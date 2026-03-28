@@ -1,0 +1,259 @@
+---
+import type { Lang, ResumeProfile } from '../../lib/resume-types';
+import { messages } from '../../lib/messages';
+import { t, bullets } from '../../lib/localize';
+import { baseUrlJoin } from '../../lib/base-url';
+import TemplateSelector from '../../components/TemplateSelector.astro';
+
+interface Props {
+  lang: Lang;
+  profile: ResumeProfile;
+}
+
+const { lang, profile } = Astro.props;
+const m = messages(lang);
+const other = lang === 'ko' ? 'en' : 'ko';
+const otherLangUrl = baseUrlJoin(other, 'minimal');
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{m.docTitle}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen bg-white font-sans text-sm leading-relaxed text-gray-900 antialiased">
+    <TemplateSelector lang={lang} currentTemplate="minimal" />
+    
+    <div
+      class="print:hidden mx-auto flex max-w-4xl flex-wrap items-center justify-end gap-3 px-8 pb-4 pt-6 text-sm"
+    >
+      <span class="text-gray-500">{m.printHint}</span>
+      <a href={otherLangUrl} class="font-semibold text-black hover:underline">{m.navOther}</a>
+    </div>
+
+    <article class="mx-auto max-w-4xl p-8 md:p-12 print:p-8">
+      <header class="mb-10 border-b-2 border-black pb-8">
+        <div class="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          <div class="min-w-0 flex-1">
+            {
+              lang === 'en' ? (
+                <>
+                  <h1 class="mb-1 text-4xl font-black tracking-tight md:text-5xl text-black">
+                    {profile.name_en}
+                  </h1>
+                  <p class="mb-6 text-base text-gray-600">{profile.name}</p>
+                </>
+              ) : (
+                <h1 class="mb-6 text-4xl font-black tracking-tight md:text-5xl text-black">{profile.name}</h1>
+              )
+            }
+            <p class="max-w-2xl whitespace-pre-line text-[15px] text-gray-800">
+              {t(profile.summary, lang)}
+            </p>
+          </div>
+          <address class="shrink-0 not-italic md:text-right text-[13px] text-gray-700 space-y-1">
+            <div>{profile.contact.phone}</div>
+            <div>
+              <a href={`mailto:${profile.contact.email}`} class="hover:underline">{profile.contact.email}</a>
+            </div>
+            <div>
+              <a href={profile.contact.github_url} target="_blank" rel="noreferrer" class="hover:underline"
+                >{profile.contact.github_label}</a
+              >
+            </div>
+            <div>
+              <a href={profile.contact.linkedin_url} target="_blank" rel="noreferrer" class="hover:underline"
+                >{profile.contact.linkedin_label}</a
+              >
+            </div>
+          </address>
+        </div>
+      </header>
+
+      <div class="space-y-12">
+        <section class="break-inside-avoid">
+          <h2 class="mb-6 text-lg font-bold uppercase tracking-wider text-black">
+            {m.experience}
+          </h2>
+          <div class="space-y-8">
+            {
+              profile.experience.map((exp) => (
+                <div class="break-inside-avoid">
+                  <div class="flex flex-wrap items-baseline justify-between gap-2 border-b border-gray-200 pb-1 mb-3">
+                    <h3 class="text-base font-bold text-black">{t(exp.company, lang)}</h3>
+                    <span class="whitespace-nowrap text-[13px] font-medium text-gray-600">
+                      {t(exp.period, lang)}
+                    </span>
+                  </div>
+                  {exp.role && (
+                    <p class="mb-1.5 text-[14px] font-semibold text-gray-800">{t(exp.role, lang)}</p>
+                  )}
+                  {lang === 'en' && exp.location_en && (
+                    <p class="mb-3 text-[13px] text-gray-500">{exp.location_en}</p>
+                  )}
+                  <p class="whitespace-pre-line text-[14px] text-gray-700">
+                    {t(exp.description, lang)}
+                  </p>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        {
+          profile.projectSections.map((section) => (
+            <section class="break-inside-avoid">
+              <h2 class="mb-6 text-lg font-bold uppercase tracking-wider text-black">
+                {t(section.heading, lang)}
+              </h2>
+              <div class="space-y-8">
+                {section.projects.map((proj) => (
+                  <div class="break-inside-avoid">
+                    <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+                      <h3 class="text-base font-bold text-black flex items-center gap-3">
+                        {t(proj.title, lang)}
+                        {proj.badge && (
+                          <span class="rounded border border-black px-1.5 py-0.5 text-[11px] font-bold text-black">
+                            {t(proj.badge, lang)}
+                          </span>
+                        )}
+                      </h3>
+                      <span class="whitespace-nowrap text-[13px] font-medium text-gray-600">
+                        {t(proj.period, lang)}
+                      </span>
+                    </div>
+                    
+                    {proj.summary && (
+                      <p class="mb-3 whitespace-pre-line text-[14px] text-gray-700">
+                        {t(proj.summary, lang)}
+                      </p>
+                    )}
+                    
+                    {proj.tech?.length > 0 && (
+                      <div class="mb-4 text-[13px] text-gray-600">
+                        <span class="font-semibold text-black">Tech:</span> {proj.tech.join(', ')}
+                      </div>
+                    )}
+                    
+                    <ul class="list-disc pl-5 space-y-1.5 marker:text-gray-400">
+                      {bullets(proj.highlights, lang).map((line) => (
+                        <li class="pl-1 text-[14px] text-gray-800">{line}</li>
+                      ))}
+                    </ul>
+                    
+                    {proj.results && bullets(proj.results, lang).length > 0 && (
+                      <div class="mt-4">
+                        <p class="mb-1.5 text-[13px] font-bold text-black">{m.results}</p>
+                        <ul class="list-disc pl-5 space-y-1 marker:text-gray-400">
+                          {bullets(proj.results, lang).map((line) => (
+                            <li class="pl-1 text-[14px] text-gray-800">{line}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))
+        }
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div class="space-y-10">
+            <section class="break-inside-avoid">
+              <h2 class="mb-5 text-lg font-bold uppercase tracking-wider text-black border-b-2 border-black pb-2">
+                {m.skills}
+              </h2>
+              <div class="space-y-4">
+                {
+                  profile.skillGroups.map((g) => (
+                    <div>
+                      <div class="mb-1 text-[13px] font-bold text-black">{g.label}</div>
+                      <div class="whitespace-pre-line text-[14px] leading-relaxed text-gray-800">
+                        {lang === 'en' ? g.body_en : g.body_ko}
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+            </section>
+            
+            {lang === 'en' && profile.languages_note && (
+              <section class="break-inside-avoid">
+                <h2 class="mb-5 text-lg font-bold uppercase tracking-wider text-black border-b-2 border-black pb-2">
+                  {m.languages}
+                </h2>
+                <p class="whitespace-pre-line text-[14px] text-gray-800">
+                  {t(profile.languages_note, lang)}
+                </p>
+              </section>
+            )}
+          </div>
+
+          <div class="space-y-10">
+            <section class="break-inside-avoid">
+              <h2 class="mb-5 text-lg font-bold uppercase tracking-wider text-black border-b-2 border-black pb-2">
+                {m.education}
+              </h2>
+              <div class="space-y-4">
+                {
+                  profile.education.map((ed) => (
+                    <div>
+                      <div class="text-[14px] font-bold text-black">{t(ed.school, lang)}</div>
+                      <div class="text-[13px] text-gray-700">{t(ed.degree, lang)}</div>
+                      <div class="text-[12px] text-gray-500 mt-0.5">{t(ed.period, lang)}</div>
+                    </div>
+                  ))
+                }
+              </div>
+            </section>
+            
+            <section class="break-inside-avoid">
+              <h2 class="mb-5 text-lg font-bold uppercase tracking-wider text-black border-b-2 border-black pb-2">
+                {m.activities}
+              </h2>
+              <div class="space-y-4">
+                {
+                  profile.activities.map((a) => (
+                    <div>
+                      <div class="text-[14px] font-bold text-black">{t(a.title, lang)}</div>
+                      <div class="text-[12px] text-gray-500 mt-0.5">{t(a.period, lang)}</div>
+                    </div>
+                  ))
+                }
+              </div>
+            </section>
+
+            {profile.awards.length > 0 && (
+              <section class="break-inside-avoid">
+                <h2 class="mb-5 text-lg font-bold uppercase tracking-wider text-black border-b-2 border-black pb-2">
+                  {m.awards}
+                </h2>
+                <div class="space-y-3">
+                  {
+                    profile.awards.map((aw) => (
+                      <div>
+                        <div class="text-[14px] font-bold text-black">{aw.title}</div>
+                        {aw.subtitle && (
+                          <div class="text-[13px] text-gray-700">{t(aw.subtitle, lang)}</div>
+                        )}
+                      </div>
+                    ))
+                  }
+                </div>
+              </section>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
+  </body>
+</html>

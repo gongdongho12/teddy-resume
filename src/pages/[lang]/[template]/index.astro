@@ -1,0 +1,35 @@
+---
+import DefaultLayout from '../../../templates/default/ResumeLayout.astro';
+import MinimalLayout from '../../../templates/minimal/ResumeLayout.astro';
+import CreativeLayout from '../../../templates/creative/ResumeLayout.astro';
+
+import { loadResume } from '../../../lib/load-resume';
+import type { Lang } from '../../../lib/resume-types';
+import { AVAILABLE_TEMPLATES, type TemplateId } from '../../../lib/templates';
+
+export function getStaticPaths() {
+  const langs = ['ko', 'en'];
+  
+  return langs.flatMap(lang => 
+    AVAILABLE_TEMPLATES.map(t => ({
+      params: { lang, template: t.id }
+    }))
+  );
+}
+
+const paramLang = Astro.params.lang;
+const paramTemplate = Astro.params.template as TemplateId;
+
+const lang: Lang = paramLang === 'en' ? 'en' : 'ko';
+const profile = loadResume();
+
+const Layouts: Record<TemplateId, any> = {
+  default: DefaultLayout,
+  minimal: MinimalLayout,
+  creative: CreativeLayout,
+};
+
+const LayoutToRender = Layouts[paramTemplate] || DefaultLayout;
+---
+
+<LayoutToRender lang={lang} profile={profile} />

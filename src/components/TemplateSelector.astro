@@ -1,0 +1,38 @@
+---
+import { AVAILABLE_TEMPLATES } from '../lib/templates';
+import { baseUrlJoin } from '../lib/base-url';
+import type { Lang } from '../lib/resume-types';
+
+interface Props {
+  lang: Lang;
+  currentTemplate: string;
+}
+
+const { lang, currentTemplate } = Astro.props;
+---
+
+<div class="print:hidden fixed bottom-4 right-4 z-50 group">
+  <div class="bg-indigo-600 border border-indigo-700 text-white rounded-full shadow-lg overflow-hidden transition-all duration-300 transform translate-y-0 opacity-100 flex">
+    
+    <div class="px-4 py-2 text-sm font-semibold flex items-center space-x-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+      </svg>
+      <span>Layouts</span>
+    </div>
+
+    <!-- Hidden menu out of the box, hover to expand horizontally -->
+    <div class="max-w-0 overflow-hidden group-hover:max-w-3xl transition-[max-width] duration-300 ease-in-out bg-white text-gray-800 flex divide-x divide-gray-100">
+      {AVAILABLE_TEMPLATES.map((t) => (
+        <a 
+          href={t.id === 'default' ? baseUrlJoin(lang) : baseUrlJoin(lang, t.id)} 
+          class={`flex flex-col whitespace-nowrap justify-center px-4 py-2 hover:bg-gray-50 text-xs transition-colors ${currentTemplate === t.id ? 'font-bold bg-gray-100 text-indigo-700' : 'text-gray-600'}`}
+          title={t.description}
+        >
+          <span class="block">{t.name}</span>
+          <span class="text-[10px] text-gray-400 font-normal">{t.category}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,606 @@
+# 하이브리드 이력서 단일 소스 — resume-enhanced / 이력서_강동호_2026 / resume-enhancement 반영
+name: 강동호
+name_en: Dongho Kang
+
+contact:
+  phone: (+82) 010-6590-3302
+  email: gongdongho12@gmail.com
+  github_url: https://github.com/gongdongho12
+  github_label: github.com/gongdongho12
+  linkedin_url: https://linkedin.com/in/dongholab
+  linkedin_label: linkedin.com/in/dongholab
+
+summary:
+  ko: |
+    Kotlin + Spring Boot를 주력으로 결제 시스템을 설계하고 MSA 공통 모듈을 개발합니다.
+    서비스의 안정성을 높이고 개발 생산성을 자동화하는 역할을 맡고 있습니다.
+    기술 커뮤니티 활동과 멘토링을 지속적으로 이어오고 있습니다.
+  en: |
+    Backend engineer focused on Kotlin and Spring Boot: payment systems design, MSA shared modules,
+    and reliability. I automate delivery and developer experience, and I keep contributing through
+    community mentoring and talks. Led Flutter hybrid app PoC through launch while owning user-side backend work.
+
+languages_note:
+  ko: 한국어 — 네이티브
+  en: Korean — Native · English — professional reading for technical docs
+
+experience:
+  - company:
+      ko: LG 유플러스 볼트업 — Tech Tribe, Back-end
+      en: LG Uplus VoltUp — Tech Tribe, Back-end
+    period:
+      ko: 2024.09 ~ 재직중
+      en: Sep 2024 — Present
+    role:
+      ko: Tech Tribe, Back-end
+      en: Tech Tribe, Back-end
+    location_en: Seoul, South Korea
+    description:
+      ko: |
+        결제 서비스를 초기(0→1)부터 설계하여 멀티 PG 결제 모듈(카카오페이, 토스페이먼츠, 카카오T)을 구축하고,
+        다층 미수 관리 시스템(DLQ/Batch)으로 정산 안정성을 확보했습니다.
+        쿠폰/포인트 시스템 및 제휴사 연동을 통해 고객 리텐션을 강화하고,
+        Flutter 하이브리드 앱 신규 개발을 주도(PoC~런칭)하였으며
+        AI 코드 리뷰/배포 자동화 등 DX를 구축했습니다.
+      en: |
+        Owned billing from 0→1: multi-PG modules (KakaoPay, Toss Payments, Kakao T) and layered arrears
+        handling (batch/DLQ) for settlement reliability. Built coupon/point platforms and partner integrations.
+        Led the Flutter hybrid app (PoC→launch) and shipped automation for AI code review and releases.
+
+  - company:
+      ko: 카카오스타일 — 프라이싱시스템, Back-end
+      en: Kakao Style — Pricing System, Back-end
+    period:
+      ko: 2022.06 ~ 2024.09
+      en: Jun 2022 — Sep 2024
+    role:
+      ko: 프라이싱시스템, Back-end
+      en: Pricing System, Back-end
+    location_en: Seongnam, South Korea
+    description:
+      ko: |
+        파이널 프라이싱 서비스 및 상품 매칭 / 지그재그 멤버십 및 마일리지 서비스
+        네이버 쇼핑 / 구글 쇼핑 / 유튜브 Engine Page 연동
+        외부 상품 가격 수집 및 타사 대비 가격 우위/열위 자동화 파이프라인
+      en: |
+        Final pricing service, N:M product matching, Zigzag membership/mileage, and shopping EP integrations
+        (Naver/Google/YouTube). Pipelines for external price collection and competitive position automation.
+
+  - company:
+      ko: 스토어링크 — R&D Engineer
+      en: Storelink — R&D Engineer
+    period:
+      ko: 2021.03 ~ 2022.06
+      en: Mar 2021 — Jun 2022
+    role:
+      ko: R&D Engineer
+      en: R&D Engineer
+    location_en: Seoul, South Korea
+    description:
+      ko: 상품 데이터 수집 및 키워드 기반 순위 / 애드링크, 유짓, 퍼그샵, 프라이데이 개발
+      en: Product data collection, keyword ranking, and services including Friday/Pugshop.
+
+  - company:
+      ko: 와탭랩스 — Front-end Engineer
+      en: Whatap Labs — Front-end Engineer
+    period:
+      ko: 2019.03 ~ 2021.03
+      en: Mar 2019 — Mar 2021
+    role:
+      ko: Front-end Engineer
+      en: Front-end Engineer
+    location_en: Seoul, South Korea
+    description:
+      ko: 와탭 모니터링 서비스 프론트엔드 개발
+      en: Frontend for Whatap monitoring (React.js, TypeScript).
+
+  - company:
+      ko: 함샤우트 — SW Engineer
+      en: Hamschout — SW Engineer
+    period:
+      ko: 2017.08 ~ 2018.08
+      en: Aug 2017 — Aug 2018
+    description:
+      ko: 잇플루언서 플랫폼 개발 & 사내 솔루션 개발 및 유지보수
+      en: Influencer platform and internal solutions.
+
+  - company:
+      ko: 오픈브릿지 — SW Engineer
+      en: OpenBridge — SW Engineer
+    period:
+      ko: 2016.05 ~ 2017.07
+      en: May 2016 — Jul 2017
+    description:
+      ko: 알람톡 및 사진 편집 안드로이드 앱 개발 / 오픈브릿지 웹 개발
+      en: Alarm talk & photo-editing Android apps; OpenBridge web development.
+
+skillGroups:
+  - label: Language
+    body_ko: |
+      Java / Kotlin
+      JavaScript / TypeScript
+      Dart
+    body_en: |
+      Java / Kotlin
+      JavaScript / TypeScript
+      Dart
+  - label: Framework
+    body_ko: |
+      Spring Boot / Spring Batch
+      React.js / Next.js
+      Flutter
+      Express.js
+    body_en: |
+      Spring Boot / Spring Batch
+      React.js / Next.js
+      Flutter (Hybrid WebView)
+  - label: Infra & DB
+    body_ko: |
+      MySQL / Redis
+      GCP Pub/Sub / Cloud SQL
+      Docker / K8S
+      Kafka / Jenkins / ArgoCD
+    body_en: |
+      MySQL / Redis
+      GCP Pub/Sub / Cloud SQL
+      Docker / Kubernetes
+      Kafka / Jenkins / ArgoCD
+  - label: CI/CD & DevOps
+    body_ko: |
+      Jenkins / GitHub Actions
+      Fastlane
+      Firebase App Distribution
+      GCS Build Cache
+      ProGuard / R8
+    body_en: |
+      Jenkins / GitHub Actions
+      Fastlane
+      Firebase App Distribution
+      GCS remote Gradle cache
+      ProGuard / R8 policies
+  - label: DX / AI workflow
+    body_ko: |
+      GitHub Copilot
+      Claude Code
+      Gemini API
+      Cursor (에이전트 워크플로)
+    body_en: |
+      GitHub Copilot (11 prompts)
+      Claude Code (8 skills)
+      Gemini API / run-gemini-cli
+      Cursor workflows
+  - label: Mobile
+    body_ko: |
+      Android (네이티브 연동)
+      iOS (WKWebView)
+      FCM / APNS
+    body_en: |
+      Android (native bridges)
+      iOS (WKWebView)
+      FCM / APNS
+
+education:
+  - school:
+      ko: 국민대학교
+      en: Kookmin University
+    degree:
+      ko: 소프트웨어전공 공학사
+      en: B.S., Software Engineering
+    period:
+      ko: 2016.03 ~ 2023.02
+      en: Mar 2016 — Feb 2023
+  - school:
+      ko: 한국디지털미디어고등학교
+      en: Korea Digital Media High School
+    degree:
+      ko: 웹프로그래밍과
+      en: Web Programming
+    period:
+      ko: 2013.03 ~ 2016.02
+      en: Mar 2013 — Feb 2016
+
+awards:
+  - title: AngelHack 2020
+    subtitle:
+      ko: Common Computer Prize
+      en: Common Computer Prize
+
+activities:
+  - title:
+      ko: 커널360 2기 백엔드 멘토
+      en: Kernel360 Backend Mentor (2nd cohort)
+    period:
+      ko: 2024.07 ~ 2025.01
+      en: Jul 2024 — Jan 2025
+  - title:
+      ko: 카카오테크 캠퍼스 2기 백엔드 멘토
+      en: Kakao Tech Campus Backend Mentor (2nd)
+    period:
+      ko: 2024.06 ~ 2024.08
+      en: Jun 2024 — Aug 2024
+  - title:
+      ko: 국민대학교 SW중심대학 멘토
+      en: Kookmin SW-Centered University Mentor
+    period:
+      ko: 2024.03 ~
+      en: Mar 2024 — Present
+  - title:
+      ko: 한양대 ERICA SW창업특강 (Effective Backend)
+      en: Hanyang ERICA — Effective Backend talk
+    period:
+      ko: 2024.02
+      en: Feb 2024
+  - title:
+      ko: 부스트캠프 8기 백엔드 멘토/리뷰어
+      en: Boostcamp 8th — Backend mentor/reviewer
+    period:
+      ko: 2023.09 ~ 2023.12
+      en: Sep 2023 — Dec 2023
+  - title:
+      ko: 한빛N MSA — Monitoring 세션 발표
+      en: Hanbit N MSA — Monitoring session
+    period:
+      ko: 2023.12
+      en: Dec 2023
+  - title:
+      ko: UbuCon Korea 2023 Speaker
+      en: UbuCon Korea 2023 Speaker
+    period:
+      ko: 2023.09
+      en: Sep 2023
+  - title:
+      ko: SW중심대학 공동해커톤 멘토
+      en: SW University joint hackathon mentor
+    period:
+      ko: 2023.06
+      en: Jun 2023
+  - title:
+      ko: 프로그래머스 내일배움코스 JAVA 멘토
+      en: Programmers Java mentor
+    period:
+      ko: 2023.03 ~ 2023.04
+      en: Mar 2023 — Apr 2023
+  - title:
+      ko: 우분투 한국 커뮤니티 Infra Manager
+      en: Ubuntu Korea Community Infra Manager
+    period:
+      ko: 2018.03 ~ 2021.05
+      en: Mar 2018 — May 2021
+
+projectSections:
+  - heading:
+      ko: 주요 프로젝트 — LGU+ VoltUp
+      en: Projects — LGU+ VoltUp
+    projects:
+      - title:
+          ko: 멀티 PG 결제 시스템 및 정산 안정화
+          en: Multi-PG billing & settlement reliability
+        badge:
+          ko: 기여율 76%
+          en: ~76% of billing-service commits
+        period:
+          ko: 2024.10 ~ 현재
+          en: Oct 2024 — Present
+        summary:
+          ko: |
+            결제 서비스를 초기(0→1)부터 설계하여 단일 PG(카카오페이)에서 3개 PG사를 수용하는 멀티 모듈로 확장하고,
+            다층 미수 관리 시스템을 구축하여 매출 정산의 정확도를 확보했습니다.
+          en: |
+            Led billing from scratch; expanded from a single PG to KakaoPay, Toss Payments, and Kakao T with
+            shared error-code mapping. Layered arrears batches (1/7/30-day), retry→DLQ, and NACK recovery; SQL keepalive and pool tuning.
+        tech:
+          - Kotlin
+          - Spring Boot
+          - Spring Batch
+          - GCP Pub/Sub
+          - Cloud SQL
+          - Flutter
+        highlights:
+          ko:
+            - 결제 서비스를 프로젝트 초기(0→1)부터 설계·구현, 전체 커밋의 76%(490/646)를 직접 작성하며 핵심 개발자로 주도
+            - 카카오페이 → 토스페이먼츠 → 카카오T 3개 PG사 통합 결제 아키텍처 설계 및 PG별 에러코드 매핑 체계 구축
+            - 미수 처리 배치(1/7/30일 다단계), 5회 재시도→DLQ, NACK 기반 자동 복구 등 다층 미수 관리 시스템 구현
+            - GCP Cloud SQL keepalive 설정 및 커넥션 풀 안정성 개선, 슬로우 쿼리 인덱싱
+            - 카드 등록 제한(최대 10개), 중복 방지, vendor별/상태별 검색 필터 등 결제수단 관리 체계 구축
+          en:
+            - Owned billing 0→1 (~76% of commits in billing-service) as core engineer
+            - Unified PG integration and error-code mapping across three providers
+            - Multi-stage arrears batches, five retries to DLQ, NACK-based recovery
+            - Cloud SQL keepalive & pool stability; slow-query indexing
+            - Card registration limits, deduping, vendor/status filters
+
+      - title:
+          ko: 통합 마케팅(쿠폰/포인트) 플랫폼 구축
+          en: Coupon & point marketing platform
+        period:
+          ko: "2025"
+          en: "2025"
+        summary:
+          ko: |
+            다양한 제휴사(넥센, 도요타, 블루멤버스)의 프로모션 요구사항을 수용하는 범용 쿠폰·포인트 백엔드 시스템을
+            구축하고, 어드민 관리 UI까지 풀스택으로 구현했습니다.
+          en: |
+            Backend for coupons/points covering Nexen/Toyota/Bluemembers-style promos; full-stack admin UI.
+        tech:
+          - Kotlin
+          - Spring Boot
+          - MySQL
+          - JPA
+          - React
+          - Ant Design
+        highlights:
+          ko:
+            - 포인트 지갑 조회/조절/취소 API 및 어드민 관리 UI를 백엔드~프론트엔드까지 풀스택으로 구현
+            - 제휴사(넥센) 쿠폰 만료일·중복발급·금액 설정 등 비즈니스 요구사항에 맞춘 유연한 프로모션 로직 개발
+            - 포인트 재결제 시 사용 누락 버그를 발견·수정하여 정산 정확도 확보
+            - 카카오T 프로모션 쿠폰 대상자 확인 API 구현
+          en:
+            - Wallet APIs and admin UI end-to-end
+            - Partner-specific expiry, duplicate issuance, and amount rules (e.g., Nexen)
+            - Fixed missing point usage on re-payment to protect settlement accuracy
+            - Kakao T promotion eligibility API
+
+      - title:
+          ko: VoltUp 하이브리드 앱 및 유저 사이드 백엔드
+          en: VoltUp hybrid app & user-side backend
+        period:
+          ko: "2025"
+          en: "2025"
+        summary:
+          ko: |
+            서비스 2.0 런칭을 위해 Flutter 하이브리드 앱 개발을 주도하고,
+            카카오T 계정/결제 연동(4개 MSA 관통), PnC 자동충전, 미결제 감시 등 유저 사이드 백엔드 전반을 개발했습니다.
+          en: |
+            Led Flutter hybrid delivery for 2.0; Kakao T account/payment across auth, user, billing, feapp;
+            PnC auto-charge; unpaid-charge Slack watchdogs; Gradle local-yaml generator and Flyway.
+        tech:
+          - Flutter
+          - Kotlin
+          - Spring Boot
+          - GCP Pub/Sub
+          - Flyway
+        highlights:
+          ko:
+            - 카카오T 계정/결제 연동을 auth → user → billing → feapp 4개 MSA 서비스에 걸쳐 직접 설계·구현
+            - PnC(Plug and Charge) 자동충전 시스템의 EVCC ID 인증 로직 설계 및 구현
+            - 빌링 미반영 충전 주문을 자동 탐지하여 Slack 알림하는 감시 배치 구축
+            - 미수 알림톡 발송 조건 최적화(첫 이벤트만 발송)로 사용자 알림 피로도 감소
+            - MSA 로컬 개발 환경 구성 자동화(Gradle local-yaml 생성) 및 Flyway DB 마이그레이션 적용
+            - 서비스 개발 가능 범위 산정(PoC) 및 Android/iOS 하이브리드 앱 신속 개발 및 런칭(2025.03)
+            - Flutter 하이브리드 앱 아키텍처·JSBridge 3채널, 20+ 네이티브 브릿지 타입, FCM 3단계 푸시, ML Kit 바코드 등 (상세)
+          en:
+            - Kakao T auth/payment spanning four MSA services
+            - EVCC ID auth for Plug & Charge
+            - Slack jobs for billing mismatches; tuned arrears notification cadence
+            - Gradle tooling for local YAML; Flyway migrations
+            - Hybrid app architecture with tri-channel JSBridge, native bridges, FCM stages, ML Kit barcode, secure storage
+        results:
+          ko:
+            - 5개월 만에 PoC → 런칭 (82파일, 621커밋 규모 참고)
+            - 웹팀이 JS API로 네이티브 기능 호출 가능한 브릿지 패턴 확립
+          en:
+            - PoC→launch in ~5 months; established bridge pattern for web-to-native APIs
+
+      - title:
+          ko: 로밍 서비스 안정성 및 성능 최적화
+          en: Roaming service reliability & performance
+        period:
+          ko: "2025"
+          en: "2025"
+        summary:
+          ko: 타 충전사업자(환경부) 연동 로밍 서비스의 카드 상태 관리 로직을 재설계하고 처리 성능을 개선했습니다.
+          en: Reworked roaming card-state updates using billing arrears truth; removed redundant serialization; batched billing lookups; tuned retries per domain.
+        tech:
+          - Kotlin
+          - Spring Boot
+          - GCP Pub/Sub
+        highlights:
+          ko:
+            - 카드 상태 업데이트 로직을 결제 응답 기반에서 실제 빌링 미수정보 기반으로 재설계하여 데이터 정확성 향상
+            - 불필요한 직렬화/역직렬화 제거 및 빌링 개별 조회 통합으로 처리 성능 개선
+            - 에러 시 리트라이 횟수를 서비스별 차등 조정 (충전기/회원카드 2회, 주문 3회)
+          en:
+            - Card state driven by billing arrears instead of payment responses only
+            - Fewer serialize round-trips; consolidated billing queries
+            - Differentiated retry counts (charger/card vs order)
+
+      - title:
+          ko: 개발 생산성 자동화 및 DevOps 개선
+          en: Developer productivity & DevOps
+        period:
+          ko: "2025"
+          en: "2025"
+        summary:
+          ko: 반복되는 운영 업무와 개발 비효율을 제거하기 위해 AI 코드 리뷰, 배포 자동화, MSA 개발 환경 도구를 구축했습니다.
+          en: AI-first reviews, mobile CI/CD hardening, remote Gradle cache, iOS TestFlight automation, obfuscation policy, Firebase distribution, STG payment cancel tooling for QA.
+        tech:
+          - Gemini API
+          - GitHub Copilot
+          - Claude Code
+          - Firebase
+          - Docker
+          - Gradle
+        highlights:
+          ko:
+            - GitHub Copilot(11개 프롬프트), Claude Code(8개 스킬), Cursor 3개 AI 도구에 MSA 서비스별 맞춤 워크플로우 구축
+            - run-gemini-cli를 활용한 1차 코드 리뷰 자동화 및 시니어 리뷰 리소스 절감
+            - Firebase App Distribution 도입으로 QA/배포 프로세스 병목 제거
+            - 개발자 개입 없이 QA가 직접 결제를 취소할 수 있는 STG/DEV 환경 결제 취소 기능 개발
+            - MSA 환경의 설정 파일(application-local.yaml) 자동 생성 도구 개발
+            - Android Jenkins 파이프라인 공통 라이브러리화, GCS Gradle 캐시, iOS 자동 배포, ProGuard/R8 정책 등 (상세)
+          en:
+            - Tailored Copilot/Claude/Cursor workflows across MSA repos
+            - Gemini CLI for first-pass review load shedding
+            - Firebase App Distribution; QA self-serve payment cancel in STG/DEV
+            - Gradle generator for application-local.yaml
+            - Refactored Android Jenkins into shared libs; GCS remote cache; iOS GA/TestFlight pipeline; 300+ line R8 rules
+
+  - heading:
+      ko: 프로젝트 — 카카오스타일 (2022.06 ~ 2024.09)
+      en: Projects — Kakao Style (2022.06 — 2024.09)
+    projects:
+      - title:
+          ko: 파이널 프라이싱 서비스
+          en: Final pricing service
+        period:
+          ko: 2023.12 ~ 2024.09
+          en: Dec 2023 — Sep 2024
+        summary:
+          ko: 각 지면에서 개별 처리되던 가격 계산 로직을 하나의 API로 통합
+          en: Consolidated scattered price calculations into one API with timeouts and circuit breakers; gateway integration.
+        tech:
+          - Kotlin
+          - Spring Boot
+          - Spring Batch
+          - DGS GraphQL
+          - MySQL
+          - Kubernetes
+        highlights:
+          ko:
+            - 쿠폰, 프로모션, 배송비, 상품할인 등 모든 혜택을 파이널 프라이싱 API 하나로 통합
+            - 레이턴시 확보를 위한 타임아웃 및 서킷브레이커 적용
+            - 사내 전 지면 게이트웨이 연동
+          en:
+            - Single API for coupons, promos, shipping, item discounts
+            - Timeouts & circuit breakers for latency SLOs
+            - Internal gateway rollout
+
+      - title:
+          ko: N:M 동일 상품 매칭
+          en: N:M identical-product matching
+        period:
+          ko: 2024.02 ~ 2024.09
+          en: Feb 2024 — Sep 2024
+        tech:
+          - Kotlin
+          - Spring Boot
+          - Spring Batch
+          - Kafka
+          - AWS Athena
+        highlights:
+          ko:
+            - 기존 1:1 매칭을 N:M 구조로 변경하여 스토어/타입 구분없이 동일 상품 매칭
+            - 전 매칭 조회를 위한 별도의 이중 캐시 구성
+            - AWS Athena 쿼리로 이미지 유사도 99.5% 이상 상품 매칭 배치잡 개발
+            - 상품 업데이트 컨슈머를 통한 신규 매칭 자동 적용
+          en:
+            - Moved from 1:1 to N:M matching across stores/types
+            - Dual cache for full matching reads
+            - Athena batch job for ≥99.5% image-similarity matches
+            - Consumer-driven auto application on catalog updates
+
+      - title:
+          ko: 멤버십/마일리지 서비스 이관
+          en: Membership & mileage migration
+        period:
+          ko: 2023.04 ~ 2023.06
+          en: Apr 2023 — Jun 2023
+        highlights:
+          ko:
+            - 기존 멤버십 서비스 신규 서비스로 이관 (cormo.js → SpringBoot)
+            - 무중단 이관을 위한 기존 레거시 동작 유지 및 DB 1:1 마이그레이션
+            - 멤버십 등급에 따른 마일리지 적립 로직 개발
+            - 3중 적립 항목에서 레벨/적립률 캐싱하여 DB 부하 70% → 30% 이내로 감소
+          en:
+            - Migrated legacy Node service to Spring Boot with zero-downtime cutover
+            - Cached tier/earn rates to cut DB load from ~70% to <30% on triple-earn paths
+
+      - title:
+          ko: 네이버 쇼핑 Engine Page
+          en: Naver Shopping Engine Page
+        period:
+          ko: 2022.06 ~ 2024.09
+          en: Jun 2022 — Sep 2024
+        highlights:
+          ko:
+            - 지그재그 상품의 가격 우위 상품을 네이버 쇼핑 가격 비교에 노출
+            - CPC에서 CPS 전환 시 병렬 처리로 배치 시간 4시간 → 2시간 단축
+            - 카드사 할인정보, 빠른배송 뱃지, 카테고리 매핑 연동
+          en:
+            - Surfaced Zigzag price-competitive SKUs on Naver price compare
+            - Parallelized CPC→CPS workloads (batch ~4h → ~2h)
+            - Card promos, fast-delivery badges, category mapping
+
+      - title:
+          ko: 스마트폰 프록시 / 가격 모니터링 리포트
+          en: Mobile proxy & price monitoring
+        period:
+          ko: 2024.01 ~ 2024.09
+          en: Jan 2024 — Sep 2024
+        tech:
+          - Docker
+          - MitmProxy
+          - Kubernetes
+          - Node.js
+          - Kotlin
+        highlights:
+          ko:
+            - 모바일 프록시 서버 풀 구성으로 IP 대역 유동 사용, Rate Limit 자동 관리
+            - 가격 우위/열위 자동 비교 파이프라인 및 엑셀 리포트 생성 배치잡 개발
+          en:
+            - MitmProxy pools with rotating IPs and adaptive rate limits
+            - Automated price advantage/lag pipelines with Excel reporting batches
+
+  - heading:
+      ko: 프로젝트 — 이전 경력
+      en: Projects — Earlier experience
+    projects:
+      - title:
+          ko: 프라이데이 서비스 — 스토어링크
+          en: Friday analytics — Storelink
+        period:
+          ko: 2021.03 ~ 2022.06
+          en: Mar 2021 — Jun 2022
+        tech:
+          - Kotlin
+          - Spring Boot
+          - WebFlux
+          - R2DBC
+          - Redis
+        highlights:
+          ko:
+            - 커머스 키워드 통계 분석 서비스 백엔드 개발
+            - 개발팀 전체에 Kotlin과 WebFlux를 메인 기술 스택으로 도입
+            - 자사 서비스의 핵심 기능을 프라이데이 조회 API로 전부 대체하여 현재까지 사용
+          en:
+            - Commerce keyword analytics on Kotlin/WebFlux
+            - Team-wide adoption of Kotlin + WebFlux
+            - Replaced core reporting paths with Friday APIs (still in use)
+
+      - title:
+          ko: 와탭 모니터링 FE — 와탭랩스
+          en: Whatap monitoring FE — Whatap Labs
+        period:
+          ko: 2019.03 ~ 2021.03
+          en: Mar 2019 — Mar 2021
+        tech:
+          - React
+          - Redux
+          - TypeScript
+          - Ant Design
+        highlights:
+          ko:
+            - 서버/DB/컨테이너 모니터링 대시보드 FE 개발
+            - 실시간 대시보드 API 반복 호출 축소, 차트 대시보드 메모리 부족 현상 감소
+          en:
+            - Dashboards for servers, DBs, containers
+            - Reduced polling churn; mitigated chart memory pressure
+
+      - title:
+          ko: 잇플루언서 / 알람톡 — 함샤우트·오픈브릿지
+          en: Influencer platform & alarm apps
+        period:
+          ko: 2016.05 ~ 2018.08
+          en: May 2016 — Aug 2018
+        tech:
+          - TypeScript
+          - React
+          - Java
+          - Android
+        highlights:
+          ko:
+            - 인플루언서 플랫폼 개발: 광고주-인플루언서 매칭 자동화로 컨택 리소스 단축
+            - 알람톡 2.0 신규 개발 (음성인식/흔들기 알람), 사진 필터 앱 개발
+          en:
+            - Automated advertiser–influencer matching
+            - Alarm app 2.0 (voice/shake) and photo-filter apps

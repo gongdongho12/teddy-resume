@@ -1,0 +1,22 @@
+---
+import { baseUrlJoin } from '../lib/base-url';
+
+const resumeKo = baseUrlJoin('ko');
+const resumeEn = baseUrlJoin('en');
+---
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content={`0;url=${resumeKo}`} />
+    <title>teddy-resume</title>
+  </head>
+  <body class="min-h-screen bg-gray-100 p-8 font-sans text-sm text-gray-600">
+    <p class="text-center">
+      <a class="font-medium text-indigo-800 underline" href={resumeKo}>한국어 이력서</a>
+      <span class="mx-2 text-gray-400">·</span>
+      <a class="font-medium text-indigo-800 underline" href={resumeEn}>English</a>
+    </p>
+  </body>
+</html>

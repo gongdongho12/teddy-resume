@@ -1,0 +1,127 @@
+---
+---
+<button
+  id="canvas-print-btn"
+  class="flex items-center gap-1.5 rounded-md bg-gray-600 px-2.5 py-1 text-xs font-medium text-white shadow-sm transition-colors hover:bg-gray-500 font-sans"
+  title="Experimental Canvas to PDF rendering"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+    <polyline points="7 10 12 15 17 10"></polyline>
+    <line x1="12" y1="15" x2="12" y2="3"></line>
+  </svg>
+  <span>Canvas PDF</span>
+</button>
+
+<!-- Full-screen overlay for progress feedback -->
+<div id="canvas-overlay" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/60 backdrop-blur-sm font-sans" style="display:none;">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4">
+    <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <p id="canvas-status" class="text-gray-900 font-bold text-lg">PDF 생성 중...</p>
+    <p class="text-gray-500 text-sm text-center">화면을 캡처하고 있습니다. 잠시만 기다려 주세요.</p>
+  </div>
+</div>
+
+<style is:global>
+  body.canvas-rendering-active {
+    background: white !important;
+  }
+  .canvas-rendering-target {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background: white !important;
+  }
+</style>
+
+<script>
+  import html2canvas from 'html2canvas';
+  import { jsPDF } from 'jspdf';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('canvas-print-btn');
+    const overlay = document.getElementById('canvas-overlay');
+    const status = document.getElementById('canvas-status');
+    if (!btn || !overlay || !status) return;
+
+    btn.addEventListener('click', async () => {
+      const target = document.querySelector('article');
+      if (!target) {
+        alert('Resume container not found.');
+        return;
+      }
+
+      try {
+        // Show overlay
+        overlay.style.display = 'flex';
+        btn.setAttribute('disabled', 'true');
+        status.textContent = '화면 캡처 준비 중...';
+
+        // Apply clean styles for canvas capture
+        document.body.classList.add('canvas-rendering-active');
+        target.classList.add('canvas-rendering-target');
+
+        // Give DOM a frame to update
+        await new Promise(r => setTimeout(r, 100));
+
+        status.textContent = '캡처 진행 중...';
+
+        const canvas = await html2canvas(target as HTMLElement, {
+          scale: 2, 
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+        });
+
+        // Restore styles
+        document.body.classList.remove('canvas-rendering-active');
+        target.classList.remove('canvas-rendering-target');
+
+        status.textContent = 'PDF 파일 생성 중...';
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.92);
+        
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+
+        while (heightLeft > 5) {
+          position -= pdfHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+
+        const date = new Date().toISOString().split('T')[0];
+        pdf.save(`resume_canvas_${date}.pdf`);
+
+        status.textContent = '완료!';
+        await new Promise(r => setTimeout(r, 800));
+
+        overlay.style.display = 'none';
+        btn.removeAttribute('disabled');
+      } catch (err) {
+        console.error('PDF generation error:', err);
+        document.body.classList.remove('canvas-rendering-active');
+        target.classList.remove('canvas-rendering-target');
+        status.textContent = '오류 발생';
+        await new Promise(r => setTimeout(r, 1500));
+        overlay.style.display = 'none';
+        btn.removeAttribute('disabled');
+      }
+    });
+  });
+</script>

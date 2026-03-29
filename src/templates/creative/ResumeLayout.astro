@@ -4,6 +4,7 @@ import { messages } from '../../lib/messages';
 import { t, bullets } from '../../lib/localize';
 import { baseUrlJoin } from '../../lib/base-url';
 import TemplateSelector from '../../components/TemplateSelector.astro';
+import CanvasPrintButton from '../../components/CanvasPrintButton.astro';
 
 interface Props {
   lang: Lang;
@@ -28,18 +29,31 @@ const otherLangUrl = baseUrlJoin(other, 'creative');
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"
       rel="stylesheet"
     />
+    <style>
+      @page {
+        size: A4;
+        margin: 15mm;
+      }
+      @media print {
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    </style>
   </head>
   <body class="min-h-screen bg-gray-100 font-sans text-sm leading-relaxed text-gray-800 antialiased" style="font-family: 'Outfit', 'Noto Sans KR', sans-serif;">
     <TemplateSelector lang={lang} currentTemplate="creative" />
     
-    <div class="print:hidden mx-auto flex max-w-[1000px] flex-wrap items-center justify-end gap-3 px-8 pb-3 pt-6 text-sm">
+    <div class="print:hidden mx-auto flex max-w-[1000px] flex-wrap items-center justify-end gap-3 px-8 pb-3 pt-6 text-[13px]">
       <span class="text-gray-500">{m.printHint}</span>
-      <a href={otherLangUrl} class="font-semibold text-teal-600 hover:text-teal-800 hover:underline">{m.navOther}</a>
+      <CanvasPrintButton />
+      <a href={otherLangUrl} class="font-semibold text-teal-600 hover:text-teal-800 hover:underline ml-2">{m.navOther}</a>
     </div>
 
     <article class="mx-auto max-w-[1000px] bg-white shadow-xl overflow-hidden print:shadow-none print:overflow-visible flex flex-col md:flex-row min-h-screen">
       <!-- Left Sidebar -->
-      <aside class="w-full md:w-[320px] shrink-0 bg-teal-900 text-teal-50 p-10 flex flex-col gap-10 print:bg-teal-900 print:text-teal-50">
+      <aside class="w-full md:w-[320px] shrink-0 bg-teal-900 text-teal-50 p-10 flex flex-col gap-10 print:bg-white print:text-gray-900 print:w-[320px] print:p-0 print:pr-10">
         <div>
           {
             lang === 'en' ? (
@@ -75,14 +89,14 @@ const otherLangUrl = baseUrlJoin(other, 'creative');
         </div>
 
         <div class="space-y-8 mt-4">
-          <section class="break-inside-avoid">
+          <section>
             <h2 class="mb-4 text-xs font-bold uppercase tracking-widest text-teal-400">
               {m.skills}
             </h2>
             <div class="space-y-4">
               {
                 profile.skillGroups.map((g) => (
-                  <div>
+                  <div class="break-inside-avoid">
                     <div class="mb-1 text-[13px] font-bold text-white">{g.label}</div>
                     <div class="whitespace-pre-line text-[12.5px] leading-relaxed text-teal-100">
                       {lang === 'en' ? g.body_en : g.body_ko}
@@ -101,14 +115,14 @@ const otherLangUrl = baseUrlJoin(other, 'creative');
             )}
           </section>
 
-          <section class="break-inside-avoid">
+          <section>
             <h2 class="mb-4 text-xs font-bold uppercase tracking-widest text-teal-400">
               {m.education}
             </h2>
             <div class="space-y-4">
               {
                 profile.education.map((ed) => (
-                  <div>
+                  <div class="break-inside-avoid">
                     <div class="text-[13px] font-bold text-white">{t(ed.school, lang)}</div>
                     <div class="text-[12.5px] text-teal-100">{t(ed.degree, lang)}</div>
                     <div class="text-[11.5px] text-teal-300 mt-0.5">{t(ed.period, lang)}</div>
@@ -121,7 +135,7 @@ const otherLangUrl = baseUrlJoin(other, 'creative');
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 p-10 md:p-14 md:pl-16">
+      <main class="flex-1 p-10 md:p-14 md:pl-16 print:p-0">
         <section class="mb-12">
           <p class="whitespace-pre-line text-[16px] text-gray-700 leading-relaxed font-medium">
             {t(profile.summary, lang)}
@@ -226,14 +240,14 @@ const otherLangUrl = baseUrlJoin(other, 'creative');
         }
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <section class="break-inside-avoid">
+          <section class="print:mb-10">
             <h2 class="mb-5 text-lg font-bold uppercase tracking-wider text-teal-900">
               {m.activities}
             </h2>
             <div class="space-y-4">
               {
                 profile.activities.map((a) => (
-                  <div class="border-l-2 border-teal-200 pl-3">
+                  <div class="break-inside-avoid  border-l-2 border-teal-200 pl-3">
                     <div class="text-[14px] font-bold text-gray-900">{t(a.title, lang)}</div>
                     <div class="text-[12.5px] text-gray-500 mt-0.5">{t(a.period, lang)}</div>
                   </div>
@@ -243,14 +257,14 @@ const otherLangUrl = baseUrlJoin(other, 'creative');
           </section>
 
           {profile.awards.length > 0 && (
-            <section class="break-inside-avoid">
+            <section>
               <h2 class="mb-5 text-lg font-bold uppercase tracking-wider text-teal-900">
                 {m.awards}
               </h2>
               <div class="space-y-4">
                 {
                   profile.awards.map((aw) => (
-                    <div class="border-l-2 border-teal-200 pl-3">
+                    <div class="break-inside-avoid  border-l-2 border-teal-200 pl-3">
                       <div class="text-[14px] font-bold text-gray-900">{aw.title}</div>
                       {aw.subtitle && (
                         <div class="text-[13px] text-gray-600 mt-0.5">{t(aw.subtitle, lang)}</div>

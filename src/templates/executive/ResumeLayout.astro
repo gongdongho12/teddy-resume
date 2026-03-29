@@ -1,0 +1,277 @@
+---
+import type { Lang, ResumeProfile } from '@/lib/resume-types';
+import { messages } from '@/lib/messages';
+import { t, bullets } from '@/lib/localize';
+import { baseUrlJoin } from '@/lib/base-url';
+import TemplateSelector from '@/components/TemplateSelector.astro';
+import CanvasPrintButton from '@/components/CanvasPrintButton.astro';
+
+interface Props {
+  lang: Lang;
+  profile: ResumeProfile;
+}
+
+const { lang, profile } = Astro.props;
+const m = messages(lang);
+const other = lang === 'ko' ? 'en' : 'ko';
+const otherLangUrl = baseUrlJoin(other, 'executive');
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{m.docTitle}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @page {
+        size: A4;
+        margin: 15mm 15mm;
+      }
+      @media print {
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-[#111111] text-sm leading-tight text-[#e5e5e5] antialiased" style="font-family: 'Inter', sans-serif;">
+    <TemplateSelector lang={lang} currentTemplate="executive" />
+    
+    <div class="print:hidden mx-auto flex max-w-[850px] flex-wrap items-center justify-end gap-3 px-8 pb-3 pt-6 text-[13px]">
+      <span class="text-gray-400">{m.printHint}</span>
+      <CanvasPrintButton />
+      <a href={otherLangUrl} class="font-semibold text-[#d4af37] hover:text-[#f3cd5a] hover:underline ml-2">{m.navOther}</a>
+    </div>
+
+    <!-- DOCUMENT RENDERER -->
+    <article class="mx-auto max-w-[850px] print:block">
+      
+      <!-- PAGE 1: COVER PAGE -->
+      <section class="bg-[#1a1a1a] p-16 shadow-2xl print:shadow-none flex flex-col justify-center items-center mb-10 print:mb-0 print:break-after-page border border-[#333] print:border-none print:bg-white text-center">
+        
+        <header class="w-full">
+          <div class="mb-10 text-center">
+            {
+              lang === 'en' ? (
+                <>
+                  <h1 class="text-6xl font-bold text-[#ffffff] print:text-black tracking-tight" style="font-family: 'Playfair Display', serif;">
+                    {profile.name_en}
+                  </h1>
+                  <p class="mt-4 text-xl text-[#a0a0a0] font-medium print:text-gray-700 tracking-wider uppercase">{profile.name}</p>
+                </>
+              ) : (
+                <h1 class="text-6xl font-bold text-[#ffffff] print:text-black tracking-tight" style="font-family: 'Playfair Display', serif;">
+                  {profile.name}
+                </h1>
+              )
+            }
+          </div>
+          
+          <div class="my-10 h-px w-24 bg-[#d4af37] mx-auto print:bg-black"></div>
+
+          <p class="mx-auto max-w-3xl whitespace-pre-line text-[16px] text-[#cccccc] print:text-gray-800 leading-[1.8] font-light">
+            {t(profile.summary, lang)}
+          </p>
+
+          <div class="my-10 h-px w-24 bg-[#d4af37] mx-auto print:bg-black"></div>
+
+          <div class="mt-8 flex flex-col items-center gap-2 text-[14px] text-[#a0a0a0] print:text-gray-800 tracking-wide">
+            <div class="font-medium text-white print:text-black">{profile.contact.phone}</div>
+            <div><a href={`mailto:${profile.contact.email}`} class="hover:text-[#d4af37] print:hover:text-black">{profile.contact.email}</a></div>
+            <div><a href={profile.contact.linkedin_url} target="_blank" rel="noreferrer" class="hover:text-[#d4af37] print:hover:text-black">{profile.contact.linkedin_label}</a></div>
+            <div><a href={profile.contact.github_url} target="_blank" rel="noreferrer" class="hover:text-[#d4af37] print:hover:text-black">{profile.contact.github_label}</a></div>
+          </div>
+        </header>
+
+      </section>
+
+      <!-- PAGE 2 ONWARDS: CONTENT -->
+      <section class="bg-[#1a1a1a] shadow-2xl print:shadow-none p-12 md:p-14 print:p-0 border border-[#333] print:border-none print:bg-white mb-10 print:mb-0">
+        
+        <!-- Main Two Column Content -->
+        <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12">
+          
+          <!-- Left Column: Experience and Projects -->
+          <main class="space-y-12">
+            
+            <section>
+              <h2 class="mb-6 text-[15px] font-bold uppercase tracking-[0.15em] text-[#d4af37] print:text-black border-b border-[#333] print:border-gray-200 pb-3">
+                {m.experience}
+              </h2>
+              <div class="space-y-10">
+                {
+                  profile.experience.map((exp) => (
+                    <div class="break-inside-avoid relative pl-5 before:absolute before:left-0 before:top-[6px] before:bottom-0 before:w-[2px] before:bg-gradient-to-b before:from-[#d4af37] before:to-transparent print:before:bg-gray-400">
+                      <div class="flex flex-col mb-2">
+                         <h3 class="text-[17px] font-bold text-[#ffffff] print:text-black tracking-tight" style="font-family: 'Playfair Display', serif;">
+                           {t(exp.company, lang)}
+                         </h3>
+                         <div class="flex justify-between items-center text-[13.5px] text-[#a0a0a0] print:text-gray-600 mt-1">
+                           <span class="uppercase tracking-wider font-semibold text-[#d4af37] print:text-black">
+                             {exp.role ? t(exp.role, lang) : ''}
+                           </span>
+                           <span class="font-medium tracking-wide">{t(exp.period, lang)}</span>
+                         </div>
+                      </div>
+                      <p class="whitespace-pre-line text-[14px] text-[#cccccc] print:text-gray-800 leading-[1.7] mt-3">
+                        {t(exp.description, lang)}
+                      </p>
+                    </div>
+                  ))
+                }
+              </div>
+            </section>
+
+            {
+              profile.projectSections.map((section) => (
+                <section>
+                  <h2 class="mb-6 text-[15px] font-bold uppercase tracking-[0.15em] text-[#d4af37] print:text-black border-b border-[#333] print:border-gray-200 pb-3">
+                    {t(section.heading, lang)}
+                  </h2>
+                  <div class="space-y-10">
+                    {section.projects.map((proj) => (
+                      <div class="break-inside-avoid border border-[#333333] print:border-gray-200 bg-[#1e1e1e] print:bg-transparent p-6 rounded-sm">
+                        <div class="flex justify-between items-baseline mb-3 border-b border-[#333] print:border-gray-100 pb-3">
+                          <h3 class="text-[16px] font-bold text-[#ffffff] print:text-black tracking-tight flex items-center gap-2" style="font-family: 'Playfair Display', serif;">
+                            {t(proj.title, lang)}
+                            {proj.badge && (
+                              <span class="text-[10px] uppercase font-sans tracking-wider border border-[#d4af37] text-[#d4af37] px-1.5 py-0.5 rounded-sm print:border-black print:text-black">
+                                {t(proj.badge, lang)}
+                              </span>
+                            )}
+                          </h3>
+                          <span class="text-[13px] text-[#888888] print:text-gray-600 font-semibold tracking-wide">
+                            {t(proj.period, lang)}
+                          </span>
+                        </div>
+                        
+                        {proj.summary && (
+                          <p class="mb-4 whitespace-pre-line text-[14px] text-[#cccccc] print:text-gray-700 leading-relaxed">
+                            {t(proj.summary, lang)}
+                          </p>
+                        )}
+                        
+                        <ul class="list-none space-y-2.5 p-0 mb-4">
+                          {bullets(proj.highlights, lang).map((line) => (
+                            <li class="relative pl-4 text-[13.5px] text-[#b0b0b0] print:text-gray-800 leading-relaxed before:absolute before:left-0 before:top-2.5 before:w-1 before:h-1 before:bg-[#d4af37] print:before:bg-gray-400 before:rounded-none">
+                              {line}
+                            </li>
+                          ))}
+                        </ul>
+                        
+                        {proj.results && bullets(proj.results, lang).length > 0 && (
+                          <div class="mt-4 bg-[#111111] print:bg-gray-50 p-4 shadow-inner text-[13.5px] border-l-[3px] border-[#d4af37] print:border-black">
+                            <ul class="list-none space-y-2 p-0">
+                              {bullets(proj.results, lang).map((line) => (
+                                <li class="text-[#f3cd5a] print:text-gray-900 font-medium leading-relaxed">
+                                  {line}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))
+            }
+          </main>
+
+          <!-- Right Column: Sidebar info -->
+          <aside class="space-y-12">
+            
+            <section>
+              <h2 class="mb-5 text-[14px] font-bold uppercase tracking-[0.15em] text-[#888888] print:text-gray-500 border-b border-[#333] print:border-gray-200 pb-2">
+                {m.skills}
+              </h2>
+              <div class="space-y-6">
+                {
+                  profile.skillGroups.map((g) => (
+                    <div class="break-inside-avoid">
+                      <div class="text-[13px] font-bold uppercase tracking-wider text-[#ffffff] print:text-black mb-1.5">{g.label}</div>
+                      <div class="whitespace-pre-line text-[13px] leading-[1.6] text-[#a0a0a0] print:text-gray-700">
+                        {lang === 'en' ? g.body_en : g.body_ko}
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+              {lang === 'en' && profile.languages_note && (
+                <div class="break-inside-avoid mt-8 pt-6 border-t border-[#333] print:border-gray-200">
+                   <div class="text-[13px] font-bold uppercase tracking-wider text-[#ffffff] print:text-black mb-1.5">{m.languages}</div>
+                   <p class="whitespace-pre-line text-[13px] leading-[1.6] text-[#a0a0a0] print:text-gray-700">
+                     {t(profile.languages_note, lang)}
+                   </p>
+                </div>
+              )}
+            </section>
+
+            <section>
+              <h2 class="mb-5 text-[14px] font-bold uppercase tracking-[0.15em] text-[#888888] print:text-gray-500 border-b border-[#333] print:border-gray-200 pb-2">
+                {m.education}
+              </h2>
+              <div class="space-y-6">
+                {
+                  profile.education.map((ed) => (
+                    <div class="break-inside-avoid">
+                      <div class="text-[14px] font-bold text-[#ffffff] print:text-black leading-snug" style="font-family: 'Playfair Display', serif;">{t(ed.school, lang)}</div>
+                      <div class="text-[13px] text-[#a0a0a0] print:text-gray-700 mt-1">{t(ed.degree, lang)}</div>
+                      <div class="text-[11.5px] text-[#666666] print:text-gray-500 font-bold uppercase tracking-widest mt-1.5">{t(ed.period, lang)}</div>
+                    </div>
+                  ))
+                }
+              </div>
+            </section>
+
+            <section>
+               <h2 class="mb-5 text-[14px] font-bold uppercase tracking-[0.15em] text-[#888888] print:text-gray-500 border-b border-[#333] print:border-gray-200 pb-2">
+                 {m.activities}
+               </h2>
+               <div class="space-y-4">
+                 {
+                   profile.activities.map((a) => (
+                     <div class="break-inside-avoid">
+                       <div class="text-[14px] font-medium text-[#d4af37] print:text-black leading-snug">{t(a.title, lang)}</div>
+                       <div class="text-[11.5px] text-[#666666] print:text-gray-500 font-bold uppercase tracking-widest mt-1.5">{t(a.period, lang)}</div>
+                     </div>
+                   ))
+                 }
+               </div>
+            </section>
+
+            {profile.awards.length > 0 && (
+              <section>
+                 <h2 class="mb-5 text-[14px] font-bold uppercase tracking-[0.15em] text-[#888888] print:text-gray-500 border-b border-[#333] print:border-gray-200 pb-2">
+                   {m.awards}
+                 </h2>
+                 <div class="space-y-4">
+                   {
+                     profile.awards.map((aw) => (
+                       <div class="break-inside-avoid">
+                         <div class="text-[14px] font-medium text-[#ffffff] print:text-black leading-snug">{aw.title}</div>
+                         {aw.subtitle && (
+                           <div class="text-[12px] text-[#a0a0a0] print:text-gray-600 mt-1.5 leading-snug">{t(aw.subtitle, lang)}</div>
+                         )}
+                       </div>
+                     ))
+                   }
+                 </div>
+              </section>
+            )}
+            
+          </aside>
+
+        </div>
+      </section>
+    </article>
+  </body>
+</html>

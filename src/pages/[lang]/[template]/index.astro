@@ -1,11 +1,13 @@
 ---
-import DefaultLayout from '../../../templates/default/ResumeLayout.astro';
-import MinimalLayout from '../../../templates/minimal/ResumeLayout.astro';
-import CreativeLayout from '../../../templates/creative/ResumeLayout.astro';
+import DefaultLayout from '@/templates/default/ResumeLayout.astro';
+import MinimalLayout from '@/templates/minimal/ResumeLayout.astro';
+import CreativeLayout from '@/templates/creative/ResumeLayout.astro';
+import AcademicLayout from '@/templates/academic/ResumeLayout.astro';
+import ExecutiveLayout from '@/templates/executive/ResumeLayout.astro';
 
-import { loadResume } from '../../../lib/load-resume';
-import type { Lang } from '../../../lib/resume-types';
-import { AVAILABLE_TEMPLATES, type TemplateId } from '../../../lib/templates';
+import { loadResume } from '@/lib/load-resume';
+import type { Lang } from '@/lib/resume-types';
+import { AVAILABLE_TEMPLATES, type TemplateId } from '@/lib/templates';
 
 export function getStaticPaths() {
   const langs = ['ko', 'en'];
@@ -27,6 +29,8 @@ const Layouts: Record<TemplateId, any> = {
   default: DefaultLayout,
   minimal: MinimalLayout,
   creative: CreativeLayout,
+  academic: AcademicLayout,
+  executive: ExecutiveLayout,
 };
 
 const LayoutToRender = Layouts[paramTemplate] || DefaultLayout;

@@ -258,7 +258,7 @@ const otherLangUrl = baseUrlJoin(other, 'default');
                   {t(section.heading, lang)}
                 </h2>
                 {section.projects.map((proj) => (
-                  <div class="break-inside-avoid border border-gray-100 bg-white p-5 rounded shadow-sm print:shadow-none print:border-gray-200 mb-10 last:mb-0 print:mb-6 print:pb-8">
+                  <div class="break-inside-avoid border border-gray-100 bg-white p-5 rounded shadow-sm print:shadow-none print:border-gray-200 mb-4 last:mb-0 print:mb-6 print:pb-8">
                     <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2 border-b border-gray-100 pb-2.5">
                       <h3 class="text-[16px] font-bold text-black flex items-center gap-2">
                         {t(proj.title, lang)}
@@ -279,12 +279,12 @@ const otherLangUrl = baseUrlJoin(other, 'default');
                       </p>
                     )}
 
-                    <div class="grid grid-cols-1 md:grid-cols-[1fr_12rem] gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-[1fr_10rem] gap-6">
                       <!-- LEFT: HIGHLIGHTS -->
                       <div class="space-y-4">
                         <ul class="grid grid-cols-1 gap-y-1.5 list-disc pl-5 marker:text-[#0f3460]">
                           {bullets(proj.highlights, lang).map((line) => (
-                            <li class="pl-1 text-[13.5px] text-gray-800 leading-[1.6] text-justify">{line}</li>
+                            <li class="pl-1 text-[13.5px] text-gray-800 leading-[1.6]">{line}</li>
                           ))}
                         </ul>
                         
@@ -293,7 +293,7 @@ const otherLangUrl = baseUrlJoin(other, 'default');
                             <p class="mb-2.5 text-[12px] font-bold uppercase tracking-wider text-[#0f3460]">{m.results}</p>
                             <ul class="grid grid-cols-1 gap-y-2.5 list-none pl-0">
                               {bullets(proj.results, lang).map((line) => (
-                                <li class="relative pl-5 text-[14px] font-bold text-gray-900 leading-[1.6] text-justify before:absolute before:left-0 before:top-[8px] before:w-1.5 before:h-1.5 before:bg-[#0f3460] before:rotate-45">
+                                <li class="relative pl-5 text-[14px] font-bold text-gray-900 leading-[1.6] before:absolute before:left-0 before:top-[8px] before:w-1.5 before:h-1.5 before:bg-[#0f3460] before:rotate-45">
                                   {line}
                                 </li>
                               ))}
@@ -305,10 +305,10 @@ const otherLangUrl = baseUrlJoin(other, 'default');
                       <!-- RIGHT: TECH STACK SIDEBAR -->
                       {proj.tech?.length > 0 && (
                         <aside class="flex flex-col">
-                          <div class="h-full bg-slate-50/50 rounded-sm border-l-2 border-gray-100 p-3.5">
-                            <div class="flex flex-col items-end gap-2 md:text-right font-bold text-gray-600 text-[12px] font-sans tracking-tight">
+                          <div class="h-full bg-slate-50/50 rounded-sm border-l-2 border-gray-100 p-2 md:p-3.5">
+                            <div class="flex flex-row flex-wrap md:flex-col md:items-end gap-1.5 md:gap-1 md:text-right font-bold text-gray-600 text-[11.5px] font-sans tracking-tight">
                               {proj.tech.map((item) => (
-                                <span class="break-words">
+                                <span class="break-words px-2 py-0.5 md:px-0 md:py-0 bg-gray-100 md:bg-transparent rounded-full md:rounded-none">
                                   {item}
                                 </span>
                               ))}
@@ -330,12 +330,19 @@ const otherLangUrl = baseUrlJoin(other, 'default');
             >
               {m.activities}
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
               {
                 profile.activities.map((a) => (
                   <div class="break-inside-avoid flex flex-col border-l-4 border-gray-100 pl-4 py-1">
-                    <span class="text-[15px] font-bold text-black mb-1 leading-snug">{t(a.title, lang)}</span>
-                    <span class="text-[13px] text-gray-500 font-bold uppercase tracking-widest">{t(a.period, lang)}</span>
+                    <div class="flex flex-col mb-1.5">
+                      <span class="text-[15px] font-bold text-black leading-snug">{t(a.title, lang)}</span>
+                      <span class="text-[12px] text-gray-500 font-bold uppercase tracking-widest">{t(a.period, lang)}</span>
+                    </div>
+                    {a.description && (
+                      <p class="text-[13.5px] text-gray-700 leading-relaxed whitespace-pre-line">
+                        {t(a.description, lang)}
+                      </p>
+                    )}
                   </div>
                 ))
               }

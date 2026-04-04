@@ -1,10 +1,10 @@
 ---
-import type { Lang, ResumeProfile } from '../../lib/resume-types';
-import { messages } from '../../lib/messages';
-import { t } from '../../lib/localize';
-import { baseUrlJoin } from '../../lib/base-url';
-import TemplateSelector from '../../components/TemplateSelector.astro';
-import CanvasPrintButton from '../../components/CanvasPrintButton.astro';
+import type { Lang, ResumeProfile } from '@/lib/resume-types';
+import { messages } from '@/lib/messages';
+import { t } from '@/lib/localize';
+import { baseUrlJoin } from '@/lib/base-url';
+import TemplateSelector from '@/components/TemplateSelector.astro';
+import CanvasPrintButton from '@/components/CanvasPrintButton.astro';
 
 interface Props {
   lang: Lang;

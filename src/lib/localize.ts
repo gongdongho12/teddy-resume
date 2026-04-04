@@ -1,4 +1,4 @@
-import type { Lang, Localized } from './resume-types';
+import type { Lang, Localized } from '@/lib/resume-types';
 
 export function t(loc: Localized, lang: Lang): string {
   if (lang === 'en') {

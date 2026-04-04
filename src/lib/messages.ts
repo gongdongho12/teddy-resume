@@ -1,4 +1,4 @@
-import type { Lang } from './resume-types';
+import type { Lang } from '@/lib/resume-types';
 
 const table: Record<
   Lang,

@@ -26,8 +26,8 @@ languages_note:
 
 experience:
   - company:
-      ko: LG 유플러스 볼트업 — Tech Innovation Tribe, Back-end
-      en: LG Uplus VoltUp — Tech Innovation Tribe, Back-end
+      ko: LG 유플러스 볼트업
+      en: LG Uplus VoltUp
     period:
       ko: 2024.09 ~ 재직중
       en: Sep 2024 — Present
@@ -37,20 +37,21 @@ experience:
     location_en: Seoul, South Korea
     description:
       ko: |
-        멀티 PG 결제 시스템(카카오페이/토스페이먼츠/카카오T) 초기(0→1) 설계 및 구축
+        다양한 PG사(카카오페이/토스페이먼츠/카카오T)를 모듈화하여 벤더 타입 선택만으로 결제가 가능한 유연한 결제 시스템 설계 및 구축
         DLQ/Batch 기반 다단계 미수 관리 시스템 구축을 통한 정산 안정성 확보
         쿠폰/포인트 시스템 및 제휴사 연동을 통해 고객 리텐션 강화
-        Flutter 하이브리드 앱 신규 개발 주도(PoC~런칭) 및 유저 사이드 백엔드 전반 담당
+        하이브리드 앱 신규 개발 주도 및 유저 사이드 백엔드 전반 담당
         AI 코드 리뷰 및 배포 자동화 등 개발자 경험(DX) 인프라 구축
       en: |
-        0→1 design of multi-PG billing systems (KakaoPay/Toss/Kakao T) and settlement reliability via DLQ/Batch
+        Modular multi-PG system supporting pluggable vendors (KakaoPay/Toss/Kakao T) with unified interface
+        Settlement reliability via DLQ/Batch-based multi-stage arrears management
         Coupon/point platform development and partner integrations for user retention
-        Led Flutter hybrid app delivery (PoC to launch) and owned user-side backend services
+        Led hybrid app delivery and owned user-side backend services
         DX infrastructure including AI code review and automated deployment pipelines
 
   - company:
-      ko: 카카오스타일 — 프라이싱시스템, Back-end
-      en: Kakao Style — Pricing System, Back-end
+      ko: 카카오스타일
+      en: Kakao Style
     period:
       ko: 2022.06 ~ 2024.09
       en: Jun 2022 — Sep 2024
@@ -68,8 +69,8 @@ experience:
         (Naver/Google/YouTube). Pipelines for external price collection and competitive position automation.
 
   - company:
-      ko: 스토어링크 — R&D Engineer
-      en: Storelink — R&D Engineer
+      ko: 스토어링크
+      en: Storelink
     period:
       ko: 2021.03 ~ 2022.06
       en: Mar 2021 — Jun 2022
@@ -82,8 +83,8 @@ experience:
       en: Product data collection, keyword ranking, and services including Friday/Pugshop.
 
   - company:
-      ko: 와탭랩스 — Front-end Engineer
-      en: Whatap Labs — Front-end Engineer
+      ko: 와탭랩스
+      en: Whatap Labs
     period:
       ko: 2019.03 ~ 2021.03
       en: Mar 2019 — Mar 2021
@@ -96,24 +97,30 @@ experience:
       en: Frontend for Whatap monitoring (React.js, TypeScript).
 
   - company:
-      ko: 함샤우트 — SW Engineer
-      en: Hamschout — SW Engineer
+      ko: 함샤우트
+      en: Hamschout
     period:
       ko: 2017.08 ~ 2018.08
       en: Aug 2017 — Aug 2018
+    role:
+      ko: SW Engineer
+      en: SW Engineer
     description:
-      ko: 잇플루언서 플랫폼 개발 & 사내 솔루션 개발 및 유지보수
+      ko: 인플루언서 플랫폼 및 사내 솔루션 개발
       en: Influencer platform and internal solutions.
 
   - company:
-      ko: 오픈브릿지 — SW Engineer
-      en: OpenBridge — SW Engineer
+      ko: 오픈브릿지
+      en: OpenBridge
     period:
       ko: 2016.05 ~ 2017.07
       en: May 2016 — Jul 2017
+    role:
+      ko: SW Engineer
+      en: SW Engineer
     description:
-      ko: 알람톡 및 사진 편집 안드로이드 앱 개발 / 오픈브릿지 웹 개발
-      en: Alarm talk & photo-editing Android apps; OpenBridge web development.
+      ko: 알람톡·사진 편집 앱 및 웹 서비스 개발
+      en: Alarm & photo apps; web development.
 
 skillGroups:
   - label: Language
@@ -342,45 +349,71 @@ projectSections:
             - Kakao T promotion eligibility API
 
       - title:
-          ko: VoltUp 하이브리드 앱 및 유저 사이드 백엔드
-          en: VoltUp hybrid app & user-side backend
+          ko: 유저 사이드 백엔드
+          en: User-side Backend
         period:
           ko: "2025"
           en: "2025"
         summary:
           ko: |
-            서비스 2.0 런칭을 위해 Flutter 하이브리드 앱 개발을 주도하고,
-            카카오T 계정/결제 연동(4개 MSA 관통), PnC 자동충전, 미결제 감시 등 유저 사이드 백엔드 전반을 개발했습니다.
+            카카오T 계정/결제 연동(4개 MSA 관통), PnC 자동충전, 미결제 감시 등 사용자 경험의 핵심이 되는 백엔드 전반을 개발했습니다.
           en: |
-            Led Flutter hybrid delivery for 2.0; Kakao T account/payment across auth, user, billing, feapp;
-            PnC auto-charge; unpaid-charge Slack watchdogs; Gradle local-yaml generator and Flyway.
+            Developed core user-side backend features including Kakao T account/payment integration across 4 MSAs, PnC auto-charge, and unpaid-charge monitoring.
         tech:
-          - Flutter
           - Kotlin
           - Spring Boot
           - GCP Pub/Sub
           - Flyway
         highlights:
           ko:
-            - 카카오T 계정/결제 연동을 auth → user → billing → feapp 4개 MSA 서비스에 걸쳐 직접 설계·구현
+            - 카카오T 계정/결제 연동을 auth → user → billing → feapp 4개 MSA 서비스에 걸쳐 직접 설계 및 구현
             - PnC(Plug and Charge) 자동충전 시스템의 EVCC ID 인증 로직 설계 및 구현
             - 빌링 미반영 충전 주문을 자동 탐지하여 Slack 알림하는 감시 배치 구축
-            - 미수 알림톡 발송 조건 최적화(첫 이벤트만 발송)로 사용자 알림 피로도 감소
-            - MSA 로컬 개발 환경 구성 자동화(Gradle local-yaml 생성) 및 Flyway DB 마이그레이션 적용
-            - 서비스 개발 가능 범위 산정(PoC) 및 Android/iOS 하이브리드 앱 신속 개발 및 런칭(2025.03)
-            - Flutter 하이브리드 앱 아키텍처·JSBridge 3채널, 20+ 네이티브 브릿지 타입, FCM 3단계 푸시, ML Kit 바코드 등 (상세)
+            - 미수 알림톡 발송 조건 최적화(첫 이벤트만 발송)로 사용자 알림 피로도 개선
+            - Flyway를 이용한 체계적인 DB 마이그레이션 관리
           en:
-            - Kakao T auth/payment spanning four MSA services
-            - EVCC ID auth for Plug & Charge
-            - Slack jobs for billing mismatches; tuned arrears notification cadence
-            - Gradle tooling for local YAML; Flyway migrations
-            - Hybrid app architecture with tri-channel JSBridge, native bridges, FCM stages, ML Kit barcode, secure storage
+            - Designed and implemented Kakao T auth/payment integration spanning four MSA services (auth → user → billing → feapp)
+            - EVCC ID authentication logic for Plug & Charge (PnC) auto-charge system
+            - Slack-integrated monitoring for billing mismatch detection
+            - Optimized arrears notification cadence to reduce user fatigue
+            - Managed database migrations using Flyway
         results:
           ko:
-            - 5개월 만에 PoC → 런칭 (82파일, 621커밋 규모 참고)
-            - 웹팀이 JS API로 네이티브 기능 호출 가능한 브릿지 패턴 확립
+            - 카카오T 제휴사 연동을 위한 인프라 및 핵심 비즈니스 로직 성공적 구축
           en:
-            - PoC→launch in ~5 months; established bridge pattern for web-to-native APIs
+            - Successfully built infrastructure and core business logic for Kakao T partner integration
+
+      - title:
+          ko: 볼트업 하이브리드 앱 (Flutter)
+          en: VoltUp Hybrid App (Flutter)
+        period:
+          ko: "2025"
+          en: "2025"
+        summary:
+          ko: |
+            서비스 2.0 런칭을 위해 Flutter 하이브리드 앱 개발을 주도하고, Android/iOS 통합 플랫폼 아키텍처를 설계 및 구현했습니다.
+          en: |
+            Led Flutter hybrid delivery for 2.0; designed and implemented unified Android/iOS platform architecture and bridge patterns.
+        tech:
+          - Flutter
+          - Gradle
+          - FCM
+          - ML Kit
+        highlights:
+          ko:
+            - 서비스 개발 가능 범위 산정(PoC) 및 Android/iOS 하이브리드 앱 신속 개발 및 런칭(2025.03)
+            - Flutter 하이브리드 앱 아키텍처·JSBridge 3채널, 20+ 네이티브 브릿지 타입, FCM 3단계 푸시, ML Kit 바코드 등 개발
+            - MSA 로컬 개발 환경 구성 자동화(Gradle local-yaml 생성)로 개발 생산성 향상
+          en:
+            - Rapid Android/iOS hybrid delivery via Flutter for 2.0 launch (2025.03)
+            - Architecture with tri-channel JSBridge, 20+ native bridge types, FCM stages, and ML Kit barcode integration
+            - Automated MSA local development setup with Gradle local-yaml generation
+        results:
+          ko:
+            - 5개월 만에 PoC → 런칭 (82파일, 621커밋 규모)
+            - 웹팀이 JS API로 네이티브 기능을 호출할 수 있는 일관된 브릿지 패턴 확립
+          en:
+            - PoC→launch in ~5 months; established consistent bridge pattern for web-to-native APIs
 
       - title:
           ko: 로밍 서비스 안정성 및 성능 최적화
@@ -441,114 +474,160 @@ projectSections:
       en: Projects — Kakao Style (2022.06 — 2024.09)
     projects:
       - title:
-          ko: 파이널 프라이싱 서비스
-          en: Final pricing service
+          ko: 스마트폰 프록시 및 가격 모니터링 리포트
+          en: Mobile Proxy & Price Monitoring Report
         period:
-          ko: 2023.12 ~ 2024.09
-          en: Dec 2023 — Sep 2024
+          ko: 2024.01 ~ 2024.09
+          en: Jan 2024 — Sep 2024
         summary:
-          ko: 각 지면에서 개별 처리되던 가격 계산 로직을 하나의 API로 통합
-          en: Consolidated scattered price calculations into one API with timeouts and circuit breakers; gateway integration.
+          ko: 크롤링 차단 회피를 위한 모바일 프록시 서버 풀 구축 및 가격 우열위 자동화 파이프라인 구성
+          en: Built a mobile proxy server pool to bypass crawling blocks and automated the price comparison pipeline.
+        tech:
+          - Docker
+          - MitmProxy
+          - K8S
+          - ADB
+          - Node.js
+          - Kotlin
+          - Spring Batch
+          - AWS Athena
+        highlights:
+          ko:
+            - IP 대역 유동 사용을 위한 포트 별 스마트폰 HTTP Proxy 할당 및 프록시 풀 조회 API 개발
+            - 비행기모드/재부팅 등 스마트폰 제어 API 및 Rate Limit 자동 관리 프로세스 구축
+            - 외부 수집 데이터(EP, 최저가)와 내부 상품 간 매칭 데이터셋 구성 및 AWS Athena 적재
+            - 가격 우위/열위 비교 및 엑셀 리포트 생성 배치잡 개발
+          en:
+            - Allocated per-port smartphone HTTP proxies and developed proxy pool lookup APIs
+            - Built smartphone control APIs (airplane mode, reboot) and automated rate limit management
+            - Constructed matching datasets between external (EP, lowest price) and internal products via AWS Athena
+            - Developed batch jobs for price advantage analysis and Excel report generation
+
+      - title:
+          ko: N:M 동일 상품 매칭
+          en: N:M Identical Product Matching
+        period:
+          ko: 2024.02 ~ 2024.09
+          en: Feb 2024 — Sep 2024
+        summary:
+          ko: 기존 1:1 매칭 구조를 N:M으로 개편하여 스토어/타입 구분 없는 전사적 동일 상품 매칭 시스템 구축
+          en: Overhauled 1:1 matching to an N:M structure to match identical products across all stores and types.
         tech:
           - Kotlin
           - Spring Boot
           - Spring Batch
           - DGS GraphQL
           - MySQL
-          - Kubernetes
+          - QueryDSL
+          - Spring Kafka
+          - AWS Athena
         highlights:
           ko:
-            - 쿠폰, 프로모션, 배송비, 상품할인 등 모든 혜택을 파이널 프라이싱 API 하나로 통합
-            - 레이턴시 확보를 위한 타임아웃 및 서킷브레이커 적용
-            - 사내 전 지면 게이트웨이 연동
+            - 전 매칭 조회를 위한 별도의 이중 캐시 구성 및 상품 검색 시 위너(Winner) 데이터 서빙
+            - AWS Athena를 활용하여 이미지 유사도 99.5% 이상의 상품을 추출하는 매칭 배치잡 개발
+            - 리뷰 통합을 위한 매칭 데이터 조회 API 및 Kafka 컨슈머를 통한 신규 매칭 자동 적용
           en:
-            - Single API for coupons, promos, shipping, item discounts
-            - Timeouts & circuit breakers for latency SLOs
-            - Internal gateway rollout
+            - Implemented dual caching for full matching lookups and served "Winner" data for search
+            - Developed matching batch jobs using AWS Athena for items with ≥99.5% image similarity
+            - Built matching lookup APIs for review integration and automated matching via Kafka consumers
 
       - title:
-          ko: N:M 동일 상품 매칭
-          en: N:M identical-product matching
+          ko: 파이널 프라이싱 (가격 계산 로직 통합)
+          en: Final Pricing (Unified Calculation Logic)
         period:
-          ko: 2024.02 ~ 2024.09
-          en: Feb 2024 — Sep 2024
+          ko: 2023.12 ~ 2024.09
+          en: Dec 2023 — Sep 2024
+        summary:
+          ko: 각 지면별로 분산되어 있던 가격 계산 로직을 하나의 API로 통합하여 쿠폰, 프로모션 등 모든 혜택을 일관되게 제공
+          en: Consolidated scattered price calculation logic into a single API for consistent coupon, promo, and discount application.
+        tech:
+          - Kotlin
+          - Spring Boot
+          - DGS GraphQL
+          - MySQL
+          - QueryDSL
+          - Resilience4j
+        highlights:
+          ko:
+            - 전사 지면의 복잡한 금액 계산 로직 파악 및 통합 API 설계
+            - 서비스 안정성을 위한 타임아웃 및 서킷브레이커 적용
+            - 사내 전 지면 게이트웨이 연동 및 가격 노출 정합성 확보
+          en:
+            - Analyzed complex pricing logic across all pages and designed a unified API
+            - Applied timeouts and circuit breakers for service stability
+            - Integrated with company-wide gateways to ensure price exposure consistency
+
+      - title:
+          ko: 멤버십/마일리지 서비스 이관 및 고도화
+          en: Membership & Mileage Migration
+        period:
+          ko: 2023.04 ~ 2023.06
+          en: Apr 2023 — Jun 2023
+        summary:
+          ko: 리텐션 강화를 위해 멤버십 등급 체계를 재설계하고, 레거시 Node.js 서비스를 Spring Boot로 안정적으로 이관
+          en: Redesigned membership tiers for retention and migrated legacy Node.js services to Spring Boot.
+        tech:
+          - Kotlin
+          - Spring Boot
+          - Spring Batch
+          - MySQL
+          - JPA
+        highlights:
+          ko:
+            - cormo.js 기반 레거시를 Spring Boot로 1:1 DB 마이그레이션 및 무중단 이관
+            - 멤버십 등급 산정 기간 확대(3→6개월) 및 등급별 마일리지 적립 로직 개발
+            - 멤버십 레벨 및 적립률 데이터 캐싱 적용
+          en:
+            - Zero-downtime migration of cormo.js legacy to Spring Boot via 1:1 DB migration
+            - Expanded tier calculation periods and developed tier-based mileage earn logic
+            - Implemented caching for membership levels and earn rates
+        results:
+          ko:
+            - 캐싱 도입으로 DB 부하를 임계치(70%)에서 30% 이내로 대폭 감소
+            - 통합 테스트 및 게이트웨이 점진적 전환으로 기존 동작 유지하며 무중단 배포 성공
+          en:
+            - Reduced DB load from 70% to under 30% through strategic caching
+            - Achieved zero-downtime deployment by ensuring legacy parity via integration tests
+
+      - title:
+          ko: 네이버 쇼핑 Engine Page 및 최저가 갱신
+          en: Naver Shopping Engine Page & Lowest Price Update
+        period:
+          ko: 2022.06 ~ 2024.09
+          en: Jun 2022 — Sep 2024
+        summary:
+          ko: 지그재그 상품의 가격 경쟁력을 확보하여 네이버 쇼핑 가격 비교에 노출시키고 거래액을 견인
+          en: Enhanced price competitiveness of Zigzag products for exposure on Naver Shopping price comparison.
         tech:
           - Kotlin
           - Spring Boot
           - Spring Batch
           - Kafka
-          - AWS Athena
+          - MySQL
         highlights:
           ko:
-            - 기존 1:1 매칭을 N:M 구조로 변경하여 스토어/타입 구분없이 동일 상품 매칭
-            - 전 매칭 조회를 위한 별도의 이중 캐시 구성
-            - AWS Athena 쿼리로 이미지 유사도 99.5% 이상 상품 매칭 배치잡 개발
-            - 상품 업데이트 컨슈머를 통한 신규 매칭 자동 적용
+            - 거래액 우위 상품 추출 배치 및 카드사 할인, 빠른배송 뱃지, 카테고리 매핑 연동
+            - 타 가격비교 서비스와의 가격 우열위 판단 로직 및 Kafka 기반 실시간 상품 정보 컨슈밍
+            - 운영 효율화를 위한 백오피스 개발 및 CPC에서 CPS 버전으로의 성공적 전환
           en:
-            - Moved from 1:1 to N:M matching across stores/types
-            - Dual cache for full matching reads
-            - Athena batch job for ≥99.5% image-similarity matches
-            - Consumer-driven auto application on catalog updates
-
-      - title:
-          ko: 멤버십/마일리지 서비스 이관
-          en: Membership & mileage migration
-        period:
-          ko: 2023.04 ~ 2023.06
-          en: Apr 2023 — Jun 2023
-        highlights:
+            - Developed batch jobs for GMV-competitive products and integrated card promos/delivery badges
+            - Implemented logic to compare prices with competitors and consumed real-time Kafka updates
+            - Built backoffice tools and managed successful transition from CPC to CPS versions
+        results:
           ko:
-            - 기존 멤버십 서비스 신규 서비스로 이관 (cormo.js → SpringBoot)
-            - 무중단 이관을 위한 기존 레거시 동작 유지 및 DB 1:1 마이그레이션
-            - 멤버십 등급에 따른 마일리지 적립 로직 개발
-            - 3중 적립 항목에서 레벨/적립률 캐싱하여 DB 부하 70% → 30% 이내로 감소
+            - 대량의 상품 풀 증가에도 불구하고 병렬 처리 최적화를 통해 배치 시간 단축 (4시간 → 2시간)
+            - 파이널 프라이싱의 기반이 되는 최종가 계산 로직의 초석 마련
           en:
-            - Migrated legacy Node service to Spring Boot with zero-downtime cutover
-            - Cached tier/earn rates to cut DB load from ~70% to <30% on triple-earn paths
-
-      - title:
-          ko: 네이버 쇼핑 Engine Page
-          en: Naver Shopping Engine Page
-        period:
-          ko: 2022.06 ~ 2024.09
-          en: Jun 2022 — Sep 2024
-        highlights:
-          ko:
-            - 지그재그 상품의 가격 우위 상품을 네이버 쇼핑 가격 비교에 노출
-            - CPC에서 CPS 전환 시 병렬 처리로 배치 시간 4시간 → 2시간 단축
-            - 카드사 할인정보, 빠른배송 뱃지, 카테고리 매핑 연동
-          en:
-            - Surfaced Zigzag price-competitive SKUs on Naver price compare
-            - Parallelized CPC→CPS workloads (batch ~4h → ~2h)
-            - Card promos, fast-delivery badges, category mapping
-
-      - title:
-          ko: 스마트폰 프록시 / 가격 모니터링 리포트
-          en: Mobile proxy & price monitoring
-        period:
-          ko: 2024.01 ~ 2024.09
-          en: Jan 2024 — Sep 2024
-        tech:
-          - Docker
-          - MitmProxy
-          - Kubernetes
-          - Node.js
-          - Kotlin
-        highlights:
-          ko:
-            - 모바일 프록시 서버 풀 구성으로 IP 대역 유동 사용, Rate Limit 자동 관리
-            - 가격 우위/열위 자동 비교 파이프라인 및 엑셀 리포트 생성 배치잡 개발
-          en:
-            - MitmProxy pools with rotating IPs and adaptive rate limits
-            - Automated price advantage/lag pipelines with Excel reporting batches
+            - Halved batch processing time (4h → 2h) via parallelization despite increased product volume
+            - Established the foundational final price calculation logic used for future pricing systems
 
   - heading:
       ko: 프로젝트 — 이전 경력
       en: Projects — Earlier experience
     projects:
       - title:
-          ko: 프라이데이 서비스 — 스토어링크
-          en: Friday analytics — Storelink
+          ko: 프라이데이 서비스
+          en: Friday analytics
         period:
           ko: 2021.03 ~ 2022.06
           en: Mar 2021 — Jun 2022
@@ -558,50 +637,98 @@ projectSections:
           - WebFlux
           - R2DBC
           - Redis
+        summary:
+          ko: 커머스 키워드 통계 분석 서비스 백엔드 개발
+          en: Backend development for commerce keyword analytics service.
         highlights:
           ko:
-            - 커머스 키워드 통계 분석 서비스 백엔드 개발
             - 개발팀 전체에 Kotlin과 WebFlux를 메인 기술 스택으로 도입
             - 자사 서비스의 핵심 기능을 프라이데이 조회 API로 전부 대체하여 현재까지 사용
           en:
-            - Commerce keyword analytics on Kotlin/WebFlux
-            - Team-wide adoption of Kotlin + WebFlux
-            - Replaced core reporting paths with Friday APIs (still in use)
+            - Introduced Kotlin and WebFlux as the main tech stack for the entire team
+            - Replaced core service features with Friday search APIs (still in use)
 
       - title:
-          ko: 와탭 모니터링 FE — 와탭랩스
-          en: Whatap monitoring FE — Whatap Labs
+          ko: 와탭 모니터링 FE
+          en: Whatap monitoring FE
         period:
           ko: 2019.03 ~ 2021.03
           en: Mar 2019 — Mar 2021
+        summary:
+          ko: 어플리케이션, 서버, DB, 컨테이너 등 에이전트 수집 데이터를 시각화하는 통합 모니터링 대시보드 FE 개발
+          en: Developed integrated monitoring dashboards to visualize data collected from various agents (App, Server, DB, Container).
         tech:
-          - React
+          - React.js
           - Redux
           - TypeScript
           - Ant Design
+          - WebPack
         highlights:
           ko:
-            - 서버/DB/컨테이너 모니터링 대시보드 FE 개발
-            - 실시간 대시보드 API 반복 호출 축소, 차트 대시보드 메모리 부족 현상 감소
+            - 타임셀렉터, 서버 목록, 통합 대시보드 등 핵심 컴포넌트 개발
+            - 리액트 컴포넌트 위에 구형 페이지 핸들러 적용 및 에이전트 설정/설치 화면 개발
+            - 데이터 처리 공통 메서드 구현을 통한 코드 재사용성 향상
           en:
-            - Dashboards for servers, DBs, containers
-            - Reduced polling churn; mitigated chart memory pressure
+            - Developed core components including TimeSelector and Server List dashboards
+            - Integrated legacy page handlers on React components and developed agent setup/install screens
+            - Implemented common data processing methods for better code reusability
+        results:
+          ko:
+            - 실시간 대시보드의 API 반복 호출 축소 및 차트 대시보드 메모리 부족 현상 감소
+          en:
+            - Reduced API polling churn for real-time dashboards and mitigated memory pressure on chart-heavy screens
 
       - title:
-          ko: 잇플루언서 / 알람톡 — 함샤우트·오픈브릿지
-          en: Influencer platform & alarm apps
+          ko: 잇플루언서 프로젝트
+          en: Influencer platform
         period:
-          ko: 2016.05 ~ 2018.08
-          en: May 2016 — Aug 2018
+          ko: 2017.08 ~ 2018.08
+          en: Aug 2017 — Aug 2018
+        summary:
+          ko: 광고주 캠페인 구성 및 인플루언서 매칭/검수 시스템 개발
+          en: Developed campaign management and influencer matching/review systems.
         tech:
+          - React.js
+          - Redux
           - TypeScript
-          - React
-          - Java
-          - Android
+          - Ant Design
+          - Axios
+          - WebPack
         highlights:
           ko:
-            - 인플루언서 플랫폼 개발: 광고주-인플루언서 매칭 자동화로 컨택 리소스 단축
-            - 알람톡 2.0 신규 개발 (음성인식/흔들기 알람), 사진 필터 앱 개발
+            - 인플루언서/파워블로거 검수 시스템 및 네이버 상위노출 조회 API 개발
+            - 광고주를 위한 광고 리포트 서비스 개발
           en:
-            - Automated advertiser–influencer matching
-            - Alarm app 2.0 (voice/shake) and photo-filter apps
+            - Developed influencer review system and Naver search ranking APIs
+            - Built advertising report services for clients
+        results:
+          ko:
+            - 수동 컨택 프로세스 자동화로 리소스 및 시간 단축, 마케팅 접근성 향상
+          en:
+            - Automated manual contact processes, reducing resource overhead and improving accessibility
+
+      - title:
+          ko: 알람톡 & 포션 (안드로이드)
+          en: AlarmTalk & Potion (Android)
+        period:
+          ko: 2016.05 ~ 2017.08
+          en: May 2016 — Aug 2017
+        summary:
+          ko: 소셜 알람 서비스 '알람톡' 및 사진 필터 앱 '포션' 안드로이드 앱 개발
+          en: Android development for social alarm service 'AlarmTalk' and photo filter app 'Potion'.
+        tech:
+          - Java
+          - Android
+          - RealmDB
+          - FCM
+          - Glide
+          - Jedis
+        highlights:
+          ko:
+            - 알람톡 2.0 신규 개발 및 음성인식/흔들기 알람, 알람 스토어 기능 구현
+            - 사진 조절 컴포넌트(밝기, 대조, 크롭, 블러 등) 및 이미지 필터 엔진 개발
+            - 계정 및 미션 API 연동
+          en:
+            - Developed AlarmTalk 2.0 with voice recognition/shake alarm and alarm store
+            - Built photo adjustment components (brightness, contrast, crop, blur, etc.) and filter engines
+            - Integrated account and mission APIs

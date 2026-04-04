@@ -4,82 +4,74 @@
 <script>
   /**
    * Automatic Pagination Logic for A4 Resume
-   * This script identifies containers that exceed A4 height and splits their content 
-   * into multiple A4-sized "pages" while preserving padding and styles.
    */
   const A4_HEIGHT_MM = 297;
   const DPI = 96;
   const A4_HEIGHT_PX = Math.floor((A4_HEIGHT_MM * DPI) / 25.4); // ~1122.5px
 
   function paginate() {
-    const containers = document.querySelectorAll('.auto-paginate');
+    const containers = document.querySelectorAll('.auto-paginate:not([data-paginated="true"])');
     
     containers.forEach((container) => {
-      // If container is already paginated or too small, skip
-      if (container.dataset.paginated === 'true') return;
-      
       const contentWrapper = container.querySelector('.paginate-content');
       if (!contentWrapper) return;
 
-      // We need to check the actual rendered height
-      let totalHeight = container.offsetHeight;
-      
-      if (totalHeight <= A4_HEIGHT_PX + 10) { // Small buffer
-        container.dataset.paginated = 'true';
-        return;
-      }
-
-      console.log(`[Pagination] Container too long (${totalHeight}px > ${A4_HEIGHT_PX}px). Splitting...`);
-
-      const children = Array.from(contentWrapper.children);
+      const children = Array.from(contentWrapper.children).filter(child => !child.classList.contains('print-spacer'));
       const pages = [];
       let currentPageItems = [];
-      let currentHeight = 0;
-      
-      // Get the padding of the original container to replicate it
-      const computedStyle = window.getComputedStyle(contentWrapper);
-      const paddingTop = parseFloat(computedStyle.paddingTop);
-      const paddingBottom = parseFloat(computedStyle.paddingBottom);
-      
-      currentHeight += paddingTop;
+
+      // Adjusted Margin to 12mm (~45.4px)
+      const MARGIN_PX = 45.4; 
+      const SAFE_BUFFER = 20; 
+      let currentHeight = MARGIN_PX; 
 
       children.forEach((child) => {
+        const isHeader = child.tagName === 'H2' && child.classList.contains('print:break-before-page');
         const childHeight = (child as HTMLElement).offsetHeight;
-        const childMargin = parseFloat(window.getComputedStyle(child as HTMLElement).marginTop) + 
-                           parseFloat(window.getComputedStyle(child as HTMLElement).marginBottom);
-        
+        const computedStyle = window.getComputedStyle(child as HTMLElement);
+        const childMargin = parseFloat(computedStyle.marginTop) + parseFloat(computedStyle.marginBottom);
         const fullItemHeight = childHeight + childMargin;
 
-        if (currentHeight + fullItemHeight > A4_HEIGHT_PX - paddingBottom && currentPageItems.length > 0) {
-          // Finish current page
+        const shouldBreak = (isHeader && currentPageItems.length > 0) || 
+                           (currentHeight + fullItemHeight > A4_HEIGHT_PX - MARGIN_PX - SAFE_BUFFER && currentPageItems.length > 0);
+
+        if (shouldBreak) {
           pages.push(currentPageItems);
           currentPageItems = [child];
-          currentHeight = paddingTop + fullItemHeight;
+          currentHeight = MARGIN_PX + fullItemHeight;
         } else {
           currentPageItems.push(child);
           currentHeight += fullItemHeight;
         }
       });
       
-      if (currentPageItems.length > 0) {
-        pages.push(currentPageItems);
-      }
+      if (currentPageItems.length > 0) pages.push(currentPageItems);
 
-      // Reconstruct DOM
-      if (pages.length > 1) {
+      if (pages.length > 0) {
         const fragment = document.createDocumentFragment();
-        const originalClasses = container.className;
+        const originalClasses = container.className.replace('auto-paginate', '').trim();
         const originalContentClasses = contentWrapper.className;
 
         pages.forEach((pageItems, index) => {
           const pageDiv = document.createElement('div');
-          pageDiv.className = originalClasses + (index > 0 ? ' print:break-before-page' : '');
-          pageDiv.style.minHeight = `${A4_HEIGHT_MM}mm`;
+          pageDiv.className = originalClasses + ' paginated-page' + (index > 0 ? ' print:break-before-page mt-6 print:mt-0' : '');
+          pageDiv.dataset.paginated = 'true';
           
           const innerDiv = document.createElement('div');
           innerDiv.className = originalContentClasses;
           
+          // Use 12mm Top Spacer
+          const topSpacer = document.createElement('div');
+          topSpacer.className = 'print-spacer h-[12mm] w-full shrink-0';
+          innerDiv.appendChild(topSpacer);
+          
           pageItems.forEach(item => innerDiv.appendChild(item));
+
+          // Use 12mm Bottom Spacer
+          const bottomSpacer = document.createElement('div');
+          bottomSpacer.className = 'print-spacer h-[12mm] w-full shrink-0 mt-auto';
+          innerDiv.appendChild(bottomSpacer);
+          
           pageDiv.appendChild(innerDiv);
           fragment.appendChild(pageDiv);
         });
@@ -90,27 +82,36 @@
           parent.removeChild(container);
         }
       }
-      
-      container.dataset.paginated = 'true';
     });
   }
 
-  // Run on load and after a short delay to ensure fonts/images are loaded
   window.addEventListener('load', () => {
-    // Initial pagination
     paginate();
-    
-    // Some fonts might take a bit longer to render and change layout
     setTimeout(paginate, 500);
-    setTimeout(paginate, 2000);
+    setTimeout(paginate, 1500);
   });
 </script>
 
 <style is:global>
-  /* Ensure pages break correctly during print */
+  .paginated-page {
+    background: white;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    min-height: 297mm;
+    display: flex;
+    flex-direction: column;
+  }
+
   @media print {
     .print\:break-before-page {
       break-before: page !important;
+    }
+    .paginated-page {
+      height: 297mm !important;
+      min-height: 297mm !important;
+      max-height: 297mm !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      overflow: hidden !important;
     }
   }
 </style>

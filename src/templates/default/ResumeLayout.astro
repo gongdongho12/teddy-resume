@@ -5,6 +5,7 @@ import { t, bullets } from '@/lib/localize';
 import { baseUrlJoin } from '@/lib/base-url';
 import TemplateSelector from '@/components/TemplateSelector.astro';
 import CanvasPrintButton from '@/components/CanvasPrintButton.astro';
+import AutoPagination from '@/components/AutoPagination.astro';
 
 interface Props {
   lang: Lang;
@@ -50,6 +51,7 @@ const otherLangUrl = baseUrlJoin(other, 'default');
   </head>
   <body class="min-h-screen bg-gray-100 text-sm leading-relaxed text-black antialiased">
     <TemplateSelector lang={lang} currentTemplate="default" />
+    <AutoPagination />
     
     <div
       class="print:hidden mx-auto flex max-w-[850px] flex-wrap items-center justify-end gap-3 px-8 pb-4 pt-6 text-sm"
@@ -60,10 +62,10 @@ const otherLangUrl = baseUrlJoin(other, 'default');
     </div>
 
     <!-- DOCUMENT RENDERER -->
-    <article class="mx-auto w-full max-w-[794px] xl:max-w-none xl:grid xl:grid-cols-2 xl:gap-10 xl:justify-center xl:px-20 print:block print:w-[210mm] mb-10 print:mb-0 transition-all duration-500">
+    <article class="mx-auto w-full max-w-[794px] xl:max-w-none xl:flex xl:flex-row xl:flex-wrap xl:gap-10 xl:justify-center xl:px-20 print:block print:w-[210mm] mb-10 print:mb-0 transition-all duration-500">
       
       <!-- PAGE 1: HEADER, EXPERIENCE, SKILLS, AWARDS -->
-      <div class="flex flex-col min-h-[297mm] print:h-[297mm] bg-white shadow-md mb-4 print:mb-0 print:shadow-none relative overflow-hidden">
+      <div class="flex flex-col min-h-[297mm] print:h-[297mm] bg-white shadow-md mb-4 print:mb-0 print:shadow-none relative overflow-hidden w-full max-w-[794px] xl:max-w-[794px]">
         <!-- COMPACT HEADER -->
         <header class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] text-white px-10 py-8 print:px-8 print:py-10 flex flex-col md:flex-row justify-between items-start gap-8">
           <!-- Left: Name and Summary -->
@@ -244,9 +246,9 @@ const otherLangUrl = baseUrlJoin(other, 'default');
         </section>
       </div>
 
-      <!-- PAGE 2-3: PROJECTS (FULL WIDTH) -->
-      <div class="print:break-before-page min-h-[297mm] print:h-auto bg-white shadow-md mb-4 print:mb-0 print:shadow-none overflow-hidden">
-        <section class="p-10 md:p-12 print:px-[15mm] print:py-[15mm]">
+      <!-- PAGE 2+: PROJECTS & ACTIVITIES (AUTO-PAGINATED) -->
+      <div class="auto-paginate min-h-[297mm] print:h-auto bg-white shadow-md mb-4 print:mb-0 print:shadow-none overflow-hidden w-full max-w-[794px] xl:max-w-[794px]">
+        <section class="paginate-content p-10 md:p-12 print:px-[15mm] print:py-[15mm]">
           {
             profile.projectSections.map((section) => (
               <div class="mb-12 last:mb-0">
@@ -322,13 +324,9 @@ const otherLangUrl = baseUrlJoin(other, 'default');
               </div>
             ))
           }
-        </section>
-      </div>
 
-      <!-- PAGE 4: ACTIVITIES (FULL WIDTH) -->
-      <div class="print:break-before-page min-h-[297mm] print:h-auto bg-white shadow-md mb-4 print:mb-0 print:shadow-none overflow-hidden">
-        <section class="p-10 md:p-12 print:px-[15mm] print:py-[15mm]">
-          <section>
+          {/* ACTIVITIES SECTION */}
+          <div class="mt-12 pt-12 border-t-2 border-gray-50">
             <h2
               class="mb-8 border-b-2 border-[#0f3460] pb-3 text-[14px] font-bold uppercase tracking-[0.2em] text-[#0f3460]"
             >
@@ -344,7 +342,7 @@ const otherLangUrl = baseUrlJoin(other, 'default');
                 ))
               }
             </div>
-          </section>
+          </div>
         </section>
       </div>
     </article>

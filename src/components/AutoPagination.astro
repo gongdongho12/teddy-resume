@@ -1,0 +1,116 @@
+---
+---
+
+<script>
+  /**
+   * Automatic Pagination Logic for A4 Resume
+   * This script identifies containers that exceed A4 height and splits their content 
+   * into multiple A4-sized "pages" while preserving padding and styles.
+   */
+  const A4_HEIGHT_MM = 297;
+  const DPI = 96;
+  const A4_HEIGHT_PX = Math.floor((A4_HEIGHT_MM * DPI) / 25.4); // ~1122.5px
+
+  function paginate() {
+    const containers = document.querySelectorAll('.auto-paginate');
+    
+    containers.forEach((container) => {
+      // If container is already paginated or too small, skip
+      if (container.dataset.paginated === 'true') return;
+      
+      const contentWrapper = container.querySelector('.paginate-content');
+      if (!contentWrapper) return;
+
+      // We need to check the actual rendered height
+      let totalHeight = container.offsetHeight;
+      
+      if (totalHeight <= A4_HEIGHT_PX + 10) { // Small buffer
+        container.dataset.paginated = 'true';
+        return;
+      }
+
+      console.log(`[Pagination] Container too long (${totalHeight}px > ${A4_HEIGHT_PX}px). Splitting...`);
+
+      const children = Array.from(contentWrapper.children);
+      const pages = [];
+      let currentPageItems = [];
+      let currentHeight = 0;
+      
+      // Get the padding of the original container to replicate it
+      const computedStyle = window.getComputedStyle(contentWrapper);
+      const paddingTop = parseFloat(computedStyle.paddingTop);
+      const paddingBottom = parseFloat(computedStyle.paddingBottom);
+      
+      currentHeight += paddingTop;
+
+      children.forEach((child) => {
+        const childHeight = (child as HTMLElement).offsetHeight;
+        const childMargin = parseFloat(window.getComputedStyle(child as HTMLElement).marginTop) + 
+                           parseFloat(window.getComputedStyle(child as HTMLElement).marginBottom);
+        
+        const fullItemHeight = childHeight + childMargin;
+
+        if (currentHeight + fullItemHeight > A4_HEIGHT_PX - paddingBottom && currentPageItems.length > 0) {
+          // Finish current page
+          pages.push(currentPageItems);
+          currentPageItems = [child];
+          currentHeight = paddingTop + fullItemHeight;
+        } else {
+          currentPageItems.push(child);
+          currentHeight += fullItemHeight;
+        }
+      });
+      
+      if (currentPageItems.length > 0) {
+        pages.push(currentPageItems);
+      }
+
+      // Reconstruct DOM
+      if (pages.length > 1) {
+        const fragment = document.createDocumentFragment();
+        const originalClasses = container.className;
+        const originalContentClasses = contentWrapper.className;
+
+        pages.forEach((pageItems, index) => {
+          const pageDiv = document.createElement('div');
+          pageDiv.className = originalClasses + (index > 0 ? ' print:break-before-page' : '');
+          pageDiv.style.minHeight = `${A4_HEIGHT_MM}mm`;
+          
+          const innerDiv = document.createElement('div');
+          innerDiv.className = originalContentClasses;
+          
+          pageItems.forEach(item => innerDiv.appendChild(item));
+          pageDiv.appendChild(innerDiv);
+          fragment.appendChild(pageDiv);
+        });
+
+        const parent = container.parentElement;
+        if (parent) {
+          parent.insertBefore(fragment, container);
+          parent.removeChild(container);
+        }
+      }
+      
+      container.dataset.paginated = 'true';
+    });
+  }
+
+  // Run on load and after a short delay to ensure fonts/images are loaded
+  window.addEventListener('load', () => {
+    // Initial pagination
+    paginate();
+    
+    // Some fonts might take a bit longer to render and change layout
+    setTimeout(paginate, 500);
+    setTimeout(paginate, 2000);
+  });
+</script>
+
+<style is:global>
+  /* Ensure pages break correctly during print */
+  @media print {
+    .print\:break-before-page {
+      break-before: page !important;
+    }
+  }
+</style>

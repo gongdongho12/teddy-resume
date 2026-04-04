@@ -5,6 +5,7 @@ import { t, bullets } from '@/lib/localize';
 import { baseUrlJoin } from '@/lib/base-url';
 import TemplateSelector from '@/components/TemplateSelector.astro';
 import CanvasPrintButton from '@/components/CanvasPrintButton.astro';
+import AutoPagination from '@/components/AutoPagination.astro';
 
 interface Props {
   lang: Lang;
@@ -44,6 +45,7 @@ const otherLangUrl = baseUrlJoin(other, 'minimal');
   </head>
   <body class="min-h-screen bg-gray-100 text-[14px] leading-snug text-gray-800 antialiased font-sans">
     <TemplateSelector lang={lang} currentTemplate="minimal" />
+    <AutoPagination />
     
     <div class="print:hidden mx-auto flex max-w-[850px] flex-wrap items-center justify-end gap-3 px-8 pb-3 pt-6 text-[13px]">
       <span class="text-gray-500">{m.printHint}</span>
@@ -52,10 +54,10 @@ const otherLangUrl = baseUrlJoin(other, 'minimal');
     </div>
 
     <!-- DOCUMENT RENDERER -->
-    <article class="mx-auto max-w-[850px] print:block bg-white shadow-sm print:shadow-none border border-gray-200 print:border-none mb-10 print:mb-0">
+    <article class="mx-auto w-full max-w-[850px] xl:max-w-none xl:flex xl:flex-row xl:flex-wrap xl:gap-10 xl:justify-center xl:px-20 print:block print:w-[210mm] mb-10 print:mb-0 transition-all duration-500">
       
       <!-- HEADER SUMMARY -->
-      <section class="flex flex-col justify-center px-12 md:px-16 pt-16 pb-12 print:pt-4 print:pb-8 border-b border-gray-100">
+      <section class="flex flex-col justify-center px-12 md:px-16 pt-16 pb-12 print:pt-4 print:pb-8 border-b border-gray-100 bg-white shadow-sm print:shadow-none border border-gray-200 print:border-none w-full max-w-[850px] xl:max-w-[850px]">
         <header class="w-full">
           <div class="mb-8">
             {
@@ -87,8 +89,9 @@ const otherLangUrl = baseUrlJoin(other, 'minimal');
         </header>
       </section>
 
-      <!-- MAIN CONTENT -->
-      <section class="px-12 md:px-16 pb-16 pt-12 print:px-8 print:py-8">
+      <!-- MAIN CONTENT (AUTO-PAGINATED) -->
+      <div class="auto-paginate bg-white shadow-sm print:shadow-none border border-gray-200 print:border-none w-full max-w-[850px] xl:max-w-[850px]">
+        <section class="paginate-content px-12 md:px-16 pb-16 pt-12 print:px-8 print:py-8">
         
         <div class="space-y-16">
           
@@ -273,6 +276,7 @@ const otherLangUrl = baseUrlJoin(other, 'minimal');
           
         </div>
       </section>
+      </div>
     </article>
   </body>
 </html>

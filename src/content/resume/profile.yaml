@@ -12,13 +12,13 @@ contact:
 
 summary:
   ko: |
-    문제 해결에 집중하며 기술 스택에 제약을 두지 않고 서비스의 완성을 목표로 하는 백엔드 엔지니어입니다.
-    기획 단계부터 의견을 내고, 다양한 서비스에서의 경험을 바탕으로 고객 편의성에 초점을 맞춰 개발합니다.
-    현재 8개 MSA 서비스에 걸쳐 1,600+ 커밋을 작성하며 결제·인증·로밍 등 서비스 전반을 담당하고 있습니다.
+    문제 해결과 서비스 완성에 집중하는 소프트웨어 엔지니어입니다.
+    기획 단계부터 주도적으로 참여하여 고객 편의성을 최우선으로 고려하며,
+    현재 다수의 MSA 환경에서 유저사이드 서비스 전반을 담당하고 있습니다.
   en: |
-    Backend engineer focused on problem-solving without limiting tech stack, aiming for end-to-end service delivery.
-    Actively contributes from the planning stage, drawing on cross-service experience to prioritize user convenience.
-    Currently owns payment, auth, and roaming domains across 8 MSA services with 1,600+ commits.
+    Software engineer focused on problem-solving and end-to-end service delivery without limiting tech stack.
+    Actively contributes from the planning stage to prioritize user convenience.
+    Currently responsible for the overall user-side services across multiple MSA environments.
 
 languages_note:
   ko: 한국어 — 네이티브
@@ -37,16 +37,16 @@ experience:
     location_en: Seoul, South Korea
     description:
       ko: |
-        전략 패턴 기반 멀티 PG 결제 시스템 설계 — 카카오페이/토스페이먼츠/카카오T 3사 통합, 718커밋(기여율 68%)
-        DLQ + 다단계 미수 배치(1/7/30일) 기반 정산 안정성 확보
-        카카오T OAuth2 계정/결제 연동을 4개 MSA에 걸쳐 설계 및 구현
-        쿠폰/포인트 풀스택 개발, 환경부 로밍 서비스 연동, 인증서 Fallback 시스템 구축
+        전략 패턴 기반 멀티 PG 결제 시스템 설계 — 단일 간편결제 인터페이스로 다수 PG 및 포인트 복합결제를 처리하는 아키텍처 적용
+        DLQ 및 다단계 미수 배치 기반 정산 안정성 확보
+        카카오 T 플랫폼 연동 설계 — 인증 및 결제 프로세스를 4개의 MSA 도메인에 걸쳐 통합 설계 및 구현
+        프로모션(쿠폰/포인트) 개발로 고객 리텐션 증대, 환경부 로밍 서비스 안정성 개선, 차량 조회 API에 공인인증서 처리 및 Fallback 로직(서킷브레이커) 구성
         AI 워크플로우 표준화, 문서 자동 생성 등 DX 인프라 구축
       en: |
-        Multi-PG billing with strategy pattern — KakaoPay/Toss/Kakao T, 718 commits (68% of billing-service)
-        DLQ + multi-stage arrears batch (1/7/30-day) for settlement reliability
-        Kakao T OAuth2 account/payment integration across 4 MSAs
-        Full-stack coupon/point platform, government roaming integration, certificate fallback system
+        Designed a Multi-PG and Point combination payment system using the Strategy pattern—unifying multiple payment gateways via a single interface.
+        Ensured settlement stability through DLQ and multi-step unpaid batch processing.
+        Architected and implemented Kakao T platform integration—orchestrating account authentication and payment flows across 4 distinct MSA domains.
+        Developed promotion (coupon/point) systems to increase customer retention, improved reliability of government roaming service, public certificate processing and fallback logic (circuit breaker) for vehicle lookup API
         AI workflow standardization, auto-doc generation, DX infrastructure
 
   - company:
@@ -93,8 +93,8 @@ experience:
       en: Front-end Engineer
     location_en: Seoul, South Korea
     description:
-      ko: 와탭 모니터링 서비스 프론트엔드 개발
-      en: Frontend for Whatap monitoring (React.js, TypeScript).
+      ko: 와탭 모니터링 서비스 프론트엔드 개발 (인프라나 JVM 어플리케이션, 쿠버네티스 등의 모니터링 플랫폼 프론트엔드 개발)
+      en: Frontend for Whatap monitoring platform (Infrastructure, JVM applications, Kubernetes, etc.).
 
   - company:
       ko: 함샤우트
@@ -106,8 +106,8 @@ experience:
       ko: SW Engineer
       en: SW Engineer
     description:
-      ko: 인플루언서 플랫폼 및 사내 솔루션 개발
-      en: Influencer platform and internal solutions.
+      ko: 인플루언서와 비즈니스를 매칭시켜주는 플랫폼 개발
+      en: Developed a platform matching influencers with businesses.
 
   - company:
       ko: 오픈브릿지
@@ -119,8 +119,8 @@ experience:
       ko: SW Engineer
       en: SW Engineer
     description:
-      ko: 알람톡·사진 편집 앱 및 웹 서비스 개발
-      en: Alarm & photo apps; web development.
+      ko: 알람과 채팅이 더해진 알람톡 앱 개발, 사진편집과 미션이 합쳐진 포션 앱 개발, 웹 서비스 개발
+      en: AlarmTalk (alarm + chat) and Potion (photo editing + missions) apps, and web development.
 
 skillGroups:
   - label: Language
@@ -349,9 +349,7 @@ projectSections:
       - title:
           ko: 멀티 PG 결제 시스템 및 정산 안정화
           en: Multi-PG billing & settlement reliability
-        badge:
-          ko: 기여율 68%
-          en: ~68% of billing-service commits
+
         period:
           ko: 2024.10 ~ 현재
           en: Oct 2024 — Present
@@ -361,7 +359,7 @@ projectSections:
             다층 미수 관리 시스템을 구축하여 매출 정산의 정확도를 확보했습니다.
           en: |
             Led billing design from the start; expanded from a single PG to KakaoPay, Toss Payments, and Kakao T with
-            shared error-code mapping. Layered arrears batches (1/7/30-day), retry→DLQ, and NACK recovery; SQL keepalive and pool tuning.
+            shared error-code mapping. Layered arrears batches, retry→DLQ, and NACK recovery; SQL keepalive and pool tuning.
         tech:
           - Kotlin
           - Spring Boot
@@ -371,12 +369,12 @@ projectSections:
           - Flutter
         highlights:
           ko:
-            - 결제 서비스를 프로젝트 초기 설계부터 구현까지 전담, 전체 커밋의 68%(718/1054)를 직접 작성하며 핵심 개발자로 주도
+            - 결제 서비스를 프로젝트 초기 설계부터 구현까지 전담하며 핵심 개발자로 주도
             - 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이 → 토스페이먼츠 → 카카오T 3개 PG사를 통합하는 결제 아키텍처 구축
             - GCP Pub/Sub 기반 DLQ(Dead-Letter Queue) 패턴 구현 — 커스텀 어노테이션 및 핸들러 자동 디스커버리로 결제 이벤트 유실 방지
             - DLQ 미수 처리 및 영구 미수 대상 처리 시스템 구축 — 재시도→DLQ, NACK 기반 자동 복구로 정산 누락 방지
           en:
-            - Owned billing 0→1 (~68% of commits, 718/1054 in billing-service) as core engineer
+            - Owned billing 0→1 as core engineer
             - Designed vendor strategy pattern with abstract base classes to integrate 3 PG providers with unified interface
             - GCP Pub/Sub DLQ pattern with custom annotation-based handler discovery for payment event resilience
             - DLQ-based arrears processing and permanent arrears handling system — retry→DLQ, NACK-based auto-recovery to prevent settlement gaps

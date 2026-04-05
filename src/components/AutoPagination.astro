@@ -22,7 +22,8 @@
 
       // Adjusted Margin to 12mm (~45.4px)
       const MARGIN_PX = 45.4; 
-      const SAFE_BUFFER = 20; 
+      const SAFE_BUFFER = 5; 
+      const isCreative = (container as HTMLElement).dataset.template === 'creative';
       let currentHeight = MARGIN_PX; 
 
       children.forEach((child) => {
@@ -32,8 +33,9 @@
         const childMargin = parseFloat(computedStyle.marginTop) + parseFloat(computedStyle.marginBottom);
         const fullItemHeight = childHeight + childMargin;
 
+        const bottomLimit = isCreative ? A4_HEIGHT_PX - SAFE_BUFFER : A4_HEIGHT_PX - MARGIN_PX - SAFE_BUFFER;
         const shouldBreak = (isHeader && currentPageItems.length > 0) || 
-                           (currentHeight + fullItemHeight > A4_HEIGHT_PX - MARGIN_PX - SAFE_BUFFER && currentPageItems.length > 0);
+                           (currentHeight + fullItemHeight > bottomLimit && currentPageItems.length > 0);
 
         if (shouldBreak) {
           pages.push(currentPageItems);
@@ -54,7 +56,7 @@
 
         pages.forEach((pageItems, index) => {
           const pageDiv = document.createElement('div');
-          pageDiv.className = originalClasses + ' paginated-page' + (index > 0 ? ' print:break-before-page mt-6 print:mt-0' : '');
+          pageDiv.className = originalClasses + ' paginated-page' + (index > 0 ? ' print:break-before-page print:mt-0' : '');
           pageDiv.dataset.paginated = 'true';
           
           const innerDiv = document.createElement('div');
@@ -67,10 +69,12 @@
           
           pageItems.forEach(item => innerDiv.appendChild(item));
 
-          // Use 12mm Bottom Spacer
-          const bottomSpacer = document.createElement('div');
-          bottomSpacer.className = 'print-spacer h-[12mm] w-full shrink-0 mt-auto';
-          innerDiv.appendChild(bottomSpacer);
+          // Use 12mm Bottom Spacer (Skip for creative template)
+          if ((container as HTMLElement).dataset.template !== 'creative') {
+            const bottomSpacer = document.createElement('div');
+            bottomSpacer.className = 'print-spacer h-[12mm] w-full shrink-0 mt-auto';
+            innerDiv.appendChild(bottomSpacer);
+          }
           
           pageDiv.appendChild(innerDiv);
           fragment.appendChild(pageDiv);

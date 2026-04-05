@@ -4,7 +4,6 @@ import { messages } from '@/lib/messages';
 import { t, bullets } from '@/lib/localize';
 import { baseUrlJoin } from '@/lib/base-url';
 import TemplateSelector from '@/components/TemplateSelector.astro';
-import CanvasPrintButton from '@/components/CanvasPrintButton.astro';
 import AutoPagination from '@/components/AutoPagination.astro';
 
 interface Props {
@@ -60,15 +59,14 @@ const otherLangUrl = baseUrlJoin(other, 'default');
       class="print:hidden mx-auto flex max-w-[850px] flex-wrap items-center justify-end gap-3 px-8 pb-4 pt-6 text-sm"
     >
       <span class="text-gray-500">{m.printHint}</span>
-      <CanvasPrintButton />
       <a href={otherLangUrl} class="font-semibold text-blue-800 hover:underline ml-2">{m.navOther}</a>
     </div>
 
     <!-- DOCUMENT RENDERER -->
-    <article class="mx-auto w-full max-w-[794px] xl:max-w-none xl:flex xl:flex-row xl:flex-wrap xl:gap-10 xl:justify-center xl:px-20 print:block print:w-[210mm] mb-10 print:mb-0 transition-all duration-500">
+    <article class="mx-auto flex flex-col gap-4 w-full max-w-[794px] xl:max-w-none xl:flex-row xl:flex-wrap xl:justify-center xl:px-20 print:block print:w-[210mm] mb-10 print:mb-0 transition-all duration-500">
       
       <!-- PAGE 1: HEADER, EXPERIENCE, SKILLS, AWARDS -->
-      <div class="flex flex-col min-h-[297mm] print:h-[297mm] print:min-h-[297mm] print:max-h-[297mm] bg-white shadow-md mb-4 print:mb-0 print:shadow-none relative overflow-hidden w-full max-w-[794px] xl:max-w-[794px]">
+      <div class="flex flex-col min-h-[297mm] print:h-[297mm] print:min-h-[297mm] print:max-h-[297mm] bg-white shadow-md print:shadow-none relative overflow-hidden w-full max-w-[794px] xl:max-w-[794px]">
         <!-- COMPACT HEADER -->
         <header class="bg-gradient-to-br from-[#1a1a2e] to-[#0f3460] text-white px-10 py-7 print:px-[15mm] print:py-[10mm] flex flex-col md:flex-row justify-between items-start gap-8">
           <!-- Left: Name and Summary -->
@@ -247,7 +245,7 @@ const otherLangUrl = baseUrlJoin(other, 'default');
       </div>
 
       <!-- PAGE 2+: PROJECTS & ACTIVITIES (AUTO-PAGINATED) -->
-      <div class="auto-paginate min-h-[297mm] print:min-h-0 print:h-auto bg-white shadow-md mb-4 print:mb-0 print:shadow-none overflow-hidden w-full max-w-[794px] xl:max-w-[794px] print:mt-0">
+      <div class="auto-paginate min-h-[297mm] print:min-h-0 print:h-auto bg-white shadow-md print:shadow-none overflow-hidden w-full max-w-[794px] xl:max-w-[794px]">
         <section class="paginate-content px-10 py-0 print:px-[15mm] print:py-0">
           {
             profile.projectSections.map((section) => (

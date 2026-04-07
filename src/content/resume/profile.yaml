@@ -14,11 +14,11 @@ summary:
   ko: |
     문제 해결과 서비스 완성에 집중하는 소프트웨어 엔지니어입니다.
     기획 단계부터 주도적으로 참여하여 고객 편의성을 최우선으로 고려하며,
-    현재 다수의 MSA 환경에서 유저사이드 서비스 전반을 담당하고 있습니다.
+    현재 다수의 MSA 환경에서 빌링 및 유저사이드 서비스 전반을 담당하고 있습니다.
   en: |
     Software engineer focused on problem-solving and end-to-end service delivery without limiting tech stack.
     Actively contributes from the planning stage to prioritize user convenience.
-    Currently responsible for the overall user-side services across multiple MSA environments.
+    Currently responsible for the overall billing and user-side services across multiple MSA environments.
 
 languages_note:
   ko: 한국어 — 네이티브

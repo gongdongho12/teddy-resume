@@ -383,8 +383,8 @@ projectSections:
           ko: 통합 프로모션(쿠폰/포인트) 플랫폼 구축
           en: Coupon & point promotion platform
         period:
-          ko: "2025"
-          en: "2025"
+          ko: "쿠폰: 2025.07 / 포인트: 2025.08 ~ 10"
+          en: "Coupon: Jul 2025 / Points: Aug–Oct 2025"
         summary:
           ko: |
             다양한 제휴사(넥센, 도요타, 블루멤버스)의 프로모션 요구사항을 수용하는 범용 쿠폰·포인트 백엔드 시스템을
@@ -414,8 +414,8 @@ projectSections:
           ko: 유저 사이드 백엔드
           en: User-side Backend
         period:
-          ko: "2025"
-          en: "2025"
+          ko: 2025.07 ~ 현재
+          en: Jul 2025 — Present
         summary:
           ko: |
             카카오T 계정/결제 연동(4개 MSA 관통), PnC 자동충전, 미결제 감시 등 사용자 경험의 핵심이 되는 백엔드 전반을 개발했습니다.
@@ -484,8 +484,8 @@ projectSections:
           ko: 로밍 서비스 안정성 및 성능 최적화
           en: Roaming service reliability & performance
         period:
-          ko: "2025"
-          en: "2025"
+          ko: "2026.02"
+          en: "Feb 2026"
         summary:
           ko: 타 충전사업자(환경부) 연동 로밍 서비스의 카드 상태 관리 로직을 재설계하고 처리 성능을 개선했습니다.
           en: Reworked roaming card-state updates using billing arrears truth; removed redundant serialization; batched billing lookups; tuned retries per domain.
@@ -514,8 +514,8 @@ projectSections:
           ko: 개발 생산성 자동화 및 DevOps 개선
           en: Developer productivity & DevOps
         period:
-          ko: "2025"
-          en: "2025"
+          ko: 2024.10 ~ 현재
+          en: Oct 2024 — Present
         summary:
           ko: 반복되는 운영 업무와 개발 비효율을 제거하기 위해 AI 코드 리뷰, 배포 자동화, MSA 개발 환경 도구를 구축했습니다.
           en: AI-first reviews, mobile CI/CD hardening, remote Gradle cache, iOS TestFlight automation, obfuscation policy, Firebase distribution, STG payment cancel tooling for QA.
@@ -523,12 +523,14 @@ projectSections:
           - Gemini API
           - GitHub Copilot
           - Claude Code
+          - Cursor
+          - Antigravity
           - Firebase
           - Docker
           - Gradle
         highlights:
           ko:
-            - GitHub Copilot(11개 프롬프트), Claude Code(8개 스킬 — billing/roaming/admin/feapp/auth 서비스별 워크플로우), Cursor 등 3개 AI 도구에 MSA 맞춤 워크플로우 구축
+            - GitHub Copilot(11개 프롬프트), Claude Code(8개 스킬 — billing/roaming/admin/feapp/auth 서비스별 워크플로우), Cursor, Antigravity 등 AI 도구를 활용하여 사내 컨벤션에 맞춘 공통 작업 스킬 레포지토리 구축
             - run-gemini-cli를 활용한 1차 코드 리뷰 자동화
             - Docusaurus + GitHub Actions 기반 개발 문서 자동 생성 시스템 구축 — Git Polling 방식으로 코드 변경 감지 시 문서 자동 갱신
             - Firebase App Distribution 도입으로 QA/배포 프로세스 병목 제거
@@ -544,9 +546,9 @@ projectSections:
             - Refactored Android Jenkins into shared libs; GCS remote cache; iOS GA/TestFlight pipeline; 300+ line R8 rules
         results:
           ko:
-            - AI 코드 리뷰 자동화로 리뷰 비용 절감
+            - AI 코드 리뷰 자동화로 리뷰 리소스 절감
             - Firebase 도입으로 QA 배포 사이클 단축 및 QA 자체 검증 편의성 향상
-            - 문서 자동 생성 시스템 구축으로 관리 비용 절감
+            - 문서 자동 생성 시스템 구축으로 관리 리소스 절감
           en:
             - Reduced review overhead via automated first-pass AI review
             - Shortened QA/deploy cycle and improved QA self-serve with Firebase Distribution

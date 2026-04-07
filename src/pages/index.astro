@@ -1,5 +1,6 @@
 ---
 import { baseUrlJoin } from '@/lib/base-url';
+import CommonHead from '@/components/CommonHead.astro';
 
 const resumeKo = baseUrlJoin('ko');
 const resumeEn = baseUrlJoin('en');
@@ -7,10 +8,8 @@ const resumeEn = baseUrlJoin('en');
 <!DOCTYPE html>
 <html lang="ko">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <CommonHead title="teddy-resume" />
     <meta http-equiv="refresh" content={`0;url=${resumeKo}`} />
-    <title>teddy-resume</title>
   </head>
   <body class="min-h-screen bg-gray-100 print:bg-transparent p-8 font-sans text-sm text-gray-600">
     <p class="text-center">

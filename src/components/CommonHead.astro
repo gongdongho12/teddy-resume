@@ -1,0 +1,17 @@
+---
+import type { Lang } from '@/lib/resume-types';
+import { messages } from '@/lib/messages';
+
+interface Props {
+  lang?: Lang;
+  title?: string;
+}
+
+const { lang, title } = Astro.props;
+const m = lang ? messages(lang) : null;
+const docTitle = title || (m ? m.docTitle : 'Resume');
+---
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/png" href={import.meta.env.BASE_URL + 'favicon.png'} />
+<title>{docTitle}</title>

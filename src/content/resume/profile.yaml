@@ -215,14 +215,23 @@ awards:
 
 activities:
   - title:
-      ko: 커널360 2기 백엔드 멘토
-      en: Kernel360 Backend Mentor (2nd cohort)
+      ko: 코드잇 백엔드 코스 모의면접 멘토
+      en: Codeit Backend Course Mock Interview Mentor
     period:
-      ko: 2024.07.15 ~ 2025.01.10
-      en: Jul 2024 — Jan 2025
+      ko: 2025.09 / 2025.12 (2회)
+      en: Sep, Dec 2025
     description:
-      ko: 커널360 백엔드 2기 멘토로 참여
-      en: Participated as a mentor for the 2nd cohort of Kernel360 backend program.
+      ko: 백엔드 개발 직무 취업을 희망하는 과정 수료생들을 대상으로 기술 및 모의면접 멘토링을 진행했습니다.
+      en: Conducted technical and mock interview mentoring for backend developer bootcamp graduates.
+  - title:
+      ko: 커널360 1~5기 백엔드 멘토
+      en: Kernel360 Backend Mentor (1st ~ 5th cohorts)
+    period:
+      ko: 2023.12 ~ 2025.08
+      en: Dec 2023 — Aug 2025
+    description:
+      ko: 실무 투입이 가능한 주니어 개발자 양성을 위해 5개 기수(1~5기)에 걸쳐 프론트/백엔드 협업 기반 기업 문제 해결 프로젝트의 멘토로 참여했습니다.
+      en: Participated as a mentor for the 1st through 5th cohorts, guiding full-stack collaboration and enterprise problem-solving projects to foster job-ready developers.
   - title:
       ko: 카카오테크 캠퍼스 2기 백엔드 멘토
       en: Kakao Tech Campus Backend Mentor (2nd)
@@ -269,14 +278,14 @@ activities:
       ko: 한빛미디어에서 준비한 세미나 시리즈로 9회차 모니터링 세션을 진행했습니다
       en: Led the 9th session on Monitoring for Hanbit Media's seminar series.
   - title:
-      ko: 부스트캠프 웹·모바일 8기 백엔드 리뷰어
-      en: Boostcamp 8th Backend Reviewer
+      ko: 부스트캠프 웹·모바일 7~8기 백엔드 리뷰어
+      en: Boostcamp 7th~8th Backend Reviewer
     period:
-      ko: 2023.09.07 ~ 2023.10.27
-      en: Sep 2023 — Oct 2023
+      ko: 2022.09 ~ 10 / 2023.09 ~ 10
+      en: Sep-Oct 2022 / Sep-Oct 2023
     description:
-      ko: 부스트캠프의 웹 백엔드 캠퍼미팅 및 코드리뷰를 진행했습니다
-      en: Conducted campus meetings and code reviews for web backend campers.
+      ko: 부스트캠프 웹 백엔드 캠퍼미팅 및 코드리뷰를 진행했습니다 (7기, 8기 연속 참여)
+      en: Conducted campus meetings and code reviews for web backend campers (7th and 8th cohorts).
   - title:
       ko: UbuCon Korea 2023 Speaker
       en: UbuCon Korea 2023 Speaker
@@ -313,15 +322,7 @@ activities:
     description:
       ko: 질의응답 및 코드리뷰 및 화상 멘토링을 진행했습니다
       en: Provided Q&A, code reviews, and video mentoring.
-  - title:
-      ko: 부스트캠프 웹·모바일 7기 백엔드 리뷰어
-      en: Boostcamp 7th Backend Reviewer
-    period:
-      ko: 2022.09.09 ~ 2022.10.28
-      en: Sep 2022 — Oct 2022
-    description:
-      ko: 부스트캠프의 웹 백엔드 캠퍼미팅 및 코드리뷰를 진행했습니다
-      en: Conducted campus meetings and code reviews for web backend campers.
+
   - title:
       ko: 경북소프트웨어고등학교 리액트 특강
       en: Gyeongbuk SW High School React Lecture
@@ -366,7 +367,6 @@ projectSections:
           - Spring Batch
           - GCP Pub/Sub
           - Cloud SQL
-          - Flutter
         highlights:
           ko:
             - 결제 서비스를 프로젝트 초기 설계부터 구현까지 전담하며 핵심 개발자로 주도
@@ -396,8 +396,6 @@ projectSections:
           - Spring Boot
           - MySQL
           - JPA
-          - React
-          - Ant Design
         highlights:
           ko:
             - 적립 건마다 유효기간이 다른 포인트 지갑 시스템 설계 — 적립 시 별도 지갑 엔티티 생성, 잔액 합산 조회 및 만료 임박(7일) 포인트 별도 추적
@@ -449,8 +447,8 @@ projectSections:
           ko: 볼트업 하이브리드 앱 (Flutter)
           en: VoltUp Hybrid App (Flutter)
         period:
-          ko: "2025"
-          en: "2025"
+          ko: "2024.12 ~ 현재"
+          en: "Dec 2024 — Present"
         summary:
           ko: |
             서비스 2.0 런칭을 위해 Flutter 하이브리드 앱 개발을 주도하고, Android/iOS 통합 플랫폼 아키텍처를 설계 및 구현했습니다.
@@ -468,20 +466,19 @@ projectSections:
             - QR 코드 인식률 개선을 위해 ML Kit 바코드 스캐너 도입
             - FCM 기반 푸시 알림 시스템 구축
             - 앱 디버그 콘솔 개발
-            - MSA 로컬 개발 환경 구성 자동화(Gradle local-yaml 생성)로 개발 생산성 향상
           en:
             - Rapid Android/iOS hybrid delivery via Flutter for 2.0 launch (2025.03)
             - JSBridge for frontend–hardware and app message communication — 20+ native bridge types
             - ML Kit barcode scanner integration for QR code recognition improvement
             - FCM-based push notification system
             - In-app debug console development
-            - Automated MSA local development setup with Gradle local-yaml generation
         results:
           ko:
-            - 5개월 만에 PoC → 런칭 (82파일, 621커밋 규모)
-            - 웹팀이 JS API로 네이티브 기능을 호출할 수 있는 일관된 브릿지 패턴 확립
+            - 2개월 이내 런칭 (2024.12 ~ 2025.02)
+            - 프론트엔드에서 JS Bridge로 네이티브 기능을 호출할 수 있는 규약 설계
           en:
-            - PoC→launch in ~5 months; established consistent bridge pattern for web-to-native APIs
+            - Launched within 2 months (Dec 2024 — Feb 2025)
+            - designed protocols for frontend to invoke native functions via JS Bridge
 
       - title:
           ko: 로밍 서비스 안정성 및 성능 최적화
@@ -524,8 +521,8 @@ projectSections:
           - Gradle
         highlights:
           ko:
-            - GitHub Copilot(11개 프롬프트), Claude Code(8개 스킬 — billing/roaming/admin/feapp/t-auth/t-payment 서비스별 워크플로우), Cursor 등 3개 AI 도구에 MSA 맞춤 워크플로우 구축
-            - run-gemini-cli를 활용한 1차 코드 리뷰 자동화 및 시니어 리뷰 리소스 절감
+            - GitHub Copilot(11개 프롬프트), Claude Code(8개 스킬 — billing/roaming/admin/feapp/auth 서비스별 워크플로우), Cursor 등 3개 AI 도구에 MSA 맞춤 워크플로우 구축
+            - run-gemini-cli를 활용한 1차 코드 리뷰 자동화
             - Docusaurus + GitHub Actions 기반 개발 문서 자동 생성 시스템 구축 — Git Polling 방식으로 코드 변경 감지 시 문서 자동 갱신
             - Firebase App Distribution 도입으로 QA/배포 프로세스 병목 제거
             - 개발자 개입 없이 QA가 직접 결제를 취소할 수 있는 STG/DEV 환경 결제 취소 기능 개발
@@ -685,10 +682,10 @@ projectSections:
             - Built backoffice tools and managed successful transition from CPC to CPS versions
         results:
           ko:
-            - 대량의 상품 풀 증가에도 불구하고 병렬 처리 최적화를 통해 배치 시간 단축 (4시간 → 2시간)
+            - 대량의 상품 풀 증가에도 불구하고 이벤트 기반의 상품 업데이트를 통해 배치 시간 단축 (4시간 → 2시간)
             - 파이널 프라이싱의 기반이 되는 최종가 계산 로직의 초석 마련
           en:
-            - Halved batch processing time (4h → 2h) via parallelization despite increased product volume
+            - Halved batch processing time (4h → 2h) via event-driven product updates despite increased product volume
             - Established the foundational final price calculation logic used for future pricing systems
 
   - heading:

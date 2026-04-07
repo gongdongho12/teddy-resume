@@ -1,4 +1,5 @@
 ---
+import CommonHead from '@/components/CommonHead.astro';
 import type { Lang, ResumeProfile } from '@/lib/resume-types';
 import { messages } from '@/lib/messages';
 import { t, bullets } from '@/lib/localize';
@@ -21,9 +22,7 @@ const otherLangUrl = baseUrlJoin(other, 'minimal');
 <!DOCTYPE html>
 <html lang={lang}>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{m.docTitle}</title>
+    <CommonHead lang={lang} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -280,3 +279,5 @@ const otherLangUrl = baseUrlJoin(other, 'minimal');
     </article>
   </body>
 </html>
+
+

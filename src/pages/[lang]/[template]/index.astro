@@ -8,6 +8,7 @@ import ExecutiveLayout from '@/templates/executive/ResumeLayout.astro';
 import { loadResume } from '@/lib/load-resume';
 import type { Lang } from '@/lib/resume-types';
 import { AVAILABLE_TEMPLATES, type TemplateId } from '@/lib/templates';
+import { baseUrlJoin } from '@/lib/base-url';
 
 export function getStaticPaths() {
   const langs = ['ko', 'en'];
@@ -34,6 +35,18 @@ const Layouts: Record<TemplateId, any> = {
 };
 
 const LayoutToRender = Layouts[paramTemplate] || DefaultLayout;
+const defaultUrl = baseUrlJoin(lang);
 ---
+
+<script is:inline define:vars={{ defaultUrl }}>
+  if (window.innerWidth < 768) {
+    window.location.replace(defaultUrl);
+  }
+  window.addEventListener('resize', function() {
+    if (window.innerWidth < 768) {
+      window.location.replace(defaultUrl);
+    }
+  });
+</script>
 
 <LayoutToRender lang={lang} profile={profile} />

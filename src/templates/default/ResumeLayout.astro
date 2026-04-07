@@ -5,6 +5,7 @@ import { t, bullets } from '@/lib/localize';
 import { baseUrlJoin } from '@/lib/base-url';
 import TemplateSelector from '@/components/TemplateSelector.astro';
 import AutoPagination from '@/components/AutoPagination.astro';
+import CommonHead from '@/components/CommonHead.astro';
 
 interface Props {
   lang: Lang;
@@ -20,9 +21,7 @@ const otherLangUrl = baseUrlJoin(other, 'default');
 <!DOCTYPE html>
 <html lang={lang}>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{m.docTitle}</title>
+    <CommonHead lang={lang} />
     <style>
       @page {
         size: A4;
@@ -277,7 +276,7 @@ const otherLangUrl = baseUrlJoin(other, 'default');
                       </p>
                     )}
 
-                    <div class="grid grid-cols-1 md:grid-cols-[1fr_10rem] gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
                       <!-- LEFT: HIGHLIGHTS -->
                       <div class="space-y-4">
                         <ul class="grid grid-cols-1 gap-y-1.5 list-disc pl-5 marker:text-[#0f3460]">
@@ -328,26 +327,30 @@ const otherLangUrl = baseUrlJoin(other, 'default');
             >
               {m.activities}
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
-              {
-                profile.activities.map((a) => (
-                  <div class="break-inside-avoid flex flex-col border-l-4 border-gray-100 pl-4 py-1">
-                    <div class="flex flex-col mb-1.5">
-                      <span class="text-[15px] font-bold text-black leading-snug">{t(a.title, lang)}</span>
-                      <span class="text-[12px] text-gray-500 font-bold uppercase tracking-widest">{t(a.period, lang)}</span>
+            {
+              Array.from({ length: Math.ceil(profile.activities.length / 2) }).map((_, i) => (
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 mb-8 last:mb-0">
+                  {profile.activities.slice(i * 2, i * 2 + 2).map((a) => (
+                    <div class="break-inside-avoid flex flex-col border-l-4 border-gray-100 pl-4 py-1">
+                      <div class="flex flex-col mb-1.5">
+                        <span class="text-[15px] font-bold text-black leading-snug">{t(a.title, lang)}</span>
+                        <span class="text-[12px] text-gray-500 font-bold uppercase tracking-widest">{t(a.period, lang)}</span>
+                      </div>
+                      {a.description && (
+                        <p class="text-[13.5px] text-gray-700 leading-relaxed whitespace-pre-line">
+                          {t(a.description, lang)}
+                        </p>
+                      )}
                     </div>
-                    {a.description && (
-                      <p class="text-[13.5px] text-gray-700 leading-relaxed whitespace-pre-line">
-                        {t(a.description, lang)}
-                      </p>
-                    )}
-                  </div>
-                ))
-              }
-            </div>
+                  ))}
+                </div>
+              ))
+            }
           </>
         </section>
       </div>
     </article>
   </body>
 </html>
+
+

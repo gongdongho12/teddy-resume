@@ -502,6 +502,13 @@ projectSections:
             - Redesigned government card state updates from payment-response-based to billing arrears event-driven — selective updates only for arrears events
             - Eliminated object→string→object serialization overhead; consolidated individual billing queries into batch lookups
             - Government API error retry process — prioritized critical data (membership cards) over tolerably-lossy items (charger status)
+        results:
+          ko:
+            - 카드 상태 업데이트 로직 재설계로 데이터 정확성 향상
+            - 변환 오버헤드 제거 및 통합 조회로 처리 성능 개선
+          en:
+            - Improved data accuracy by rearchitecting card state update logic
+            - Reduced processing overhead by eliminating serialization and consolidating billing queries
 
       - title:
           ko: 개발 생산성 자동화 및 DevOps 개선
@@ -535,6 +542,15 @@ projectSections:
             - Firebase App Distribution; QA self-serve payment cancel in STG/DEV
             - Gradle generator for application-local.yaml
             - Refactored Android Jenkins into shared libs; GCS remote cache; iOS GA/TestFlight pipeline; 300+ line R8 rules
+        results:
+          ko:
+            - AI 코드 리뷰 자동화로 리뷰 비용 절감
+            - Firebase 도입으로 QA 배포 사이클 단축 및 QA 자체 검증 편의성 향상
+            - 문서 자동 생성 시스템 구축으로 관리 비용 절감
+          en:
+            - Reduced review overhead via automated first-pass AI review
+            - Shortened QA/deploy cycle and improved QA self-serve with Firebase Distribution
+            - Auto-doc system reduced manual documentation maintenance
 
   - heading:
       ko: 프로젝트 — 카카오스타일 (2022.06 ~ 2024.09)
@@ -637,8 +653,12 @@ projectSections:
           - Kotlin
           - Spring Boot
           - Spring Batch
-          - MySQL
+          - DGS Framework
+          - GraphQL
           - JPA
+          - QueryDSL
+          - MySQL
+          - Kafka
         highlights:
           ko:
             - cormo.js 기반 레거시를 Spring Boot로 1:1 DB 마이그레이션 및 무중단 이관
@@ -711,9 +731,15 @@ projectSections:
           ko:
             - 개발팀 전체에 Kotlin과 WebFlux를 메인 기술 스택으로 도입
             - 자사 서비스의 핵심 기능을 프라이데이 조회 API로 전부 대체하여 현재까지 사용
+            - Jenkins CI/CD, WireGuard VPN, NPM 모듈/NPX 보일러플레이트 등 사내 개발 환경 자동화 도구 개발
+            - AMD64/ARM64 크로스 빌드 환경 구성 (Docker buildx, AWS Graviton2 대응)
+            - Puppeteer 기반 크롤링 API 개발 — 외부 페이지 API 조회/태그 선택/JS 함수 주입 지원
           en:
             - Introduced Kotlin and WebFlux as the main tech stack for the entire team
             - Replaced core service features with Friday search APIs (still in use)
+            - In-house automation tools: Jenkins CI/CD, WireGuard VPN, NPM modules/NPX boilerplates
+            - Cross-architecture Docker builds (AMD64/ARM64) via buildx for AWS Graviton2 compatibility
+            - Puppeteer crawler API — page access, API query, tag selection, and JS function injection
 
       - title:
           ko: 와탭 모니터링 FE

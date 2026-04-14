@@ -16,6 +16,7 @@ const { lang, profile } = Astro.props;
 const m = messages(lang);
 const other = lang === 'ko' ? 'en' : 'ko';
 const otherLangUrl = baseUrlJoin(other, 'creative');
+const portfolioUrl = baseUrlJoin(lang, 'portfolio');
 ---
 
 <!DOCTYPE html>
@@ -61,6 +62,7 @@ const otherLangUrl = baseUrlJoin(other, 'creative');
     
     <div class="print:hidden mx-auto flex max-w-[1000px] flex-wrap items-center justify-end gap-3 px-8 pb-3 pt-6 text-[13px]">
       <span class="text-gray-500">{m.printHint}</span>
+      <a href={portfolioUrl} class="font-medium text-black hover:underline">{lang === 'ko' ? '포트폴리오' : 'Portfolio'}</a>
       <a href={otherLangUrl} class="font-medium text-black hover:underline ml-2">{m.navOther}</a>
     </div>
 

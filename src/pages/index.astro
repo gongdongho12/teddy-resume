@@ -4,6 +4,8 @@ import CommonHead from '@/components/CommonHead.astro';
 
 const resumeKo = baseUrlJoin('ko');
 const resumeEn = baseUrlJoin('en');
+const portfolioKo = baseUrlJoin('ko', 'portfolio');
+const portfolioEn = baseUrlJoin('en', 'portfolio');
 ---
 <!DOCTYPE html>
 <html lang="ko">
@@ -16,6 +18,10 @@ const resumeEn = baseUrlJoin('en');
       <a class="font-medium text-indigo-800 underline" href={resumeKo}>한국어 이력서</a>
       <span class="mx-2 text-gray-400">·</span>
       <a class="font-medium text-indigo-800 underline" href={resumeEn}>English</a>
+      <span class="mx-2 text-gray-400">·</span>
+      <a class="font-medium text-indigo-800 underline" href={portfolioKo}>포트폴리오</a>
+      <span class="mx-2 text-gray-400">·</span>
+      <a class="font-medium text-indigo-800 underline" href={portfolioEn}>Portfolio EN</a>
     </p>
   </body>
 </html>

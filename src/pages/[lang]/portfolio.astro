@@ -1,0 +1,382 @@
+---
+import CommonHead from '@/components/CommonHead.astro';
+import { baseUrlJoin } from '@/lib/base-url';
+import { kakaoPiccomaPortfolio, portfolioText } from '@/lib/portfolio-content';
+import { loadResume } from '@/lib/load-resume';
+import type { Lang } from '@/lib/resume-types';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ko' } }, { params: { lang: 'en' } }];
+}
+
+const param = Astro.params.lang;
+const lang: Lang = param === 'en' ? 'en' : 'ko';
+const otherLang: Lang = lang === 'ko' ? 'en' : 'ko';
+const profile = loadResume();
+const content = kakaoPiccomaPortfolio;
+const otherLangUrl = baseUrlJoin(otherLang, content.slug);
+const resumeUrl = baseUrlJoin(lang);
+const orderedTitles = [
+  '멀티 PG 결제 시스템 및 정산 안정화',
+  '파이널 프라이싱 API',
+  '멤버십/마일리지 서비스 이관 및 고도화',
+  '유저 사이드 백엔드: 카카오T 계정/결제 연동',
+  '통합 프로모션(쿠폰/포인트) 플랫폼 구축',
+  '개발 생산성 자동화 및 DevOps 개선',
+];
+const projects = [...content.projects].sort(
+  (a, b) => orderedTitles.indexOf(a.title.ko) - orderedTitles.indexOf(b.title.ko),
+);
+
+const roleFocus = content.roleFocus.map((item) => portfolioText(item, lang));
+const interviewThemes = [
+  lang === 'ko' ? '왜 그 API 경계와 책임 분리를 선택했는가' : 'Why the API boundaries and ownership were divided that way',
+  lang === 'ko' ? '이벤트 재처리와 중복 처리 전략을 어떻게 세웠는가' : 'How event retries and duplicate handling were designed',
+  lang === 'ko' ? '장애 시 어디까지 자동 복구하고 언제 사람이 개입하는가' : 'How far automated recovery goes and when human intervention begins',
+  lang === 'ko' ? 'Athena, 배치, Kafka, 파티션 구조를 왜 그렇게 조합했는가' : 'Why Athena, batch jobs, Kafka, and partitioning were combined that way',
+  lang === 'ko' ? 'AI 도구를 팀 표준으로 만들기 위해 무엇을 문서화했는가' : 'What was documented to turn AI tooling into a team standard',
+  lang === 'ko' ? '코드 리뷰와 아키텍처 의사결정에서 어떤 기준을 세웠는가' : 'What criteria were used for code review and architectural decisions',
+];
+const projectPrompts: Record<string, { ko: string[]; en: string[] }> = {
+  '멀티 PG 결제 시스템 및 정산 안정화': {
+    ko: [
+      'PG 공통 인터페이스와 벤더별 구현의 경계를 어디까지 두었는지 설명할 수 있습니다.',
+      '재처리, DLQ, NACK 흐름에서 중복 처리와 상태 일관성을 어떤 기준으로 잡았는지 이야기할 수 있습니다.',
+      '자동 복구로 끝낼 케이스와 운영자가 확인해야 할 케이스를 어떻게 나눴는지 설명할 수 있습니다.',
+    ],
+    en: [
+      'Can explain where the boundary was placed between the common PG interface and vendor-specific implementations.',
+      'Can discuss how duplicate handling and state consistency were approached across retry, DLQ, and NACK flows.',
+      'Can explain how automated recovery cases were separated from cases requiring operator review.',
+    ],
+  },
+  '유저 사이드 백엔드: 카카오T 계정/결제 연동': {
+    ko: [
+      '4개 MSA로 나뉜 API 경계를 왜 그렇게 두었는지 설명할 수 있습니다.',
+      '외부 인증서 서비스 장애 시 어디까지 자동 복구하고 언제 수동 대응하는지 이야기할 수 있습니다.',
+      '승인, 취소, 프로모션 흐름에서 상태 일관성을 어떻게 유지했는지 설명할 수 있습니다.',
+    ],
+    en: [
+      'Can explain why the API boundaries were split across four MSAs.',
+      'Can discuss how much of certificate-service failure handling was automated and when manual intervention was needed.',
+      'Can explain how state consistency was maintained across approval, cancellation, and promotion flows.',
+    ],
+  },
+  '통합 프로모션(쿠폰/포인트) 플랫폼 구축': {
+    ko: [
+      '왜 단일 잔액 모델이 아니라 지갑 구조를 선택했는지 설명할 수 있습니다.',
+      '잔액, 만료, 히스토리 반영 시점이 어긋날 때 어떤 기준으로 사용자 경험과 운영 기준을 맞췄는지 이야기할 수 있습니다.',
+      '제휴사별 쿠폰 정책과 공통 포인트 로직의 경계를 어떻게 나눴는지 설명할 수 있습니다.',
+    ],
+    en: [
+      'Can explain why a wallet model was chosen over a single-balance model.',
+      'Can discuss how balance display, expiration timing, and history reflection were aligned.',
+      'Can explain how partner-specific coupon rules were separated from shared point logic.',
+    ],
+  },
+  '개발 생산성 자동화 및 DevOps 개선': {
+    ko: [
+      'AI 도구를 팀 표준으로 굳힐 때 무엇을 문서화하고 어떤 단위로 공유했는지 설명할 수 있습니다.',
+      '자동 리뷰가 사람 리뷰를 대체하지 않도록 어떤 기준으로 역할을 나눴는지 이야기할 수 있습니다.',
+      '코드 리뷰와 아키텍처 논의에서 시니어로 어떤 체크리스트를 세웠는지 설명할 수 있습니다.',
+    ],
+    en: [
+      'Can explain what was documented and how it was shared when turning AI tooling into a team standard.',
+      'Can discuss how automated review was scoped so it would not replace human review.',
+      'Can explain what checklist was used for senior-level code review and architecture discussion.',
+    ],
+  },
+  '파이널 프라이싱 API': {
+    ko: [
+      '왜 가격 계산을 각 지면이나 클라이언트에 남기지 않고 중앙 API로 모았는지 설명할 수 있습니다.',
+      'DataLoader를 어떤 호출 패턴에 적용했고 어떤 부하를 줄였는지 구체적으로 이야기할 수 있습니다.',
+      '가격 계산 API에서 타임아웃과 서킷브레이커 기준을 어떻게 세웠는지 설명할 수 있습니다.',
+    ],
+    en: [
+      'Can explain why pricing was centralized instead of being left to each surface or client.',
+      'Can discuss what call pattern DataLoader was applied to and what load it reduced.',
+      'Can explain how timeout and circuit-breaker criteria were set for the pricing API.',
+    ],
+  },
+  '멤버십/마일리지 서비스 이관 및 고도화': {
+    ko: [
+      '무중단 이관에서 기존 동작 보장을 어떤 단계로 확인했는지 설명할 수 있습니다.',
+      'Athena, 배치, 스트림, 월간 파티션 구조를 왜 그렇게 조합했는지 이야기할 수 있습니다.',
+      '계속 적재되는 대량 데이터에서 어느 병목을 먼저 최적화했는지 설명할 수 있습니다.',
+    ],
+    en: [
+      'Can explain how legacy parity was checked during a zero-downtime migration.',
+      'Can discuss why Athena, batch jobs, streams, and monthly partitioning were combined that way.',
+      'Can explain which bottlenecks were optimized first in continuously growing datasets.',
+    ],
+  },
+};
+const sectionLabels =
+  lang === 'ko'
+    ? {
+        intro: '소개',
+        index: '목차',
+        background: '설계 배경',
+        implementation: '핵심 구현',
+        outcomes: '운영 결과',
+        note: '강조 포인트',
+        summary: '정리',
+        interview: '인터뷰에서 자주 연결되는 질문',
+        prompts: '인터뷰에서 풀어낼 질문',
+      }
+    : {
+        intro: 'Introduction',
+        index: 'Contents',
+        background: 'Design Context',
+        implementation: 'Core Implementation',
+        outcomes: 'Operational Outcomes',
+        note: 'Key Point',
+        summary: 'Summary',
+        interview: 'Likely Interview Themes',
+        prompts: 'Interview Talking Points',
+      };
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <CommonHead title={portfolioText(content.title, lang)} lang={lang} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="min-h-screen bg-[linear-gradient(180deg,#f7f3eb_0%,#f1ebdf_100%)] text-slate-900 antialiased"
+    style="font-family: 'Outfit', 'Noto Sans KR', sans-serif;"
+  >
+    <main class="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+      <nav class="flex flex-wrap items-center justify-between gap-3 border-b border-black/10 px-1 pb-4 text-sm">
+        <div class="flex flex-wrap items-center gap-3 text-slate-600">
+          <span class="bg-[#d9e7d2] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+            {lang === 'ko' ? 'Portfolio' : 'Portfolio'}
+          </span>
+          <span>{profile.name}</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-4">
+          <a class="font-medium text-slate-600 transition hover:text-slate-900" href={resumeUrl}>
+            {lang === 'ko' ? '이력서 보기' : 'View resume'}
+          </a>
+          <a class="font-semibold text-sky-900 transition hover:text-sky-700" href={otherLangUrl}>
+            {lang === 'ko' ? 'English' : '한국어'}
+          </a>
+        </div>
+      </nav>
+
+      <section class="grid gap-8 border-b border-black/10 pb-10 lg:grid-cols-[1.18fr_0.82fr]">
+        <div class="space-y-8">
+          <div class="space-y-4">
+            <p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#365314]">
+              {portfolioText(content.eyebrow, lang)}
+            </p>
+            <h1 class="max-w-4xl text-5xl font-semibold tracking-tight text-slate-950 sm:text-6xl lg:text-[4.25rem]" style="font-family: 'Cormorant Garamond', 'Noto Sans KR', serif;">
+              {portfolioText(content.title, lang)}
+            </h1>
+            <p class="max-w-3xl text-base leading-8 text-slate-700 sm:text-lg">
+              {portfolioText(content.intro, lang)}
+            </p>
+          </div>
+
+          <div class="grid gap-4 border-y border-black/10 py-5 sm:grid-cols-3">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                {lang === 'ko' ? 'Projects' : 'Projects'}
+              </p>
+              <p class="mt-2 text-2xl font-semibold text-slate-950">{projects.length}</p>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                {lang === 'ko' ? 'Primary Stack' : 'Primary Stack'}
+              </p>
+              <p class="mt-2 text-sm leading-7 text-slate-700">Kotlin / Spring Boot / MySQL</p>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                {lang === 'ko' ? 'Focus' : 'Focus'}
+              </p>
+              <p class="mt-2 text-sm leading-7 text-slate-700">
+                {lang === 'ko' ? '설계 판단, 운영 기준, 인터뷰 설명력' : 'Design decisions, operating standards, interview depth'}
+              </p>
+            </div>
+          </div>
+
+          <div class="grid gap-x-10 gap-y-4 sm:grid-cols-2">
+            {roleFocus.map((item, index) => (
+              <div class="flex gap-3">
+                <span class="mt-0.5 text-xs font-semibold tracking-[0.18em] text-[#365314]">
+                  {(index + 1).toString().padStart(2, '0')}
+                </span>
+                <p class="text-sm leading-7 text-slate-700">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <aside class="bg-[#ebe3d3] px-6 py-6">
+          <div class="space-y-6">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#365314]">
+                {sectionLabels.summary}
+              </p>
+              <p class="mt-2 text-2xl font-semibold text-slate-950">
+                {lang === 'ko' ? profile.name : profile.name_en}
+              </p>
+              <p class="mt-1 text-sm text-slate-500">{profile.contact.email}</p>
+            </div>
+            <div class="border-t border-black/10 pt-4">
+              <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#365314]">
+                {sectionLabels.interview}
+              </p>
+              <ul class="mt-3 space-y-3">
+                {interviewThemes.map((line) => (
+                  <li class="relative pl-4 text-sm leading-7 text-slate-700 before:absolute before:left-0 before:top-3 before:h-px before:w-2.5 before:bg-[#365314]">
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="grid gap-12 lg:grid-cols-[15rem_minmax(0,1fr)]">
+        <aside class="hidden lg:block">
+          <div class="sticky top-8 space-y-6">
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#365314]">
+              {sectionLabels.index}
+            </p>
+            <ol class="space-y-3 border-l border-black/10 pl-4 text-sm leading-6 text-slate-600">
+              {projects.map((project, index) => (
+                <li>
+                  <a href={`#project-${index + 1}`} class="block transition hover:text-slate-950">
+                    <span class="block text-xs font-semibold tracking-[0.18em] text-slate-400">
+                      {(index + 1).toString().padStart(2, '0')}
+                    </span>
+                    <span class="mt-1 block">{portfolioText(project.title, lang)}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </aside>
+
+        <section class="space-y-0 border-t border-black/10">
+        {projects.map((project, index) => (
+          <article id={`project-${index + 1}`} class="grid gap-6 border-b border-black/10 py-10 lg:grid-cols-[7rem_minmax(0,1fr)]">
+            <div class="flex items-start gap-3 lg:block">
+              <span class="text-xs font-semibold uppercase tracking-[0.24em] text-[#365314]">
+                {lang === 'ko' ? 'Project' : 'Project'}
+              </span>
+              <p class="mt-1 text-3xl font-semibold leading-none text-slate-300 lg:mt-3">
+                {(index + 1).toString().padStart(2, '0')}
+              </p>
+            </div>
+
+            <div class="space-y-10">
+              <header class="space-y-4">
+                <div class="flex flex-wrap items-center gap-3 text-sm text-slate-500">
+                  <span>{portfolioText(project.company, lang)}</span>
+                  <span class="text-slate-300">/</span>
+                  <span>{portfolioText(project.period, lang)}</span>
+                </div>
+                <div class="space-y-3">
+                  <h2 class="text-3xl font-semibold tracking-tight text-slate-950 sm:text-[2.15rem]" style="font-family: 'Cormorant Garamond', 'Noto Sans KR', serif;">
+                    {portfolioText(project.title, lang)}
+                  </h2>
+                  <p class="text-base font-medium leading-7 text-slate-700">
+                    {portfolioText(project.roleLabel, lang)}
+                  </p>
+                  <p class="max-w-4xl text-base leading-8 text-slate-700">
+                    {portfolioText(project.summary, lang)}
+                  </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  {project.tech.map((item) => (
+                    <span class="border border-black/10 bg-white/70 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </header>
+
+              <div class="grid gap-8 xl:grid-cols-[0.8fr_1fr_1fr]">
+                <section>
+                  <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+                      {sectionLabels.background}
+                    </p>
+                    <p class="mt-3 text-sm leading-7 text-slate-700">
+                      {portfolioText(project.challenge, lang)}
+                    </p>
+                  </div>
+
+                  <div class="mt-6 border-t border-black/10 pt-4">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+                      {sectionLabels.note}
+                    </p>
+                    <p class="mt-3 text-sm leading-7 text-slate-600">
+                      {portfolioText(project.note, lang)}
+                    </p>
+                  </div>
+                </section>
+
+                <section>
+                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+                    {sectionLabels.implementation}
+                  </p>
+                  <ul class="mt-3 space-y-3">
+                    {project.actions.map((item) => (
+                      <li class="relative pl-5 text-sm leading-7 text-slate-700 before:absolute before:left-0 before:top-3 before:h-px before:w-3 before:bg-[#365314]">
+                        {portfolioText(item, lang)}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+
+                {projectPrompts[project.title.ko] && (
+                  <section>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+                      {sectionLabels.prompts}
+                    </p>
+                    <ul class="mt-3 space-y-3">
+                      {(lang === 'ko'
+                        ? projectPrompts[project.title.ko].ko
+                        : projectPrompts[project.title.ko].en
+                      ).map((line) => (
+                        <li class="relative pl-5 text-sm leading-7 text-slate-700 before:absolute before:left-0 before:top-3 before:h-px before:w-3 before:bg-[#a3b18a]">
+                          {line}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+              </div>
+
+              <section class="border-t border-black/10 pt-6">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+                  {sectionLabels.outcomes}
+                </p>
+                <ul class="mt-3 grid gap-3 sm:grid-cols-2">
+                  {project.outcomes.map((item) => (
+                    <li class="border border-black/10 bg-white/70 px-4 py-4 text-sm font-medium leading-7 text-slate-800">
+                      {portfolioText(item, lang)}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </div>
+          </article>
+        ))}
+        </section>
+      </section>
+
+    </main>
+  </body>
+</html>

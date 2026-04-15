@@ -1,5 +1,6 @@
 ---
 import CommonHead from '@/components/CommonHead.astro';
+import MermaidDiagram from '@/components/MermaidDiagram.astro';
 import { baseUrlJoin } from '@/lib/base-url';
 import { kakaoPiccomaPortfolio, portfolioText } from '@/lib/portfolio-content';
 import { loadResume } from '@/lib/load-resume';
@@ -18,99 +19,57 @@ const otherLangUrl = baseUrlJoin(otherLang, content.slug);
 const resumeUrl = baseUrlJoin(lang);
 const orderedTitles = [
   '멀티 PG 결제 시스템 및 정산 안정화',
-  '파이널 프라이싱 API',
-  '멤버십/마일리지 서비스 이관 및 고도화',
-  '유저 사이드 백엔드: 카카오T 계정/결제 연동',
+  '카카오 T 계정 링크 및 결제수단 등록',
+  '차량 등록 / EVCC 자동 매핑 / PnC 인증',
   '통합 프로모션(쿠폰/포인트) 플랫폼 구축',
   '개발 생산성 자동화 및 DevOps 개선',
+  '파이널 프라이싱 API',
+  '멤버십/마일리지 서비스 이관 및 고도화',
 ];
 const projects = [...content.projects].sort(
   (a, b) => orderedTitles.indexOf(a.title.ko) - orderedTitles.indexOf(b.title.ko),
 );
+const hasDiagrams = projects.some((project) => (project.diagrams?.length ?? 0) > 0);
 
 const roleFocus = content.roleFocus.map((item) => portfolioText(item, lang));
-const interviewThemes = [
-  lang === 'ko' ? '왜 그 API 경계와 책임 분리를 선택했는가' : 'Why the API boundaries and ownership were divided that way',
-  lang === 'ko' ? '이벤트 재처리와 중복 처리 전략을 어떻게 세웠는가' : 'How event retries and duplicate handling were designed',
-  lang === 'ko' ? '장애 시 어디까지 자동 복구하고 언제 사람이 개입하는가' : 'How far automated recovery goes and when human intervention begins',
-  lang === 'ko' ? 'Athena, 배치, Kafka, 파티션 구조를 왜 그렇게 조합했는가' : 'Why Athena, batch jobs, Kafka, and partitioning were combined that way',
-  lang === 'ko' ? 'AI 도구를 팀 표준으로 만들기 위해 무엇을 문서화했는가' : 'What was documented to turn AI tooling into a team standard',
-  lang === 'ko' ? '코드 리뷰와 아키텍처 의사결정에서 어떤 기준을 세웠는가' : 'What criteria were used for code review and architectural decisions',
+const engineeringThemes = [
+  lang === 'ko'
+    ? {
+        title: '처음부터 크게 나누지 않기',
+        body: '처음에는 단순하게 두고, 필요해질 때만 경계를 키웠습니다.',
+      }
+    : {
+        title: 'Avoid over-sizing upfront',
+        body: 'Flows start simple and grow only when the work demands it.',
+      },
+  lang === 'ko'
+    ? {
+        title: '문제가 생긴 지점부터 보강하기',
+        body: '락, 재시도, 복구는 실제로 문제 난 구간부터 붙였습니다.',
+      }
+    : {
+        title: 'Reinforce where it hurts',
+        body: 'Locks, retries, and recovery were added where production pain actually showed up.',
+      },
+  lang === 'ko'
+    ? {
+        title: '벤더와 정책은 늘어날 때 추상화하기',
+        body: '종류가 늘어날 때 공통 계층을 만들고, 그전엔 단순하게 유지했습니다.',
+      }
+    : {
+        title: 'Abstract when variation grows',
+        body: 'Shared layers were added only after vendor and policy variation started to grow.',
+      },
+  lang === 'ko'
+    ? {
+        title: '반복되면 자동화하기',
+        body: '문서, QA 배포, 리뷰 보조는 반복 비용이 커질 때 자동화했습니다.',
+      }
+    : {
+        title: 'Automate repeated work',
+        body: 'Documentation, QA delivery, and review support were automated once repetition became expensive.',
+      },
 ];
-const projectPrompts: Record<string, { ko: string[]; en: string[] }> = {
-  '멀티 PG 결제 시스템 및 정산 안정화': {
-    ko: [
-      'PG 공통 인터페이스와 벤더별 구현의 경계를 어디까지 두었는지 설명할 수 있습니다.',
-      '재처리, DLQ, NACK 흐름에서 중복 처리와 상태 일관성을 어떤 기준으로 잡았는지 이야기할 수 있습니다.',
-      '자동 복구로 끝낼 케이스와 운영자가 확인해야 할 케이스를 어떻게 나눴는지 설명할 수 있습니다.',
-    ],
-    en: [
-      'Can explain where the boundary was placed between the common PG interface and vendor-specific implementations.',
-      'Can discuss how duplicate handling and state consistency were approached across retry, DLQ, and NACK flows.',
-      'Can explain how automated recovery cases were separated from cases requiring operator review.',
-    ],
-  },
-  '유저 사이드 백엔드: 카카오T 계정/결제 연동': {
-    ko: [
-      '4개 MSA로 나뉜 API 경계를 왜 그렇게 두었는지 설명할 수 있습니다.',
-      '외부 인증서 서비스 장애 시 어디까지 자동 복구하고 언제 수동 대응하는지 이야기할 수 있습니다.',
-      '승인, 취소, 프로모션 흐름에서 상태 일관성을 어떻게 유지했는지 설명할 수 있습니다.',
-    ],
-    en: [
-      'Can explain why the API boundaries were split across four MSAs.',
-      'Can discuss how much of certificate-service failure handling was automated and when manual intervention was needed.',
-      'Can explain how state consistency was maintained across approval, cancellation, and promotion flows.',
-    ],
-  },
-  '통합 프로모션(쿠폰/포인트) 플랫폼 구축': {
-    ko: [
-      '왜 단일 잔액 모델이 아니라 지갑 구조를 선택했는지 설명할 수 있습니다.',
-      '잔액, 만료, 히스토리 반영 시점이 어긋날 때 어떤 기준으로 사용자 경험과 운영 기준을 맞췄는지 이야기할 수 있습니다.',
-      '제휴사별 쿠폰 정책과 공통 포인트 로직의 경계를 어떻게 나눴는지 설명할 수 있습니다.',
-    ],
-    en: [
-      'Can explain why a wallet model was chosen over a single-balance model.',
-      'Can discuss how balance display, expiration timing, and history reflection were aligned.',
-      'Can explain how partner-specific coupon rules were separated from shared point logic.',
-    ],
-  },
-  '개발 생산성 자동화 및 DevOps 개선': {
-    ko: [
-      'AI 도구를 팀 표준으로 굳힐 때 무엇을 문서화하고 어떤 단위로 공유했는지 설명할 수 있습니다.',
-      '자동 리뷰가 사람 리뷰를 대체하지 않도록 어떤 기준으로 역할을 나눴는지 이야기할 수 있습니다.',
-      '코드 리뷰와 아키텍처 논의에서 시니어로 어떤 체크리스트를 세웠는지 설명할 수 있습니다.',
-    ],
-    en: [
-      'Can explain what was documented and how it was shared when turning AI tooling into a team standard.',
-      'Can discuss how automated review was scoped so it would not replace human review.',
-      'Can explain what checklist was used for senior-level code review and architecture discussion.',
-    ],
-  },
-  '파이널 프라이싱 API': {
-    ko: [
-      '왜 가격 계산을 각 지면이나 클라이언트에 남기지 않고 중앙 API로 모았는지 설명할 수 있습니다.',
-      'DataLoader를 어떤 호출 패턴에 적용했고 어떤 부하를 줄였는지 구체적으로 이야기할 수 있습니다.',
-      '가격 계산 API에서 타임아웃과 서킷브레이커 기준을 어떻게 세웠는지 설명할 수 있습니다.',
-    ],
-    en: [
-      'Can explain why pricing was centralized instead of being left to each surface or client.',
-      'Can discuss what call pattern DataLoader was applied to and what load it reduced.',
-      'Can explain how timeout and circuit-breaker criteria were set for the pricing API.',
-    ],
-  },
-  '멤버십/마일리지 서비스 이관 및 고도화': {
-    ko: [
-      '무중단 이관에서 기존 동작 보장을 어떤 단계로 확인했는지 설명할 수 있습니다.',
-      'Athena, 배치, 스트림, 월간 파티션 구조를 왜 그렇게 조합했는지 이야기할 수 있습니다.',
-      '계속 적재되는 대량 데이터에서 어느 병목을 먼저 최적화했는지 설명할 수 있습니다.',
-    ],
-    en: [
-      'Can explain how legacy parity was checked during a zero-downtime migration.',
-      'Can discuss why Athena, batch jobs, streams, and monthly partitioning were combined that way.',
-      'Can explain which bottlenecks were optimized first in continuously growing datasets.',
-    ],
-  },
-};
 const sectionLabels =
   lang === 'ko'
     ? {
@@ -120,9 +79,10 @@ const sectionLabels =
         implementation: '핵심 구현',
         outcomes: '운영 결과',
         note: '강조 포인트',
-        summary: '정리',
-        interview: '인터뷰에서 자주 연결되는 질문',
-        prompts: '인터뷰에서 풀어낼 질문',
+        summary: 'Engineering Profile',
+        interview: '실무에서 일한 방식',
+        prompts: '엔지니어링 관점',
+        diagrams: 'Mermaid로 보는 핵심 구조',
       }
     : {
         intro: 'Introduction',
@@ -131,9 +91,10 @@ const sectionLabels =
         implementation: 'Core Implementation',
         outcomes: 'Operational Outcomes',
         note: 'Key Point',
-        summary: 'Summary',
-        interview: 'Likely Interview Themes',
-        prompts: 'Interview Talking Points',
+        summary: 'Engineering Profile',
+        interview: 'How I Worked In Practice',
+        prompts: 'Engineering Lens',
+        diagrams: 'Architecture Snapshot',
       };
 ---
 
@@ -144,21 +105,105 @@ const sectionLabels =
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    {hasDiagrams && (
+      <>
+        <style is:global>
+          {`
+            :root {
+              color-scheme: light;
+            }
+
+            .portfolio-mermaid svg {
+              height: auto;
+              max-width: 100%;
+            }
+
+            .portfolio-mermaid .label,
+            .portfolio-mermaid .messageText,
+            .portfolio-mermaid .nodeLabel,
+            .portfolio-mermaid .edgeLabel {
+              font-family: "IBM Plex Sans KR", "IBM Plex Sans", sans-serif !important;
+            }
+          `}
+        </style>
+        <script type="module" is:inline>
+          const mermaidModule = await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
+          const mermaid = mermaidModule.default;
+
+          mermaid.initialize({
+            startOnLoad: false,
+            securityLevel: 'loose',
+            theme: 'base',
+            flowchart: {
+              curve: 'basis',
+              htmlLabels: true,
+              useMaxWidth: true,
+            },
+            sequence: {
+              useMaxWidth: true,
+            },
+            themeVariables: {
+              fontFamily: 'IBM Plex Sans KR, IBM Plex Sans, sans-serif',
+              primaryColor: '#dff2ff',
+              primaryTextColor: '#0f172a',
+              primaryBorderColor: '#0f4c81',
+              secondaryColor: '#eef7fb',
+              tertiaryColor: '#f8fbfe',
+              lineColor: '#3b556b',
+              clusterBkg: '#f1f7fb',
+              clusterBorder: '#acc6d7',
+              actorBkg: '#e8f4ff',
+              actorBorder: '#0f4c81',
+              noteBkg: '#edf9f3',
+              noteBorderColor: '#2f6f57',
+              edgeLabelBackground: '#f8fbfe',
+            },
+          });
+
+          const elements = Array.from(document.querySelectorAll('.js-mermaid'));
+
+          for (const [index, element] of elements.entries()) {
+            const source = element.textContent?.trim();
+            if (!source) continue;
+
+            try {
+              const renderId = `portfolio-mermaid-${index}`;
+              const { svg, bindFunctions } = await mermaid.render(renderId, source);
+              const wrapper = document.createElement('div');
+              wrapper.innerHTML = svg;
+              const svgElement = wrapper.firstElementChild;
+
+              if (svgElement) {
+                element.replaceWith(svgElement);
+                bindFunctions?.(svgElement);
+              }
+            } catch (error) {
+              console.error('Mermaid render failed:', error);
+              element.classList.add('whitespace-pre-wrap', 'text-rose-700');
+              element.textContent = source;
+            }
+          }
+        </script>
+      </>
+    )}
   </head>
   <body
-    class="min-h-screen bg-[linear-gradient(180deg,#f7f3eb_0%,#f1ebdf_100%)] text-slate-900 antialiased"
-    style="font-family: 'Outfit', 'Noto Sans KR', sans-serif;"
+    class="min-h-screen bg-[#edf4f8] text-slate-900 antialiased"
+    style="font-family: 'IBM Plex Sans KR', 'IBM Plex Sans', sans-serif;"
   >
-    <main class="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
-      <nav class="flex flex-wrap items-center justify-between gap-3 border-b border-black/10 px-1 pb-4 text-sm">
+    <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,#d8edff_0%,transparent_28%),radial-gradient(circle_at_top_right,#d7f4ef_0%,transparent_24%),linear-gradient(180deg,#edf4f8_0%,#f7fbfd_100%)]"></div>
+    <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 opacity-[0.08] [background-image:linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] [background-size:30px_30px]"></div>
+
+    <main class="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+      <nav class="flex flex-wrap items-center justify-between gap-3 rounded-[1.4rem] border border-slate-900/10 bg-white/70 px-4 py-4 text-sm shadow-[0_20px_60px_-42px_rgba(15,23,42,0.35)] backdrop-blur-sm">
         <div class="flex flex-wrap items-center gap-3 text-slate-600">
-          <span class="bg-[#d9e7d2] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+          <span class="rounded-full border border-sky-800/15 bg-sky-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-sky-800">
             {lang === 'ko' ? 'Portfolio' : 'Portfolio'}
           </span>
-          <span>{profile.name}</span>
+          <span class="font-medium text-slate-700">{profile.name}</span>
         </div>
         <div class="flex flex-wrap items-center gap-4">
           <a class="font-medium text-slate-600 transition hover:text-slate-900" href={resumeUrl}>
@@ -170,13 +215,13 @@ const sectionLabels =
         </div>
       </nav>
 
-      <section class="grid gap-8 border-b border-black/10 pb-10 lg:grid-cols-[1.18fr_0.82fr]">
+      <section class="grid gap-8 rounded-[2rem] border border-slate-900/10 bg-white/74 p-6 shadow-[0_30px_80px_-44px_rgba(15,23,42,0.4)] backdrop-blur-sm lg:grid-cols-[1.18fr_0.82fr] lg:p-8">
         <div class="space-y-8">
           <div class="space-y-4">
-            <p class="text-sm font-semibold uppercase tracking-[0.22em] text-[#365314]">
+            <p class="text-sm font-semibold uppercase tracking-[0.22em] text-sky-800">
               {portfolioText(content.eyebrow, lang)}
             </p>
-            <h1 class="max-w-4xl text-5xl font-semibold tracking-tight text-slate-950 sm:text-6xl lg:text-[4.25rem]" style="font-family: 'Cormorant Garamond', 'Noto Sans KR', serif;">
+            <h1 class="max-w-4xl text-4xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl lg:text-[3.7rem]">
               {portfolioText(content.title, lang)}
             </h1>
             <p class="max-w-3xl text-base leading-8 text-slate-700 sm:text-lg">
@@ -184,33 +229,33 @@ const sectionLabels =
             </p>
           </div>
 
-          <div class="grid gap-4 border-y border-black/10 py-5 sm:grid-cols-3">
-            <div>
+          <div class="grid gap-4 sm:grid-cols-3">
+            <div class="rounded-[1.25rem] border border-slate-900/10 bg-slate-50/90 px-4 py-4">
               <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 {lang === 'ko' ? 'Projects' : 'Projects'}
               </p>
               <p class="mt-2 text-2xl font-semibold text-slate-950">{projects.length}</p>
             </div>
-            <div>
+            <div class="rounded-[1.25rem] border border-slate-900/10 bg-slate-50/90 px-4 py-4">
               <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 {lang === 'ko' ? 'Primary Stack' : 'Primary Stack'}
               </p>
               <p class="mt-2 text-sm leading-7 text-slate-700">Kotlin / Spring Boot / MySQL</p>
             </div>
-            <div>
+            <div class="rounded-[1.25rem] border border-slate-900/10 bg-slate-50/90 px-4 py-4">
               <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 {lang === 'ko' ? 'Focus' : 'Focus'}
               </p>
               <p class="mt-2 text-sm leading-7 text-slate-700">
-                {lang === 'ko' ? '설계 판단, 운영 기준, 인터뷰 설명력' : 'Design decisions, operating standards, interview depth'}
+                {lang === 'ko' ? '아키텍처, 상태 전이, 운영 복원력' : 'Architecture, state transitions, operational resilience'}
               </p>
             </div>
           </div>
 
-          <div class="grid gap-x-10 gap-y-4 sm:grid-cols-2">
+          <div class="grid gap-4 sm:grid-cols-2">
             {roleFocus.map((item, index) => (
-              <div class="flex gap-3">
-                <span class="mt-0.5 text-xs font-semibold tracking-[0.18em] text-[#365314]">
+              <div class="flex gap-3 rounded-[1.15rem] border border-slate-900/10 bg-[#f7fbfe] px-4 py-4">
+                <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold tracking-[0.02em] text-sky-800">
                   {(index + 1).toString().padStart(2, '0')}
                 </span>
                 <p class="text-sm leading-7 text-slate-700">{item}</p>
@@ -219,47 +264,60 @@ const sectionLabels =
           </div>
         </div>
 
-        <aside class="bg-[#ebe3d3] px-6 py-6">
+        <aside class="rounded-[1.6rem] bg-[linear-gradient(180deg,#0f172a_0%,#162235_100%)] px-6 py-6 text-slate-100 shadow-[0_24px_70px_-38px_rgba(15,23,42,0.7)]">
           <div class="space-y-6">
             <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#365314]">
+              <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200/80">
                 {sectionLabels.summary}
               </p>
-              <p class="mt-2 text-2xl font-semibold text-slate-950">
+              <p class="mt-2 text-2xl font-semibold text-white">
                 {lang === 'ko' ? profile.name : profile.name_en}
               </p>
-              <p class="mt-1 text-sm text-slate-500">{profile.contact.email}</p>
+              <p class="mt-1 text-sm text-slate-300">{profile.contact.email}</p>
             </div>
-            <div class="border-t border-black/10 pt-4">
-              <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#365314]">
+            <div class="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-4">
+              <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200/80">
                 {sectionLabels.interview}
               </p>
-              <ul class="mt-3 space-y-3">
-                {interviewThemes.map((line) => (
-                  <li class="relative pl-4 text-sm leading-7 text-slate-700 before:absolute before:left-0 before:top-3 before:h-px before:w-2.5 before:bg-[#365314]">
-                    {line}
-                  </li>
+              <p class="mt-2 text-sm leading-6 text-slate-300">
+                {lang === 'ko'
+                  ? '실제 서비스 환경에서 문제를 풀어온 방식과 설계 판단의 기준을 정리했습니다.'
+                  : 'A concise summary of the problem-solving approach and design judgment applied across real service environments.'}
+              </p>
+              <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-2">
+                {engineeringThemes.map((theme, index) => (
+                  <article class="rounded-[1rem] border border-white/10 bg-white/[0.06] px-3 py-3">
+                    <div class="flex items-start gap-2.5">
+                      <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-sky-200/20 bg-sky-300/10 text-[10px] font-semibold tracking-[0.08em] text-sky-100">
+                        {(index + 1).toString().padStart(2, '0')}
+                      </span>
+                      <div>
+                        <p class="text-sm font-semibold leading-5 text-white">{theme.title}</p>
+                        <p class="mt-1 text-[13px] leading-5 text-slate-300">{theme.body}</p>
+                      </div>
+                    </div>
+                  </article>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
         </aside>
       </section>
 
-      <section class="grid gap-12 lg:grid-cols-[15rem_minmax(0,1fr)]">
+      <section class="grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)]">
         <aside class="hidden lg:block">
-          <div class="sticky top-8 space-y-6">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#365314]">
+          <div class="sticky top-8 space-y-6 rounded-[1.4rem] border border-slate-900/10 bg-white/68 p-5 shadow-[0_22px_70px_-44px_rgba(15,23,42,0.35)] backdrop-blur-sm">
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-800">
               {sectionLabels.index}
             </p>
-            <ol class="space-y-3 border-l border-black/10 pl-4 text-sm leading-6 text-slate-600">
+            <ol class="space-y-3 border-l border-slate-900/10 pl-4 text-sm leading-6 text-slate-600">
               {projects.map((project, index) => (
                 <li>
-                  <a href={`#project-${index + 1}`} class="block transition hover:text-slate-950">
-                    <span class="block text-xs font-semibold tracking-[0.18em] text-slate-400">
+                  <a href={`#project-${index + 1}`} class="block rounded-xl px-2 py-2 transition hover:bg-slate-50 hover:text-slate-950">
+                    <span class="block text-xs font-semibold tracking-[0.18em] text-sky-800/70">
                       {(index + 1).toString().padStart(2, '0')}
                     </span>
-                    <span class="mt-1 block">{portfolioText(project.title, lang)}</span>
+                    <span class="mt-1 block font-medium">{portfolioText(project.title, lang)}</span>
                   </a>
                 </li>
               ))}
@@ -267,14 +325,14 @@ const sectionLabels =
           </div>
         </aside>
 
-        <section class="space-y-0 border-t border-black/10">
+        <section class="space-y-6">
         {projects.map((project, index) => (
-          <article id={`project-${index + 1}`} class="grid gap-6 border-b border-black/10 py-10 lg:grid-cols-[7rem_minmax(0,1fr)]">
+          <article id={`project-${index + 1}`} class="grid gap-6 rounded-[1.75rem] border border-slate-900/10 bg-white/78 p-6 shadow-[0_28px_80px_-52px_rgba(15,23,42,0.38)] backdrop-blur-sm lg:grid-cols-[7rem_minmax(0,1fr)] lg:p-7">
             <div class="flex items-start gap-3 lg:block">
-              <span class="text-xs font-semibold uppercase tracking-[0.24em] text-[#365314]">
+              <span class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-800">
                 {lang === 'ko' ? 'Project' : 'Project'}
               </span>
-              <p class="mt-1 text-3xl font-semibold leading-none text-slate-300 lg:mt-3">
+              <p class="mt-1 inline-flex h-14 w-14 items-center justify-center rounded-[1rem] border border-slate-900/10 bg-slate-50 text-2xl font-semibold leading-none text-slate-500 lg:mt-3">
                 {(index + 1).toString().padStart(2, '0')}
               </p>
             </div>
@@ -287,7 +345,7 @@ const sectionLabels =
                   <span>{portfolioText(project.period, lang)}</span>
                 </div>
                 <div class="space-y-3">
-                  <h2 class="text-3xl font-semibold tracking-tight text-slate-950 sm:text-[2.15rem]" style="font-family: 'Cormorant Garamond', 'Noto Sans KR', serif;">
+                  <h2 class="text-3xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-[2.15rem]">
                     {portfolioText(project.title, lang)}
                   </h2>
                   <p class="text-base font-medium leading-7 text-slate-700">
@@ -299,17 +357,17 @@ const sectionLabels =
                 </div>
                 <div class="flex flex-wrap gap-2">
                   {project.tech.map((item) => (
-                    <span class="border border-black/10 bg-white/70 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                    <span class="rounded-full border border-slate-900/10 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700">
                       {item}
                     </span>
                   ))}
                 </div>
               </header>
 
-              <div class="grid gap-8 xl:grid-cols-[0.8fr_1fr_1fr]">
-                <section>
+              <div class="grid gap-8 xl:grid-cols-2">
+                <section class="rounded-[1.35rem] border border-slate-900/10 bg-[#f9fbfd] p-5">
                   <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
                       {sectionLabels.background}
                     </p>
                     <p class="mt-3 text-sm leading-7 text-slate-700">
@@ -317,8 +375,8 @@ const sectionLabels =
                     </p>
                   </div>
 
-                  <div class="mt-6 border-t border-black/10 pt-4">
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+                  <div class="mt-6 border-t border-slate-900/10 pt-4">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
                       {sectionLabels.note}
                     </p>
                     <p class="mt-3 text-sm leading-7 text-slate-600">
@@ -327,31 +385,28 @@ const sectionLabels =
                   </div>
                 </section>
 
-                <section>
-                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+                <section class="rounded-[1.35rem] border border-slate-900/10 bg-[#f9fbfd] p-5">
+                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
                     {sectionLabels.implementation}
                   </p>
                   <ul class="mt-3 space-y-3">
                     {project.actions.map((item) => (
-                      <li class="relative pl-5 text-sm leading-7 text-slate-700 before:absolute before:left-0 before:top-3 before:h-px before:w-3 before:bg-[#365314]">
+                      <li class="relative pl-5 text-sm leading-7 text-slate-700 before:absolute before:left-0 before:top-3 before:h-px before:w-3 before:bg-sky-700">
                         {portfolioText(item, lang)}
                       </li>
                     ))}
                   </ul>
                 </section>
 
-                {projectPrompts[project.title.ko] && (
-                  <section>
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+                {project.engineeringViews && project.engineeringViews.length > 0 && (
+                  <section class="rounded-[1.35rem] border border-slate-900/10 bg-[linear-gradient(180deg,#eef7fb_0%,#f7fbfe_100%)] p-5 xl:col-span-2">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
                       {sectionLabels.prompts}
                     </p>
-                    <ul class="mt-3 space-y-3">
-                      {(lang === 'ko'
-                        ? projectPrompts[project.title.ko].ko
-                        : projectPrompts[project.title.ko].en
-                      ).map((line) => (
-                        <li class="relative pl-5 text-sm leading-7 text-slate-700 before:absolute before:left-0 before:top-3 before:h-px before:w-3 before:bg-[#a3b18a]">
-                          {line}
+                    <ul class="mt-3 grid gap-3 md:grid-cols-2">
+                      {project.engineeringViews.map((item) => (
+                        <li class="rounded-[1rem] border border-slate-900/10 bg-white/70 px-4 py-4 text-sm leading-7 text-slate-700">
+                          {portfolioText(item, lang)}
                         </li>
                       ))}
                     </ul>
@@ -359,13 +414,34 @@ const sectionLabels =
                 )}
               </div>
 
-              <section class="border-t border-black/10 pt-6">
-                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#365314]">
+              {project.diagrams && project.diagrams.length > 0 && (
+                <section class="rounded-[1.45rem] border border-slate-900/10 bg-[linear-gradient(180deg,#f7fbfe_0%,#f1f7fb_100%)] p-5">
+                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
+                    {sectionLabels.diagrams}
+                  </p>
+                  <div class="mt-4 grid gap-4">
+                    {project.diagrams.map((diagram) => (
+                      <MermaidDiagram
+                        title={portfolioText(diagram.title, lang)}
+                        description={portfolioText(diagram.description, lang)}
+                        code={diagram.code}
+                        exampleTitle={diagram.example ? portfolioText(diagram.example.title, lang) : undefined}
+                        exampleSteps={diagram.example
+                          ? diagram.example.steps.map((item) => portfolioText(item, lang))
+                          : undefined}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              <section class="rounded-[1.35rem] border border-slate-900/10 bg-slate-50/85 p-5">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
                   {sectionLabels.outcomes}
                 </p>
                 <ul class="mt-3 grid gap-3 sm:grid-cols-2">
                   {project.outcomes.map((item) => (
-                    <li class="border border-black/10 bg-white/70 px-4 py-4 text-sm font-medium leading-7 text-slate-800">
+                    <li class="rounded-[1rem] border border-slate-900/10 bg-white px-4 py-4 text-sm font-medium leading-7 text-slate-800">
                       {portfolioText(item, lang)}
                     </li>
                   ))}

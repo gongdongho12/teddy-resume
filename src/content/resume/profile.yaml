@@ -607,8 +607,8 @@ projectSections:
             - Developed batch jobs for dynamic pricing based on price-gap analysis and Excel report generation
 
       - title:
-          ko: N:M 동일 상품 매칭
-          en: N:M Identical Product Matching
+          ko: 내/외부 동일 상품 매칭
+          en: Internal/External Identical Product Matching
         portfolioSlug: pricing-platform
         portfolioAnchor: pricing-platform-product-matching
         period:

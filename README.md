@@ -45,8 +45,9 @@ npm run dev
 - `/` : 브라우저 언어에 따라 `ko` 또는 `en`으로 이동
 - `/ko/` : 한국어 기본 이력서
 - `/en/` : 영어 기본 이력서
-- `/ko/portfolio/` : 한국어 포트폴리오
-- `/en/portfolio/` : 영어 포트폴리오
+- `/portfolio/` : 브라우저 언어에 따라 포트폴리오 언어 자동 이동
+- `/portfolio/ko/` : 한국어 포트폴리오
+- `/portfolio/en/` : 영어 포트폴리오
 
 ### 4. 빌드
 

@@ -17,7 +17,7 @@ export function getStaticPaths() {
 const lang: Lang = normalizeLang(Astro.params.lang);
 const profile = loadResume();
 const content = kakaoPiccomaPortfolio;
-const targetUrl = getPortfolioUrl(lang);
+const canonicalPortfolioUrl = getPortfolioUrl(lang);
 const resumeUrl = baseUrlJoin(lang);
 const portfolioLangLinks = SUPPORTED_LANGS.map((candidate) => ({
   lang: candidate,
@@ -125,8 +125,7 @@ const sectionLabels =
 <html lang={lang}>
   <head>
     <CommonHead title={portfolioText(content.title, lang)} lang={lang} />
-    <link rel="canonical" href={targetUrl} />
-    <meta http-equiv="refresh" content={`0;url=${targetUrl}`} />
+    <link rel="canonical" href={canonicalPortfolioUrl} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -251,10 +250,6 @@ const sectionLabels =
     class="min-h-screen bg-[#edf4f8] text-slate-900 antialiased"
     style="font-family: 'IBM Plex Sans KR', 'IBM Plex Sans', sans-serif;"
   >
-    <script is:inline define:vars={{ targetUrl }}>
-      const destination = `${targetUrl}${window.location.hash || ''}`;
-      window.location.replace(destination);
-    </script>
     <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,#d8edff_0%,transparent_28%),radial-gradient(circle_at_top_right,#d7f4ef_0%,transparent_24%),linear-gradient(180deg,#edf4f8_0%,#f7fbfd_100%)]"></div>
     <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 opacity-[0.08] [background-image:linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] [background-size:30px_30px]"></div>
 

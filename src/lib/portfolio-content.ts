@@ -838,8 +838,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           id: 'pricing-platform-product-matching',
           title: {
-            ko: 'N:M 동일 상품 매칭',
-            en: 'N:M Identical Product Matching',
+            ko: '내/외부 동일 상품 매칭',
+            en: 'Internal/External Identical Product Matching',
           },
           description: {
             ko: '이미지 유사도, same-shop exact match, winner score를 기반으로 비교 가능한 상품군을 안정적으로 만드는 상품 매칭 영역입니다.',

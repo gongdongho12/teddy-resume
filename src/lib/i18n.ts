@@ -30,5 +30,5 @@ export function getTemplateUrl(lang: Lang, template: TemplateId): string {
 }
 
 export function getPortfolioUrl(lang: Lang): string {
-  return baseUrlJoin(lang, 'portfolio');
+  return baseUrlJoin('portfolio', lang);
 }

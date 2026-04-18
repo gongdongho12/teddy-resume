@@ -253,15 +253,15 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       summary: {
         ko:
-          '결제 서비스 초기 설계부터 구현까지 전담하며, 단일 결제(카카오페이) 구조를 카카오페이·토스페이먼츠·카카오T를 포함한 멀티 PG 구조로 확장하고, DLQ 기반 미수 이벤트 처리와 자동 복구 체계를 구성했습니다.',
+          '결제 서비스 초기 설계부터 구현까지 전담하며, 단일 결제 구조를 멀티 벤더사를 수용하는 모듈 구조로 확장하고, DLQ 기반 미수 이벤트 처리와 자동 복구 체계를 구성했습니다.',
         en:
-          'Owned the payment service from initial design through implementation, expanding a single payment flow (KakaoPay) into a multi-PG structure and building DLQ-based unpaid-event processing with automatic recovery.',
+          'Owned the payment service from initial design through implementation, expanding a single payment flow into a modular structure that supports multiple payment vendors and building DLQ-based unpaid-event processing with automatic recovery.',
       },
       challenge: {
         ko:
-          '단일 결제(카카오페이) 중심 구조에서 복수 PG 벤더를 같은 방식으로 수용하고, 이후 새로운 벤더가 늘어나더라도 같은 확장 지점으로 붙일 수 있는 구조가 필요했습니다.',
+          '단일 결제 중심 구조에서 복수 벤더를 같은 방식으로 수용하고, 이후 새로운 벤더가 늘어나더라도 같은 확장 지점으로 붙일 수 있는 구조가 필요했습니다.',
         en:
-          'The service needed to move beyond a single-payment structure centered on KakaoPay into one that can absorb multiple PG vendors through the same extension point, while also handling unpaid-processing flows.',
+          'The service needed to move beyond a single-payment structure into one that can absorb multiple payment vendors through the same extension point, while also handling unpaid-processing flows.',
       },
       actions: [
         {
@@ -1072,9 +1072,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       summary: {
         ko:
-          '리텐션 강화를 위해 멤버십 등급 체계를 재설계하고, cormo.js 기반 레거시를 Spring Boot로 무중단 이관했습니다. 특히 기존 멤버십 API에서 실제 request·response 셋을 수집해 테스트케이스를 만들고, 이를 Spring 로직에 직접 재주입해 응답 차이를 비교한 뒤 게이트웨이를 점진 전환하는 방식으로 오픈했으며, 월간 등급 산정도 Athena partition source 기반으로 다시 정리했습니다.',
+          '리텐션 강화를 위해 멤버십 등급 체계를 재설계하고, 레거시 멤버십 서비스(cormo.js 기반)를 Spring Boot로 1:1 DB 마이그레이션 및 무중단 이관했습니다. 특히 기존 멤버십 API에서 실제 request·response 셋을 수집해 테스트케이스를 만들고, 이를 Spring 로직에 직접 재주입해 응답 차이를 비교한 뒤 게이트웨이를 점진 전환하는 방식으로 오픈했으며, 월간 등급 산정도 Athena partition source 기반으로 다시 정리했습니다.',
         en:
-          'Redesigned membership tiers for retention, migrated the cormo.js legacy service to Spring Boot without downtime, and did the cutover by collecting real request/response sets from the legacy membership API, turning them into test cases, replaying them through the Spring implementation, and comparing output before gradually switching the gateway. The monthly tier calculation was also rebuilt around a partitioned Athena source.',
+          'Redesigned membership tiers for retention, migrated the legacy membership service (cormo.js-based) to Spring Boot through a 1:1 DB migration with zero downtime, and did the cutover by collecting real request/response sets from the legacy membership API, turning them into test cases, replaying them through the Spring implementation, and comparing output before gradually switching the gateway. The monthly tier calculation was also rebuilt around a partitioned Athena source.',
       },
       challenge: {
         ko:

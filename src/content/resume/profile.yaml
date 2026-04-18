@@ -211,6 +211,15 @@ awards: []
 
 activities:
   - title:
+      ko: 국민대학교 SW중심대학 멘토
+      en: Kookmin SW-Centered University Mentor
+    period:
+      ko: 2024.03.14 ~ 현재
+      en: Mar 2024 — Present
+    description:
+      ko: 국민대학교 SW중심대학 멘토로 참여
+      en: Participated as a mentor for Kookmin University's SW-centered university program.
+  - title:
       ko: 코드잇 백엔드 코스 모의면접 멘토
       en: Codeit Backend Course Mock Interview Mentor
     period:
@@ -237,15 +246,6 @@ activities:
     description:
       ko: 카카오테크캠퍼스 2기 백엔드 멘토로 참여
       en: Participated as a mentor for the 2nd cohort of Kakao Tech Campus backend track.
-  - title:
-      ko: 국민대학교 SW중심대학 멘토
-      en: Kookmin SW-Centered University Mentor
-    period:
-      ko: 2024.03.14 ~ 현재
-      en: Mar 2024 — Present
-    description:
-      ko: 국민대학교 SW중심대학 멘토로 참여
-      en: Participated as a mentor for Kookmin University's SW-centered university program.
   - title:
       ko: 한양대 ERICA SW창업특강 (Effective Backend)
       en: Hanyang ERICA SW Startup Lecture
@@ -352,11 +352,11 @@ projectSections:
           en: Oct 2024 — Present
         summary:
           ko: |
-            결제 서비스를 초기 설계부터 주도하여 단일 결제(카카오페이)에서 3개 PG사를 수용하는 멀티 모듈로 확장하고,
+            결제 서비스를 초기 설계부터 주도하여 단일 결제에서 멀티 벤더사를 수용하는 모듈로 확장하고,
             다층 미수 관리 시스템을 구축하여 매출 정산의 정확도를 확보했습니다.
           en: |
-            Led billing design from the start; expanded from a single payment flow (KakaoPay) to KakaoPay, Toss Payments, and Kakao T with
-            shared error-code mapping. Layered arrears batches, retry→DLQ, and NACK recovery; SQL keepalive and pool tuning.
+            Led billing design from the start; expanded from a single payment flow into a modular structure that supports multiple payment vendors,
+            and improved settlement accuracy through a layered arrears-management system.
         tech:
           - Kotlin
           - Spring Boot
@@ -366,7 +366,7 @@ projectSections:
         highlights:
           ko:
             - 결제 서비스를 프로젝트 초기 설계부터 구현까지 전담하며 핵심 개발자로 주도
-            - 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이 → 토스페이먼츠 → 카카오T 3개 PG사를 통합하는 결제 아키텍처 구축
+            - 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이·토스페이먼츠·카카오T를 수용하는 멀티 벤더 결제 아키텍처 구축
             - GCP Pub/Sub 기반 DLQ(Dead-Letter Queue) 패턴 구현 — 커스텀 어노테이션 및 핸들러 자동 디스커버리로 결제 이벤트 유실 방지
             - DLQ 미수 처리 및 영구 미수 대상 처리 시스템 구축 — 재시도→DLQ, NACK 기반 자동 복구로 정산 누락 방지
           en:
@@ -385,9 +385,9 @@ projectSections:
         summary:
           ko: |
             다양한 제휴사(넥센, 도요타, 블루멤버스)의 프로모션 요구사항을 수용하는 범용 쿠폰·포인트 백엔드 시스템을
-            구축하고, 어드민 관리 UI까지 풀스택으로 구현했습니다.
+            구축했습니다.
           en: |
-            Backend for coupons/points covering Nexen/Toyota/Bluemembers-style promos; full-stack admin UI.
+            Built a reusable coupon and points backend that supports partner-driven promotions such as Nexen, Toyota, and Bluemembers.
         tech:
           - Kotlin
           - Spring Boot
@@ -648,8 +648,8 @@ projectSections:
           ko: 2023.04 ~ 2023.06
           en: Apr 2023 — Jun 2023
         summary:
-          ko: 리텐션 강화를 위해 멤버십 등급 체계를 재설계하고, 레거시 Node.js 서비스를 Spring Boot로 안정적으로 이관
-          en: Redesigned membership tiers for retention and migrated legacy Node.js services to Spring Boot.
+          ko: 리텐션 강화를 위해 멤버십 등급 체계를 재설계하고, 레거시 멤버십 서비스를 Spring Boot로 안정적으로 이관
+          en: Redesigned membership tiers for retention and migrated the legacy membership service to Spring Boot.
         tech:
           - Kotlin
           - Spring Boot
@@ -660,11 +660,11 @@ projectSections:
           - Kafka
         highlights:
           ko:
-            - cormo.js 기반 레거시를 Spring Boot로 1:1 DB 마이그레이션 및 무중단 이관
+            - 레거시 멤버십 서비스(cormo.js 기반)을 Spring Boot로 1:1 DB 마이그레이션 및 무중단 이관
             - 멤버십 등급 산정 기간 확대(3→6개월)
             - 3개월 단위 등급 산정액 계산을 달별 캐시 + 누적합 방식으로 최적화
           en:
-            - Zero-downtime migration of cormo.js legacy to Spring Boot via 1:1 DB migration
+            - Zero-downtime migration of the legacy membership service (cormo.js-based) to Spring Boot via 1:1 DB migration
             - Expanded the membership tier calculation period from 3 to 6 months
             - Optimized 3-month tier calculation by caching monthly totals and using cumulative sums
         results:

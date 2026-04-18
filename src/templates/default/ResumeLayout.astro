@@ -121,7 +121,12 @@ const m = messages(lang);
                       <div class="break-inside-avoid">
                         <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-1.5 gap-2">
                           <div class="flex flex-wrap items-baseline gap-x-2">
-                            <h3 class="text-[16px] font-bold text-black">{t(exp.company, lang)}</h3>
+                            <h3 class="text-[16px] font-bold text-black">
+                              <PortfolioProjectTitleLink
+                                label={t(exp.company, lang)}
+                                className="text-black"
+                              />
+                            </h3>
                             {exp.role && (
                               <span class="text-[13.5px] font-bold text-gray-500 italic">
                                 ({t(exp.role, lang)})
@@ -132,9 +137,22 @@ const m = messages(lang);
                             {t(exp.period, lang)}
                           </span>
                         </div>
-                        <p class="whitespace-pre-line text-[13.5px] leading-[1.6] text-gray-800">
-                          {t(exp.description, lang)}
-                        </p>
+                        {exp.descriptionLead ? (
+                          <>
+                            <p class="mb-2 text-[13.5px] leading-[1.6] text-gray-800">
+                              {t(exp.descriptionLead, lang)}
+                            </p>
+                            <ul class="space-y-1.5 pl-5 text-[13.5px] leading-[1.6] text-gray-800 list-disc marker:text-[#0f3460]">
+                              {t(exp.description, lang).split('\n').map((line) => line.trim()).filter(Boolean).map((line) => (
+                                <li>{line}</li>
+                              ))}
+                            </ul>
+                          </>
+                        ) : (
+                          <p class="whitespace-pre-line text-[13.5px] leading-[1.6] text-gray-800">
+                            {t(exp.description, lang)}
+                          </p>
+                        )}
                       </div>
                     ))
                   }
@@ -240,7 +258,7 @@ const m = messages(lang);
                   </div>
                   <div class="flex flex-col">
                     <span class="text-[12.5px] font-bold text-black mb-0.5">English</span>
-                    <span class="text-[11.5px] text-gray-700 font-medium leading-tight">문서 검색 및 읽기, 기술 아티클 작성 가능</span>
+                  <span class="text-[11.5px] text-gray-700 font-medium leading-tight">문서 검색 및 읽기, 기술 논의, 기술 아티클 작성 가능</span>
                   </div>
                 </div>
               </section>
@@ -269,7 +287,14 @@ const m = messages(lang);
                           label={t(proj.title, lang)}
                           className="text-black hover:text-[#0f3460] print:text-black print:no-underline"
                           externalHref={proj.externalUrl}
+                          externalVisibility={proj.externalLinkVisibility}
                           externalClassName="text-gray-500 hover:text-[#0f3460]"
+                          githubHref={proj.githubUrl}
+                          githubClassName="text-gray-500 hover:text-[#0f3460]"
+                          googlePlayHref={proj.googlePlayUrl}
+                          googlePlayClassName="text-gray-500 hover:text-[#0f3460]"
+                          appStoreHref={proj.appStoreUrl}
+                          appStoreClassName="text-gray-500 hover:text-[#0f3460]"
                         />
                         {proj.badge && (
                           <span class="rounded bg-[#0f3460] px-2 py-0.5 text-[11px] font-bold tracking-widest text-white uppercase">
@@ -349,9 +374,21 @@ const m = messages(lang);
                         <span class="text-[12px] text-gray-500 font-bold uppercase tracking-widest">{t(a.period, lang)}</span>
                       </div>
                       {a.description && (
-                        <p class="text-[13.5px] text-gray-700 leading-relaxed whitespace-pre-line">
-                          {t(a.description, lang)}
-                        </p>
+                        <div class="space-y-2">
+                          <p class="text-[13.5px] text-gray-700 leading-relaxed whitespace-pre-line">
+                            {t(a.description, lang)}
+                          </p>
+                          {a.externalUrl && a.externalLabel && (
+                            <a
+                              href={a.externalUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              class="inline-flex items-center text-[12.5px] font-semibold text-[#0f3460] hover:underline"
+                            >
+                              [{t(a.externalLabel, lang)}]
+                            </a>
+                          )}
+                        </div>
                       )}
                     </div>
                   ))}

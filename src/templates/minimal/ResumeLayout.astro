@@ -109,7 +109,12 @@ const m = messages(lang);
                   <div class="break-inside-avoid relative pl-8 before:absolute before:left-2 before:-top-0.5 before:bottom-0 before:w-px before:bg-gray-200">
                     <div class="absolute left-0 top-1.5 w-[17px] h-[17px] bg-white border-[4px] border-black rounded-full" />
                     <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
-                      <h3 class="text-[16px] font-bold text-black tracking-tight">{t(exp.company, lang)}</h3>
+                      <h3 class="text-[16px] font-bold text-black tracking-tight">
+                        <PortfolioProjectTitleLink
+                          label={t(exp.company, lang)}
+                          className="text-black"
+                        />
+                      </h3>
                       <span class="whitespace-nowrap text-[13.5px] font-medium text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
                         {t(exp.period, lang)}
                       </span>
@@ -120,9 +125,22 @@ const m = messages(lang);
                         <p class="text-[13.5px] text-gray-400">{exp.location_en}</p>
                       )}
                     </div>
-                    <p class="whitespace-pre-line text-[14.5px] text-gray-600 leading-[1.7]">
-                      {t(exp.description, lang)}
-                    </p>
+                    {exp.descriptionLead ? (
+                      <>
+                        <p class="mb-2 text-[14.5px] text-gray-600 leading-[1.7]">
+                          {t(exp.descriptionLead, lang)}
+                        </p>
+                        <ul class="space-y-1.5 pl-5 text-[14.5px] text-gray-600 leading-[1.7] list-disc marker:text-gray-700">
+                          {t(exp.description, lang).split('\n').map((line) => line.trim()).filter(Boolean).map((line) => (
+                            <li>{line}</li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : (
+                      <p class="whitespace-pre-line text-[14.5px] text-gray-600 leading-[1.7]">
+                        {t(exp.description, lang)}
+                      </p>
+                    )}
                   </div>
                 ))
               }
@@ -142,13 +160,20 @@ const m = messages(lang);
                       <div class="mb-2">
                          <div class="flex flex-wrap items-baseline justify-between mb-1.5">
                            <h3 class="text-[15.5px] font-bold text-black tracking-tight flex items-center gap-2">
-                             <PortfolioProjectTitleLink
-                               href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
-                               label={t(proj.title, lang)}
-                               className="text-black hover:text-gray-700 print:text-black print:no-underline"
-                               externalHref={proj.externalUrl}
-                               externalClassName="text-gray-500 hover:text-gray-700"
-                             />
+                        <PortfolioProjectTitleLink
+                          href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
+                          label={t(proj.title, lang)}
+                          className="text-black hover:text-gray-700 print:text-black print:no-underline"
+                          externalHref={proj.externalUrl}
+                          externalVisibility={proj.externalLinkVisibility}
+                          externalClassName="text-gray-500 hover:text-gray-700"
+                          githubHref={proj.githubUrl}
+                          githubClassName="text-gray-500 hover:text-gray-700"
+                          googlePlayHref={proj.googlePlayUrl}
+                          googlePlayClassName="text-gray-500 hover:text-gray-700"
+                          appStoreHref={proj.appStoreUrl}
+                          appStoreClassName="text-gray-500 hover:text-gray-700"
+                        />
                            </h3>
                            <span class="text-[13px] font-semibold text-gray-400 border border-gray-200 px-1.5 py-0.5 rounded-sm">
                              {t(proj.period, lang)}
@@ -255,6 +280,21 @@ const m = messages(lang);
                        <div class="break-inside-avoid">
                          <div class="text-[14px] font-bold text-black mb-0.5">{t(a.title, lang)}</div>
                          <div class="text-[12px] text-gray-400 font-bold tracking-widest uppercase">{t(a.period, lang)}</div>
+                         {a.description && (
+                           <p class="mt-1.5 text-[12.5px] leading-relaxed text-gray-600 whitespace-pre-line">
+                             {t(a.description, lang)}
+                           </p>
+                         )}
+                         {a.externalUrl && a.externalLabel && (
+                           <a
+                             href={a.externalUrl}
+                             target="_blank"
+                             rel="noreferrer"
+                             class="mt-1 inline-flex items-center text-[11.5px] font-semibold text-gray-700 hover:underline"
+                           >
+                             [{t(a.externalLabel, lang)}]
+                           </a>
+                         )}
                        </div>
                      ))
                    }

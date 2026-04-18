@@ -167,6 +167,7 @@ export interface PortfolioReferenceImage {
 export interface PortfolioProject {
   slug: string;
   externalUrl?: string;
+  githubUrl?: string;
   title: Localized;
   indexLabel?: Localized;
   referenceLayout?: 'stacked' | 'split-with-context';
@@ -734,8 +735,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Built a reusable comment-triggered GitHub Actions workflow in `voltup-workflow` around `/gemini-review`, using the organization-level `GEMINI_API_KEY` plus per-repo `project-context`, `review-template`, and docs to provide consistent first-pass reviews.',
         },
         {
-          ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 넣어 각 마이크로서비스의 작업 컨벤션, 공통 작업 형상, API 우선 개발 흐름, 보안 규칙을 도구가 바로 이해할 수 있는 재사용 스킬 체계로 정리했습니다.',
-          en: 'Added `.agent/workflows`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` to the MSA workspace so microservice conventions, recurring task shapes, API-first development flow, and security rules become reusable tool-readable skills instead of tribal knowledge.',
+          ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 넣어 여러 생성형 LLM에서 활용할 수 있도록 각 마이크로서비스의 작업 컨벤션, 공통 작업 형상, API 우선 개발 흐름, 보안 규칙을 재사용 가능한 스킬 체계로 정리했습니다.',
+          en: 'Added `.agent/workflows`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` to the MSA workspace so microservice conventions, recurring task shapes, API-first development flow, and security rules become reusable skills that can be consumed across generative LLM tools.',
         },
         {
           ko: '루트 `build.gradle.kts`에는 base yaml의 placeholder를 Vault에서 치환해 `application-local.yaml`을 생성하는 로직을 넣고, 프로젝트 경로와 `secret/SHARED/voltup/dev`를 순차 조회하도록 만들었습니다. Vault CLI 로그인 확인, 비대화형 환경 대응, `gcloud` 계정 기반 `IAM_DB_USER_NAME` 치환까지 포함해 새 키가 추가돼도 개발자별 local 환경이 자동으로 같은 기준을 유지하도록 했습니다.',
@@ -950,6 +951,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       slug: 'commit-map',
       externalUrl: 'https://map.dongholab.com/posts/2026-01-01-mie-nara-osaka/',
+      githubUrl: 'https://github.com/gongdongho12/commit-map',
       title: {
         ko: 'Commit Map',
         en: 'Commit Map',

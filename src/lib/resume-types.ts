@@ -17,6 +17,7 @@ export interface Experience {
   company: Localized;
   period: Localized;
   role?: Localized;
+  descriptionLead?: Localized;
   /** EN-only location line (e.g. city) */
   location_en?: string;
   description: Localized;
@@ -43,6 +44,8 @@ export interface Activity {
   title: Localized;
   period: Localized;
   description?: Localized;
+  externalUrl?: string;
+  externalLabel?: Localized;
 }
 
 export interface Project {
@@ -51,6 +54,10 @@ export interface Project {
   portfolioSlug?: string;
   portfolioAnchor?: string;
   externalUrl?: string;
+  externalLinkVisibility?: 'always' | 'hover';
+  githubUrl?: string;
+  googlePlayUrl?: string;
+  appStoreUrl?: string;
   badge?: Localized;
   summary?: Localized;
   tech: string[];

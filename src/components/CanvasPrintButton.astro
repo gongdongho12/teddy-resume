@@ -39,14 +39,71 @@
 </style>
 
 <script>
-  import html2canvas from 'html2canvas';
-  import { jsPDF } from 'jspdf';
-
   document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('canvas-print-btn');
     const overlay = document.getElementById('canvas-overlay');
     const status = document.getElementById('canvas-status');
     if (!btn || !overlay || !status) return;
+
+    const pdfWindow = window;
+
+    const loadScriptOnce = (src) =>
+      new Promise((resolve, reject) => {
+        const selector = `script[data-canvas-lib="${src}"]`;
+        const existing = document.querySelector(selector);
+
+        if (existing) {
+          if (existing.dataset.loaded === 'true') {
+            resolve(undefined);
+            return;
+          }
+
+          existing.addEventListener('load', () => resolve(undefined), { once: true });
+          existing.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), { once: true });
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.defer = true;
+        script.dataset.canvasLib = src;
+        script.addEventListener(
+          'load',
+          () => {
+            script.dataset.loaded = 'true';
+            resolve(undefined);
+          },
+          { once: true },
+        );
+        script.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), { once: true });
+        document.head.appendChild(script);
+      });
+
+    const loadPdfDependencies = async () => {
+      if (!pdfWindow.__canvasPdfDepsPromise) {
+        pdfWindow.__canvasPdfDepsPromise = Promise.all([
+          loadScriptOnce('/vendor/html2canvas.min.js'),
+          loadScriptOnce('/vendor/jspdf.umd.min.js'),
+        ])
+          .then(() => {
+            const html2canvasLib = pdfWindow.html2canvas;
+            const jsPdfLib = pdfWindow.jspdf?.jsPDF;
+
+            if (!html2canvasLib || !jsPdfLib) {
+              throw new Error('PDF dependencies are not available');
+            }
+
+            return { html2canvas: html2canvasLib, jsPDF: jsPdfLib };
+          })
+          .catch((error) => {
+            delete pdfWindow.__canvasPdfDepsPromise;
+            throw error;
+          });
+      }
+
+      return pdfWindow.__canvasPdfDepsPromise;
+    };
 
     btn.addEventListener('click', async () => {
       const target = document.querySelector('article');
@@ -59,6 +116,10 @@
         // Show overlay
         overlay.style.display = 'flex';
         btn.setAttribute('disabled', 'true');
+        status.textContent = 'PDF 라이브러리 로드 중...';
+
+        const { html2canvas, jsPDF } = await loadPdfDependencies();
+
         status.textContent = '화면 캡처 준비 중...';
 
         // Apply clean styles for canvas capture
@@ -114,7 +175,6 @@
         overlay.style.display = 'none';
         btn.removeAttribute('disabled');
       } catch (err) {
-        console.error('PDF generation error:', err);
         document.body.classList.remove('canvas-rendering-active');
         target.classList.remove('canvas-rendering-target');
         status.textContent = '오류 발생';

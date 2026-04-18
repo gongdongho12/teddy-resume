@@ -155,7 +155,12 @@ const m = messages(lang);
               {profile.experience.map((exp) => (
                 <div class="break-inside-avoid relative pl-5 border-l-2 border-teal-100">
                   <div class="flex flex-wrap items-baseline justify-between gap-2 mb-1">
-                    <h3 class="text-[15.5px] font-bold text-gray-900">{t(exp.company, lang)}</h3>
+                    <h3 class="text-[15.5px] font-bold text-gray-900">
+                      <PortfolioProjectTitleLink
+                        label={t(exp.company, lang)}
+                        className="text-gray-900"
+                      />
+                    </h3>
                     <span class="whitespace-nowrap text-[12px] font-extrabold text-teal-700 bg-teal-50 px-2 py-0.5 rounded tracking-wide">
                       {t(exp.period, lang)}
                     </span>
@@ -163,9 +168,22 @@ const m = messages(lang);
                   {exp.role && (
                     <p class="text-[13.5px] font-bold text-gray-700 mb-1.5">{t(exp.role, lang)}</p>
                   )}
-                  <p class="whitespace-pre-line text-[12.5px] text-gray-600 leading-relaxed">
-                    {t(exp.description, lang)}
-                  </p>
+                  {exp.descriptionLead ? (
+                    <>
+                      <p class="mb-2 text-[12.5px] text-gray-600 leading-relaxed">
+                        {t(exp.descriptionLead, lang)}
+                      </p>
+                      <ul class="space-y-1.5 pl-5 text-[12.5px] text-gray-600 leading-relaxed list-disc marker:text-teal-700">
+                        {t(exp.description, lang).split('\n').map((line) => line.trim()).filter(Boolean).map((line) => (
+                          <li>{line}</li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : (
+                    <p class="whitespace-pre-line text-[12.5px] text-gray-600 leading-relaxed">
+                      {t(exp.description, lang)}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -186,13 +204,20 @@ const m = messages(lang);
                 <div class="bg-gray-50 rounded-xl p-6 border border-gray-100 shadow-sm mb-8 last:mb-0">
                     <div class="break-inside-avoid flex flex-wrap items-center justify-between gap-2 mb-3">
                       <h3 class="text-[16px] font-bold text-gray-900 flex items-center gap-3">
-                        <PortfolioProjectTitleLink
-                          href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
-                          label={t(proj.title, lang)}
-                          className="text-gray-900 hover:text-teal-900 print:text-gray-900 print:no-underline"
-                          externalHref={proj.externalUrl}
-                          externalClassName="text-gray-500 hover:text-teal-900"
-                        />
+                      <PortfolioProjectTitleLink
+                        href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
+                        label={t(proj.title, lang)}
+                        className="text-gray-900 hover:text-teal-900 print:text-gray-900 print:no-underline"
+                        externalHref={proj.externalUrl}
+                        externalVisibility={proj.externalLinkVisibility}
+                        externalClassName="text-gray-500 hover:text-teal-900"
+                        githubHref={proj.githubUrl}
+                        githubClassName="text-gray-500 hover:text-teal-900"
+                        googlePlayHref={proj.googlePlayUrl}
+                        googlePlayClassName="text-gray-500 hover:text-teal-900"
+                        appStoreHref={proj.appStoreUrl}
+                        appStoreClassName="text-gray-500 hover:text-teal-900"
+                      />
                         {proj.badge && (
                           <span class="bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded text-[11px] uppercase tracking-wide">
                             {t(proj.badge, lang)}
@@ -238,9 +263,21 @@ const m = messages(lang);
                     </span>
                   </div>
                   {a.description && (
-                    <p class="text-[13px] text-gray-600 leading-relaxed whitespace-pre-line">
-                      {t(a.description, lang)}
-                    </p>
+                    <div class="space-y-2">
+                      <p class="text-[13px] text-gray-600 leading-relaxed whitespace-pre-line">
+                        {t(a.description, lang)}
+                      </p>
+                      {a.externalUrl && a.externalLabel && (
+                        <a
+                          href={a.externalUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          class="inline-flex items-center text-[12px] font-semibold text-teal-700 hover:underline"
+                        >
+                          [{t(a.externalLabel, lang)}]
+                        </a>
+                      )}
+                    </div>
                   )}
                 </div>
               ))}

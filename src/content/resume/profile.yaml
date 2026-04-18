@@ -22,7 +22,7 @@ summary:
 
 languages_note:
   ko: 한국어 — 네이티브
-  en: Korean — Native · English — professional reading for technical docs
+  en: Korean — Native · English — capable of technical document research and reading, technical discussions, and technical article writing
 
 experience:
   - company:
@@ -35,19 +35,20 @@ experience:
       ko: Tech Innovation Tribe, Back-end
       en: Tech Innovation Tribe, Back-end
     location_en: Seoul, South Korea
+    descriptionLead:
+      ko: 카카오모빌리티와 LG유플러스가 함께 운영하는 전기차 충전 서비스 JV
+      en: VoltUp, an EV charging service JV jointly operated by Kakao Mobility and LG Uplus
     description:
       ko: |
-        전략 패턴 기반 멀티 PG·간편결제·포인트 복합결제 아키텍처 설계 — 단일 인터페이스로 다수 결제서비스를 통합
-        DLQ 및 다단계 미수 배치로 정산 안정성 확보, 카카오 T 인증/결제를 4개 MSA 도메인에 걸쳐 통합 설계·구현
-        프로모션(쿠폰/포인트) 개발로 고객 리텐션 증대
-        차량 조회 API 공인인증서 연동 및 Fallback 적용
-        AI 워크플로우 표준화, 문서 자동 생성 등 DX 인프라 구축
+        빌링 - DLQ 및 다단계 미수 배치로 결제/정산 안정성 확보
+        프로모션(쿠폰/포인트) - 고객 리텐션 증대
+        유저사이드 - 차량 조회, PnC(Plug & Charge) 인증 및 유저사이드 백엔드와 모바일 앱 담당
+        DX 인프라 - AI 워크플로우 표준화, CI/CD 통합, 문서 자동 생성 적용
       en: |
-        Designed a strategy-pattern payment architecture that unified multiple payment services, simple-pay methods, and point-combined payments behind a single interface.
-        Improved settlement reliability with DLQ and multi-stage unpaid batches, and integrated Kakao T auth/payment flows across 4 MSA domains.
-        Built coupon/point promotions to improve retention.
-        Integrated public-certificate handling into the vehicle lookup API and added fallback logic.
-        Standardized AI workflows and automated documentation as DX infrastructure.
+        Billing - Improved payment and settlement stability with DLQ and multi-stage unpaid batches
+        Promotions (coupon/points) - Improved customer retention
+        User-side - Owned vehicle lookup, PnC (Plug & Charge) authorization, user-side backend, and the mobile app
+        DX infrastructure - Standardized AI workflows and applied CI/CD integration and automated documentation
 
   - company:
       ko: 카카오스타일
@@ -61,12 +62,12 @@ experience:
     location_en: Seongnam, South Korea
     description:
       ko: |
-        파이널 프라이싱 서비스 및 상품 매칭 / 지그재그 멤버십 및 마일리지 서비스
-        네이버 쇼핑 / 구글 쇼핑 / 유튜브 Engine Page 연동
+        파이널 프라이싱 서비스 및 상품 매칭 / 지그재그 멤버십 신규개발 및 마이그레이션
+        상품 카탈로그 Engine Page 연동 (네이버 쇼핑 / 구글 쇼핑)
         외부 상품 가격 수집 및 타사 대비 가격 우위/열위 자동화 파이프라인
       en: |
-        Final pricing service, N:M product matching, Zigzag membership/mileage, and shopping EP integrations
-        (Naver/Google/YouTube). Pipelines for external price collection and competitive position automation.
+        Final pricing service, product matching, Zigzag membership new development and migration, and shopping EP integrations
+        (Naver Shopping / Google Shopping). Pipelines for external price collection and competitive position automation.
 
   - company:
       ko: 스토어링크
@@ -79,8 +80,12 @@ experience:
       en: R&D Engineer
     location_en: Seoul, South Korea
     description:
-      ko: 상품 데이터 수집 및 키워드 기반 순위 / 애드링크, 유짓, 퍼그샵, 프라이데이 개발
-      en: Product data collection, keyword ranking, and services including Friday/Pugshop.
+      ko: |
+        상품 데이터 수집 및 키워드 기반 순위 분석 플랫폼
+        애드링크, 유짓, 퍼그샵, 프라이데이 개발
+      en: |
+        Product-data collection and keyword-ranking analysis platform
+        Developed AdLink, Uzzit, Pugshop, and Friday
 
   - company:
       ko: 와탭랩스
@@ -93,8 +98,8 @@ experience:
       en: Front-end Engineer
     location_en: Seoul, South Korea
     description:
-      ko: 와탭 모니터링 서비스 프론트엔드 개발 (인프라나 JVM 어플리케이션, 쿠버네티스 등의 모니터링 플랫폼 프론트엔드 개발)
-      en: Frontend for Whatap monitoring platform (Infrastructure, JVM applications, Kubernetes, etc.).
+      ko: Infra, JVM 어플리케이션, 쿠버네티스 등의 모니터링 대시보드 프론트엔드 개발
+      en: Frontend development for monitoring dashboards across infrastructure, JVM applications, and Kubernetes.
 
   - company:
       ko: 함샤우트
@@ -106,8 +111,8 @@ experience:
       ko: SW Engineer
       en: SW Engineer
     description:
-      ko: 인플루언서와 비즈니스를 매칭시켜주는 플랫폼 개발
-      en: Developed a platform matching influencers with businesses.
+      ko: 인플루언서와 비즈니스를 매칭시켜주는 잇플루언서 플랫폼 개발
+      en: Developed the Itfluencer platform matching influencers with businesses.
 
   - company:
       ko: 오픈브릿지
@@ -119,8 +124,8 @@ experience:
       ko: SW Engineer
       en: SW Engineer
     description:
-      ko: 알람과 채팅이 더해진 알람톡 앱 개발, 사진편집과 미션이 합쳐진 포션 앱 개발, 웹 서비스 개발
-      en: AlarmTalk (alarm + chat) and Potion (photo editing + missions) apps, and web development.
+      ko: 알람과 채팅이 더해진 알람톡 앱 개발, 사진편집과 미션이 합쳐진 포션 앱 개발, 오픈브릿지 웹 플랫폼 개발
+      en: Developed AlarmTalk (alarm + chat), Potion (photo editing + missions), and the OpenBridge web platform.
 
 skillGroups:
   - label: Language
@@ -217,8 +222,12 @@ activities:
       ko: 2024.03.14 ~ 현재
       en: Mar 2024 — Present
     description:
-      ko: 국민대학교 SW중심대학 멘토로 참여
-      en: Participated as a mentor for Kookmin University's SW-centered university program.
+      ko: SW 아키텍처, 문제 해결 전략 수립, 유저 사이드 플로우 최적화 관점의 멘토링을 진행했습니다.
+      en: Mentored students with a focus on SW architecture, problem-solving strategy, and user-side flow optimization.
+    externalUrl: https://mentor.cs.kookmin.ac.kr/%EB%A9%98%ED%86%A0%EC%86%8C%EA%B0%9C#h.dlkra2kupnvf
+    externalLabel:
+      ko: 멘토 소개
+      en: Mentor Profile
   - title:
       ko: 코드잇 백엔드 코스 모의면접 멘토
       en: Codeit Backend Course Mock Interview Mentor
@@ -235,8 +244,8 @@ activities:
       ko: 2023.12 ~ 2025.08
       en: Dec 2023 — Aug 2025
     description:
-      ko: 실무 투입이 가능한 주니어 개발자 양성을 위해 5개 기수(1~5기)에 걸쳐 프론트/백엔드 협업 기반 기업 문제 해결 프로젝트의 멘토로 참여했습니다.
-      en: Participated as a mentor for the 1st through 5th cohorts, guiding full-stack collaboration and enterprise problem-solving projects to foster job-ready developers.
+      ko: 5개 기수(1~5기)에 걸쳐 프론트/백엔드 협업 기반 기업 문제 해결 프로젝트의 멘토로 참여했습니다.
+      en: Participated as a mentor across the 1st through 5th cohorts, guiding collaboration-based projects that solved real company problems.
   - title:
       ko: 카카오테크 캠퍼스 2기 백엔드 멘토
       en: Kakao Tech Campus Backend Mentor (2nd)
@@ -335,8 +344,16 @@ activities:
       ko: "2020"
       en: "2020"
     description:
-      ko: Common Computer Prize 수상
-      en: Received the Common Computer Prize
+      ko: |
+        우리 동네 소상공인을 위한 공동구매/재고할인 서비스 - LiBi
+        Common Computer Prize 수상 (상금 240만원)
+      en: |
+        LiBi, a group-buying and inventory-discount service for local small businesses
+        Winner of the Common Computer Prize (KRW 2.4M)
+    externalUrl: https://medium.com/@seoulangelhack/%EC%97%94%EC%A0%A4%ED%95%B5-%EC%84%9C%EC%9A%B8-2020-%EC%98%A8%EB%9D%BC%EC%9D%B8-%EC%9C%84%EA%B8%B0-%EC%86%8D%EC%9D%98-%EC%B0%BD%EC%9D%98%EC%84%B1-%EC%9A%B0%EC%8A%B9%ED%8C%80-%EB%B0%9C%ED%91%9C-ac97c2ddf520
+    externalLabel:
+      ko: 관련자료
+      en: Related
 
 projectSections:
   - heading:
@@ -445,6 +462,8 @@ projectSections:
       - title:
           ko: 볼트업 하이브리드 앱 (Flutter - iOS/Android)
           en: VoltUp Hybrid App (Flutter - iOS/Android)
+        googlePlayUrl: https://play.google.com/store/apps/details?id=com.lgvoltup.app
+        appStoreUrl: https://apps.apple.com/kr/app/%EB%B3%BC%ED%8A%B8%EC%97%85-voltup/id6739238828
         period:
           ko: "2024.12 ~ 현재"
           en: "Dec 2024 — Present"
@@ -530,18 +549,17 @@ projectSections:
           - Gradle
         highlights:
           ko:
-            - GitHub Copilot(11개 프롬프트), Claude Code(8개 스킬), Cursor, Antigravity 등 AI 도구를 활용해 각 마이크로서비스의 작업 컨벤션과 공통 작업 형상을 재사용 가능한 스킬 레포지토리로 구축
+            - 여러 생성형 LLM에서 활용할 수 있도록 각 마이크로서비스의 작업 컨벤션과 공통 작업 형상을 재사용 가능한 스킬 레포지토리로 구축 (Claude Code, Cursor, Gemini 등)
             - run-gemini-cli를 활용한 1차 코드 리뷰 자동화
             - Docusaurus + GitHub Actions 기반 개발 문서 자동 생성 시스템 구축 — Git Polling 방식으로 코드 변경 감지 시 문서 자동 갱신
             - Firebase App Distribution 도입으로 QA/배포 프로세스 병목 제거
-            - 개발자 개입 없이 QA가 직접 결제를 취소할 수 있는 STG/DEV 환경 결제 취소 기능 개발
             - MSA 환경의 설정 파일(application-local.yaml) 자동 생성 도구 개발
             - Android Jenkins 파이프라인 공통 라이브러리화, GCS Gradle 캐시, iOS 자동 배포, ProGuard/R8 정책 등
           en:
-            - Built a reusable skill repository from microservice-level working conventions and recurring task shapes with Copilot (11 prompts), Claude Code (8 skills), Cursor, and Antigravity
+            - Built a reusable skill repository of microservice conventions and recurring task shapes so it could be applied across generative LLM tools such as Claude Code, Cursor, and Gemini
             - Gemini CLI for first-pass review load shedding
             - Docusaurus + GitHub Actions auto-doc system with git-polling change detection
-            - Firebase App Distribution; QA self-serve payment cancel in STG/DEV
+            - Firebase App Distribution for faster QA and release cycles
             - Gradle generator for application-local.yaml
             - Refactored Android Jenkins into shared libs; GCS remote cache; iOS GA/TestFlight pipeline; 300+ line R8 rules
         results:
@@ -718,6 +736,8 @@ projectSections:
       - title:
           ko: 프라이데이 서비스
           en: Friday analytics
+        externalUrl: https://dongholab.notion.site/Friday-Storelink-Project-2021-03-2022-06-2022-07-de901f54ec704d61b30d09efed7e750e?source=copy_link
+        externalLinkVisibility: hover
         period:
           ko: 2021.03 ~ 2022.06
           en: Mar 2021 — Jun 2022
@@ -747,6 +767,8 @@ projectSections:
       - title:
           ko: 와탭 모니터링 FE
           en: Whatap monitoring FE
+        externalUrl: https://dongholab.notion.site/Whatap-Project-2019-03-2021-03-42f7a7cbb2af4cc88a88b2e959d89a86?source=copy_link
+        externalLinkVisibility: hover
         period:
           ko: 2019.03 ~ 2021.03
           en: Mar 2019 — Mar 2021
@@ -812,6 +834,8 @@ projectSections:
       - title:
           ko: 알람톡 (Android)
           en: AlarmTalk (Android)
+        externalUrl: https://dongholab.notion.site/AlarmTalk-Project-2016-05-2017-08-5c037a4e31ad422985d33a0a156e1ada?source=copy_link
+        externalLinkVisibility: hover
         period:
           ko: 2016.05 ~ 2017.08
           en: May 2016 — Aug 2017
@@ -838,6 +862,8 @@ projectSections:
       - title:
           ko: 포션 (Android)
           en: Potion (Android)
+        externalUrl: https://dongholab.notion.site/Phosion-Project-2016-12-2017-05-baa9768aa75e46f3b197e51786d3a9db?source=copy_link
+        externalLinkVisibility: hover
         period:
           ko: 2016.05 ~ 2017.08
           en: May 2016 — Aug 2017
@@ -869,6 +895,7 @@ projectSections:
           en: Commit Map
         portfolioSlug: commit-map
         externalUrl: https://map.dongholab.com/posts/2026-01-01-mie-nara-osaka/
+        githubUrl: https://github.com/gongdongho12/commit-map
         badge:
           ko: 개인 프로젝트
           en: Personal Project
@@ -898,6 +925,7 @@ projectSections:
           ko: Teddy Resume
           en: Teddy Resume
         externalUrl: http://resume.dongholab.com/
+        githubUrl: https://github.com/gongdongho12/teddy-resume
         badge:
           ko: 개인 프로젝트
           en: Personal Project

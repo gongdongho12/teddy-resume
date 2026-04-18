@@ -418,8 +418,10 @@ const sectionLabels =
                     <PortfolioProjectTitleLink
                       label={portfolioText(project.title, lang)}
                       externalHref={project.externalUrl}
+                      githubHref={project.githubUrl}
                       className="text-slate-950"
                       externalClassName="text-slate-400 hover:text-sky-700"
+                      githubClassName="text-slate-400 hover:text-sky-700"
                     />
                   </h2>
                   <p class="text-base font-medium leading-7 text-slate-700">
@@ -557,7 +559,7 @@ const sectionLabels =
                     </p>
                     <ul class="mt-3 grid gap-3 md:grid-cols-2">
                       {project.engineeringViews.map((item) => (
-                        <li class="rounded-[1rem] border border-slate-900/10 bg-white/70 px-4 py-4 text-sm leading-7 text-slate-700">
+                        <li class="rounded-[1rem] border border-slate-900/10 bg-white/70 px-4 py-4 text-sm leading-7 text-slate-700 [overflow-wrap:anywhere]">
                           {portfolioText(item, lang)}
                         </li>
                       ))}

@@ -115,7 +115,10 @@ const m = messages(lang);
                     <div class="break-inside-avoid relative pl-5 before:absolute before:left-0 before:top-[6px] before:bottom-0 before:w-[2px] before:bg-gradient-to-b before:from-[#d4af37] before:to-transparent print:before:bg-gray-400">
                       <div class="flex flex-col mb-2">
                          <h3 class="text-[17px] font-bold text-[#ffffff] print:text-black tracking-tight" style="font-family: 'Playfair Display', serif;">
-                           {t(exp.company, lang)}
+                         <PortfolioProjectTitleLink
+                             label={t(exp.company, lang)}
+                             className="text-[#ffffff] print:text-black"
+                           />
                          </h3>
                          <div class="flex justify-between items-center text-[13.5px] text-[#a0a0a0] print:text-gray-600 mt-1">
                            <span class="uppercase tracking-wider font-semibold text-[#d4af37] print:text-black">
@@ -124,9 +127,22 @@ const m = messages(lang);
                            <span class="font-medium tracking-wide">{t(exp.period, lang)}</span>
                          </div>
                       </div>
-                      <p class="whitespace-pre-line text-[14px] text-[#cccccc] print:text-gray-800 leading-[1.7] mt-3">
-                        {t(exp.description, lang)}
-                      </p>
+                      {exp.descriptionLead ? (
+                        <>
+                          <p class="text-[14px] text-[#cccccc] print:text-gray-800 leading-[1.7] mt-3 mb-2">
+                            {t(exp.descriptionLead, lang)}
+                          </p>
+                          <ul class="space-y-1.5 pl-5 text-[14px] text-[#cccccc] print:text-gray-800 leading-[1.7] list-disc marker:text-[#d4af37] print:marker:text-black">
+                            {t(exp.description, lang).split('\n').map((line) => line.trim()).filter(Boolean).map((line) => (
+                              <li>{line}</li>
+                            ))}
+                          </ul>
+                        </>
+                      ) : (
+                        <p class="whitespace-pre-line text-[14px] text-[#cccccc] print:text-gray-800 leading-[1.7] mt-3">
+                          {t(exp.description, lang)}
+                        </p>
+                      )}
                     </div>
                   ))
                 }
@@ -144,13 +160,20 @@ const m = messages(lang);
                       <div class="break-inside-avoid border border-[#333333] print:border-gray-200 bg-[#1e1e1e] print:bg-transparent p-6 rounded-sm">
                         <div class="flex justify-between items-baseline mb-3 border-b border-[#333] print:border-gray-100 pb-3">
                           <h3 class="text-[16px] font-bold text-[#ffffff] print:text-black tracking-tight flex items-center gap-2" style="font-family: 'Playfair Display', serif;">
-                            <PortfolioProjectTitleLink
-                              href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
-                              label={t(proj.title, lang)}
-                              className="text-[#ffffff] hover:text-[#f3cd5a] print:text-black print:no-underline"
-                              externalHref={proj.externalUrl}
-                              externalClassName="text-[#bfa257] hover:text-[#f3cd5a] print:hidden"
-                            />
+                        <PortfolioProjectTitleLink
+                          href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
+                          label={t(proj.title, lang)}
+                          className="text-[#ffffff] hover:text-[#f3cd5a] print:text-black print:no-underline"
+                          externalHref={proj.externalUrl}
+                          externalVisibility={proj.externalLinkVisibility}
+                          externalClassName="text-[#bfa257] hover:text-[#f3cd5a] print:hidden"
+                          githubHref={proj.githubUrl}
+                          githubClassName="text-[#bfa257] hover:text-[#f3cd5a] print:hidden"
+                          googlePlayHref={proj.googlePlayUrl}
+                          googlePlayClassName="text-[#bfa257] hover:text-[#f3cd5a] print:hidden"
+                          appStoreHref={proj.appStoreUrl}
+                          appStoreClassName="text-[#bfa257] hover:text-[#f3cd5a] print:hidden"
+                        />
                             {proj.badge && (
                               <span class="text-[10px] uppercase font-sans tracking-wider border border-[#d4af37] text-[#d4af37] px-1.5 py-0.5 rounded-sm print:border-black print:text-black">
                                 {t(proj.badge, lang)}
@@ -251,6 +274,21 @@ const m = messages(lang);
                      <div class="break-inside-avoid">
                        <div class="text-[14px] font-medium text-[#d4af37] print:text-black leading-snug">{t(a.title, lang)}</div>
                        <div class="text-[11.5px] text-[#666666] print:text-gray-500 font-bold uppercase tracking-widest mt-1.5">{t(a.period, lang)}</div>
+                       {a.description && (
+                         <p class="mt-1.5 text-[12.5px] leading-relaxed text-[#bbbbbb] print:text-gray-700 whitespace-pre-line">
+                           {t(a.description, lang)}
+                         </p>
+                       )}
+                       {a.externalUrl && a.externalLabel && (
+                         <a
+                           href={a.externalUrl}
+                           target="_blank"
+                           rel="noreferrer"
+                           class="mt-1 inline-flex items-center text-[11.5px] font-semibold text-[#d4af37] hover:underline print:text-black"
+                         >
+                           [{t(a.externalLabel, lang)}]
+                         </a>
+                       )}
                      </div>
                    ))
                  }

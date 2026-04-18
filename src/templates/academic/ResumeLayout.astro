@@ -108,7 +108,12 @@ const m = messages(lang);
                 profile.experience.map((exp) => (
                   <div class="break-inside-avoid">
                     <div class="flex flex-wrap items-baseline justify-between gap-2">
-                      <h3 class="text-[15.5px] font-bold text-black tracking-tight">{t(exp.company, lang)}</h3>
+                      <h3 class="text-[15.5px] font-bold text-black tracking-tight">
+                        <PortfolioProjectTitleLink
+                          label={t(exp.company, lang)}
+                          className="text-black"
+                        />
+                      </h3>
                       <span class="whitespace-nowrap text-[13.5px] font-bold text-gray-700">
                         {t(exp.period, lang)}
                       </span>
@@ -121,9 +126,22 @@ const m = messages(lang);
                         <p class="text-[13.5px] text-gray-600">{exp.location_en}</p>
                       )}
                     </div>
-                    <p class="whitespace-pre-line text-[14px] leading-[1.8] text-gray-800 text-justify">
-                      {t(exp.description, lang)}
-                    </p>
+                    {exp.descriptionLead ? (
+                      <>
+                        <p class="mb-2 text-[14px] leading-[1.8] text-gray-800 text-justify">
+                          {t(exp.descriptionLead, lang)}
+                        </p>
+                        <ul class="space-y-1.5 pl-5 text-[14px] leading-[1.8] text-gray-800 list-disc marker:text-[#800000]">
+                          {t(exp.description, lang).split('\n').map((line) => line.trim()).filter(Boolean).map((line) => (
+                            <li>{line}</li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : (
+                      <p class="whitespace-pre-line text-[14px] leading-[1.8] text-gray-800 text-justify">
+                        {t(exp.description, lang)}
+                      </p>
+                    )}
                   </div>
                 ))
               }
@@ -141,13 +159,20 @@ const m = messages(lang);
                     <div class="break-inside-avoid">
                       <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                         <h3 class="text-[15.5px] font-bold text-black flex items-center gap-2">
-                          <PortfolioProjectTitleLink
-                            href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
-                            label={t(proj.title, lang)}
-                            className="text-black hover:text-[#800000] print:text-black print:no-underline"
-                            externalHref={proj.externalUrl}
-                            externalClassName="text-gray-500 hover:text-[#800000]"
-                          />
+                        <PortfolioProjectTitleLink
+                          href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
+                          label={t(proj.title, lang)}
+                          className="text-black hover:text-[#800000] print:text-black print:no-underline"
+                          externalHref={proj.externalUrl}
+                          externalVisibility={proj.externalLinkVisibility}
+                          externalClassName="text-gray-500 hover:text-[#800000]"
+                          githubHref={proj.githubUrl}
+                          githubClassName="text-gray-500 hover:text-[#800000]"
+                          googlePlayHref={proj.googlePlayUrl}
+                          googlePlayClassName="text-gray-500 hover:text-[#800000]"
+                          appStoreHref={proj.appStoreUrl}
+                          appStoreClassName="text-gray-500 hover:text-[#800000]"
+                        />
                           {proj.badge && (
                             <span class="font-sans rounded bg-gray-100 border border-gray-300 px-2 py-0.5 text-[11px] font-bold text-black tracking-wide">
                               {t(proj.badge, lang)}
@@ -253,6 +278,21 @@ const m = messages(lang);
                        <div class="break-inside-avoid flex flex-col">
                          <span class="text-[14px] font-bold text-black mb-0.5">{t(a.title, lang)}</span>
                          <span class="text-[12.5px] text-gray-500 font-bold">{t(a.period, lang)}</span>
+                         {a.description && (
+                           <p class="mt-1.5 text-[12.5px] leading-relaxed text-gray-700 whitespace-pre-line">
+                             {t(a.description, lang)}
+                           </p>
+                         )}
+                         {a.externalUrl && a.externalLabel && (
+                           <a
+                             href={a.externalUrl}
+                             target="_blank"
+                             rel="noreferrer"
+                             class="mt-1 inline-flex items-center text-[11.5px] font-semibold text-[#800000] hover:underline"
+                           >
+                             [{t(a.externalLabel, lang)}]
+                           </a>
+                         )}
                        </div>
                      ))
                    }

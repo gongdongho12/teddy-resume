@@ -8,9 +8,10 @@ const OUT_DIR = path.resolve('dist');
 
 const lang = process.argv[2] || 'ko';
 const template = process.argv[3] || 'default';
+const basePath = (process.env.BASE_URL || '/').replace(/\/$/, '');
 
 const routePath = template === 'default' ? `/${lang}/` : `/${lang}/${template}/`;
-const URL = `http://localhost:${PORT}/teddy-resume${routePath}`;
+const URL = `http://localhost:${PORT}${basePath}${routePath}`;
 
 async function exportPdf() {
   if (!fs.existsSync(OUT_DIR)) {

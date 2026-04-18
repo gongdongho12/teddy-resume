@@ -20,6 +20,7 @@
   const targetUrl = langTargets[detectedLang] || langTargets[fallbackLang];
 
   if (window.location.pathname === '/' && targetUrl) {
-    window.location.replace(targetUrl);
+    const destination = `${targetUrl}${window.location.search || ''}${window.location.hash || ''}`;
+    window.location.replace(destination);
   }
 })();

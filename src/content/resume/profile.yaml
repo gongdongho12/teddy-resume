@@ -37,7 +37,7 @@ experience:
     location_en: Seoul, South Korea
     descriptionLead:
       ko: 카카오모빌리티와 LG유플러스가 함께 운영하는 전기차 충전 서비스 JV
-      en: VoltUp, an EV charging service JV jointly operated by Kakao Mobility and LG Uplus
+      en: ""
     description:
       ko: |
         빌링 - DLQ 및 다단계 미수 배치로 결제/정산 안정성 확보
@@ -419,7 +419,7 @@ projectSections:
             - 프로모션 쿠폰 발급 배치 구상 및 개발
           en:
             - Designed point wallet system with per-deposit expiration — separate wallet entity per deposit, aggregated balance with 7-day expiry-soon tracking
-            - Point deduction policy: free points first, then earliest-expiring; cancellation refunds in reverse order (longest-expiry wallets first) to benefit users
+            - "Point deduction policy: free points first, then earliest-expiring; cancellation refunds in reverse order (longest-expiry wallets first) to benefit users"
             - Hold→Confirm→Release 3-phase point lifecycle ensuring auto-restoration on payment failure
             - Partner-specific promo rules — expiry, duplicate issuance, amount settings (Nexen/Toyota/Bluemembers)
             - Promotion coupon issuance batch — designed and developed
@@ -436,7 +436,7 @@ projectSections:
           ko: |
             카카오T 계정/결제 연동(4개 MSA 관통), PnC(Plug & Charge) 자동충전, 미결제 감시 등 사용자 경험의 핵심이 되는 백엔드 전반을 개발했습니다.
           en: |
-            Developed core user-side backend features including Kakao T account/payment integration across 4 MSAs, PnC (Plug & Charge) auto-charge, and unpaid-charge monitoring.
+            Developed core user-side backend features including KakaoT account/payment integration across 4 MSAs, PnC (Plug & Charge) auto-charge, and unpaid-charge monitoring.
         tech:
           - Kotlin
           - Spring Boot
@@ -449,7 +449,7 @@ projectSections:
             - 프로모션 쿠폰 발급 배치 구상 및 개발
             - 외부 인증서 서비스에 서킷브레이커 패턴 적용 — 장애 인증서 자동 비활성화 및 복구, 전체 장애 시 강제 리셋 복구 경로 구성
           en:
-            - Designed and implemented Kakao T account/payment integration across 4 MSAs (auth→user→billing→feapp) — OAuth2 account linking, 5-step card registration, payment approval/partial cancellation
+          - Designed and implemented KakaoT account/payment integration across 4 MSAs (auth→user→billing→feapp) — OAuth2 account linking, 5-step card registration, payment approval/partial cancellation
             - Vehicle registration service and PnC (Plug & Charge) authentication registration service
             - Promotion coupon issuance batch — designed and developed
             - Circuit breaker pattern for external certificate service — auto-disable on failure with recovery and a force-reset recovery path for total outages
@@ -457,7 +457,7 @@ projectSections:
           ko:
             - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현
           en:
-            - Full Kakao T partner integration: card registration, payment, cancellation, and promotion lifecycle implemented across 4 MSA services
+          - "Full KakaoT partner integration: card registration, payment, cancellation, and promotion lifecycle implemented across 4 MSA services"
 
       - title:
           ko: 볼트업 하이브리드 앱 (Flutter - iOS/Android)
@@ -760,7 +760,7 @@ projectSections:
           en:
             - Introduced Kotlin and WebFlux as the main tech stack for the entire team
             - Replaced core service features with Friday search APIs (still in use)
-            - In-house automation tools: Jenkins CI/CD, WireGuard VPN, NPM modules/NPX boilerplates
+            - "In-house automation tools: Jenkins CI/CD, WireGuard VPN, NPM modules/NPX boilerplates"
             - Cross-architecture Docker builds (AMD64/ARM64) via buildx for AWS Graviton2 compatibility
             - Puppeteer crawler API — page access, API query, tag selection, and JS function injection
 

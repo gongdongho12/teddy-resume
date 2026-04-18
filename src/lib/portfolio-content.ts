@@ -1,11 +1,13 @@
 import type { Lang, Localized } from '@/lib/resume-types';
 
-const multiPgArchitectureDiagram = `flowchart TD
+const localized = (ko: string, en: string = ko): Localized => ({ ko, en });
+
+const multiPgArchitectureDiagram = localized(`flowchart TD
   Req["pay / rePay<br/>order=ORD-240915-001<br/>user=421 method=17 point=2000"] --> Lock["distributed lock<br/>payment-user-process:421"]
   Lock --> Hold["PointUpdater.hold()<br/>wallet -> HOLD 2000P"]
   Hold --> Ready["createWithReady()<br/>payment READY"]
   Ready --> Sub["resolve subscription<br/>methodId=17 or primary"]
-  Sub --> Vendor["PG Vendor Router<br/>supports: KakaoPay / TossPayments / Kakao T<br/>selected: Kakao T"]
+  Sub --> Vendor["PG Vendor Router<br/>supports: KakaoPay / TossPayments / KakaoT<br/>selected: KakaoT"]
   subgraph PGV["PG Vendor Layer"]
     direction TD
     Vendor --> Keys["read vendor keys<br/>pgPayKey + token"]
@@ -18,10 +20,10 @@ const multiPgArchitectureDiagram = `flowchart TD
   Fail --> Recovery["repair / retry / failover"]
   classDef vendor fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   class Vendor,Keys,Api,Tx vendor;
-  style PGV fill:#eef7fb,stroke:#0f4c81,stroke-width:2px,color:#0f172a;`;
+  style PGV fill:#eef7fb,stroke:#0f4c81,stroke-width:2px,color:#0f172a;`);
 
-const multiVendorContractDiagram = `flowchart TD
-  Vendors["VendorType<br/>KakaoPay / TossPayments / Kakao T"] --> Select["VendorChecker.select(vendorType)"]
+const multiVendorContractDiagram = localized(`flowchart TD
+  Vendors["VendorType<br/>KakaoPay / TossPayments / KakaoT"] --> Select["VendorChecker.select(vendorType)"]
   Select --> Required["Required on all vendors<br/>VendorPaymentProcessor<br/>VendorMethodProcessor"]
   Select --> Partial["Required on some vendors<br/>VendorPaymentOnceProcessor<br/>(KakaoPay only)"]
   Select --> Optional["Optional extensions<br/>RepairService / vendor hooks"]
@@ -35,24 +37,42 @@ const multiVendorContractDiagram = `flowchart TD
   classDef error fill:#fff1f2,stroke:#be123c,stroke-width:2px,color:#0f172a;
   class Vendors,Select,Required,Partial,Validate,Route core;
   class Optional optional;
-  class Error error;`;
+  class Error error;`);
 
-const kakaoTLinkAndCardDiagram = `flowchart TD
-  User["VoltUp member<br/>encrypted CI"] --> OAuth["Kakao T OAuth<br/>external account + encrypted CI"]
+const kakaoTLinkAndCardDiagram = localized(
+  `flowchart TD
+  User["VoltUp member<br/>encrypted CI"] --> OAuth["KakaoT OAuth<br/>external account + encrypted CI"]
   OAuth --> Link["user-service<br/>AuthMethod(KAKAO_T) link"]
   Link --> Session["FEAPP link session<br/>ACCOUNT + PAYMENT"]
   Session --> Ready["billing init<br/>READY 상태 전환"]
-  Ready --> Active["confirm success<br/>ACTIVE 상태 전환"]`;
+  Ready --> Active["confirm success<br/>ACTIVE 상태 전환"]`,
+  `flowchart TD
+  User["VoltUp member<br/>encrypted CI"] --> OAuth["KakaoT OAuth<br/>external account + encrypted CI"]
+  OAuth --> Link["user-service<br/>AuthMethod(KAKAO_T) link"]
+  Link --> Session["FEAPP link session<br/>ACCOUNT + PAYMENT"]
+  Session --> Ready["billing init<br/>READY transition"]
+  Ready --> Active["confirm success<br/>ACTIVE transition"]`,
+);
 
-const vehiclePncDiagram = `flowchart TD
+const vehiclePncDiagram = localized(
+  `flowchart TD
   Vehicle["vehicleInfo 501<br/>plate=12가3456"] --> Match{"unlinked pair<br/>count == 1 ?"}
   Pnc["userVehicle 88<br/>evccId=EVCC-A1B2"] --> Match
   Match -->|yes| Link["linkPncVehicle(501,88)"]
   Match -->|no| Manual["manual select"]
   Link --> Auth["authorizeByEvccId<br/>user=421 plate=12가3456"]
-  Auth --> Charge["start charge"]`;
+  Auth --> Charge["start charge"]`,
+  `flowchart TD
+  Vehicle["vehicleInfo 501<br/>plate=12GA3456"] --> Match{"unlinked pair<br/>count == 1 ?"}
+  Pnc["userVehicle 88<br/>evccId=EVCC-A1B2"] --> Match
+  Match -->|yes| Link["linkPncVehicle(501,88)"]
+  Match -->|no| Manual["manual select"]
+  Link --> Auth["authorizeByEvccId<br/>user=421 plate=12GA3456"]
+  Auth --> Charge["start charge"]`,
+);
 
-const voltupPointWalletDiagram = `flowchart TD
+const voltupPointWalletDiagram = localized(
+  `flowchart TD
   Grant["addBulk / partner accrual<br/>BASE 1200P exp 10-18<br/>TOYOTA 3000P exp 10-20<br/>BLUEMEMBERS 800P exp 10-22<br/>NEXEN 5000P exp 10-31<br/>EVENT 700P exp 11-15<br/>BASE 900P exp null"] --> Rule["wallet rule<br/>expiredAt 있으면 new wallet<br/>null이면 same type+chargeType merge"]
   Rule --> Wallets["wallet #11 BASE/FREE 1200 exp 10-18<br/>wallet #12 TOYOTA/FREE 3000 exp 10-20<br/>wallet #13 BLUEMEMBERS/FREE 800 exp 10-22<br/>wallet #14 NEXEN/CHARGE 5000 exp 10-31<br/>wallet #15 EVENT/FREE 700 exp 11-15<br/>wallet #16 BASE/FREE 900 exp null"]
   Wallets --> Active["active wallet scan<br/>expiredAt > now only<br/>createdAt asc page 조회"]
@@ -66,9 +86,25 @@ const voltupPointWalletDiagram = `flowchart TD
   classDef wallet fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef state fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
   class Wallets,Active,Order,Hold,Usage wallet;
-  class Confirm,Release,Expire state;`;
+  class Confirm,Release,Expire state;`,
+  `flowchart TD
+  Grant["addBulk / partner accrual<br/>BASE 1200P exp 10-18<br/>TOYOTA 3000P exp 10-20<br/>BLUEMEMBERS 800P exp 10-22<br/>NEXEN 5000P exp 10-31<br/>EVENT 700P exp 11-15<br/>BASE 900P exp null"] --> Rule["wallet rule<br/>new wallet if expiredAt exists<br/>merge by same type+chargeType if null"]
+  Rule --> Wallets["wallet #11 BASE/FREE 1200 exp 10-18<br/>wallet #12 TOYOTA/FREE 3000 exp 10-20<br/>wallet #13 BLUEMEMBERS/FREE 800 exp 10-22<br/>wallet #14 NEXEN/CHARGE 5000 exp 10-31<br/>wallet #15 EVENT/FREE 700 exp 11-15<br/>wallet #16 BASE/FREE 900 exp null"]
+  Wallets --> Active["active wallet scan<br/>expiredAt > now only<br/>page query by createdAt asc"]
+  Active --> Order["deduction order<br/>FREE first<br/>then expiredAt asc"]
+  Order --> Hold["hold 4500P<br/>#11 -1200<br/>#12 -3000<br/>#13 -300"]
+  Hold --> Usage["point_usage rows<br/>order=ORD-240915-001<br/>walletId=11,12,13<br/>status=HOLD"]
+  Usage --> Result{"payment result"}
+  Result -->|success| Confirm["confirm<br/>HOLD -> CONFIRM<br/>wallet amount final"]
+  Result -->|fail| Release["releaseHold(order)<br/>wallet 11 +1200<br/>wallet 12 +3000<br/>wallet 13 +300<br/>usage -> FAILED"]
+  Wallets --> Expire["expiry handling<br/>expired wallet excluded from active<br/>expiringSoon queried separately"]
+  classDef wallet fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef state fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Wallets,Active,Order,Hold,Usage wallet;
+  class Confirm,Release,Expire state;`,
+);
 
-const voltupCouponServiceDiagram = `flowchart TD
+const voltupCouponServiceDiagram = localized(`flowchart TD
   Pack["couponPack 71<br/>register 10/01~10/31<br/>usable 10/01~11/30"] --> Code["batchIssue(size=1000)<br/>Snowflake -> SHA-256/base36<br/>code=37PRPT85WA"]
   Pack --> Direct["mapping(code=null) / batchMapping<br/>user=421 or [421,422]"]
   Code --> Claim["mapping(user=421, code=37PRPT85WA)<br/>lock coupon-mapping:37PRPT85WA"]
@@ -79,9 +115,10 @@ const voltupCouponServiceDiagram = `flowchart TD
   Process --> Finish["complete -> COMPLETE<br/>rollback -> READY"]
   Pack --> Expire["couponExpiryReminderJob<br/>usableEndAt D+3 window"]
   Expire --> Scan["getAllByCouponPackId<br/>completeAt is null"]
-  Scan --> Event["publish coupon.event<br/>eventType=EXPIRED"]`;
+  Scan --> Event["publish coupon.event<br/>eventType=EXPIRED"]`);
 
-const pricingPlatformDiagram = `flowchart TD
+const pricingPlatformDiagram = localized(
+  `flowchart TD
   Req["request<br/>product=421 user=3001 site=KR"] --> Match
   Req --> Member
   subgraph PIMSYS["상품 관리 시스템 (PIM)"]
@@ -106,9 +143,37 @@ const pricingPlatformDiagram = `flowchart TD
   classDef expose fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
   class Match,Optimize,Catalog,External pim;
   class Member,Final promo;
-  class Expose,Resp expose;`;
+  class Expose,Resp expose;`,
+  `flowchart TD
+  Req["request<br/>product=421 user=3001 site=KR"] --> Match
+  Req --> Member
+  subgraph PIMSYS["Product Management System (PIM)"]
+    direction TD
+    Match["Internal/external product matching<br/>matchingId / same-shop / winner score"]
+    Optimize["Dynamic pricing<br/>price score / compare set"]
+    Catalog["Shopping catalog Engine Page<br/>Naver / YouTube feed sync"]
+    External["External product values<br/>lowest price / sync dataset"]
+    Match --> Optimize --> Catalog --> External
+  end
+  subgraph PROMO["Promotion Service"]
+    direction TD
+    Member["Membership<br/>grade / eligibility"]
+    Final["Final Pricing API<br/>coupon / promotion / shipping"]
+    Member --> Final
+  end
+  External --> Expose
+  Final --> Expose
+  Expose["PIM user-facing price<br/>promotion final + external price"] --> Resp["response<br/>show best reasonable price"]
+  classDef pim fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef promo fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef expose fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Match,Optimize,Catalog,External pim;
+  class Member,Final promo;
+  class Expose,Resp expose;`,
+);
 
-const devopsAutomationDiagram = `flowchart TD
+const devopsAutomationDiagram = localized(
+  `flowchart TD
   Pain["반복 작업<br/>PR 리뷰 / 로컬 ENV / 배포"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
   Review --> Context["project-context + prompts + skills<br/>repo별 규칙 주입"]
   Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
@@ -122,9 +187,26 @@ const devopsAutomationDiagram = `flowchart TD
   classDef ops fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   class Review,Context ai;
   class Local,Vault,IAM sec;
-  class Deploy,Build,Argo ops;`;
+  class Deploy,Build,Argo ops;`,
+  `flowchart TD
+  Pain["Repeated work<br/>PR review / local env / deploy"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
+  Review --> Context["project-context + prompts + skills<br/>repo-specific rules injected"]
+  Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
+  Local --> Vault["Vault CLI login<br/>project path + SHARED path<br/>no secret commits"]
+  Local --> IAM["gcloud account -><br/>IAM_DB_USER_NAME"]
+  Pain --> Deploy["Jenkins shared library<br/>job name -> target routing"]
+  Deploy --> Build["docker/app build<br/>cache / track / notifications"]
+  Build --> Argo["deployArgoCD"]
+  classDef ai fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef sec fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  classDef ops fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  class Review,Context ai;
+  class Local,Vault,IAM sec;
+  class Deploy,Build,Argo ops;`,
+);
 
-const membershipBatchPartitionDiagram = `flowchart TD
+const membershipBatchPartitionDiagram = localized(
+  `flowchart TD
   Source["Athena source<br/>vip_confirmed_paid_partitioned<br/>stamp_date=2023-10-08"] --> Reader["reader paging<br/>queryExecutionId + nextToken"]
   Reader --> Paid["UserConfirmedPaid<br/>user=421 confirmed=330000<br/>predicted=350000"]
   Paid --> Calc["level calc<br/>최근 6개월 누적합 기준"]
@@ -132,9 +214,20 @@ const membershipBatchPartitionDiagram = `flowchart TD
   Upsert --> Current["memberships<br/>batch insert / update"]
   Upsert --> Archive["membership_logs<br/>RANGE(date_applied_ym)"]
   Current --> Query["recent Ym lookup<br/>202310, 202309, 202308"]
-  Archive --> Query`;
+  Archive --> Query`,
+  `flowchart TD
+  Source["Athena source<br/>vip_confirmed_paid_partitioned<br/>stamp_date=2023-10-08"] --> Reader["reader paging<br/>queryExecutionId + nextToken"]
+  Reader --> Paid["UserConfirmedPaid<br/>user=421 confirmed=330000<br/>predicted=350000"]
+  Paid --> Calc["level calc<br/>latest 6-month cumulative sum"]
+  Calc --> Upsert["membership upsert<br/>dateAppliedYm=202310"]
+  Upsert --> Current["memberships<br/>batch insert / update"]
+  Upsert --> Archive["membership_logs<br/>RANGE(date_applied_ym)"]
+  Current --> Query["recent Ym lookup<br/>202310, 202309, 202308"]
+  Archive --> Query`,
+);
 
-const membershipParityMigrationDiagram = `flowchart TD
+const membershipParityMigrationDiagram = localized(
+  `flowchart TD
   Legacy["기존 멤버십 API<br/>request / response set 수집"] --> Cases["테스트 케이스화<br/>query / body / edge case"]
   Cases --> Replay["Spring Boot 로직에<br/>동일 입력 재주입"]
   Replay --> Compare{"legacy 응답과 동일?"}
@@ -142,7 +235,17 @@ const membershipParityMigrationDiagram = `flowchart TD
   Compare -->|no| Fix["로직 / serializer diff 수정"]
   Fix --> Replay
   Ready --> Switch["게이트웨이 점진 전환"]
-  Switch --> Open["무중단 오픈"]`;
+  Switch --> Open["무중단 오픈"]`,
+  `flowchart TD
+  Legacy["legacy membership API<br/>request / response set capture"] --> Cases["test case conversion<br/>query / body / edge case"]
+  Cases --> Replay["replay the same input<br/>into Spring Boot logic"]
+  Replay --> Compare{"same as legacy response?"}
+  Compare -->|yes| Ready["ready for rollout"]
+  Compare -->|no| Fix["fix logic / serializer diff"]
+  Fix --> Replay
+  Ready --> Switch["gradual gateway switch"]
+  Switch --> Open["zero-downtime release"]`,
+);
 
 export interface PortfolioDiagramExample {
   title: Localized;
@@ -152,7 +255,7 @@ export interface PortfolioDiagramExample {
 export interface PortfolioDiagram {
   title: Localized;
   description: Localized;
-  code: string;
+  code: Localized;
   example?: PortfolioDiagramExample;
 }
 
@@ -171,6 +274,7 @@ export interface PortfolioProject {
   title: Localized;
   indexLabel?: Localized;
   referenceLayout?: 'stacked' | 'split-with-context';
+  fullWidthImplementationAfterContext?: boolean;
   period: Localized;
   company: Localized;
   roleLabel: Localized;
@@ -339,8 +443,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       slug: 'kakao-t-integration',
       title: {
-        ko: '카카오 T 계정 링크 및 결제수단 등록',
-        en: 'Kakao T Account Linking and Payment Method Registration',
+        ko: '카카오T 계정 링크 및 결제수단 등록',
+        en: 'KakaoT Account Linking and Payment Method Registration',
       },
       period: {
         ko: '2025.07 - 현재',
@@ -358,13 +462,13 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko:
           'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, FEAPP 한 스텝 API에서 결제수단 등록 세션 생성부터 billing의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다.',
         en:
-          'Designed the flow that links Kakao T external accounts to existing VoltUp members through encrypted CI and carries payment-method registration from the FEAPP one-step API through billing READY-state and ACTIVE-state transitions.',
+          'Designed the flow that links KakaoT external accounts to existing VoltUp members through encrypted CI and carries payment-method registration from the FEAPP one-step API through billing READY-state and ACTIVE-state transitions.',
       },
       challenge: {
         ko:
           '기존 VoltUp 회원과 KakaoT 유저를 중복 계정 없이 합쳐야 했고, 그 위에서 카드 등록 세션과 최종 결제수단 상태가 같은 사용자 컨텍스트를 공유해야 했습니다.',
         en:
-          'The system had to merge existing VoltUp members with Kakao T users without creating duplicate identities, then keep card-registration sessions and final payment-method state under the same user context.',
+          'The system had to merge existing VoltUp members with KakaoT users without creating duplicate identities, then keep card-registration sessions and final payment-method state under the same user context.',
       },
       subsections: [
         {
@@ -374,19 +478,19 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
             en: 'User-side Backend',
           },
           description: {
-            ko: '이력서의 유저 사이드 백엔드 항목은 카카오 T 연동을 중심으로 차량/PnC(Plug & Charge), 인증서 안정화 등 사용자 경험 핵심 흐름을 함께 다룬 이 영역으로 연결됩니다.',
-            en: 'The resume entry for User-side Backend maps here as the broader area around Kakao T integration, vehicle/PnC (Plug & Charge) flows, and user-facing stability work.',
+            ko: '이력서의 유저 사이드 백엔드 항목은 카카오T 연동을 중심으로 차량/PnC(Plug & Charge), 인증서 안정화 등 사용자 경험 핵심 흐름을 함께 다룬 이 영역으로 연결됩니다.',
+            en: 'The resume entry for User-side Backend maps here as the broader area around KakaoT integration, vehicle/PnC (Plug & Charge) flows, and user-facing stability work.',
           },
         },
       ],
       actions: [
         {
           ko: 'KakaoT OAuth 결과의 `externalId`, `ci`를 기준으로 기존 VoltUp 회원을 찾고 `AuthMethod(KAKAO_T)`를 추가하는 연결 흐름을 설계했습니다.',
-          en: 'Designed the linking flow that resolves the existing VoltUp member from Kakao T OAuth account data and encrypted CI, then adds `AuthMethod(KAKAO_T)`.',
+          en: 'Designed the linking flow that resolves the existing VoltUp member from KakaoT OAuth account data and encrypted CI, then adds `AuthMethod(KAKAO_T)`.',
         },
         {
-          ko: 'FEAPP에서 현재 사용자의 암호화된 CI를 기준으로 KakaoT 결제수단 연동 세션을 생성하는 한 스텝 API 흐름을 정리했습니다.',
-          en: 'Built the one-step FEAPP flow that uses the current user encrypted CI to create the Kakao T payment-link session.',
+          ko: 'FEAPP에서 현재 사용자의 암호화된 CI를 기준으로 카카오T 결제수단 연동 세션을 생성하는 한 스텝 API 흐름을 정리했습니다.',
+          en: 'Built the one-step FEAPP flow that uses the current user encrypted CI to create the KakaoT payment-link session.',
         },
         {
           ko: 'billing에서는 `pg_payloads`에 `session_key`를 저장하고, confirm 시 `pgPayKey`와 `t_partner_user_token`을 확정하는 상태 전이를 구현했습니다.',
@@ -410,7 +514,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       outcomes: [
         {
           ko: '기존 VoltUp 회원과 KakaoT 계정을 동일인 기준으로 연결한 뒤 카드 등록을 이어가는 사용자 흐름을 정리했습니다.',
-          en: 'Established the user flow that links existing VoltUp members to Kakao T accounts before continuing into card registration.',
+          en: 'Established the user flow that links existing VoltUp members to KakaoT accounts before continuing into card registration.',
         },
         {
           ko: '결제수단 등록 완료 후 subscription이 ACTIVE 상태를 유지하며 승인, 취소, 조회가 같은 식별 컨텍스트를 재사용하도록 만들었습니다.',
@@ -426,12 +530,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           {
             src: '/images/portfolio/voltup-multi-auth.png',
             title: {
-              ko: '로그인 수단 연결: 동일 회원 아래 Kakao T 계정 연결',
-              en: 'Linked auth methods: connecting Kakao T under the same member',
+              ko: '로그인 수단 연결: 동일 회원 아래 카카오T 계정 연결',
+              en: 'Linked auth methods: connecting KakaoT under the same member',
             },
             caption: {
-              ko: '동일 사용자 기준으로 여러 로그인 수단을 묶고, Kakao T 계정 연결 이후 결제수단 등록 흐름으로 이어지도록 설계한 화면입니다.',
-              en: 'A screen showing how multiple auth methods were unified under one member, then connected into the Kakao T payment-registration flow.',
+              ko: '동일 사용자 기준으로 여러 로그인 수단을 묶고, 카카오T 계정 연결 이후 결제수단 등록 흐름으로 이어지도록 설계한 화면입니다.',
+              en: 'A screen showing how multiple auth methods were unified under one member, then connected into the KakaoT payment-registration flow.',
             },
             alt: {
               ko: 'VoltUp 로그인 수단 연결 화면',
@@ -441,12 +545,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           {
             src: '/images/portfolio/voltup-add-payments.png',
             title: {
-              ko: '결제수단 등록: Kakao T / 카카오페이 / 일반 카드 분기',
-              en: 'Payment registration: Kakao T, KakaoPay, and card options',
+              ko: '결제수단 등록: 카카오T / 카카오페이 / 일반 카드 분기',
+              en: 'Payment registration: KakaoT, KakaoPay, and card options',
             },
             caption: {
-              ko: '추가하기 한 번으로 Kakao T, 카카오페이, 일반 카드 등록 경로를 한 바텀시트에서 노출해 사용자 선택 흐름을 단순화한 화면입니다.',
-              en: 'A bottom-sheet entry that exposes Kakao T, KakaoPay, and normal card registration in one place to simplify the user choice flow.',
+              ko: '추가하기 한 번으로 카카오T, 카카오페이, 일반 카드 등록 경로를 한 바텀시트에서 노출해 사용자 선택 흐름을 단순화한 화면입니다.',
+              en: 'A bottom-sheet entry that exposes KakaoT, KakaoPay, and normal card registration in one place to simplify the user choice flow.',
             },
             alt: {
               ko: 'VoltUp 결제수단 등록 바텀시트 화면',
@@ -457,8 +561,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         diagrams: [
           {
             title: {
-              ko: 'VoltUp 회원과 Kakao T 계정 연결 후 카드 등록',
-            en: 'Card registration after VoltUp-to-Kakao T account linking',
+              ko: 'VoltUp 회원과 카카오T 계정 연결 후 카드 등록',
+              en: 'Card registration after VoltUp-to-KakaoT account linking',
           },
           description: {
             ko:
@@ -477,6 +581,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'Vehicle Registration, Vehicle-Key Auto-Mapping, and PnC (Plug & Charge) Authorization',
       },
       referenceLayout: 'split-with-context',
+      fullWidthImplementationAfterContext: true,
       period: {
         ko: '2025.07 - 현재',
         en: 'Jul 2025 - Present',
@@ -1060,6 +1165,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko: '멤버십/마일리지 서비스 이관 및 고도화',
         en: 'Membership & Mileage Migration',
       },
+      fullWidthImplementationAfterContext: true,
       period: {
         ko: '2023.04 - 2023.06',
         en: 'Apr 2023 - Jun 2023',

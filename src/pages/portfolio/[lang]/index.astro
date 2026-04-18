@@ -1,9 +1,11 @@
 ---
 import CommonHead from '@/components/CommonHead.astro';
+import ContactVisibilityToggle from '@/components/ContactVisibilityToggle.astro';
 import LanguageSwitcher from '@/components/LanguageSwitcher.astro';
 import MermaidDiagram from '@/components/MermaidDiagram.astro';
 import PortfolioReferenceGallery from '@/components/PortfolioReferenceGallery.astro';
 import PortfolioProjectTitleLink from '@/components/PortfolioProjectTitleLink.astro';
+import StackTagList from '@/components/StackTagList.astro';
 import { baseUrlJoin } from '@/lib/base-url';
 import { getPortfolioUrl, normalizeLang, SUPPORTED_LANGS } from '@/lib/i18n';
 import { kakaoPiccomaPortfolio, portfolioText } from '@/lib/portfolio-content';
@@ -25,7 +27,7 @@ const portfolioLangLinks = SUPPORTED_LANGS.map((candidate) => ({
 }));
 const orderedTitles = [
   '멀티 벤더 결제 시스템 및 정산 안정화',
-  '카카오 T 계정 링크 및 결제수단 등록',
+  '카카오T 계정 링크 및 결제수단 등록',
   '차량 등록 / 차량 고유 키 자동 매핑 / PnC(Plug & Charge) 인증',
   '통합 프로모션(쿠폰/포인트) 플랫폼 구축 및 고도화',
   '개발 생산성 자동화 및 DevOps 개선',
@@ -41,6 +43,7 @@ const projects = [...content.projects].sort(
   (a, b) => getProjectOrder(a.title.ko) - getProjectOrder(b.title.ko),
 );
 const hasDiagrams = projects.some((project) => (project.diagrams?.length ?? 0) > 0);
+const primaryStack = ['Kotlin', 'Spring Boot', 'MySQL'];
 
 const roleFocus = content.roleFocus.map((item) => portfolioText(item, lang));
 const engineeringThemes = [
@@ -140,9 +143,14 @@ const sectionLabels =
               color-scheme: light;
             }
 
+            .portfolio-mermaid {
+              text-align: center;
+            }
+
             .portfolio-mermaid svg {
               height: auto;
               max-width: 100%;
+              margin-inline: auto;
             }
 
             .portfolio-mermaid .label,
@@ -259,10 +267,13 @@ const sectionLabels =
           <span class="rounded-full border border-sky-800/15 bg-sky-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-sky-800">
             {lang === 'ko' ? 'Portfolio' : 'Portfolio'}
           </span>
-          <span class="font-medium text-slate-700">{profile.name}</span>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="font-medium text-slate-700">{lang === 'en' ? profile.name_en : profile.name}</span>
+            <ContactVisibilityToggle lang={lang} labelClass="text-sky-900" />
+          </div>
         </div>
         <div class="flex flex-wrap items-center gap-4">
-          <a class="font-medium text-slate-600 transition hover:text-slate-900" href={resumeUrl}>
+          <a data-preserve-contact-query class="font-medium text-slate-600 transition hover:text-slate-900" href={resumeUrl}>
             {lang === 'ko' ? '이력서 보기' : 'View resume'}
           </a>
           <LanguageSwitcher
@@ -299,7 +310,7 @@ const sectionLabels =
               <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 {lang === 'ko' ? 'Primary Stack' : 'Primary Stack'}
               </p>
-              <p class="mt-2 text-sm leading-7 text-slate-700">Kotlin / Spring Boot / MySQL</p>
+              <StackTagList items={primaryStack} class="mt-3" />
             </div>
             <div class="rounded-[1.25rem] border border-slate-900/10 bg-slate-50/90 px-4 py-4">
               <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
@@ -313,10 +324,10 @@ const sectionLabels =
 
           <div class="grid gap-4 sm:grid-cols-2">
             {roleFocus.map((item, index) => (
-              <div class="flex gap-3 rounded-[1.15rem] border border-slate-900/10 bg-[#f7fbfe] px-4 py-4">
-                <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold tracking-[0.02em] text-sky-800">
-                  {(index + 1).toString().padStart(2, '0')}
-                </span>
+                <div class="flex gap-3 rounded-[1.15rem] border border-slate-900/10 bg-[#f7fbfe] px-4 py-4">
+                  <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold leading-none tracking-[0.02em] text-sky-800">
+                    {(index + 1).toString().padStart(2, '0')}
+                  </span>
                 <p class="text-sm leading-7 text-slate-700">{item}</p>
               </div>
             ))}
@@ -332,7 +343,7 @@ const sectionLabels =
               <p class="mt-2 text-2xl font-semibold text-white">
                 {lang === 'ko' ? profile.name : profile.name_en}
               </p>
-              <p class="mt-1 text-sm text-slate-300">{profile.contact.email}</p>
+              <p class="mt-1 text-sm text-slate-300" data-contact-visibility>{profile.contact.email}</p>
             </div>
             <div class="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-4">
               <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200/80">
@@ -403,7 +414,14 @@ const sectionLabels =
                 const hasReferenceImages = (project.referenceImages?.length ?? 0) > 0;
                 const useSplitReferenceContext =
                   hasReferenceImages && project.referenceLayout === 'split-with-context';
-                const detailGridClass = useSplitReferenceContext
+                const wideImplementationAfterReference =
+                  useSplitReferenceContext && project.fullWidthImplementationAfterContext === true;
+                const implementationWeight = project.actions.reduce(
+                  (total, item) => total + portfolioText(item, lang).length,
+                  0,
+                );
+                const useSingleColumnDetails = useSplitReferenceContext || implementationWeight > 220;
+                const detailGridClass = useSingleColumnDetails
                   ? 'grid gap-8'
                   : 'grid gap-8 xl:grid-cols-2';
 
@@ -438,7 +456,10 @@ const sectionLabels =
                     {project.subsections.map((subsection) => (
                       <section
                         id={subsection.id}
-                        class="scroll-mt-24 rounded-[1.1rem] border border-slate-900/10 bg-[#f8fbfd] px-4 py-4"
+                        class:list={[
+                          'scroll-mt-24 rounded-[1.1rem] border border-slate-900/10 bg-[#f8fbfd] px-4 py-4',
+                          project.subsections.length === 1 && 'md:col-span-2',
+                        ]}
                       >
                         <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-800">
                           {sectionLabels.linked}
@@ -499,6 +520,21 @@ const sectionLabels =
                       </p>
                     </div>
                   </section>
+
+                  {wideImplementationAfterReference && (
+                    <section class="rounded-[1.35rem] border border-slate-900/10 bg-[#f9fbfd] p-5 xl:col-span-2">
+                      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
+                        {sectionLabels.implementation}
+                      </p>
+                      <ul class="mt-3 space-y-3">
+                        {project.actions.map((item) => (
+                          <li class="relative pl-5 text-sm leading-7 text-slate-700 before:absolute before:left-0 before:top-3 before:h-px before:w-3 before:bg-sky-700">
+                            {portfolioText(item, lang)}
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
                 </div>
               ) : hasReferenceImages ? (
                 <PortfolioReferenceGallery
@@ -541,18 +577,20 @@ const sectionLabels =
                   </section>
                 )}
 
-                <section class="rounded-[1.35rem] border border-slate-900/10 bg-[#f9fbfd] p-5">
-                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
-                    {sectionLabels.implementation}
-                  </p>
-                  <ul class="mt-3 space-y-3">
-                    {project.actions.map((item) => (
-                      <li class="relative pl-5 text-sm leading-7 text-slate-700 before:absolute before:left-0 before:top-3 before:h-px before:w-3 before:bg-sky-700">
-                        {portfolioText(item, lang)}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
+                {!wideImplementationAfterReference && (
+                  <section class="rounded-[1.35rem] border border-slate-900/10 bg-[#f9fbfd] p-5">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
+                      {sectionLabels.implementation}
+                    </p>
+                    <ul class="mt-3 space-y-3">
+                      {project.actions.map((item) => (
+                        <li class="relative pl-5 text-sm leading-7 text-slate-700 before:absolute before:left-0 before:top-3 before:h-px before:w-3 before:bg-sky-700">
+                          {portfolioText(item, lang)}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
 
                 {project.engineeringViews && project.engineeringViews.length > 0 && (
                   <section class="rounded-[1.35rem] border border-slate-900/10 bg-[linear-gradient(180deg,#eef7fb_0%,#f7fbfe_100%)] p-5 xl:col-span-2">
@@ -580,7 +618,7 @@ const sectionLabels =
                       <MermaidDiagram
                         title={portfolioText(diagram.title, lang)}
                         description={portfolioText(diagram.description, lang)}
-                        code={diagram.code}
+                        code={portfolioText(diagram.code, lang)}
                         exampleTitle={diagram.example ? portfolioText(diagram.example.title, lang) : undefined}
                         exampleSteps={diagram.example
                           ? diagram.example.steps.map((item) => portfolioText(item, lang))

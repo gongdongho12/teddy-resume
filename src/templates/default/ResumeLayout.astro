@@ -65,6 +65,7 @@ const m = messages(lang);
       portfolioLinkClass="font-semibold text-slate-700 hover:underline"
       languageLinkClass="text-blue-800 hover:text-blue-900 hover:underline"
       activeLanguageClass="text-[#0f3460]"
+      contactToggleLabelClass="text-[#0f3460]"
     />
 
     <!-- DOCUMENT RENDERER -->
@@ -95,13 +96,16 @@ const m = messages(lang);
             </p>
           </div>
 
-          <!-- Right: Contact Info -->
-          <address class="flex flex-col gap-1.5 text-[12px] font-medium not-italic text-blue-200 tracking-wide md:text-right shrink-0 pt-1">
+          <address
+            data-contact-visibility
+            class="flex flex-col gap-1.5 text-[12px] font-medium not-italic text-blue-200 tracking-wide md:text-right shrink-0 pt-1"
+          >
             <span>{profile.contact.phone}</span>
             <a href={`mailto:${profile.contact.email}`} class="hover:text-white hover:underline transition-colors">{profile.contact.email}</a>
             <a href={profile.contact.github_url} target="_blank" rel="noreferrer" class="hover:text-white hover:underline transition-colors">{profile.contact.github_label}</a>
             <a href={profile.contact.linkedin_url} target="_blank" rel="noreferrer" class="hover:text-white hover:underline transition-colors">{profile.contact.linkedin_label}</a>
           </address>
+
         </header>
 
         <section class="px-10 py-7 md:px-12 md:py-6 print:px-[15mm] print:py-[10mm] flex-1">
@@ -137,10 +141,10 @@ const m = messages(lang);
                             {t(exp.period, lang)}
                           </span>
                         </div>
-                        {exp.descriptionLead ? (
+                        {exp.descriptionLead?.[lang]?.trim() ? (
                           <>
                             <p class="mb-2 text-[13.5px] leading-[1.6] text-gray-800">
-                              {t(exp.descriptionLead, lang)}
+                              {exp.descriptionLead[lang]}
                             </p>
                             <ul class="space-y-1.5 pl-5 text-[13.5px] leading-[1.6] text-gray-800 list-disc marker:text-[#0f3460]">
                               {t(exp.description, lang).split('\n').map((line) => line.trim()).filter(Boolean).map((line) => (
@@ -254,11 +258,17 @@ const m = messages(lang);
                 <div class="space-y-3">
                   <div class="flex flex-col">
                     <span class="text-[12.5px] font-bold text-black mb-0.5">Korean</span>
-                    <span class="text-[11.5px] text-gray-700 font-medium leading-tight">네이티브, 테크 스피치 및 문서화 가능</span>
+                    <span class="text-[11.5px] text-gray-700 font-medium leading-tight">
+                      {lang === 'en' ? 'Native proficiency' : '네이티브, 테크 스피치 및 문서화 가능'}
+                    </span>
                   </div>
                   <div class="flex flex-col">
                     <span class="text-[12.5px] font-bold text-black mb-0.5">English</span>
-                  <span class="text-[11.5px] text-gray-700 font-medium leading-tight">문서 검색 및 읽기, 기술 논의, 기술 아티클 작성 가능</span>
+                    <span class="text-[11.5px] text-gray-700 font-medium leading-tight">
+                      {lang === 'en'
+                        ? 'Capable of technical document research and reading, technical discussions, and technical article writing'
+                        : '문서 검색 및 읽기, 기술 논의, 기술 아티클 작성 가능'}
+                    </span>
                   </div>
                 </div>
               </section>

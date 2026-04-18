@@ -32,8 +32,8 @@
     }
 
     return shortcut
-      ? `Print (${shortcut}) tip: enable Background Graphics + set Margins to None for clean output`
-      : 'Print tip: enable Background Graphics + set Margins to None for clean output';
+      ? `Print (${shortcut}) tip: Background Graphics + Margins None`
+      : 'Print tip: Background Graphics + Margins None';
   };
 
   const getLeadText = (lang, shortcut) => {
@@ -47,7 +47,7 @@
   const getRestText = (lang) =>
     lang === 'ko'
       ? ' 시 배경 그래픽 포함 + 여백 없음 설정으로 깔끔하게 출력 가능'
-      : ' tip: enable Background Graphics + set Margins to None for clean output';
+      : ' tip: Background Graphics + Margins None';
 
   const applyPrintHints = () => {
     const shortcut = detectShortcut();

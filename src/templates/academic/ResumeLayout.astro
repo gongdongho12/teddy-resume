@@ -52,7 +52,8 @@ const m = messages(lang);
       showCanvasPrintButton={true}
       languageLinkClass="text-[#800000] hover:text-[#5c0000] hover:underline"
       activeLanguageClass="text-[#800000]"
-    />
+      contactToggleLabelClass="text-[#800000]"
+      />
 
     <!-- DOCUMENT RENDERER -->
     <article class="mx-auto max-w-[850px] print:block bg-white shadow-md print:shadow-none border border-gray-200 print:border-none mb-10 print:mb-0">
@@ -78,20 +79,17 @@ const m = messages(lang);
           <p class="mx-auto max-w-2xl whitespace-pre-line text-center text-[15px] text-gray-800 leading-[1.8] mb-10 font-medium">
             {t(profile.summary, lang)}
           </p>
-          
-          <div class="flex flex-wrap justify-center items-center gap-x-5 gap-y-2 text-[14px] text-gray-800 font-sans tracking-wide">
+
+          <div data-contact-visibility class="flex flex-wrap justify-center items-center gap-x-5 gap-y-2 text-[14px] text-gray-800 font-sans tracking-wide">
             <span class="font-bold text-black">{profile.contact.phone}</span>
             <span class="text-gray-300">|</span>
             <a href={`mailto:${profile.contact.email}`} class="hover:underline hover:text-[#800000] font-bold text-black">{profile.contact.email}</a>
             <span class="text-gray-300">|</span>
-            <a href={profile.contact.github_url} target="_blank" rel="noreferrer" class="hover:underline hover:text-[#800000]"
-              >{profile.contact.github_label}</a
-            >
+            <a href={profile.contact.github_url} target="_blank" rel="noreferrer" class="hover:underline hover:text-[#800000]">{profile.contact.github_label}</a>
             <span class="text-gray-300">|</span>
-            <a href={profile.contact.linkedin_url} target="_blank" rel="noreferrer" class="hover:underline hover:text-[#800000]"
-              >{profile.contact.linkedin_label}</a
-            >
+            <a href={profile.contact.linkedin_url} target="_blank" rel="noreferrer" class="hover:underline hover:text-[#800000]">{profile.contact.linkedin_label}</a>
           </div>
+          
         </header>
 
       </section>
@@ -126,10 +124,10 @@ const m = messages(lang);
                         <p class="text-[13.5px] text-gray-600">{exp.location_en}</p>
                       )}
                     </div>
-                    {exp.descriptionLead ? (
+                    {exp.descriptionLead?.[lang]?.trim() ? (
                       <>
                         <p class="mb-2 text-[14px] leading-[1.8] text-gray-800 text-justify">
-                          {t(exp.descriptionLead, lang)}
+                          {exp.descriptionLead[lang]}
                         </p>
                         <ul class="space-y-1.5 pl-5 text-[14px] leading-[1.8] text-gray-800 list-disc marker:text-[#800000]">
                           {t(exp.description, lang).split('\n').map((line) => line.trim()).filter(Boolean).map((line) => (

@@ -25,6 +25,7 @@ const { lang, currentTemplate } = Astro.props;
     <div class="max-w-0 overflow-hidden group-hover:max-w-3xl transition-[max-width] duration-300 ease-in-out bg-white text-gray-800 flex divide-x divide-gray-100">
       {AVAILABLE_TEMPLATES.map((t) => (
         <a 
+          data-preserve-contact-query
           href={t.id === 'default' ? baseUrlJoin(lang) : baseUrlJoin(lang, t.id)} 
           class={`flex flex-col whitespace-nowrap justify-center px-4 py-2 hover:bg-gray-50 text-xs transition-colors ${currentTemplate === t.id ? 'font-bold bg-gray-100 text-indigo-700' : 'text-gray-600'}`}
           title={t.description}

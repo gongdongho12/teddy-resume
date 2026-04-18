@@ -1,0 +1,157 @@
+---
+import { messages } from '@/lib/messages';
+import type { Lang } from '@/lib/resume-types';
+
+interface Props {
+  lang: Lang;
+  containerClass?: string;
+  labelClass?: string;
+  checkboxClass?: string;
+}
+
+const {
+  lang,
+  containerClass = '',
+  labelClass = 'text-slate-700',
+  checkboxClass = 'h-4 w-4 rounded border-slate-300 shadow-sm transition',
+} = Astro.props;
+
+const m = messages(lang);
+---
+
+<label
+  data-contact-visibility-toggle-wrapper
+  hidden
+  class:list={['inline-flex items-center gap-2 text-sm font-medium print:hidden', labelClass, containerClass]}
+>
+  <input
+    type="checkbox"
+    checked
+    data-contact-visibility-toggle
+    class:list={[checkboxClass]}
+  />
+  <span>{m.contactVisibility}</span>
+</label>
+
+<style is:global>
+  [data-contact-visibility-toggle] {
+    accent-color: currentColor;
+  }
+
+  :root[data-show-contact='false'] [data-contact-visibility] {
+    display: none !important;
+  }
+
+  :root[data-contact-visibility-locked='true'] [data-contact-visibility-toggle-wrapper] {
+    display: none !important;
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const storageKey = 'resume-show-contact';
+    const preservedQueryKey = 'c';
+    const preservedQueryValue = 'h';
+    const allowedQueryLocks = new Map([[preservedQueryKey, new Set([preservedQueryValue])]]);
+
+    const readQueryPreference = () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+
+        for (const [key, allowedValues] of allowedQueryLocks.entries()) {
+          const value = params.get(key)?.toLowerCase().trim();
+          if (value && allowedValues.has(value)) {
+            return { locked: true, visible: false };
+          }
+        }
+      } catch {}
+
+      return { locked: false, visible: null };
+    };
+
+    const readPreference = () => {
+      const queryPreference = readQueryPreference();
+      if (queryPreference.locked && queryPreference.visible !== null) {
+        return queryPreference;
+      }
+
+      try {
+        const stored = window.localStorage.getItem(storageKey);
+        return { locked: false, visible: stored !== 'false' };
+      } catch {
+        return { locked: false, visible: true };
+      }
+    };
+
+    const writePreference = (visible) => {
+      try {
+        window.localStorage.setItem(storageKey, visible ? 'true' : 'false');
+      } catch {}
+    };
+
+    const syncPreservedQuery = (locked) => {
+      document.querySelectorAll('a[data-preserve-contact-query]').forEach((anchor) => {
+        if (!(anchor instanceof HTMLAnchorElement)) return;
+
+        const originalHref = anchor.dataset.originalHref || anchor.getAttribute('href') || '';
+        if (!originalHref) return;
+        if (!anchor.dataset.originalHref) {
+          anchor.dataset.originalHref = originalHref;
+        }
+
+        try {
+          const url = new URL(originalHref, window.location.origin);
+          if (locked) {
+            url.searchParams.set(preservedQueryKey, preservedQueryValue);
+          } else {
+            url.searchParams.delete(preservedQueryKey);
+          }
+          anchor.setAttribute('href', `${url.pathname}${url.search}${url.hash}`);
+        } catch {}
+      });
+    };
+
+    const applyVisibility = (visible, locked = false) => {
+      document.documentElement.dataset.showContact = visible ? 'true' : 'false';
+      document.documentElement.dataset.contactVisibilityLocked = locked ? 'true' : 'false';
+      syncPreservedQuery(locked);
+      document.querySelectorAll('[data-contact-visibility-toggle-wrapper]').forEach((wrapper) => {
+        if (wrapper instanceof HTMLElement) {
+          wrapper.hidden = locked;
+        }
+      });
+      document.querySelectorAll('[data-contact-visibility-toggle]').forEach((input) => {
+        if (input instanceof HTMLInputElement) {
+          input.checked = visible;
+          input.disabled = locked;
+        }
+      });
+    };
+
+    const bindToggle = (input) => {
+      if (!(input instanceof HTMLInputElement)) return;
+      if (input.dataset.contactVisibilityBound === 'true') return;
+      input.dataset.contactVisibilityBound = 'true';
+      input.addEventListener('change', () => {
+        if (input.disabled) return;
+        const visible = input.checked;
+        writePreference(visible);
+        applyVisibility(visible, false);
+      });
+    };
+
+    const initialPreference = readPreference();
+    applyVisibility(initialPreference.visible ?? true, initialPreference.locked);
+
+    const init = () => {
+      applyVisibility(initialPreference.visible ?? true, initialPreference.locked);
+      document.querySelectorAll('[data-contact-visibility-toggle]').forEach(bindToggle);
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init, { once: true });
+    } else {
+      init();
+    }
+  })();
+</script>

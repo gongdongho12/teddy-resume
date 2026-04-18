@@ -12,6 +12,7 @@ const table: Record<
     languages: string;
     results: string;
     printHint: string;
+    contactVisibility: string;
   }
 > = {
   ko: {
@@ -24,6 +25,7 @@ const table: Record<
     languages: '언어',
     results: '성과',
     printHint: '인쇄 시 배경 그래픽 포함 + 여백 없음 설정으로 깔끔하게 출력 가능',
+    contactVisibility: '연락처 표기',
   },
   en: {
     docTitle: 'Dongho Kang — Resume',
@@ -34,7 +36,8 @@ const table: Record<
     activities: 'Other Activities',
     languages: 'Language',
     results: 'Outcomes',
-    printHint: 'Print tip: enable Background Graphics + set Margins to None for clean output',
+    printHint: 'Print tip: Background Graphics + Margins None',
+    contactVisibility: 'Contact Info',
   },
 };
 

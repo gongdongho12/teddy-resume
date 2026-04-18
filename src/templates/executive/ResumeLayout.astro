@@ -52,7 +52,8 @@ const m = messages(lang);
       showCanvasPrintButton={true}
       languageLinkClass="text-[#d4af37] hover:text-[#f3cd5a] hover:underline"
       activeLanguageClass="text-[#d4af37]"
-    />
+      contactToggleLabelClass="text-[#8b6b16]"
+      />
 
     <!-- DOCUMENT RENDERER -->
     <article class="mx-auto max-w-[850px] print:block">
@@ -86,12 +87,13 @@ const m = messages(lang);
 
           <div class="my-10 h-px w-24 bg-[#d4af37] mx-auto print:bg-black"></div>
 
-          <div class="mt-8 flex flex-col items-center gap-2 text-[14px] text-[#a0a0a0] print:text-gray-800 tracking-wide">
+          <div data-contact-visibility class="mt-8 flex flex-col items-center gap-2 text-[14px] text-[#a0a0a0] print:text-gray-800 tracking-wide">
             <div class="font-medium text-white print:text-black">{profile.contact.phone}</div>
             <div><a href={`mailto:${profile.contact.email}`} class="hover:text-[#d4af37] print:hover:text-black">{profile.contact.email}</a></div>
             <div><a href={profile.contact.linkedin_url} target="_blank" rel="noreferrer" class="hover:text-[#d4af37] print:hover:text-black">{profile.contact.linkedin_label}</a></div>
             <div><a href={profile.contact.github_url} target="_blank" rel="noreferrer" class="hover:text-[#d4af37] print:hover:text-black">{profile.contact.github_label}</a></div>
           </div>
+
         </header>
 
       </section>
@@ -127,10 +129,10 @@ const m = messages(lang);
                            <span class="font-medium tracking-wide">{t(exp.period, lang)}</span>
                          </div>
                       </div>
-                      {exp.descriptionLead ? (
+                      {exp.descriptionLead?.[lang]?.trim() ? (
                         <>
                           <p class="text-[14px] text-[#cccccc] print:text-gray-800 leading-[1.7] mt-3 mb-2">
-                            {t(exp.descriptionLead, lang)}
+                            {exp.descriptionLead[lang]}
                           </p>
                           <ul class="space-y-1.5 pl-5 text-[14px] text-[#cccccc] print:text-gray-800 leading-[1.7] list-disc marker:text-[#d4af37] print:marker:text-black">
                             {t(exp.description, lang).split('\n').map((line) => line.trim()).filter(Boolean).map((line) => (

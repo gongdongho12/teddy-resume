@@ -42,7 +42,9 @@ const portfolioLinks = SUPPORTED_LANGS.map((lang) => ({
           .map((value) => String(value).toLowerCase().split('-')[0])
           .find((value) => supportedLangs.includes(value)) || fallbackLang;
 
-      window.location.replace(langTargets[detectedLang] || defaultPortfolioUrl);
+      const targetUrl = langTargets[detectedLang] || defaultPortfolioUrl;
+      const destination = `${targetUrl}${window.location.search || ''}${window.location.hash || ''}`;
+      window.location.replace(destination);
     </script>
 
     <p class="text-center">

@@ -54,7 +54,8 @@ const m = messages(lang);
       showCanvasPrintButton={true}
       languageLinkClass="text-black hover:text-gray-700 hover:underline"
       activeLanguageClass="text-black"
-    />
+      contactToggleLabelClass="text-black"
+      />
 
     <!-- DOCUMENT RENDERER -->
     <article class="mx-auto flex flex-col gap-4 w-full max-w-[850px] xl:max-w-none xl:flex-row xl:flex-wrap xl:justify-center xl:px-20 print:block print:w-[210mm] mb-10 print:mb-0 transition-all duration-500">
@@ -83,12 +84,13 @@ const m = messages(lang);
             {t(profile.summary, lang)}
           </p>
 
-          <address class="flex flex-col gap-2 text-[14px] text-gray-500 font-medium not-italic border-l-2 border-black pl-5">
+          <address data-contact-visibility class="flex flex-col gap-2 text-[14px] text-gray-500 font-medium not-italic border-l-2 border-black pl-5">
             <span class="text-black">{profile.contact.phone}</span>
             <a href={`mailto:${profile.contact.email}`} class="hover:text-black hover:underline">{profile.contact.email}</a>
             <a href={profile.contact.github_url} target="_blank" rel="noreferrer" class="hover:text-black hover:underline">{profile.contact.github_label}</a>
             <a href={profile.contact.linkedin_url} target="_blank" rel="noreferrer" class="hover:text-black hover:underline">{profile.contact.linkedin_label}</a>
           </address>
+
         </header>
       </section>
 
@@ -125,10 +127,10 @@ const m = messages(lang);
                         <p class="text-[13.5px] text-gray-400">{exp.location_en}</p>
                       )}
                     </div>
-                    {exp.descriptionLead ? (
+                    {exp.descriptionLead?.[lang]?.trim() ? (
                       <>
                         <p class="mb-2 text-[14.5px] text-gray-600 leading-[1.7]">
-                          {t(exp.descriptionLead, lang)}
+                          {exp.descriptionLead[lang]}
                         </p>
                         <ul class="space-y-1.5 pl-5 text-[14.5px] text-gray-600 leading-[1.7] list-disc marker:text-gray-700">
                           {t(exp.description, lang).split('\n').map((line) => line.trim()).filter(Boolean).map((line) => (

@@ -2,10 +2,12 @@
 import type { Lang, ResumeProfile } from '@/lib/resume-types';
 import { messages } from '@/lib/messages';
 import { t, bullets } from '@/lib/localize';
-import { baseUrlJoin } from '@/lib/base-url';
+import { getPortfolioProjectHref } from '@/lib/portfolio-links';
 import TemplateSelector from '@/components/TemplateSelector.astro';
 import AutoPagination from '@/components/AutoPagination.astro';
 import CommonHead from '@/components/CommonHead.astro';
+import PortfolioProjectTitleLink from '@/components/PortfolioProjectTitleLink.astro';
+import ResumeTopBar from '@/components/ResumeTopBar.astro';
 
 interface Props {
   lang: Lang;
@@ -14,9 +16,6 @@ interface Props {
 
 const { lang, profile } = Astro.props;
 const m = messages(lang);
-const other = lang === 'ko' ? 'en' : 'ko';
-const otherLangUrl = baseUrlJoin(other, 'default');
-const portfolioUrl = baseUrlJoin(lang, 'portfolio');
 ---
 
 <!DOCTYPE html>
@@ -54,16 +53,19 @@ const portfolioUrl = baseUrlJoin(lang, 'portfolio');
   <body class="min-h-screen bg-gray-100 print:bg-white text-sm leading-relaxed text-black antialiased">
     <TemplateSelector lang={lang} currentTemplate="default" />
     <AutoPagination />
-    
-    <div
-      class="print:hidden mx-auto flex max-w-[850px] flex-wrap items-center justify-end gap-3 px-8 pb-4 pt-6 text-sm"
-    >
-      <span class="text-gray-500">{m.printHint}</span>
-      <a href={portfolioUrl} class="font-semibold text-slate-700 hover:underline">
-        {lang === 'ko' ? '포트폴리오' : 'Portfolio'}
-      </a>
-      <a href={otherLangUrl} class="font-semibold text-blue-800 hover:underline ml-2">{m.navOther}</a>
-    </div>
+
+    <ResumeTopBar
+      lang={lang}
+      currentTemplate="default"
+      maxWidthClass="max-w-[850px]"
+      containerClass="pb-4 text-sm"
+      printHintStyle="popover"
+      printHintAccentClass="text-[#0f3460]"
+      showPortfolioLink={true}
+      portfolioLinkClass="font-semibold text-slate-700 hover:underline"
+      languageLinkClass="text-blue-800 hover:text-blue-900 hover:underline"
+      activeLanguageClass="text-[#0f3460]"
+    />
 
     <!-- DOCUMENT RENDERER -->
     <article class="mx-auto flex flex-col gap-4 w-full max-w-[794px] xl:max-w-none xl:flex-row xl:flex-wrap xl:justify-center xl:px-20 print:block print:w-[210mm] mb-10 print:mb-0 transition-all duration-500">
@@ -262,7 +264,13 @@ const portfolioUrl = baseUrlJoin(lang, 'portfolio');
                   <div class="break-inside-avoid border border-gray-100 bg-white p-5 rounded shadow-sm print:shadow-none print:border-gray-200 mb-4 last:mb-0 print:mb-6 print:pb-8">
                     <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2 border-b border-gray-100 pb-2.5">
                       <h3 class="text-[16px] font-bold text-black flex items-center gap-2">
-                        {t(proj.title, lang)}
+                        <PortfolioProjectTitleLink
+                          href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
+                          label={t(proj.title, lang)}
+                          className="text-black hover:text-[#0f3460] print:text-black print:no-underline"
+                          externalHref={proj.externalUrl}
+                          externalClassName="text-gray-500 hover:text-[#0f3460]"
+                        />
                         {proj.badge && (
                           <span class="rounded bg-[#0f3460] px-2 py-0.5 text-[11px] font-bold tracking-widest text-white uppercase">
                             {t(proj.badge, lang)}

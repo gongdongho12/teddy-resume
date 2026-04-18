@@ -3,9 +3,10 @@ import CommonHead from '@/components/CommonHead.astro';
 import type { Lang, ResumeProfile } from '@/lib/resume-types';
 import { messages } from '@/lib/messages';
 import { t, bullets } from '@/lib/localize';
-import { baseUrlJoin } from '@/lib/base-url';
+import { getPortfolioProjectHref } from '@/lib/portfolio-links';
+import PortfolioProjectTitleLink from '@/components/PortfolioProjectTitleLink.astro';
 import TemplateSelector from '@/components/TemplateSelector.astro';
-import CanvasPrintButton from '@/components/CanvasPrintButton.astro';
+import ResumeTopBar from '@/components/ResumeTopBar.astro';
 
 interface Props {
   lang: Lang;
@@ -14,8 +15,6 @@ interface Props {
 
 const { lang, profile } = Astro.props;
 const m = messages(lang);
-const other = lang === 'ko' ? 'en' : 'ko';
-const otherLangUrl = baseUrlJoin(other, 'executive');
 ---
 
 <!DOCTYPE html>
@@ -43,12 +42,17 @@ const otherLangUrl = baseUrlJoin(other, 'executive');
   </head>
   <body class="min-h-screen bg-[#111111] print:bg-white text-sm leading-tight text-[#e5e5e5] antialiased" style="font-family: 'Inter', sans-serif;">
     <TemplateSelector lang={lang} currentTemplate="executive" />
-    
-    <div class="print:hidden mx-auto flex max-w-[850px] flex-wrap items-center justify-end gap-3 px-8 pb-3 pt-6 text-[13px]">
-      <span class="text-gray-400">{m.printHint}</span>
-      <CanvasPrintButton />
-      <a href={otherLangUrl} class="font-semibold text-[#d4af37] hover:text-[#f3cd5a] hover:underline ml-2">{m.navOther}</a>
-    </div>
+
+    <ResumeTopBar
+      lang={lang}
+      currentTemplate="executive"
+      maxWidthClass="max-w-[850px]"
+      containerClass="pb-3 text-[13px]"
+      printHintTextClass="text-gray-400"
+      showCanvasPrintButton={true}
+      languageLinkClass="text-[#d4af37] hover:text-[#f3cd5a] hover:underline"
+      activeLanguageClass="text-[#d4af37]"
+    />
 
     <!-- DOCUMENT RENDERER -->
     <article class="mx-auto max-w-[850px] print:block">
@@ -140,7 +144,13 @@ const otherLangUrl = baseUrlJoin(other, 'executive');
                       <div class="break-inside-avoid border border-[#333333] print:border-gray-200 bg-[#1e1e1e] print:bg-transparent p-6 rounded-sm">
                         <div class="flex justify-between items-baseline mb-3 border-b border-[#333] print:border-gray-100 pb-3">
                           <h3 class="text-[16px] font-bold text-[#ffffff] print:text-black tracking-tight flex items-center gap-2" style="font-family: 'Playfair Display', serif;">
-                            {t(proj.title, lang)}
+                            <PortfolioProjectTitleLink
+                              href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
+                              label={t(proj.title, lang)}
+                              className="text-[#ffffff] hover:text-[#f3cd5a] print:text-black print:no-underline"
+                              externalHref={proj.externalUrl}
+                              externalClassName="text-[#bfa257] hover:text-[#f3cd5a] print:hidden"
+                            />
                             {proj.badge && (
                               <span class="text-[10px] uppercase font-sans tracking-wider border border-[#d4af37] text-[#d4af37] px-1.5 py-0.5 rounded-sm print:border-black print:text-black">
                                 {t(proj.badge, lang)}

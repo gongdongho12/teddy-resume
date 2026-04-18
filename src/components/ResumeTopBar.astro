@@ -1,0 +1,79 @@
+---
+import CanvasPrintButton from '@/components/CanvasPrintButton.astro';
+import LanguageSwitcher from '@/components/LanguageSwitcher.astro';
+import PrintHintPopover from '@/components/PrintHintPopover.astro';
+import { messages } from '@/lib/messages';
+import { getPortfolioUrl } from '@/lib/i18n';
+import type { Lang } from '@/lib/resume-types';
+import type { TemplateId } from '@/lib/templates';
+
+interface Props {
+  lang: Lang;
+  currentTemplate: TemplateId;
+  maxWidthClass: string;
+  containerClass?: string;
+  printHintStyle?: 'plain' | 'popover';
+  printHintAccentClass?: string;
+  printHintTextClass?: string;
+  showPortfolioLink?: boolean;
+  portfolioLinkClass?: string;
+  showCanvasPrintButton?: boolean;
+  languageLinkClass?: string;
+  activeLanguageClass?: string;
+  languageContainerClass?: string;
+}
+
+const {
+  lang,
+  currentTemplate,
+  maxWidthClass,
+  containerClass = '',
+  printHintStyle = 'plain',
+  printHintAccentClass = 'text-[#0f3460]',
+  printHintTextClass = 'text-gray-500',
+  showPortfolioLink = false,
+  portfolioLinkClass = 'font-medium text-black hover:underline',
+  showCanvasPrintButton = false,
+  languageLinkClass = 'text-slate-500 hover:text-slate-900 hover:underline',
+  activeLanguageClass = 'text-slate-900',
+  languageContainerClass = '',
+} = Astro.props;
+
+const m = messages(lang);
+const portfolioUrl = getPortfolioUrl(lang);
+const portfolioLabel = lang === 'ko' ? '포트폴리오' : 'Portfolio';
+---
+
+<div
+  class:list={[
+    'print:hidden mx-auto flex flex-wrap items-center justify-end gap-3 px-8 pt-6',
+    maxWidthClass,
+    containerClass,
+  ]}
+>
+  {
+    printHintStyle === 'popover' ? (
+      <PrintHintPopover lang={lang} accentClass={printHintAccentClass} />
+    ) : (
+      <span class:list={[printHintTextClass]} data-print-hint-plain data-lang={lang}>{m.printHint}</span>
+    )
+  }
+
+  {showPortfolioLink && (
+    <a href={portfolioUrl} class:list={[portfolioLinkClass]}>
+      {portfolioLabel}
+    </a>
+  )}
+
+  {showCanvasPrintButton && <CanvasPrintButton />}
+
+  <LanguageSwitcher
+    lang={lang}
+    currentTemplate={currentTemplate}
+    containerClass={languageContainerClass}
+    linkClass={languageLinkClass}
+    activeClass={activeLanguageClass}
+  />
+</div>
+
+<script src="/scripts/print-hints.js" defer></script>

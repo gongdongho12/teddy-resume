@@ -1,0 +1,162 @@
+---
+interface ReferenceCard {
+  src: string;
+  href?: string;
+  alt: string;
+  title: string;
+  caption?: string;
+}
+
+interface Props {
+  galleryKey?: string;
+  sectionTitle: string;
+  items: ReferenceCard[];
+  viewLabel: string;
+  expandLabel: string;
+  closeLabel: string;
+  externalLinkLabel: string;
+}
+
+const { galleryKey, sectionTitle, items, viewLabel, expandLabel, closeLabel, externalLinkLabel } = Astro.props;
+const baseGalleryId = galleryKey ?? sectionTitle;
+const galleryId = baseGalleryId
+  .toLowerCase()
+  .replace(/\s+/g, '-')
+  .replace(/[^a-z0-9\-가-힣]/g, '');
+const gridClass = items.length > 1 ? 'mt-4 grid gap-4 md:grid-cols-2' : 'mt-4 grid gap-4';
+---
+
+<section class="rounded-[1.45rem] border border-slate-900/10 bg-[linear-gradient(180deg,#fdfefe_0%,#f6fafc_100%)] p-5">
+  <div class="flex items-center justify-between gap-3">
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
+      {sectionTitle}
+    </p>
+    <span class="rounded-full border border-sky-800/10 bg-sky-50 px-3 py-1 text-[11px] font-semibold tracking-[0.16em] text-sky-800">
+      {viewLabel}
+    </span>
+  </div>
+
+  <div class={gridClass}>
+    {items.map((item, index) => {
+      const dialogId = `reference-preview-${galleryId}-${index}`;
+
+      return (
+        <figure class="rounded-[1.2rem] border border-slate-900/10 bg-white/85 p-3 shadow-[0_20px_50px_-40px_rgba(15,23,42,0.35)]">
+          <button
+            type="button"
+            class="group block w-full cursor-zoom-in text-left transition hover:-translate-y-0.5"
+            data-reference-preview-open={dialogId}
+            aria-label={`${item.title} ${expandLabel}`}
+          >
+            <div class="overflow-hidden rounded-[1.2rem] border border-slate-900/10 bg-slate-50 shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)]">
+              <img
+                src={item.src}
+                alt={item.alt}
+                loading="lazy"
+                class="block h-auto w-full bg-white"
+              />
+            </div>
+            <span class="mt-3 inline-flex rounded-full border border-sky-800/15 bg-sky-50 px-3 py-1 text-[11px] font-semibold tracking-[0.14em] text-sky-800 transition group-hover:border-sky-800/30 group-hover:bg-sky-100">
+              {expandLabel}
+            </span>
+          </button>
+
+          <dialog
+            id={dialogId}
+            class="reference-preview-dialog m-auto w-[min(1120px,92vw)] max-w-none rounded-[1.4rem] border border-slate-900/10 bg-white p-0 text-left shadow-[0_36px_120px_-48px_rgba(15,23,42,0.6)] backdrop:bg-slate-950/72"
+            aria-label={item.title}
+          >
+            <div class="flex items-center justify-between gap-4 border-b border-slate-900/10 px-5 py-4">
+              <div>
+                <p class="text-sm font-semibold text-slate-900">{item.title}</p>
+                {item.caption && (
+                  <p class="mt-1 text-sm text-slate-500">{item.caption}</p>
+                )}
+              </div>
+              <button
+                type="button"
+                class="rounded-full border border-slate-900/10 px-3 py-1 text-sm font-semibold text-slate-600 transition hover:border-slate-900/20 hover:bg-slate-100 hover:text-slate-900"
+                data-reference-preview-close={dialogId}
+              >
+                {closeLabel}
+              </button>
+            </div>
+
+            <div class="max-h-[78vh] overflow-auto bg-slate-50 p-4">
+              <img
+                src={item.src}
+                alt={item.alt}
+                loading="lazy"
+                class="mx-auto block h-auto max-w-full rounded-[1rem] bg-white shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)]"
+              />
+            </div>
+          </dialog>
+
+          <figcaption class="px-1 pb-1 pt-4">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <p class="text-sm font-semibold text-slate-900">{item.title}</p>
+              {item.href && (
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  class="inline-flex items-center rounded-full border border-sky-800/15 bg-sky-50 px-3 py-1 text-[11px] font-semibold tracking-[0.14em] text-sky-800 transition hover:border-sky-800/30 hover:bg-sky-100"
+                >
+                  {externalLinkLabel}
+                </a>
+              )}
+            </div>
+            {item.caption && (
+              <p class="mt-2 text-sm leading-7 text-slate-600">{item.caption}</p>
+            )}
+          </figcaption>
+        </figure>
+      );
+    })}
+  </div>
+</section>
+
+<script>
+  const dialogs = document.querySelectorAll('.reference-preview-dialog');
+
+  const closeDialog = (dialogId) => {
+    const dialog = document.getElementById(dialogId);
+    if (dialog instanceof HTMLDialogElement) {
+      dialog.close();
+    }
+  };
+
+  document.querySelectorAll('[data-reference-preview-open]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const dialogId = button.getAttribute('data-reference-preview-open');
+      const dialog = dialogId ? document.getElementById(dialogId) : null;
+      if (dialog instanceof HTMLDialogElement) {
+        dialog.showModal();
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-reference-preview-close]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const dialogId = button.getAttribute('data-reference-preview-close');
+      if (dialogId) {
+        closeDialog(dialogId);
+      }
+    });
+  });
+
+  dialogs.forEach((dialog) => {
+    dialog.addEventListener('click', (event) => {
+      const bounds = dialog.getBoundingClientRect();
+      const clickedInside =
+        bounds.top <= event.clientY &&
+        event.clientY <= bounds.top + bounds.height &&
+        bounds.left <= event.clientX &&
+        event.clientX <= bounds.left + bounds.width;
+
+      if (!clickedInside) {
+        dialog.close();
+      }
+    });
+  });
+</script>

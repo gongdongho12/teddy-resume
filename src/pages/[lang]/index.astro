@@ -1,15 +1,15 @@
 ---
 import ResumeLayout from '@/templates/default/ResumeLayout.astro';
 import { loadResume } from '@/lib/load-resume';
+import { normalizeLang, SUPPORTED_LANGS } from '@/lib/i18n';
 import type { Lang } from '@/lib/resume-types';
 
 export function getStaticPaths() {
-  return [{ params: { lang: 'ko' } }, { params: { lang: 'en' } }];
+  return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
 }
 
-const param = Astro.params.lang;
-const lang: Lang = param === 'en' ? 'en' : 'ko';
+const lang: Lang = normalizeLang(Astro.params.lang);
 const profile = loadResume();
----
+--- 
 
 <ResumeLayout lang={lang} profile={profile} />

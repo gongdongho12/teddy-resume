@@ -6,15 +6,14 @@ import AcademicLayout from '@/templates/academic/ResumeLayout.astro';
 import ExecutiveLayout from '@/templates/executive/ResumeLayout.astro';
 
 import { loadResume } from '@/lib/load-resume';
+import { normalizeLang, SUPPORTED_LANGS } from '@/lib/i18n';
 import type { Lang } from '@/lib/resume-types';
 import { AVAILABLE_TEMPLATES, type TemplateId } from '@/lib/templates';
 import { baseUrlJoin } from '@/lib/base-url';
 
 export function getStaticPaths() {
-  const langs = ['ko', 'en'];
-  
-  return langs.flatMap(lang => 
-    AVAILABLE_TEMPLATES.map(t => ({
+  return SUPPORTED_LANGS.flatMap((lang) =>
+    AVAILABLE_TEMPLATES.map((t) => ({
       params: { lang, template: t.id }
     }))
   );
@@ -23,7 +22,7 @@ export function getStaticPaths() {
 const paramLang = Astro.params.lang;
 const paramTemplate = Astro.params.template as TemplateId;
 
-const lang: Lang = paramLang === 'en' ? 'en' : 'ko';
+const lang: Lang = normalizeLang(paramLang);
 const profile = loadResume();
 
 const Layouts: Record<TemplateId, any> = {

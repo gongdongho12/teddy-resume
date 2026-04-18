@@ -1,9 +1,8 @@
-export type Lang = 'ko' | 'en';
+import type { Lang } from '@/lib/i18n';
 
-export interface Localized {
-  ko: string;
-  en: string;
-}
+export type { Lang };
+
+export type Localized = Record<Lang, string>;
 
 export interface Contact {
   phone: string;
@@ -43,16 +42,20 @@ export interface Award {
 export interface Activity {
   title: Localized;
   period: Localized;
+  description?: Localized;
 }
 
 export interface Project {
   title: Localized;
   period: Localized;
+  portfolioSlug?: string;
+  portfolioAnchor?: string;
+  externalUrl?: string;
   badge?: Localized;
   summary?: Localized;
   tech: string[];
-  highlights: { ko: string[]; en: string[] };
-  results?: { ko: string[]; en: string[] };
+  highlights: Record<Lang, string[]>;
+  results?: Record<Lang, string[]>;
 }
 
 export interface ProjectSection {

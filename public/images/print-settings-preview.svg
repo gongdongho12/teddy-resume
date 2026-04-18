@@ -1,0 +1,32 @@
+<svg width="477" height="489" viewBox="0 0 477 489" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="477" height="489" fill="#2A2B2F"/>
+  <text x="30" y="46" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="21" font-weight="700">인쇄</text>
+  <text x="365" y="46" fill="#F8FAFC" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="16" font-weight="700">페이지 10쪽</text>
+  <text x="28" y="116" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="18" font-weight="700">대상</text>
+  <rect x="210" y="88" width="210" height="44" rx="10" fill="#33353B" stroke="#7A7E87"/>
+  <path d="M229 100H240L249 109V122H229V100Z" fill="#D1D5DB"/>
+  <path d="M240 100V109H249" stroke="#9CA3AF" stroke-width="2"/>
+  <text x="264" y="117" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="16" font-weight="500">PDF로 저장</text>
+  <path d="M388 108L394 114L400 108" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="28" y="184" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="18" font-weight="700">페이지</text>
+  <rect x="210" y="156" width="240" height="44" rx="10" fill="#33353B" stroke="#7A7E87"/>
+  <text x="224" y="183" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="16" font-weight="500">전체</text>
+  <path d="M418 176L424 182L430 176" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="28" y="252" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="18" font-weight="700">시트당 페이지 수</text>
+  <rect x="210" y="224" width="240" height="44" rx="10" fill="#33353B" stroke="#7A7E87"/>
+  <text x="224" y="251" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="16" font-weight="500">1</text>
+  <path d="M418 244L424 250L430 244" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="28" y="320" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="18" font-weight="700">여백</text>
+  <text x="28" y="388" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="18" font-weight="700">옵션</text>
+  <rect x="194" y="279" width="270" height="201" fill="none" stroke="#FF2B2B" stroke-width="5"/>
+  <rect x="210" y="292" width="240" height="44" rx="10" fill="#4A4C53" stroke="#8AB4F8" stroke-width="2"/>
+  <text x="224" y="319" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="16" font-weight="500">기본</text>
+  <path d="M418 312L424 318L430 312" stroke="#D1D5DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="210" y="336" width="240" height="122" fill="#2F3136" stroke="#E5E7EB"/>
+  <text x="224" y="357" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="16" font-weight="500">기본</text>
+  <rect x="210" y="367" width="240" height="32" fill="#8AB4F8"/>
+  <rect x="213" y="360" width="56" height="39" fill="#93C000"/>
+  <text x="223" y="389" fill="#132200" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="16" font-weight="800">없음</text>
+  <text x="224" y="420" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="16" font-weight="500">최소</text>
+  <text x="224" y="449" fill="white" font-family="Pretendard, Noto Sans KR, Arial, sans-serif" font-size="16" font-weight="500">맞춤</text>
+</svg>

@@ -1,27 +1,47 @@
 ---
-import { baseUrlJoin } from '@/lib/base-url';
 import CommonHead from '@/components/CommonHead.astro';
+import { DEFAULT_LANG, getPortfolioUrl, LANGUAGE_LABELS, SUPPORTED_LANGS } from '@/lib/i18n';
+import { baseUrlJoin } from '@/lib/base-url';
 
-const resumeKo = baseUrlJoin('ko');
-const resumeEn = baseUrlJoin('en');
-const portfolioKo = baseUrlJoin('ko', 'portfolio');
-const portfolioEn = baseUrlJoin('en', 'portfolio');
+const defaultResumeUrl = baseUrlJoin(DEFAULT_LANG);
+const resumeLinks = SUPPORTED_LANGS.map((lang) => ({
+  href: baseUrlJoin(lang),
+  label: lang === 'ko' ? `${LANGUAGE_LABELS[lang]} 이력서` : `${LANGUAGE_LABELS[lang]} Resume`,
+}));
+const portfolioLinks = SUPPORTED_LANGS.map((lang) => ({
+  href: getPortfolioUrl(lang),
+  label: lang === 'ko' ? '포트폴리오' : `${LANGUAGE_LABELS[lang]} Portfolio`,
+}));
 ---
 <!DOCTYPE html>
 <html lang="ko">
   <head>
     <CommonHead title="teddy-resume" />
-    <meta http-equiv="refresh" content={`0;url=${resumeKo}`} />
+    <script
+      src="/scripts/index-lang-redirect.js"
+      defer
+      data-ko-url={baseUrlJoin('ko')}
+      data-en-url={baseUrlJoin('en')}
+      data-fallback-lang={DEFAULT_LANG}
+    ></script>
+    <noscript>
+      <meta http-equiv="refresh" content={`0;url=${defaultResumeUrl}`} />
+    </noscript>
   </head>
   <body class="min-h-screen bg-gray-100 print:bg-transparent p-8 font-sans text-sm text-gray-600">
     <p class="text-center">
-      <a class="font-medium text-indigo-800 underline" href={resumeKo}>한국어 이력서</a>
-      <span class="mx-2 text-gray-400">·</span>
-      <a class="font-medium text-indigo-800 underline" href={resumeEn}>English</a>
-      <span class="mx-2 text-gray-400">·</span>
-      <a class="font-medium text-indigo-800 underline" href={portfolioKo}>포트폴리오</a>
-      <span class="mx-2 text-gray-400">·</span>
-      <a class="font-medium text-indigo-800 underline" href={portfolioEn}>Portfolio EN</a>
+      {resumeLinks.map((link, index) => (
+        <>
+          {index > 0 && <span class="mx-2 text-gray-400">·</span>}
+          <a class="font-medium text-indigo-800 underline" href={link.href}>{link.label}</a>
+        </>
+      ))}
+      {portfolioLinks.map((link) => (
+        <>
+          <span class="mx-2 text-gray-400">·</span>
+          <a class="font-medium text-indigo-800 underline" href={link.href}>{link.label}</a>
+        </>
+      ))}
     </p>
   </body>
 </html>

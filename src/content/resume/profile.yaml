@@ -37,17 +37,17 @@ experience:
     location_en: Seoul, South Korea
     description:
       ko: |
-        전략 패턴 기반 멀티 PG 결제 시스템 설계 — 단일 간편결제 인터페이스로 다수 PG 및 포인트 복합결제를 처리하는 아키텍처 적용
-        DLQ 및 다단계 미수 배치 기반 정산 안정성 확보
-        카카오 T 플랫폼 연동 설계 — 인증 및 결제 프로세스를 4개의 MSA 도메인에 걸쳐 통합 설계 및 구현
-        프로모션(쿠폰/포인트) 개발로 고객 리텐션 증대, 환경부 로밍 서비스 안정성 개선, 차량 조회 API에 공인인증서 처리 및 Fallback 로직(서킷브레이커) 구성
+        전략 패턴 기반 멀티 PG·간편결제·포인트 복합결제 아키텍처 설계 — 단일 인터페이스로 다수 결제서비스를 통합
+        DLQ 및 다단계 미수 배치로 정산 안정성 확보, 카카오 T 인증/결제를 4개 MSA 도메인에 걸쳐 통합 설계·구현
+        프로모션(쿠폰/포인트) 개발로 고객 리텐션 증대
+        차량 조회 API 공인인증서 연동 및 Fallback 적용
         AI 워크플로우 표준화, 문서 자동 생성 등 DX 인프라 구축
       en: |
-        Designed a Multi-PG and Point combination payment system using the Strategy pattern—unifying multiple payment gateways via a single interface.
-        Ensured settlement stability through DLQ and multi-step unpaid batch processing.
-        Architected and implemented Kakao T platform integration—orchestrating account authentication and payment flows across 4 distinct MSA domains.
-        Developed promotion (coupon/point) systems to increase customer retention, improved reliability of government roaming service, public certificate processing and fallback logic (circuit breaker) for vehicle lookup API
-        AI workflow standardization, auto-doc generation, DX infrastructure
+        Designed a strategy-pattern payment architecture that unified multiple payment services, simple-pay methods, and point-combined payments behind a single interface.
+        Improved settlement reliability with DLQ and multi-stage unpaid batches, and integrated Kakao T auth/payment flows across 4 MSA domains.
+        Built coupon/point promotions to improve retention.
+        Integrated public-certificate handling into the vehicle lookup API and added fallback logic.
+        Standardized AI workflows and automated documentation as DX infrastructure.
 
   - company:
       ko: 카카오스타일
@@ -207,11 +207,7 @@ education:
       ko: 2013.03 ~ 2016.02
       en: Mar 2013 — Feb 2016
 
-awards:
-  - title: AngelHack 2020
-    subtitle:
-      ko: Common Computer Prize
-      en: Common Computer Prize
+awards: []
 
 activities:
   - title:
@@ -305,15 +301,6 @@ activities:
       ko: 해커톤 멘토로 참여하여 FE/BE 멘토링 및 커리어 상담을 진행했습니다
       en: Provided FE/BE mentoring and career counseling as a hackathon mentor.
   - title:
-      ko: 대학생연합IT동아리 잇타(IT’sTime) 백엔드 멘토
-      en: IT'sTime (College IT Union) Backend Mentor
-    period:
-      ko: 2023.05.13 ~ 2023.07.31
-      en: May 2023 — Jul 2023
-    description:
-      ko: 대학생 대상으로 현직자와의 만남 세미나 및 백엔드 프로젝트 멘토링까지 멘토링을 진행했습니다
-      en: Conducted seminars and project mentoring for university students.
-  - title:
       ko: 프로그래머스 스쿨 내일배움코스 11기 JAVA 멘토
       en: Programmers School JAVA Mentor (11th)
     period:
@@ -341,6 +328,15 @@ activities:
     description:
       ko: 리눅스 관련 커뮤니티의 운영진으로 Infra를 담당하여 Forum과 Wiki 그리고 ASK 등의 서비스 및 메일서버의 구축 및 유지보수를 진행했습니다
       en: Managed infrastructure (Forum, Wiki, ASK, Mail server) for the Linux community.
+  - title:
+      ko: AngelHack 2020
+      en: AngelHack 2020
+    period:
+      ko: "2020"
+      en: "2020"
+    description:
+      ko: Common Computer Prize 수상
+      en: Received the Common Computer Prize
 
 projectSections:
   - heading:
@@ -348,18 +344,18 @@ projectSections:
       en: Projects — LGU+ VoltUp
     projects:
       - title:
-          ko: 멀티 PG 결제 시스템 및 정산 안정화
-          en: Multi-PG billing & settlement reliability
-
+          ko: 멀티 벤더 결제 시스템 및 정산 안정화
+          en: Multi-vendor billing & settlement reliability
+        portfolioSlug: multi-pg-payment
         period:
           ko: 2024.10 ~ 현재
           en: Oct 2024 — Present
         summary:
           ko: |
-            결제 서비스를 초기 설계부터 주도하여 단일 PG(카카오페이)에서 3개 PG사를 수용하는 멀티 모듈로 확장하고,
+            결제 서비스를 초기 설계부터 주도하여 단일 결제(카카오페이)에서 3개 PG사를 수용하는 멀티 모듈로 확장하고,
             다층 미수 관리 시스템을 구축하여 매출 정산의 정확도를 확보했습니다.
           en: |
-            Led billing design from the start; expanded from a single PG to KakaoPay, Toss Payments, and Kakao T with
+            Led billing design from the start; expanded from a single payment flow (KakaoPay) to KakaoPay, Toss Payments, and Kakao T with
             shared error-code mapping. Layered arrears batches, retry→DLQ, and NACK recovery; SQL keepalive and pool tuning.
         tech:
           - Kotlin
@@ -382,6 +378,7 @@ projectSections:
       - title:
           ko: 통합 프로모션(쿠폰/포인트) 플랫폼 구축
           en: Coupon & point promotion platform
+        portfolioSlug: promotion-platform
         period:
           ko: "쿠폰: 2025.07 / 포인트: 2025.08 ~ 10"
           en: "Coupon: Jul 2025 / Points: Aug–Oct 2025"
@@ -413,14 +410,16 @@ projectSections:
       - title:
           ko: 유저 사이드 백엔드
           en: User-side Backend
+        portfolioSlug: kakao-t-integration
+        portfolioAnchor: user-side-backend-overview
         period:
           ko: 2025.07 ~ 현재
           en: Jul 2025 — Present
         summary:
           ko: |
-            카카오T 계정/결제 연동(4개 MSA 관통), PnC 자동충전, 미결제 감시 등 사용자 경험의 핵심이 되는 백엔드 전반을 개발했습니다.
+            카카오T 계정/결제 연동(4개 MSA 관통), PnC(Plug & Charge) 자동충전, 미결제 감시 등 사용자 경험의 핵심이 되는 백엔드 전반을 개발했습니다.
           en: |
-            Developed core user-side backend features including Kakao T account/payment integration across 4 MSAs, PnC auto-charge, and unpaid-charge monitoring.
+            Developed core user-side backend features including Kakao T account/payment integration across 4 MSAs, PnC (Plug & Charge) auto-charge, and unpaid-charge monitoring.
         tech:
           - Kotlin
           - Spring Boot
@@ -429,14 +428,14 @@ projectSections:
         highlights:
           ko:
             - 카카오T 계정/결제 연동을 4개 MSA(auth→user→billing→feapp)에 걸쳐 설계 및 구현 — OAuth2 기반 계정 연동, 결제수단 등록(5단계), 결제 승인/부분 취소까지 전체 플로우 담당
-            - 차량 등록 서비스 및 PnC(Plug and Charge) 인증 등록 서비스 개발
+            - 차량 등록 서비스 및 PnC(Plug & Charge) 인증 등록 서비스 개발
             - 프로모션 쿠폰 발급 배치 구상 및 개발
-            - 외부 인증서 서비스에 서킷브레이커 패턴 적용 — 장애 인증서 자동 비활성화 및 복구, 전체 장애 시 강제 리셋 Fallback
+            - 외부 인증서 서비스에 서킷브레이커 패턴 적용 — 장애 인증서 자동 비활성화 및 복구, 전체 장애 시 강제 리셋 복구 경로 구성
           en:
             - Designed and implemented Kakao T account/payment integration across 4 MSAs (auth→user→billing→feapp) — OAuth2 account linking, 5-step card registration, payment approval/partial cancellation
-            - Vehicle registration service and PnC (Plug and Charge) authentication registration service
+            - Vehicle registration service and PnC (Plug & Charge) authentication registration service
             - Promotion coupon issuance batch — designed and developed
-            - Circuit breaker pattern for external certificate service — auto-disable on failure with recovery, force-reset fallback on total outage
+            - Circuit breaker pattern for external certificate service — auto-disable on failure with recovery and a force-reset recovery path for total outages
         results:
           ko:
             - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현
@@ -444,8 +443,8 @@ projectSections:
             - Full Kakao T partner integration: card registration, payment, cancellation, and promotion lifecycle implemented across 4 MSA services
 
       - title:
-          ko: 볼트업 하이브리드 앱 (Flutter)
-          en: VoltUp Hybrid App (Flutter)
+          ko: 볼트업 하이브리드 앱 (Flutter - iOS/Android)
+          en: VoltUp Hybrid App (Flutter - iOS/Android)
         period:
           ko: "2024.12 ~ 현재"
           en: "Dec 2024 — Present"
@@ -462,13 +461,13 @@ projectSections:
         highlights:
           ko:
             - 서비스 개발 가능 범위 산정(PoC) 및 Android/iOS 하이브리드 앱 신속 개발 및 런칭(2025.03)
-            - JSBridge를 통해 프론트엔드와 하드웨어·앱 메시지 통신 구현 — 20+ 네이티브 브릿지 타입 개발
+            - JSBridge를 통해 프론트엔드와 하드웨어·앱 메시지 통신 구현 — 20개 이상의 다수 네이티브 브릿지 로직 개발
             - QR 코드 인식률 개선을 위해 ML Kit 바코드 스캐너 도입
             - FCM 기반 푸시 알림 시스템 구축
             - 앱 디버그 콘솔 개발
           en:
             - Rapid Android/iOS hybrid delivery via Flutter for 2.0 launch (2025.03)
-            - JSBridge for frontend–hardware and app message communication — 20+ native bridge types
+            - JSBridge for frontend–hardware and app message communication — developed 20+ native bridge flows
             - ML Kit barcode scanner integration for QR code recognition improvement
             - FCM-based push notification system
             - In-app debug console development
@@ -513,6 +512,7 @@ projectSections:
       - title:
           ko: 개발 생산성 자동화 및 DevOps 개선
           en: Developer productivity & DevOps
+        portfolioSlug: devops-automation
         period:
           ko: 2024.10 ~ 현재
           en: Oct 2024 — Present
@@ -530,7 +530,7 @@ projectSections:
           - Gradle
         highlights:
           ko:
-            - GitHub Copilot(11개 프롬프트), Claude Code(8개 스킬 — billing/roaming/admin/feapp/auth 서비스별 워크플로우), Cursor, Antigravity 등 AI 도구를 활용하여 사내 컨벤션에 맞춘 공통 작업 스킬 레포지토리 구축
+            - GitHub Copilot(11개 프롬프트), Claude Code(8개 스킬), Cursor, Antigravity 등 AI 도구를 활용해 각 마이크로서비스의 작업 컨벤션과 공통 작업 형상을 재사용 가능한 스킬 레포지토리로 구축
             - run-gemini-cli를 활용한 1차 코드 리뷰 자동화
             - Docusaurus + GitHub Actions 기반 개발 문서 자동 생성 시스템 구축 — Git Polling 방식으로 코드 변경 감지 시 문서 자동 갱신
             - Firebase App Distribution 도입으로 QA/배포 프로세스 병목 제거
@@ -538,7 +538,7 @@ projectSections:
             - MSA 환경의 설정 파일(application-local.yaml) 자동 생성 도구 개발
             - Android Jenkins 파이프라인 공통 라이브러리화, GCS Gradle 캐시, iOS 자동 배포, ProGuard/R8 정책 등
           en:
-            - Tailored Copilot (11 prompts), Claude Code (8 skills per MSA service), Cursor workflows across all repositories
+            - Built a reusable skill repository from microservice-level working conventions and recurring task shapes with Copilot (11 prompts), Claude Code (8 skills), Cursor, and Antigravity
             - Gemini CLI for first-pass review load shedding
             - Docusaurus + GitHub Actions auto-doc system with git-polling change detection
             - Firebase App Distribution; QA self-serve payment cancel in STG/DEV
@@ -559,14 +559,14 @@ projectSections:
       en: Projects — Kakao Style (2022.06 — 2024.09)
     projects:
       - title:
-          ko: 스마트폰 프록시 및 가격 모니터링 리포트
-          en: Mobile Proxy & Price Monitoring Report
+          ko: 모바일 IP 대역 프록시 인프라 및 다이나믹 프라이싱
+          en: Mobile IP Pool Proxy Infrastructure & Dynamic Pricing
         period:
           ko: 2024.01 ~ 2024.09
           en: Jan 2024 — Sep 2024
         summary:
-          ko: 크롤링 차단 회피를 위한 모바일 프록시 서버 풀 구축 및 가격 우열위 자동화 파이프라인 구성
-          en: Built a mobile proxy server pool to bypass crawling blocks and automated the price comparison pipeline.
+          ko: 크롤링 차단 회피를 위한 모바일 IP 대역 프록시 인프라 구축 및 가격 우열위 기반 다이나믹 프라이싱 자동화 파이프라인 구성
+          en: Built a mobile IP pool proxy infrastructure to bypass crawling blocks and automated a dynamic pricing pipeline based on price competitiveness.
         tech:
           - Docker
           - MitmProxy
@@ -578,19 +578,21 @@ projectSections:
           - AWS Athena
         highlights:
           ko:
-            - IP 대역 유동 사용을 위한 포트 별 스마트폰 HTTP Proxy 할당 및 프록시 풀 조회 API 개발
-            - 비행기모드/재부팅 등 스마트폰 제어 API 및 Rate Limit 자동 관리 프로세스 구축
+            - IP 대역 유동 사용을 위한 포트별 모바일 HTTP Proxy 할당 및 프록시 풀 조회 API 개발
+            - 비행기모드/재부팅 등 모바일 디바이스 제어 API 및 Rate Limit 자동 관리 프로세스 구축
             - 외부 수집 데이터(EP, 최저가)와 내부 상품 간 매칭 데이터셋 구성 및 AWS Athena 적재
-            - 가격 우위/열위 비교 및 엑셀 리포트 생성 배치잡 개발
+            - 가격 우위/열위 비교를 반영한 다이나믹 프라이싱 및 엑셀 리포트 생성 배치잡 개발
           en:
-            - Allocated per-port smartphone HTTP proxies and developed proxy pool lookup APIs
-            - Built smartphone control APIs (airplane mode, reboot) and automated rate limit management
+            - Allocated per-port mobile HTTP proxies and developed proxy pool lookup APIs
+            - Built mobile device control APIs (airplane mode, reboot) and automated rate limit management
             - Constructed matching datasets between external (EP, lowest price) and internal products via AWS Athena
-            - Developed batch jobs for price advantage analysis and Excel report generation
+            - Developed batch jobs for dynamic pricing based on price-gap analysis and Excel report generation
 
       - title:
           ko: N:M 동일 상품 매칭
           en: N:M Identical Product Matching
+        portfolioSlug: pricing-platform
+        portfolioAnchor: pricing-platform-product-matching
         period:
           ko: 2024.02 ~ 2024.09
           en: Feb 2024 — Sep 2024
@@ -601,9 +603,8 @@ projectSections:
           - Kotlin
           - Spring Boot
           - Spring Batch
-          - DGS Framework
+          - DGS Framework(GraphQL)
           - MySQL
-          - QueryDSL
           - Spring Kafka
           - AWS Athena
         highlights:
@@ -617,34 +618,32 @@ projectSections:
             - Built matching lookup APIs for review integration and automated matching via Kafka consumers
 
       - title:
-          ko: 파이널 프라이싱 (가격 계산 로직 통합)
-          en: Final Pricing (Unified Calculation Logic)
+          ko: 파이널 프라이싱 (각 서비스별 가격 계산 로직 통합 API)
+          en: Final Pricing (Unified API for Service-Level Pricing Logic)
+        portfolioSlug: pricing-platform
+        portfolioAnchor: pricing-platform-final-pricing
         period:
           ko: 2023.12 ~ 2024.09
           en: Dec 2023 — Sep 2024
         summary:
-          ko: 각 지면별로 분산되어 있던 가격 계산 로직을 하나의 API로 통합하여 쿠폰, 프로모션 등 모든 혜택을 일관되게 제공
-          en: Consolidated scattered price calculation logic into a single API for consistent coupon, promo, and discount application.
+          ko: 각 지면별로 분산되어 있던 가격 계산 로직을 하나의 API로 통합하여 쿠폰, 프로모션 등 모든 혜택을 통일
+          en: Unified scattered pricing logic into a single API so coupons, promotions, and other benefits follow one contract.
         tech:
           - Kotlin
           - Spring Boot
-          - DGS Framework
-          - MySQL
-          - QueryDSL
-          - Resilience4j
+          - DGS Framework(GraphQL)
         highlights:
           ko:
-            - 전사 지면의 복잡한 금액 계산 로직 파악 및 통합 API 설계
             - 서비스 안정성을 위한 타임아웃 및 서킷브레이커 적용
-            - 사내 전 지면 게이트웨이 연동 및 가격 노출 정합성 확보
+            - 사내 전 지면 게이트웨이와 연동해 분산된 가격 계산 로직을 통합 API로 정리하고 가격 노출 정합성 확보
           en:
-            - Analyzed complex pricing logic across all pages and designed a unified API
             - Applied timeouts and circuit breakers for service stability
-            - Integrated with company-wide gateways to ensure price exposure consistency
+            - Consolidated scattered pricing logic into a unified API across company-wide gateways and ensured price exposure consistency
 
       - title:
           ko: 멤버십/마일리지 서비스 이관 및 고도화
           en: Membership & Mileage Migration
+        portfolioSlug: membership-migration
         period:
           ko: 2023.04 ~ 2023.06
           en: Apr 2023 — Jun 2023
@@ -655,32 +654,32 @@ projectSections:
           - Kotlin
           - Spring Boot
           - Spring Batch
-          - DGS Framework
-          - GraphQL
+          - DGS Framework(GraphQL)
           - JPA
-          - QueryDSL
           - MySQL
           - Kafka
         highlights:
           ko:
             - cormo.js 기반 레거시를 Spring Boot로 1:1 DB 마이그레이션 및 무중단 이관
-            - 멤버십 등급 산정 기간 확대(3→6개월) 및 등급별 마일리지 적립 로직 개발
+            - 멤버십 등급 산정 기간 확대(3→6개월)
             - 3개월 단위 등급 산정액 계산을 달별 캐시 + 누적합 방식으로 최적화
           en:
             - Zero-downtime migration of cormo.js legacy to Spring Boot via 1:1 DB migration
-            - Expanded tier calculation periods and developed tier-based mileage earn logic
+            - Expanded the membership tier calculation period from 3 to 6 months
             - Optimized 3-month tier calculation by caching monthly totals and using cumulative sums
         results:
           ko:
             - 캐싱 도입으로 DB 부하를 임계치(70%)에서 30% 이내로 대폭 감소
-            - 통합 테스트 및 게이트웨이 점진적 전환으로 기존 동작 유지하며 무중단 배포 성공
+            - API 입출력 통합 테스트 및 게이트웨이 점진적 전환으로 무중단 배포 성공
           en:
             - Reduced DB load from 70% to under 30% through strategic caching
-            - Achieved zero-downtime deployment by ensuring legacy parity via integration tests
+            - Achieved zero-downtime deployment through API I/O integration tests and gradual gateway switching
 
       - title:
-          ko: 네이버 쇼핑 Engine Page 및 최저가 갱신
-          en: Naver Shopping Engine Page & Lowest Price Update
+          ko: 쇼핑 카탈로그 Engine Page 및 최저가 갱신 (네이버쇼핑 / 유튜브쇼핑)
+          en: Shopping Catalog Engine Page & Lowest-Price Updates (Naver Shopping / YouTube Shopping)
+        portfolioSlug: pricing-platform
+        portfolioAnchor: pricing-platform-shopping-catalog
         period:
           ko: 2022.06 ~ 2024.09
           en: Jun 2022 — Sep 2024
@@ -697,18 +696,20 @@ projectSections:
           ko:
             - 거래액 우위 상품 추출 배치 및 카드사 할인, 빠른배송 뱃지, 카테고리 매핑 연동
             - 타 가격비교 서비스와의 가격 우열위 판단 로직 및 Kafka 기반 실시간 상품 정보 컨슈밍
-            - 운영 효율화를 위한 백오피스 개발 및 CPC에서 CPS 버전으로의 성공적 전환
+            - 네이버 쇼핑 Engine Page·최저가 갱신 구조를 공통화해 구글 Engine Page(유튜브 쇼핑)까지 빠르게 확장하고, 운영 효율화용 백오피스와 CPC→CPS 전환까지 담당
           en:
             - Developed batch jobs for GMV-competitive products and integrated card promos/delivery badges
             - Implemented logic to compare prices with competitors and consumed real-time Kafka updates
-            - Built backoffice tools and managed successful transition from CPC to CPS versions
+            - Commonized the Engine Page and lowest-price update flow so it could be quickly extended to Google Engine Page (YouTube Shopping), while also building backoffice tooling and leading the CPC-to-CPS transition
         results:
           ko:
-            - 대량의 상품 풀 증가에도 불구하고 이벤트 기반의 상품 업데이트를 통해 배치 시간 단축 (4시간 → 2시간)
-            - 파이널 프라이싱의 기반이 되는 최종가 계산 로직의 초석 마련
+            - CPS 방식 전환에 필요한 2시간 상품 업데이트 간격을 맞추기 위해 전체 상품 갱신 대신 품절·가격 변동 상품만 부분 업데이트하도록 재구성해, 1시간 이내에 네이버 쇼핑이 읽어가는 CSV와 변경 상품 동기화용 데이터셋을 생성할 수 있게 함
+            - Engine Page 및 최저가 갱신 구조를 공통화해 구글 Engine Page(유튜브 쇼핑)도 빠르게 반영할 수 있는 확장 기반 마련
+            - 각 팀이 별도로 운영하던 최종 가격 API를 파이널 프라이싱 API로 통합해, 지면별로 달랐던 가격 계산 로직을 하나의 기준으로 정리하는 계기 마련
           en:
-            - Halved batch processing time (4h → 2h) via event-driven product updates despite increased product volume
-            - Established the foundational final price calculation logic used for future pricing systems
+            - To satisfy the 2-hour product update interval required for CPS, replaced full-catalog refreshes with partial updates for sold-out or price-changed items, enabling generation of the Naver Shopping feed CSV and changed-product sync dataset within an hour
+            - Built a shared Engine Page and lowest-price update structure that could be extended quickly to Google Engine Page (YouTube Shopping)
+            - Created the path to consolidate team-specific final-price APIs into a unified Final Pricing API, aligning previously inconsistent pricing logic across surfaces
 
   - heading:
       ko: 프로젝트 — 이전 경력
@@ -770,8 +771,10 @@ projectSections:
         results:
           ko:
             - 실시간 대시보드의 API 반복 호출 축소 및 차트 대시보드 메모리 부족 현상 감소
+            - 실제 서비스 운영자 관점으로 모니터링을 직접 활용하며, 장애·성능 분석에 유의미한 메트릭/차트 조합과 대시보드 구성을 설계·개선
           en:
             - Reduced API polling churn for real-time dashboards and mitigated memory pressure on chart-heavy screens
+            - Used the product from an operator's perspective to shape meaningful metric/chart combinations and dashboard compositions for troubleshooting and performance analysis
 
       - title:
           ko: 잇플루언서 프로젝트
@@ -807,7 +810,7 @@ projectSections:
             - Improved marketing accessibility for small businesses and startups
 
       - title:
-          ko: 알람톡 (안드로이드)
+          ko: 알람톡 (Android)
           en: AlarmTalk (Android)
         period:
           ko: 2016.05 ~ 2017.08
@@ -833,7 +836,7 @@ projectSections:
             - Built the in-app alarm store system
 
       - title:
-          ko: 포션 (안드로이드)
+          ko: 포션 (Android)
           en: Potion (Android)
         period:
           ko: 2016.05 ~ 2017.08
@@ -856,3 +859,67 @@ projectSections:
             - Developed core photo adjustment components (brightness, contrast, crop, etc.)
             - Implemented photo filter engine and effects through design collaboration
             - Integrated account systems and mission-related APIs
+
+  - heading:
+      ko: 기타 프로젝트
+      en: Personal Projects
+    projects:
+      - title:
+          ko: Commit Map
+          en: Commit Map
+        portfolioSlug: commit-map
+        externalUrl: https://map.dongholab.com/posts/2026-01-01-mie-nara-osaka/
+        badge:
+          ko: 개인 프로젝트
+          en: Personal Project
+        period:
+          ko: 운영 중
+          en: Ongoing
+        summary:
+          ko: 개인적으로 여행 계획과 이동 동선을 공유하고, 여행 루트 초안을 빠르게 잡기 위해 만든 지도 기반 여행 계획 서비스
+          en: A map-based travel planning service built to share my travel plans and quickly draft route ideas.
+        tech:
+          - Astro
+          - React
+          - TypeScript
+          - Leaflet
+          - Markdown
+          - GitHub Pages
+        highlights:
+          ko:
+            - 여행 일정과 이동 경로를 지도와 타임라인으로 함께 볼 수 있는 개인 서비스로 구성
+            - 여행지와 이동 루트를 자연어로 입력하면 AI 워크플로우가 일정 초안과 장소 구성을 잡아주고, 이후 Markdown으로 세부 계획을 직접 고도화할 수 있는 플로우 구성
+            - Markdown 기반 여행 데이터를 관리해 여행별 콘텐츠를 손쉽게 추가·운영하고, 정적 배포로 링크 하나만으로 여행 계획을 공유할 수 있게 운영
+          en:
+            - Built as a personal service that shows travel plans and routes together on a map and timeline
+            - Added an AI workflow that turns natural-language destinations and routes into a rough itinerary draft, which can then be refined directly in Markdown
+            - Manages trip content through Markdown-based travel data and static deployment so a single link can be used to share plans easily
+      - title:
+          ko: Teddy Resume
+          en: Teddy Resume
+        externalUrl: http://resume.dongholab.com/
+        badge:
+          ko: 개인 프로젝트
+          en: Personal Project
+        period:
+          ko: 운영 중
+          en: Ongoing
+        summary:
+          ko: 단일 YAML 소스에서 다국어 이력서와 프로젝트 포트폴리오를 여러 레이아웃으로 관리하고, 인쇄/PDF 출력까지 최적화한 개인 이력서 서비스
+          en: A personal resume service that manages multilingual resumes and project portfolio pages from a single YAML source across multiple layouts, optimized for print and PDF output.
+        tech:
+          - Astro
+          - TypeScript
+          - Tailwind CSS
+          - YAML
+          - html2canvas
+          - jsPDF
+        highlights:
+          ko:
+            - 단일 YAML 데이터 소스에서 한/영 이력서, 프로젝트 포트폴리오, 다중 이력서 레이아웃을 함께 관리하도록 구조화
+            - A4 자동 페이지네이션, 인쇄 여백 없음 가이드, 배경 그래픽 포함 안내, PDF 출력 흐름 등 실제 제출/공유 상황을 고려한 출력 UX 구현
+            - 프로젝트 링크 연결, 공통 언어 전환, 문구/구조 반복 튜닝이 빠르게 반영되도록 공통 컴포넌트와 콘텐츠 구조를 지속적으로 리팩토링
+          en:
+            - Structured the app so Korean/English resumes, project portfolio pages, and multiple resume layouts are managed from one YAML data source
+            - Implemented output UX for real submission and sharing scenarios, including A4 auto-pagination, no-margin print guidance, background-graphics hints, and PDF export flow
+            - Continuously refactored shared components and content structure so project links, common language switching, and repeated wording/layout tuning can be applied quickly

@@ -1,17 +1,16 @@
+import { DEFAULT_LANG } from '@/lib/i18n';
 import type { Lang, Localized } from '@/lib/resume-types';
 
 export function t(loc: Localized, lang: Lang): string {
-  if (lang === 'en') {
-    const v = loc.en?.trim();
-    if (v) return loc.en;
-  }
-  return loc.ko;
+  const value = loc[lang]?.trim();
+  if (value) return value;
+  return loc[DEFAULT_LANG];
 }
 
 export function bullets(
-  items: { ko: string[]; en: string[] },
+  items: Record<Lang, string[]>,
   lang: Lang,
 ): string[] {
-  if (lang === 'en' && items.en.length > 0) return items.en;
-  return items.ko;
+  if (items[lang]?.length > 0) return items[lang];
+  return items[DEFAULT_LANG] ?? [];
 }

@@ -1,0 +1,71 @@
+---
+import { LANGUAGE_LABELS, LANGUAGE_SHORT_LABELS, SUPPORTED_LANGS } from '@/lib/i18n';
+import { getTemplateUrl } from '@/lib/i18n';
+import type { Lang } from '@/lib/resume-types';
+import type { TemplateId } from '@/lib/templates';
+
+interface LanguageLink {
+  lang: Lang;
+  href: string;
+}
+
+interface Props {
+  lang: Lang;
+  currentTemplate?: TemplateId;
+  links?: LanguageLink[];
+  containerClass?: string;
+  linkClass?: string;
+  activeClass?: string;
+  separatorClass?: string;
+}
+
+const {
+  lang,
+  currentTemplate,
+  links,
+  containerClass = '',
+  linkClass = 'text-slate-500 hover:text-slate-900 hover:underline',
+  activeClass = 'text-slate-900',
+  separatorClass = 'text-slate-300',
+} = Astro.props;
+
+const resolvedLinks =
+  links ??
+  (currentTemplate
+    ? SUPPORTED_LANGS.map((candidate) => ({
+        lang: candidate,
+        href: getTemplateUrl(candidate, currentTemplate),
+      }))
+    : []);
+---
+
+{
+  resolvedLinks.length > 0 && (
+    <div class:list={['flex items-center gap-2 font-sans', containerClass]}>
+      {resolvedLinks.map((entry, index) => (
+        <>
+          {entry.lang === lang ? (
+            <span
+              aria-current="page"
+              title={LANGUAGE_LABELS[entry.lang]}
+              class:list={['text-[12px] font-semibold uppercase tracking-[0.18em]', activeClass]}
+            >
+              {LANGUAGE_SHORT_LABELS[entry.lang]}
+            </span>
+          ) : (
+            <a
+              href={entry.href}
+              title={LANGUAGE_LABELS[entry.lang]}
+              class:list={['text-[12px] font-semibold uppercase tracking-[0.18em] transition-colors', linkClass]}
+            >
+              {LANGUAGE_SHORT_LABELS[entry.lang]}
+            </a>
+          )}
+          {index < resolvedLinks.length - 1 && (
+            <span aria-hidden="true" class:list={['select-none text-[12px]', separatorClass]}>/</span>
+          )}
+        </>
+      ))}
+    </div>
+  )
+}

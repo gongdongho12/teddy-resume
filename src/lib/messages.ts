@@ -4,7 +4,6 @@ const table: Record<
   Lang,
   {
     docTitle: string;
-    navOther: string;
     experience: string;
     skills: string;
     education: string;
@@ -17,7 +16,6 @@ const table: Record<
 > = {
   ko: {
     docTitle: '강동호 — 이력서',
-    navOther: 'English',
     experience: '경력',
     skills: '기술',
     education: '학력',
@@ -29,7 +27,6 @@ const table: Record<
   },
   en: {
     docTitle: 'Dongho Kang — Resume',
-    navOther: '한국어',
     experience: 'Experience',
     skills: 'Skills',
     education: 'Education',

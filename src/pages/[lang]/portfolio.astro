@@ -1,33 +1,43 @@
 ---
 import CommonHead from '@/components/CommonHead.astro';
+import LanguageSwitcher from '@/components/LanguageSwitcher.astro';
 import MermaidDiagram from '@/components/MermaidDiagram.astro';
+import PortfolioReferenceGallery from '@/components/PortfolioReferenceGallery.astro';
+import PortfolioProjectTitleLink from '@/components/PortfolioProjectTitleLink.astro';
 import { baseUrlJoin } from '@/lib/base-url';
+import { normalizeLang, SUPPORTED_LANGS } from '@/lib/i18n';
 import { kakaoPiccomaPortfolio, portfolioText } from '@/lib/portfolio-content';
 import { loadResume } from '@/lib/load-resume';
 import type { Lang } from '@/lib/resume-types';
 
 export function getStaticPaths() {
-  return [{ params: { lang: 'ko' } }, { params: { lang: 'en' } }];
+  return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
 }
 
-const param = Astro.params.lang;
-const lang: Lang = param === 'en' ? 'en' : 'ko';
-const otherLang: Lang = lang === 'ko' ? 'en' : 'ko';
+const lang: Lang = normalizeLang(Astro.params.lang);
 const profile = loadResume();
 const content = kakaoPiccomaPortfolio;
-const otherLangUrl = baseUrlJoin(otherLang, content.slug);
 const resumeUrl = baseUrlJoin(lang);
+const portfolioLangLinks = SUPPORTED_LANGS.map((candidate) => ({
+  lang: candidate,
+  href: baseUrlJoin(candidate, content.slug),
+}));
 const orderedTitles = [
-  '멀티 PG 결제 시스템 및 정산 안정화',
+  '멀티 벤더 결제 시스템 및 정산 안정화',
   '카카오 T 계정 링크 및 결제수단 등록',
-  '차량 등록 / EVCC 자동 매핑 / PnC 인증',
+  '차량 등록 / 차량 고유 키 자동 매핑 / PnC(Plug & Charge) 인증',
   '통합 프로모션(쿠폰/포인트) 플랫폼 구축',
   '개발 생산성 자동화 및 DevOps 개선',
-  '파이널 프라이싱 API',
+  '프라이싱 플랫폼: 상품 관리 시스템과 프로모션 서비스',
   '멤버십/마일리지 서비스 이관 및 고도화',
+  'Commit Map',
 ];
+const getProjectOrder = (title: string) => {
+  const index = orderedTitles.indexOf(title);
+  return index === -1 ? orderedTitles.length : index;
+};
 const projects = [...content.projects].sort(
-  (a, b) => orderedTitles.indexOf(a.title.ko) - orderedTitles.indexOf(b.title.ko),
+  (a, b) => getProjectOrder(a.title.ko) - getProjectOrder(b.title.ko),
 );
 const hasDiagrams = projects.some((project) => (project.diagrams?.length ?? 0) > 0);
 
@@ -44,12 +54,12 @@ const engineeringThemes = [
       },
   lang === 'ko'
     ? {
-        title: '문제가 생긴 지점부터 보강하기',
-        body: '락, 재시도, 복구는 실제로 문제 난 구간부터 붙였습니다.',
+        title: '문제 지점을 보강하되 원인을 구조적으로 개선하기',
+        body: '락, 재시도, 복구는 실제로 문제 난 구간부터 붙이되, 가능하면 근본 원인을 원천 개선하는 방향으로 리팩토링하는 편입니다.',
       }
     : {
-        title: 'Reinforce where it hurts',
-        body: 'Locks, retries, and recovery were added where production pain actually showed up.',
+        title: 'Reinforce pain points, then fix the root cause',
+        body: 'I start with locks, retries, and recovery where production pain shows up, but prefer refactors that remove the underlying cause at the source whenever possible.',
       },
   lang === 'ko'
     ? {
@@ -83,9 +93,15 @@ const sectionLabels =
         interview: '실무에서 일한 방식',
         prompts: '엔지니어링 관점',
         diagrams: 'Mermaid로 보는 핵심 구조',
-      }
-    : {
-        intro: 'Introduction',
+          linked: '이력서 연결 지점',
+          references: '참고 화면',
+          referenceView: 'Preview',
+          referenceExpand: '이미지 클릭 시 확대',
+          referenceClose: '닫기',
+          referenceVisit: '서비스 보기',
+        }
+      : {
+          intro: 'Introduction',
         index: 'Contents',
         background: 'Design Context',
         implementation: 'Core Implementation',
@@ -95,7 +111,13 @@ const sectionLabels =
         interview: 'How I Worked In Practice',
         prompts: 'Engineering Lens',
         diagrams: 'Architecture Snapshot',
-      };
+          linked: 'Resume Link Points',
+          references: 'Reference Views',
+          referenceView: 'Preview',
+          referenceExpand: 'Click image to enlarge',
+          referenceClose: 'Close',
+          referenceVisit: 'Open service',
+        };
 ---
 
 <!DOCTYPE html>
@@ -132,6 +154,25 @@ const sectionLabels =
         <script type="module" is:inline>
           const mermaidModule = await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
           const mermaid = mermaidModule.default;
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const getHashTarget = () => {
+            const rawHash = window.location.hash?.slice(1);
+            if (!rawHash) return null;
+            const hash = decodeURIComponent(rawHash);
+            return document.getElementById(hash);
+          };
+          const scrollToHashTarget = (behavior = 'smooth') => {
+            const target = getHashTarget();
+            if (!target) return;
+            target.scrollIntoView({ behavior, block: 'start' });
+          };
+          const alignHashAfterLayout = async () => {
+            if (!window.location.hash) return;
+            await sleep(40);
+            scrollToHashTarget('auto');
+            await sleep(120);
+            scrollToHashTarget('smooth');
+          };
 
           mermaid.initialize({
             startOnLoad: false,
@@ -186,6 +227,19 @@ const sectionLabels =
               element.textContent = source;
             }
           }
+
+          if (document.fonts?.ready) {
+            try {
+              await document.fonts.ready;
+            } catch (error) {
+              console.warn('Font readiness check failed:', error);
+            }
+          }
+
+          await alignHashAfterLayout();
+          window.addEventListener('hashchange', () => {
+            requestAnimationFrame(() => scrollToHashTarget('smooth'));
+          });
         </script>
       </>
     )}
@@ -209,9 +263,12 @@ const sectionLabels =
           <a class="font-medium text-slate-600 transition hover:text-slate-900" href={resumeUrl}>
             {lang === 'ko' ? '이력서 보기' : 'View resume'}
           </a>
-          <a class="font-semibold text-sky-900 transition hover:text-sky-700" href={otherLangUrl}>
-            {lang === 'ko' ? 'English' : '한국어'}
-          </a>
+          <LanguageSwitcher
+            lang={lang}
+            links={portfolioLangLinks}
+            linkClass="text-sky-900 hover:text-sky-700 hover:underline"
+            activeClass="text-slate-900"
+          />
         </div>
       </nav>
 
@@ -313,11 +370,13 @@ const sectionLabels =
             <ol class="space-y-3 border-l border-slate-900/10 pl-4 text-sm leading-6 text-slate-600">
               {projects.map((project, index) => (
                 <li>
-                  <a href={`#project-${index + 1}`} class="block rounded-xl px-2 py-2 transition hover:bg-slate-50 hover:text-slate-950">
+                  <a href={`#${project.slug}`} class="block rounded-xl px-2 py-2 transition hover:bg-slate-50 hover:text-slate-950">
                     <span class="block text-xs font-semibold tracking-[0.18em] text-sky-800/70">
                       {(index + 1).toString().padStart(2, '0')}
                     </span>
-                    <span class="mt-1 block font-medium">{portfolioText(project.title, lang)}</span>
+                    <span class="mt-1 block font-medium">
+                      {portfolioText(project.indexLabel ?? project.title, lang)}
+                    </span>
                   </a>
                 </li>
               ))}
@@ -327,7 +386,7 @@ const sectionLabels =
 
         <section class="space-y-6">
         {projects.map((project, index) => (
-          <article id={`project-${index + 1}`} class="grid gap-6 rounded-[1.75rem] border border-slate-900/10 bg-white/78 p-6 shadow-[0_28px_80px_-52px_rgba(15,23,42,0.38)] backdrop-blur-sm lg:grid-cols-[7rem_minmax(0,1fr)] lg:p-7">
+          <article id={project.slug} class="grid gap-6 scroll-mt-8 rounded-[1.75rem] border border-slate-900/10 bg-white/78 p-6 shadow-[0_28px_80px_-52px_rgba(15,23,42,0.38)] backdrop-blur-sm lg:grid-cols-[7rem_minmax(0,1fr)] lg:p-7">
             <div class="flex items-start gap-3 lg:block">
               <span class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-800">
                 {lang === 'ko' ? 'Project' : 'Project'}
@@ -338,6 +397,16 @@ const sectionLabels =
             </div>
 
             <div class="space-y-10">
+              {(() => {
+                const hasReferenceImages = (project.referenceImages?.length ?? 0) > 0;
+                const useSplitReferenceContext =
+                  hasReferenceImages && project.referenceLayout === 'split-with-context';
+                const detailGridClass = useSplitReferenceContext
+                  ? 'grid gap-8'
+                  : 'grid gap-8 xl:grid-cols-2';
+
+                return (
+                  <>
               <header class="space-y-4">
                 <div class="flex flex-wrap items-center gap-3 text-sm text-slate-500">
                   <span>{portfolioText(project.company, lang)}</span>
@@ -346,7 +415,12 @@ const sectionLabels =
                 </div>
                 <div class="space-y-3">
                   <h2 class="text-3xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-[2.15rem]">
-                    {portfolioText(project.title, lang)}
+                    <PortfolioProjectTitleLink
+                      label={portfolioText(project.title, lang)}
+                      externalHref={project.externalUrl}
+                      className="text-slate-950"
+                      externalClassName="text-slate-400 hover:text-sky-700"
+                    />
                   </h2>
                   <p class="text-base font-medium leading-7 text-slate-700">
                     {portfolioText(project.roleLabel, lang)}
@@ -355,6 +429,26 @@ const sectionLabels =
                     {portfolioText(project.summary, lang)}
                   </p>
                 </div>
+                {project.subsections && project.subsections.length > 0 && (
+                  <div class="grid gap-3 md:grid-cols-2">
+                    {project.subsections.map((subsection) => (
+                      <section
+                        id={subsection.id}
+                        class="scroll-mt-24 rounded-[1.1rem] border border-slate-900/10 bg-[#f8fbfd] px-4 py-4"
+                      >
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-800">
+                          {sectionLabels.linked}
+                        </p>
+                        <h3 class="mt-2 text-sm font-semibold leading-6 text-slate-900">
+                          {portfolioText(subsection.title, lang)}
+                        </h3>
+                        <p class="mt-2 text-sm leading-7 text-slate-600">
+                          {portfolioText(subsection.description, lang)}
+                        </p>
+                      </section>
+                    ))}
+                  </div>
+                )}
                 <div class="flex flex-wrap gap-2">
                   {project.tech.map((item) => (
                     <span class="rounded-full border border-slate-900/10 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700">
@@ -364,26 +458,84 @@ const sectionLabels =
                 </div>
               </header>
 
-              <div class="grid gap-8 xl:grid-cols-2">
-                <section class="rounded-[1.35rem] border border-slate-900/10 bg-[#f9fbfd] p-5">
-                  <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
-                      {sectionLabels.background}
-                    </p>
-                    <p class="mt-3 text-sm leading-7 text-slate-700">
-                      {portfolioText(project.challenge, lang)}
-                    </p>
-                  </div>
+              {hasReferenceImages && useSplitReferenceContext ? (
+                <div class="grid gap-8 xl:grid-cols-[minmax(0,0.72fr)_minmax(0,1fr)] xl:items-start">
+                  <PortfolioReferenceGallery
+                    galleryKey={project.slug}
+                    sectionTitle={sectionLabels.references}
+                    viewLabel={sectionLabels.referenceView}
+                    expandLabel={sectionLabels.referenceExpand}
+                    closeLabel={sectionLabels.referenceClose}
+                    externalLinkLabel={sectionLabels.referenceVisit}
+                    items={project.referenceImages!.map((item) => ({
+                      src: item.src,
+                      href: item.href,
+                      alt: portfolioText(item.alt, lang),
+                      title: portfolioText(item.title, lang),
+                      caption: item.caption ? portfolioText(item.caption, lang) : undefined,
+                    }))}
+                  />
 
-                  <div class="mt-6 border-t border-slate-900/10 pt-4">
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
-                      {sectionLabels.note}
-                    </p>
-                    <p class="mt-3 text-sm leading-7 text-slate-600">
-                      {portfolioText(project.note, lang)}
-                    </p>
-                  </div>
-                </section>
+                  <section class="rounded-[1.35rem] border border-slate-900/10 bg-[#f9fbfd] p-5">
+                    <div>
+                      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
+                        {sectionLabels.background}
+                      </p>
+                      <p class="mt-3 text-sm leading-7 text-slate-700">
+                        {portfolioText(project.challenge, lang)}
+                      </p>
+                    </div>
+
+                    <div class="mt-6 border-t border-slate-900/10 pt-4">
+                      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
+                        {sectionLabels.note}
+                      </p>
+                      <p class="mt-3 text-sm leading-7 text-slate-600">
+                        {portfolioText(project.note, lang)}
+                      </p>
+                    </div>
+                  </section>
+                </div>
+              ) : hasReferenceImages ? (
+                <PortfolioReferenceGallery
+                  galleryKey={project.slug}
+                  sectionTitle={sectionLabels.references}
+                  viewLabel={sectionLabels.referenceView}
+                  expandLabel={sectionLabels.referenceExpand}
+                  closeLabel={sectionLabels.referenceClose}
+                  externalLinkLabel={sectionLabels.referenceVisit}
+                  items={project.referenceImages!.map((item) => ({
+                    src: item.src,
+                    href: item.href,
+                    alt: portfolioText(item.alt, lang),
+                    title: portfolioText(item.title, lang),
+                    caption: item.caption ? portfolioText(item.caption, lang) : undefined,
+                  }))}
+                />
+              ) : null}
+
+              <div class={detailGridClass}>
+                {!useSplitReferenceContext && (
+                  <section class="rounded-[1.35rem] border border-slate-900/10 bg-[#f9fbfd] p-5">
+                    <div>
+                      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
+                        {sectionLabels.background}
+                      </p>
+                      <p class="mt-3 text-sm leading-7 text-slate-700">
+                        {portfolioText(project.challenge, lang)}
+                      </p>
+                    </div>
+
+                    <div class="mt-6 border-t border-slate-900/10 pt-4">
+                      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
+                        {sectionLabels.note}
+                      </p>
+                      <p class="mt-3 text-sm leading-7 text-slate-600">
+                        {portfolioText(project.note, lang)}
+                      </p>
+                    </div>
+                  </section>
+                )}
 
                 <section class="rounded-[1.35rem] border border-slate-900/10 bg-[#f9fbfd] p-5">
                   <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
@@ -447,6 +599,9 @@ const sectionLabels =
                   ))}
                 </ul>
               </section>
+                  </>
+                );
+              })()}
             </div>
           </article>
         ))}

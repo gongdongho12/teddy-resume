@@ -1,0 +1,71 @@
+---
+interface Props {
+  href?: string;
+  label: string;
+  className?: string;
+  externalHref?: string;
+  externalClassName?: string;
+}
+
+const {
+  href,
+  label,
+  className = '',
+  externalHref,
+  externalClassName = '',
+} = Astro.props;
+
+const plainClassName = className
+  .split(/\s+/)
+  .filter(Boolean)
+  .filter((token) => !token.startsWith('hover:') && !token.startsWith('focus:'))
+  .join(' ');
+---
+
+<span class="inline-flex items-center gap-1.5">
+  {
+    href ? (
+      <a
+        href={href}
+        class:list={[
+          'transition-colors underline decoration-transparent underline-offset-4 hover:decoration-current',
+          'focus:outline-none focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-current/20',
+          className,
+        ]}
+      >
+        {label}
+      </a>
+    ) : (
+      <span class:list={[plainClassName]}>{label}</span>
+    )
+  }
+  {externalHref && (
+    <a
+      href={externalHref}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={`${label} external link`}
+      class:list={[
+        'inline-flex items-center justify-center text-current/60 transition-colors hover:text-current',
+        'focus:outline-none focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-current/20 print:hidden',
+        externalClassName,
+      ]}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="h-[0.95em] w-[0.95em]"
+        aria-hidden="true"
+      >
+        <path d="M14 3h7v7" />
+        <path d="M10 14 21 3" />
+        <path d="M21 14v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6" />
+      </svg>
+    </a>
+  )}
+</span>

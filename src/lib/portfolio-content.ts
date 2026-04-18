@@ -579,12 +579,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       slug: 'promotion-platform',
       title: {
-        ko: '통합 프로모션(쿠폰/포인트) 플랫폼 구축',
-        en: 'Unified Promotion Platform for Coupons and Points',
+        ko: '통합 프로모션(쿠폰/포인트) 플랫폼 구축 및 고도화',
+        en: 'Unified Promotion Platform for Coupons and Points Buildout and Enhancement',
       },
       period: {
-        ko: '2025.07 - 2025.10',
-        en: 'Jul 2025 - Oct 2025',
+        ko: '2025.07 - 현재',
+        en: 'Jul 2025 - Present',
       },
       company: {
         ko: 'LG유플러스 볼트업',

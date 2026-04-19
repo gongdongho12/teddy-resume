@@ -17,6 +17,11 @@ interface Props {
   linkClass?: string;
   activeClass?: string;
   separatorClass?: string;
+  variant?: 'text' | 'segmented';
+  segmentedContainerClass?: string;
+  segmentedItemClass?: string;
+  segmentedActiveClass?: string;
+  segmentedInactiveClass?: string;
 }
 
 const {
@@ -27,6 +32,11 @@ const {
   linkClass = 'text-slate-500 hover:text-slate-900 hover:underline',
   activeClass = 'text-slate-900',
   separatorClass = 'text-slate-300',
+  variant = 'text',
+  segmentedContainerClass = '',
+  segmentedItemClass = 'rounded-lg px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] whitespace-nowrap transition-colors sm:px-3 sm:text-[12px] sm:tracking-[0.14em]',
+  segmentedActiveClass = 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200',
+  segmentedInactiveClass = 'text-slate-500 hover:bg-white/80 hover:text-slate-900',
 } = Astro.props;
 
 const resolvedLinks =
@@ -41,14 +51,20 @@ const resolvedLinks =
 
 {
   resolvedLinks.length > 0 && (
-    <div class:list={['flex items-center gap-2 font-sans', containerClass]}>
-      {resolvedLinks.map((entry, index) => (
-        <>
-          {entry.lang === lang ? (
+    variant === 'segmented' ? (
+      <div
+        class:list={[
+          'inline-flex items-center rounded-xl bg-slate-100 p-1 font-sans',
+          segmentedContainerClass,
+          containerClass,
+        ]}
+      >
+        {resolvedLinks.map((entry) =>
+          entry.lang === lang ? (
             <span
               aria-current="page"
               title={LANGUAGE_LABELS[entry.lang]}
-              class:list={['text-[12px] font-semibold uppercase tracking-[0.18em]', activeClass]}
+              class:list={[segmentedItemClass, segmentedActiveClass]}
             >
               {LANGUAGE_SHORT_LABELS[entry.lang]}
             </span>
@@ -57,16 +73,41 @@ const resolvedLinks =
               href={entry.href}
               data-preserve-contact-query
               title={LANGUAGE_LABELS[entry.lang]}
-              class:list={['text-[12px] font-semibold uppercase tracking-[0.18em] transition-colors', linkClass]}
+              class:list={[segmentedItemClass, segmentedInactiveClass]}
             >
               {LANGUAGE_SHORT_LABELS[entry.lang]}
             </a>
-          )}
-          {index < resolvedLinks.length - 1 && (
-            <span aria-hidden="true" class:list={['select-none text-[12px]', separatorClass]}>/</span>
-          )}
-        </>
-      ))}
-    </div>
+          ),
+        )}
+      </div>
+    ) : (
+      <div class:list={['flex items-center gap-2 font-sans', containerClass]}>
+        {resolvedLinks.map((entry, index) => (
+          <>
+            {entry.lang === lang ? (
+              <span
+                aria-current="page"
+                title={LANGUAGE_LABELS[entry.lang]}
+                class:list={['text-[12px] font-semibold uppercase tracking-[0.18em]', activeClass]}
+              >
+                {LANGUAGE_SHORT_LABELS[entry.lang]}
+              </span>
+            ) : (
+              <a
+                href={entry.href}
+                data-preserve-contact-query
+                title={LANGUAGE_LABELS[entry.lang]}
+                class:list={['text-[12px] font-semibold uppercase tracking-[0.18em] transition-colors', linkClass]}
+              >
+                {LANGUAGE_SHORT_LABELS[entry.lang]}
+              </a>
+            )}
+            {index < resolvedLinks.length - 1 && (
+              <span aria-hidden="true" class:list={['select-none text-[12px]', separatorClass]}>/</span>
+            )}
+          </>
+        ))}
+      </div>
+    )
   )
 }

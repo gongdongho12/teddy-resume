@@ -4,6 +4,7 @@ const table: Record<
   Lang,
   {
     docTitle: string;
+    printFileTitle: string;
     experience: string;
     skills: string;
     education: string;
@@ -17,6 +18,7 @@ const table: Record<
 > = {
   ko: {
     docTitle: '강동호 — 이력서',
+    printFileTitle: '강동호 Software Engineer 이력서',
     experience: '경력',
     skills: '기술',
     education: '학력',
@@ -29,6 +31,7 @@ const table: Record<
   },
   en: {
     docTitle: 'Dongho Kang — Resume',
+    printFileTitle: 'Dongho Kang Software Engineer Resume',
     experience: 'Experience',
     skills: 'Skills',
     education: 'Education',

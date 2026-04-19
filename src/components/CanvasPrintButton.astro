@@ -1,7 +1,13 @@
 ---
+interface Props {
+  fileNameBase?: string;
+}
+
+const { fileNameBase = 'resume' } = Astro.props;
 ---
 <button
   id="canvas-print-btn"
+  data-file-name-base={fileNameBase}
   class="flex items-center gap-1.5 rounded-md bg-gray-600 px-2.5 py-1 text-xs font-medium text-white shadow-sm transition-colors hover:bg-gray-500 font-sans"
   title="Experimental Canvas to PDF rendering"
 >
@@ -44,6 +50,7 @@
     const overlay = document.getElementById('canvas-overlay');
     const status = document.getElementById('canvas-status');
     if (!btn || !overlay || !status) return;
+    const fileNameBase = btn.dataset.fileNameBase?.trim() || 'resume';
 
     const pdfWindow = window;
 
@@ -105,6 +112,69 @@
       return pdfWindow.__canvasPdfDepsPromise;
     };
 
+    const collectPdfLinks = (root: HTMLElement) => {
+      const rootRect = root.getBoundingClientRect();
+      const links = Array.from(root.querySelectorAll('a[href]'))
+        .map((anchor) => {
+          if (!(anchor instanceof HTMLAnchorElement)) return null;
+
+          const rect = anchor.getBoundingClientRect();
+          if (rect.width <= 0 || rect.height <= 0) return null;
+
+          const style = window.getComputedStyle(anchor);
+          if (style.display === 'none' || style.visibility === 'hidden') return null;
+
+          const url = anchor.href?.trim();
+          if (!url) return null;
+
+          return {
+            url,
+            x: rect.left - rootRect.left,
+            y: rect.top - rootRect.top,
+            width: rect.width,
+            height: rect.height,
+          };
+        })
+        .filter(Boolean);
+
+      return {
+        width: rootRect.width,
+        links,
+      };
+    };
+
+    const addPdfLinks = (pdf, links, pxToMm, pageHeightMm) => {
+      const pageCount =
+        typeof pdf.getNumberOfPages === 'function'
+          ? pdf.getNumberOfPages()
+          : pdf.internal.getNumberOfPages();
+
+      links.forEach((link) => {
+        const x = link.x * pxToMm;
+        const y = link.y * pxToMm;
+        const width = link.width * pxToMm;
+        const height = link.height * pxToMm;
+
+        if (width <= 0 || height <= 0) return;
+
+        const firstPage = Math.max(1, Math.floor(y / pageHeightMm) + 1);
+        const lastPage = Math.min(pageCount, Math.floor((y + height - 0.01) / pageHeightMm) + 1);
+
+        for (let pageNumber = firstPage; pageNumber <= lastPage; pageNumber += 1) {
+          const pageTop = (pageNumber - 1) * pageHeightMm;
+          const pageBottom = pageTop + pageHeightMm;
+          const segmentTop = Math.max(y, pageTop);
+          const segmentBottom = Math.min(y + height, pageBottom);
+          const segmentHeight = segmentBottom - segmentTop;
+
+          if (segmentHeight <= 0) continue;
+
+          pdf.setPage(pageNumber);
+          pdf.link(x, segmentTop - pageTop, width, segmentHeight, { url: link.url });
+        }
+      });
+    };
+
     btn.addEventListener('click', async () => {
       const target = document.querySelector('article');
       if (!target) {
@@ -128,6 +198,8 @@
 
         // Give DOM a frame to update
         await new Promise(r => setTimeout(r, 100));
+
+        const { width: targetWidth, links: pdfLinks } = collectPdfLinks(target as HTMLElement);
 
         status.textContent = '캡처 진행 중...';
 
@@ -166,8 +238,12 @@
           heightLeft -= pdfHeight;
         }
 
-        const date = new Date().toISOString().split('T')[0];
-        pdf.save(`resume_canvas_${date}.pdf`);
+        if (targetWidth > 0 && pdfLinks.length > 0) {
+          const pxToMm = pdfWidth / targetWidth;
+          addPdfLinks(pdf, pdfLinks, pxToMm, pdfHeight);
+        }
+
+        pdf.save(`${fileNameBase}.pdf`);
 
         status.textContent = '완료!';
         await new Promise(r => setTimeout(r, 800));

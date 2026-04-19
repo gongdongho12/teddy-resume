@@ -1,4 +1,5 @@
 ---
+import BrowserPrintButton from '@/components/BrowserPrintButton.astro';
 import CanvasPrintButton from '@/components/CanvasPrintButton.astro';
 import ContactVisibilityToggle from '@/components/ContactVisibilityToggle.astro';
 import LanguageSwitcher from '@/components/LanguageSwitcher.astro';
@@ -18,6 +19,7 @@ interface Props {
   printHintTextClass?: string;
   showPortfolioLink?: boolean;
   portfolioLinkClass?: string;
+  showBrowserPrintButton?: boolean;
   showCanvasPrintButton?: boolean;
   languageLinkClass?: string;
   activeLanguageClass?: string;
@@ -34,8 +36,9 @@ const {
   printHintStyle = 'plain',
   printHintAccentClass = 'text-[#0f3460]',
   printHintTextClass = 'text-gray-500',
-  showPortfolioLink = false,
+  showPortfolioLink = true,
   portfolioLinkClass = 'font-medium text-black hover:underline',
+  showBrowserPrintButton = true,
   showCanvasPrintButton = false,
   languageLinkClass = 'text-slate-500 hover:text-slate-900 hover:underline',
   activeLanguageClass = 'text-slate-900',
@@ -47,11 +50,15 @@ const {
 const m = messages(lang);
 const portfolioUrl = getPortfolioUrl(lang);
 const portfolioLabel = lang === 'ko' ? '포트폴리오' : 'Portfolio';
+const printFileTitle = m.printFileTitle;
+const showStandalonePrintHint = printHintStyle === 'popover' ? !showBrowserPrintButton : true;
+const actionMenuClass =
+  'flex max-w-full flex-wrap items-center gap-1 rounded-2xl border border-slate-200 bg-white/95 p-1 shadow-sm backdrop-blur-sm sm:inline-flex sm:w-auto sm:flex-nowrap sm:p-1.5';
 ---
 
 <div
   class:list={[
-    'print:hidden mx-auto flex flex-wrap items-center gap-3 px-8 pt-6',
+    'print:hidden relative z-[90] isolate mx-auto flex items-start gap-2 px-4 pt-4 sm:flex-wrap sm:items-center sm:gap-3 sm:px-8 sm:pt-6',
     maxWidthClass,
     containerClass,
   ]}
@@ -60,33 +67,159 @@ const portfolioLabel = lang === 'ko' ? '포트폴리오' : 'Portfolio';
     lang={lang}
     labelClass={contactToggleLabelClass}
     checkboxClass={contactToggleCheckboxClass}
+    containerClass="shrink-0 rounded-xl border border-slate-200 bg-white/95 px-2.5 py-1.5 text-[12px] shadow-sm backdrop-blur-sm sm:px-3 sm:py-2 sm:text-sm"
   />
 
-  <div class="ml-auto flex flex-wrap items-center justify-end gap-3">
+  <div class="flex w-full items-center justify-center gap-2 pb-1 sm:ml-auto sm:w-auto sm:flex-none sm:flex-wrap sm:justify-end sm:gap-3 sm:pb-0">
     {
-      printHintStyle === 'popover' ? (
+      printHintStyle === 'popover' && showStandalonePrintHint ? (
         <PrintHintPopover lang={lang} accentClass={printHintAccentClass} />
       ) : (
-        <span class:list={[printHintTextClass]} data-print-hint-plain data-lang={lang}>{m.printHint}</span>
+        printHintStyle === 'plain' && (
+          <span class:list={[printHintTextClass]} data-print-hint-plain data-lang={lang}>{m.printHint}</span>
+        )
       )
     }
 
     {showPortfolioLink && (
-      <a href={portfolioUrl} data-preserve-contact-query class:list={[portfolioLinkClass]}>
-        {portfolioLabel}
-      </a>
+      <div class:list={[actionMenuClass]}>
+        <a
+          href={portfolioUrl}
+          data-preserve-contact-query
+          class:list={[
+            'inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl px-2 py-1.5 text-[12px] font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:bg-slate-100 focus-visible:ring-2 focus-visible:ring-slate-200 sm:gap-2 sm:px-3 sm:py-2 sm:text-[13px]',
+            portfolioLinkClass,
+          ]}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class:list={['shrink-0', printHintAccentClass]}
+            aria-hidden="true"
+          >
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+          </svg>
+          <span>{portfolioLabel}</span>
+        </a>
+
+        {showBrowserPrintButton && (
+          <BrowserPrintButton lang={lang} accentClass={printHintAccentClass} />
+        )}
+
+        {showBrowserPrintButton && (
+          <div class="mx-1 hidden h-7 w-px bg-slate-200 sm:block" aria-hidden="true"></div>
+        )}
+
+        <LanguageSwitcher
+          lang={lang}
+          currentTemplate={currentTemplate}
+          variant="segmented"
+          containerClass={languageContainerClass}
+          linkClass={languageLinkClass}
+          activeClass={activeLanguageClass}
+          segmentedContainerClass="shrink-0 bg-slate-100"
+        />
+      </div>
     )}
 
-    {showCanvasPrintButton && <CanvasPrintButton />}
+    {!showPortfolioLink && (
+      <div class:list={[actionMenuClass]}>
+        {showBrowserPrintButton && (
+          <BrowserPrintButton lang={lang} accentClass={printHintAccentClass} />
+        )}
 
-    <LanguageSwitcher
-      lang={lang}
-      currentTemplate={currentTemplate}
-      containerClass={languageContainerClass}
-      linkClass={languageLinkClass}
-      activeClass={activeLanguageClass}
-    />
+        {showBrowserPrintButton && (
+          <div class="mx-1 hidden h-7 w-px bg-slate-200 sm:block" aria-hidden="true"></div>
+        )}
+
+        <LanguageSwitcher
+          lang={lang}
+          currentTemplate={currentTemplate}
+          variant="segmented"
+          containerClass={languageContainerClass}
+          linkClass={languageLinkClass}
+          activeClass={activeLanguageClass}
+          segmentedContainerClass="shrink-0 bg-slate-100"
+        />
+      </div>
+    )}
+
+    {showCanvasPrintButton && (
+      <div class="hidden sm:block">
+        <CanvasPrintButton fileNameBase={printFileTitle} />
+      </div>
+    )}
   </div>
 </div>
 
 <script src="/scripts/print-hints.js" defer></script>
+<script is:inline define:vars={{ printFileTitle }}>
+  (() => {
+    if (!printFileTitle || typeof window === 'undefined') return;
+    if (window.__resumePrintTitleBound === printFileTitle) return;
+
+    const originalTitle = document.title;
+    let isPrintTitleActive = false;
+
+    const applyPrintTitle = () => {
+      if (isPrintTitleActive) return;
+      document.title = printFileTitle;
+      isPrintTitleActive = true;
+    };
+
+    const restoreTitle = () => {
+      if (!isPrintTitleActive) return;
+      document.title = originalTitle;
+      isPrintTitleActive = false;
+    };
+
+    const openPrintDialog = () => {
+      applyPrintTitle();
+      window.setTimeout(() => {
+        window.print();
+      }, 50);
+    };
+
+    window.addEventListener('beforeprint', applyPrintTitle);
+    window.addEventListener('afterprint', restoreTitle);
+
+    window.addEventListener('keydown', (event) => {
+      const isPrintShortcut =
+        (event.ctrlKey || event.metaKey) &&
+        !event.shiftKey &&
+        !event.altKey &&
+        event.key.toLowerCase() === 'p';
+
+      if (!isPrintShortcut) return;
+
+      event.preventDefault();
+      openPrintDialog();
+    });
+
+    const mediaQuery = window.matchMedia?.('print');
+    mediaQuery?.addEventListener?.('change', (event) => {
+      if (event.matches) {
+        applyPrintTitle();
+      } else {
+        restoreTitle();
+      }
+    });
+
+    window.addEventListener('focus', () => {
+      window.setTimeout(restoreTitle, 0);
+    });
+
+    window.__resumeOpenPrintDialog = openPrintDialog;
+    window.__resumePreparePrintTitle = applyPrintTitle;
+    window.__resumeRestorePrintTitle = restoreTitle;
+    window.__resumePrintTitleBound = printFileTitle;
+  })();
+</script>

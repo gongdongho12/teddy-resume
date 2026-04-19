@@ -48,7 +48,8 @@ const m = messages(lang);
       currentTemplate="executive"
       maxWidthClass="max-w-[850px]"
       containerClass="pb-3 text-[13px]"
-      printHintTextClass="text-gray-400"
+      printHintStyle="popover"
+      printHintAccentClass="text-[#d4af37]"
       showCanvasPrintButton={true}
       languageLinkClass="text-[#d4af37] hover:text-[#f3cd5a] hover:underline"
       activeLanguageClass="text-[#d4af37]"
@@ -168,13 +169,13 @@ const m = messages(lang);
                           className="text-[#ffffff] hover:text-[#f3cd5a] print:text-black print:no-underline"
                           externalHref={proj.externalUrl}
                           externalVisibility={proj.externalLinkVisibility}
-                          externalClassName="text-[#bfa257] hover:text-[#f3cd5a] print:hidden"
+                          externalClassName="text-[#bfa257] hover:text-[#f3cd5a] print:text-black"
                           githubHref={proj.githubUrl}
-                          githubClassName="text-[#bfa257] hover:text-[#f3cd5a] print:hidden"
+                          githubClassName="text-[#bfa257] hover:text-[#f3cd5a] print:text-black"
                           googlePlayHref={proj.googlePlayUrl}
-                          googlePlayClassName="text-[#bfa257] hover:text-[#f3cd5a] print:hidden"
+                          googlePlayClassName="text-[#bfa257] hover:text-[#f3cd5a] print:text-black"
                           appStoreHref={proj.appStoreUrl}
-                          appStoreClassName="text-[#bfa257] hover:text-[#f3cd5a] print:hidden"
+                          appStoreClassName="text-[#bfa257] hover:text-[#f3cd5a] print:text-black"
                         />
                             {proj.badge && (
                               <span class="text-[10px] uppercase font-sans tracking-wider border border-[#d4af37] text-[#d4af37] px-1.5 py-0.5 rounded-sm print:border-black print:text-black">

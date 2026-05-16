@@ -71,6 +71,82 @@ const vehiclePncDiagram = localized(
   Auth --> Charge["start charge"]`,
 );
 
+const voltupHybridAppDiagram = localized(
+  `flowchart TD
+  Web["VoltUp WebView 화면"] --> Bridge["JSBridge 계약<br/>frontend -> native"]
+  Bridge --> Window["새창 / 외부 URL 처리"]
+  Bridge --> QR["QR 스캔<br/>ML Kit custom scanner"]
+  Bridge --> Camera["카메라 권한 / lifecycle"]
+  Bridge --> Push["FCM push token"]
+  Bridge --> Version["강제 업데이트 / version branch"]
+  QR --> Native["Android / iOS native layer"]
+  Camera --> Native
+  Push --> Native
+  Version --> Native
+  Native --> Observe["Crashlytics<br/>Dart + native error tracking"]
+  Observe --> Fix["NPE / camera / token throttle 안정화"]
+  classDef web fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef native fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef ops fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Web,Bridge web;
+  class Window,QR,Camera,Push,Version,Native native;
+  class Observe,Fix ops;`,
+  `flowchart TD
+  Web["VoltUp WebView surface"] --> Bridge["JSBridge contract<br/>frontend -> native"]
+  Bridge --> Window["new-window / external URL handling"]
+  Bridge --> QR["QR scanning<br/>ML Kit custom scanner"]
+  Bridge --> Camera["camera permission / lifecycle"]
+  Bridge --> Push["FCM push token"]
+  Bridge --> Version["forced update / version branch"]
+  QR --> Native["Android / iOS native layer"]
+  Camera --> Native
+  Push --> Native
+  Version --> Native
+  Native --> Observe["Crashlytics<br/>Dart + native error tracking"]
+  Observe --> Fix["NPE / camera / token throttle stabilization"]
+  classDef web fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef native fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef ops fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Web,Bridge web;
+  class Window,QR,Camera,Push,Version,Native native;
+  class Observe,Fix ops;`,
+);
+
+const voltupAppExtensionDiagram = localized(
+  `flowchart TD
+  Pain["앱 연결 검증 병목<br/>새창 / QR / 카메라 / 버전"] --> Extension["Chrome Extension<br/>app-like controls"]
+  Extension --> Sim["브라우저에서 앱 의존 흐름 재현"]
+  Extension --> Capture["API request capture"]
+  Capture --> Template["row parser<br/>variable template"]
+  Template --> Replay["Bulk Replay executor"]
+  Replay --> Guard["confirm / 401·403 early stop<br/>skip 일괄 통보"]
+  Guard --> QA["개발 QA 반복 시간 단축"]
+  Replay --> Ops["Admin 미지원 단일 API<br/>운영 보정"]
+  Ops --> Share["일회성 JS fetch -> 팀 도구"]
+  classDef pain fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef tool fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Pain pain;
+  class Extension,Sim,Capture,Template,Replay,Guard tool;
+  class QA,Ops,Share result;`,
+  `flowchart TD
+  Pain["app-attachment bottleneck<br/>new window / QR / camera / version"] --> Extension["Chrome Extension<br/>app-like controls"]
+  Extension --> Sim["recreate app-dependent flows in browser"]
+  Extension --> Capture["API request capture"]
+  Capture --> Template["row parser<br/>variable template"]
+  Template --> Replay["Bulk Replay executor"]
+  Replay --> Guard["confirm / 401·403 early stop<br/>batch skip notification"]
+  Guard --> QA["shorter repeated dev QA"]
+  Replay --> Ops["single-API ops correction<br/>beyond Admin UI"]
+  Ops --> Share["one-off JS fetch -> team tool"]
+  classDef pain fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef tool fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Pain pain;
+  class Extension,Sim,Capture,Template,Replay,Guard tool;
+  class QA,Ops,Share result;`,
+);
+
 const voltupPointWalletDiagram = localized(
   `flowchart TD
   Grant["addBulk / partner accrual<br/>BASE 1200P exp 10-18<br/>TOYOTA 3000P exp 10-20<br/>BLUEMEMBERS 800P exp 10-22<br/>NEXEN 5000P exp 10-31<br/>EVENT 700P exp 11-15<br/>BASE 900P exp null"] --> Rule["wallet rule<br/>expiredAt 있으면 new wallet<br/>null이면 same type+chargeType merge"]
@@ -310,14 +386,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     en: 'Project Portfolio',
   },
   eyebrow: {
-    ko: '결제, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
-    en: 'Selected cases across payments, pricing, membership, promotions, DX, and personal products',
+    ko: '결제, 앱, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
+    en: 'Selected cases across payments, apps, pricing, membership, promotions, DX, and personal products',
   },
   intro: {
     ko:
-      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
+      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
     en:
-      'This page highlights projects such as multi-vendor payments, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
+      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
   },
   roleFocus: [
     {
@@ -329,12 +405,16 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       en: 'Experience integrating MSAs with OAuth2, PGs, gateways, and external certificate services',
     },
     {
+      ko: 'Flutter/WebView 기반 하이브리드 앱과 앱 검증 도구 개발 경험',
+      en: 'Hybrid app and app-validation tooling experience with Flutter/WebView',
+    },
+    {
       ko: 'Pub/Sub DLQ, Athena 배치, 월간 파티션, 서킷브레이커 기반 운영 안정화 경험',
       en: 'Operational stabilization with Pub/Sub DLQ, Athena batches, monthly partitions, and circuit-breaker patterns',
     },
     {
-      ko: 'run-gemini-cli, Docusaurus, Firebase App Distribution, Jenkins/TestFlight 기반 DX 개선 경험',
-      en: 'DX improvements using run-gemini-cli, Docusaurus, Firebase App Distribution, and Jenkins/TestFlight',
+      ko: 'run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
+      en: 'DX improvements using run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
     },
   ],
   projects: [
@@ -801,6 +881,200 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
               'Separates point handling from coupon flow and shows, with concrete example data, how partner points split into wallets and move through active-wallet scan, ordering, hold, and confirm/release.',
           },
           code: voltupPointWalletDiagram,
+        },
+      ],
+    },
+    {
+      slug: 'voltup-hybrid-app',
+      title: {
+        ko: '볼트업 하이브리드 앱: WebView 브릿지와 네이티브 기능',
+        en: 'VoltUp Hybrid App: WebView Bridge and Native Features',
+      },
+      period: {
+        ko: '2024.12 - 현재',
+        en: 'Dec 2024 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: 'Flutter 하이브리드 앱 런칭, JSBridge, QR/권한/푸시/강제 업데이트 흐름 설계',
+        en: 'Flutter hybrid launch, JSBridge, and QR/permission/push/forced-update flows',
+      },
+      summary: {
+        ko:
+          'VoltUp 2.0 런칭을 위해 Flutter 기반 Android/iOS 하이브리드 앱을 빠르게 구축하고, WebView 화면이 네이티브 기능을 안정적으로 호출할 수 있도록 JSBridge와 앱 핵심 흐름을 설계했습니다. 이후 QR 스캔, 카메라 권한, FCM, 강제 업데이트, Crashlytics 기반 안정화까지 운영 중인 앱의 품질 개선을 이어갔습니다.',
+        en:
+          'Built the Flutter-based Android/iOS hybrid app for the VoltUp 2.0 launch and designed JSBridge plus core app flows so WebView surfaces can call native capabilities reliably. Continued improving production quality through QR scanning, camera permission, FCM, forced-update handling, and Crashlytics-driven stabilization.',
+      },
+      challenge: {
+        ko:
+          '짧은 일정 안에 Android/iOS 앱을 런칭해야 했고, 서비스 화면은 WebView로 빠르게 확장하면서도 QR 스캔, 카메라 권한, 새창 처리, 푸시, 강제 업데이트처럼 앱만이 처리할 수 있는 기능은 네이티브 계층에서 안정적으로 제공해야 했습니다.',
+        en:
+          'The app had to ship quickly on Android and iOS while keeping service screens flexible through WebView. At the same time, app-only capabilities such as QR scanning, camera permission, new-window handling, push notifications, and forced updates needed reliable native support.',
+      },
+      actions: [
+        {
+          ko: 'Flutter 기반 하이브리드 앱 구조를 잡고 2개월 내 Android/iOS 런칭을 목표로 WebView 중심 화면과 네이티브 기능 호출 경계를 설계했습니다.',
+          en: 'Defined the Flutter hybrid structure and designed the boundary between WebView screens and native capability calls for a two-month Android/iOS launch.',
+        },
+        {
+          ko: 'JSBridge를 통해 프론트엔드가 새창, 외부 URL, QR 스캔, 카메라 권한, 앱 메시지, 강제 업데이트 같은 네이티브 기능을 호출하는 규약을 구현했습니다.',
+          en: 'Implemented the JSBridge contract that lets the frontend call native features such as new-window handling, external URLs, QR scanning, camera permission, app messages, and forced updates.',
+        },
+        {
+          ko: 'QR 인식 경험을 제어하기 위해 ML Kit 기반 커스텀 QR 스캐너 페이지와 반응형 스캔 UI를 구현하고 기존 스캐너 의존성을 줄였습니다.',
+          en: 'Built a custom ML Kit-based QR scanner page with responsive scan UI to control the QR recognition experience and reduce dependency on the previous scanner package.',
+        },
+        {
+          ko: 'Crashlytics 기반으로 Dart/native 오류 수집 경로를 연결하고, null-safe 처리, 카메라 lifecycle 예외, FCM token upload throttle을 보강했습니다.',
+          en: 'Connected Crashlytics for Dart/native error collection and hardened null-safe handling, camera lifecycle exceptions, and FCM token upload throttling.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: '하이브리드 앱에서 WebView는 빠른 화면 확장성을 맡고, 네이티브 계층은 OS 권한과 하드웨어 기능을 맡도록 경계를 분리했습니다. JSBridge는 이 둘 사이의 제품 계약으로 보고, 프론트엔드가 호출할 수 있는 기능을 명시적인 메시지 흐름으로 정리했습니다.',
+          en: 'In the hybrid app, WebView owns fast surface iteration while the native layer owns OS permissions and hardware capabilities. I treated JSBridge as the product contract between them and organized callable frontend features into explicit message flows.',
+        },
+        {
+          ko: 'QR 스캔과 카메라 권한은 충전 시작의 핵심 진입점이라 단순 패키지 적용보다 기기별 레이아웃, lifecycle, 권한 상태를 앱 UX 안에서 제어할 수 있게 만드는 데 초점을 뒀습니다.',
+          en: 'Because QR scanning and camera permission are key entry points for starting a charge, I focused on controlling device layout, lifecycle, and permission states inside the app UX rather than just wrapping a scanner package.',
+        },
+        {
+          ko: '운영 중 앱 안정성은 Crashlytics 신호를 기준으로 개선했습니다. NPE 후보, camera pause 중 예외, FCM token upload 중복/회복력 같은 작은 크래시 원인을 묶어 사용자 진입 흐름의 안정성을 높였습니다.',
+          en: 'Production stability improvements were driven by Crashlytics signals. I grouped small crash causes such as NPE candidates, camera pause exceptions, and FCM-token upload throttling to improve reliability around user entry flows.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '서비스 2.0 앱을 Android/iOS 양쪽에 빠르게 런칭하고, WebView 화면에서 네이티브 기능을 호출하는 공통 규약을 운영 기준으로 만들었습니다.',
+          en: 'Launched the 2.0 app quickly across Android and iOS and established an operational contract for WebView surfaces to call native features.',
+        },
+        {
+          ko: 'QR 스캔, 카메라 권한, 푸시, 강제 업데이트처럼 앱이 담당해야 하는 핵심 기능을 네이티브 계층에서 안정적으로 처리하도록 정리했습니다.',
+          en: 'Stabilized core app-owned capabilities such as QR scanning, camera permission, push notifications, and forced-update handling in the native layer.',
+        },
+        {
+          ko: 'Crashlytics 기반으로 실제 운영 크래시를 추적하고 수정해 앱 핵심 진입점의 안정성을 지속적으로 개선했습니다.',
+          en: 'Used Crashlytics to track and fix production crashes, continuously improving stability around core app entry points.',
+        },
+      ],
+      note: {
+        ko: '사용자 앱을 빠르게 런칭한 경험과 WebView-네이티브 브릿지, QR/권한/푸시/업데이트 같은 앱 고유 기능 설계를 함께 설명하기 좋은 프로젝트입니다.',
+        en: 'A strong project for explaining rapid user-app delivery together with WebView-native bridge design and app-specific flows such as QR, permissions, push, and updates.',
+      },
+      tech: ['Flutter', 'Dart', 'Kotlin', 'Swift', 'WebView', 'JSBridge', 'ML Kit', 'FCM', 'Crashlytics'],
+      diagrams: [
+        {
+          title: {
+            ko: 'WebView 화면과 네이티브 기능을 잇는 앱 브릿지',
+            en: 'App bridge between WebView surfaces and native features',
+          },
+          description: {
+            ko:
+              'WebView 화면에서 JSBridge를 통해 새창, QR 스캔, 카메라 권한, FCM, 강제 업데이트 같은 네이티브 기능으로 이어지고, Crashlytics 신호로 안정화하는 흐름을 정리했습니다.',
+            en:
+              'Shows how WebView surfaces call native features such as new-window handling, QR scanning, camera permission, FCM, and forced updates through JSBridge, then feed stability improvements through Crashlytics.',
+          },
+          code: voltupHybridAppDiagram,
+        },
+      ],
+    },
+    {
+      slug: 'voltup-app-extension',
+      title: {
+        ko: '볼트업 앱 검증/운영 보정 익스텐션',
+        en: 'VoltUp App Validation and Ops Correction Extension',
+      },
+      period: {
+        ko: '2026.05 - 현재',
+        en: 'May 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: '앱 연결 없는 기능 검증, API capture/replay, Admin 미지원 운영 보정',
+        en: 'App-free validation, API capture/replay, and Admin-unsupported ops corrections',
+      },
+      summary: {
+        ko:
+          '앱 개발 중 매번 `voltup-app`을 연결해야 검증할 수 있던 새창, QR 스캔, 카메라 권한, 강제 업데이트 버전 분기 등을 브라우저 익스텐션에서 재현해 검증 시간을 줄였습니다. 이후 같은 capture/replay 구조를 충전존 생성 오류 대응처럼 Admin 화면에서 직접 지원하지 않는 단일 API 보정 작업까지 확장했습니다.',
+        en:
+          'Reduced validation time by recreating app-dependent flows such as new-window handling, QR scanning, camera permission, and forced-update version branches inside a browser extension instead of requiring `voltup-app` attachment every time. The same capture/replay structure was then extended to single-API operational corrections not directly supported by the Admin UI.',
+      },
+      challenge: {
+        ko:
+          '앱 기능 검증은 준비 비용이 컸습니다. 간단한 API 흐름이나 WebView-앱 브릿지 동작을 확인하려 해도 앱을 연결해야 했고, 운영에서는 충전존 생성 오류처럼 Admin 화면에 기능이 없지만 단일 API로는 보정 가능한 상황이 반복될 수 있었습니다.',
+        en:
+          'App feature validation had high setup cost. Even simple API flows or WebView-app bridge behavior required attaching the app, while operations sometimes had cases such as charge-zone correction where the Admin UI lacked a feature but the issue could be corrected through a single API.',
+      },
+      actions: [
+        {
+          ko: 'Chrome Extension에서 앱이 제공하는 새창, QR 스캔, 카메라 권한, 강제 업데이트 버전 조건을 조정/재현할 수 있는 검증 흐름을 만들었습니다.',
+          en: 'Built Chrome Extension flows that can adjust or recreate app-provided behaviors such as new windows, QR scanning, camera permission, and forced-update version conditions.',
+        },
+        {
+          ko: 'API 요청을 캡처하고 row 기반 입력으로 replay할 수 있는 구조를 만들어, 앱 연결 없이도 반복 QA와 API 흐름 확인을 빠르게 수행할 수 있게 했습니다.',
+          en: 'Implemented API capture plus row-based replay so repeated QA and API-flow checks can be performed quickly without attaching the app.',
+        },
+        {
+          ko: 'Admin 화면에서 직접 지원하지 않는 단일 API 보정 작업을 위해 variable template, row parser, executor를 구성하고 Bulk Replay로 실행할 수 있게 했습니다.',
+          en: 'Added variable templates, row parsing, and an executor so single-API correction work beyond the Admin UI can run through Bulk Replay.',
+        },
+        {
+          ko: '호스트별 popup 모드를 분리하고, 실행 전 confirm, 401/403 조기 중단, skip 일괄 통보, Vitest 기반 parser/executor 테스트와 CI를 구성했습니다.',
+          en: 'Separated popup modes by host and added confirmation, 401/403 early-stop guards, batch skip notifications, Vitest-based parser/executor tests, and CI.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: '이 도구는 처음부터 운영 자동화만을 목표로 한 것이 아니라, 앱 연결이 필요한 개발 검증 병목을 먼저 줄이는 데서 출발했습니다. 이후 같은 capture/replay 구조가 운영 보정에도 유효하다는 점을 확인하고 범위를 넓혔습니다.',
+          en: 'This tool did not start as ops automation alone. It first targeted app-attachment validation delays, then expanded once the same capture/replay structure proved useful for operational corrections.',
+        },
+        {
+          ko: '충전존 생성 오류 대응 때 JS `fetch` 스크립트를 직접 세팅해 처리했던 경험을, 매번 새로 짜는 임시 스크립트가 아니라 팀이 다시 쓸 수 있는 row 기반 실행 도구로 바꿨습니다.',
+          en: 'After handling a charge-zone creation issue with a hand-written JS `fetch` script, I turned that pattern into a row-based execution tool the team can reuse instead of writing one-off scripts every time.',
+        },
+        {
+          ko: 'app/admin 호스트가 섞여 있는 환경에서는 잘못된 화면에 잘못된 조작을 노출하지 않도록 호스트별 UI를 분리하고, 권한 만료나 접근 오류는 대량 replay 전에 멈추도록 설계했습니다.',
+          en: 'Because app/admin hosts coexist, I separated host-specific UI to avoid exposing the wrong operation in the wrong context, and designed permission expiration or access errors to stop before bulk replay proceeds.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '앱 없이도 앱 의존 흐름을 브라우저에서 빠르게 확인할 수 있어 개발 검증의 대기 시간과 반복 조작을 줄였습니다.',
+          en: 'Reduced waiting and repeated interactions by making app-dependent flows quickly verifiable from the browser without the app.',
+        },
+        {
+          ko: 'Admin 미지원 단일 API 보정 작업을 일회성 스크립트가 아니라 반복 가능한 내부 도구 절차로 다룰 수 있게 했습니다.',
+          en: 'Turned Admin-unsupported single-API correction work from one-off scripts into a repeatable internal tooling procedure.',
+        },
+        {
+          ko: '병목이 보이면 작은 도구로 만들어 공유하는 작업 방식을 실제 앱 개발/운영 맥락에서 보여주는 사례가 됐습니다.',
+          en: 'Became a concrete example of spotting bottlenecks and sharing small tools that improve real app development and operations workflows.',
+        },
+      ],
+      note: {
+        ko: '앱 기능 자체가 아니라 앱 개발과 운영 대응을 빠르게 만드는 도구성 프로젝트입니다. 병목을 발견하고 작은 내부 도구로 구체화하는 일하는 방식을 보여주기에 좋습니다.',
+        en: 'A tooling project for speeding up app development and operations response rather than an app feature itself. It is useful for showing a working style of spotting bottlenecks and turning them into small internal tools.',
+      },
+      tech: ['TypeScript', 'Chrome Extension', 'Vitest', 'GitHub Actions', 'API Replay', 'WebView Debugging'],
+      diagrams: [
+        {
+          title: {
+            ko: '앱 검증 병목에서 운영 보정 replay까지',
+            en: 'From app-validation bottlenecks to ops-correction replay',
+          },
+          description: {
+            ko:
+              '앱 연결 없이 앱 의존 흐름을 재현하고, 캡처한 API 요청을 row 기반 replay로 바꿔 개발 QA와 Admin 미지원 운영 보정을 같은 도구 구조로 다루는 흐름입니다.',
+            en:
+              'Shows how the extension recreates app-dependent flows without app attachment, then turns captured API requests into row-based replay for both development QA and Admin-unsupported operational corrections.',
+          },
+          code: voltupAppExtensionDiagram,
         },
       ],
     },

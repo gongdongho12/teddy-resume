@@ -147,6 +147,43 @@ const voltupAppExtensionDiagram = localized(
   class QA,Ops,Share result;`,
 );
 
+const roamingReliabilityDiagram = localized(
+  `flowchart TD
+  Source["환경부 로밍 API<br/>회원카드 / 충전기 상태"] --> Online["온라인 이벤트 처리<br/>card state update"]
+  Online --> Arrears["billing 미수 이벤트 기준<br/>필요 건만 상태 갱신"]
+  Source --> Retry["공공 API 오류 재처리<br/>중요도별 우선순위"]
+  Retry --> Member["회원카드 우선 재처리<br/>기준 데이터 회복"]
+  Retry --> Charger["충전기 상태 후순위<br/>누락 허용 항목 분리"]
+  Source --> Monthly["월 1회 전체 재동기화<br/>dynamic scheduler + seed"]
+  Monthly --> Baseline["외부 시스템과 장기 drift 방지"]
+  Arrears --> Stable["운영 데이터 정확성"]
+  Member --> Stable
+  Baseline --> Stable
+  classDef external fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef process fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Source external;
+  class Online,Arrears,Retry,Member,Charger,Monthly process;
+  class Baseline,Stable result;`,
+  `flowchart TD
+  Source["MCEE roaming API<br/>member cards / charger status"] --> Online["online event handling<br/>card state update"]
+  Online --> Arrears["billing-arrears events<br/>update only required cases"]
+  Source --> Retry["public API error retry<br/>priority by importance"]
+  Retry --> Member["member-card retry first<br/>recover baseline data"]
+  Retry --> Charger["charger status later<br/>separate tolerable loss"]
+  Source --> Monthly["monthly full resync<br/>dynamic scheduler + seed"]
+  Monthly --> Baseline["prevent long-term external drift"]
+  Arrears --> Stable["operational data accuracy"]
+  Member --> Stable
+  Baseline --> Stable
+  classDef external fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef process fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Source external;
+  class Online,Arrears,Retry,Member,Charger,Monthly process;
+  class Baseline,Stable result;`,
+);
+
 const voltupPointWalletDiagram = localized(
   `flowchart TD
   Grant["addBulk / partner accrual<br/>BASE 1200P exp 10-18<br/>TOYOTA 3000P exp 10-20<br/>BLUEMEMBERS 800P exp 10-22<br/>NEXEN 5000P exp 10-31<br/>EVENT 700P exp 11-15<br/>BASE 900P exp null"] --> Rule["wallet rule<br/>expiredAt 있으면 new wallet<br/>null이면 same type+chargeType merge"]
@@ -183,11 +220,13 @@ const voltupPointWalletDiagram = localized(
 const voltupCouponServiceDiagram = localized(`flowchart TD
   Pack["couponPack 71<br/>register 10/01~10/31<br/>usable 10/01~11/30"] --> Code["batchIssue(size=1000)<br/>Snowflake -> SHA-256/base36<br/>code=37PRPT85WA"]
   Pack --> Direct["mapping(code=null) / batchMapping<br/>user=421 or [421,422]"]
+  Pack --> VendorPolicy["allowedPaymentVendors<br/>KAKAO_T / CARD / KAKAO_PAY"]
   Code --> Claim["mapping(user=421, code=37PRPT85WA)<br/>lock coupon-mapping:37PRPT85WA"]
   Claim --> Guard["DB unique guard<br/>code / (userId,couponPackId)"]
   Direct --> Guard
   Guard --> Ready["coupon row<br/>userId=421 status=READY"]
   Ready --> Process["process(price=32000, user=421)<br/>lock coupon-process:421<br/>READY -> PROCESSING"]
+  VendorPolicy --> Process
   Process --> Finish["complete -> COMPLETE<br/>rollback -> READY"]
   Pack --> Expire["couponExpiryReminderJob<br/>usableEndAt D+3 window"]
   Expire --> Scan["getAllByCouponPackId<br/>completeAt is null"]
@@ -250,35 +289,45 @@ const pricingPlatformDiagram = localized(
 
 const devopsAutomationDiagram = localized(
   `flowchart TD
-  Pain["반복 작업<br/>PR 리뷰 / 로컬 ENV / 배포"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
+  Pain["반복 작업<br/>PR 리뷰 / 로컬 ENV / 배포 / 내부 API"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
   Review --> Context["project-context + prompts + skills<br/>repo별 규칙 주입"]
   Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
   Local --> Vault["Vault CLI login<br/>project path + SHARED path<br/>secret commit 없음"]
   Local --> IAM["gcloud account -><br/>IAM_DB_USER_NAME"]
+  Pain --> Internal["admin-internal-* client<br/>X-Internal-Caller"]
   Pain --> Deploy["Jenkins shared library<br/>job name -> target 분기"]
   Deploy --> Build["docker/app build<br/>cache / track / notifications"]
+  Deploy --> Android["Android Workload Identity<br/>Play REST API + firebase-tools"]
+  Deploy --> IOS["iOS workflow hardening<br/>skip 조건 / CocoaPods CDN"]
   Build --> Argo["deployArgoCD"]
+  Android --> Argo
+  IOS --> Argo
   classDef ai fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef sec fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
   classDef ops fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   class Review,Context ai;
-  class Local,Vault,IAM sec;
-  class Deploy,Build,Argo ops;`,
+  class Local,Vault,IAM,Internal sec;
+  class Deploy,Build,Android,IOS,Argo ops;`,
   `flowchart TD
-  Pain["Repeated work<br/>PR review / local env / deploy"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
+  Pain["Repeated work<br/>PR review / local env / deploy / internal APIs"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
   Review --> Context["project-context + prompts + skills<br/>repo-specific rules injected"]
   Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
   Local --> Vault["Vault CLI login<br/>project path + SHARED path<br/>no secret commits"]
   Local --> IAM["gcloud account -><br/>IAM_DB_USER_NAME"]
+  Pain --> Internal["admin-internal-* client<br/>X-Internal-Caller"]
   Pain --> Deploy["Jenkins shared library<br/>job name -> target routing"]
   Deploy --> Build["docker/app build<br/>cache / track / notifications"]
+  Deploy --> Android["Android Workload Identity<br/>Play REST API + firebase-tools"]
+  Deploy --> IOS["iOS workflow hardening<br/>skip conditions / CocoaPods CDN"]
   Build --> Argo["deployArgoCD"]
+  Android --> Argo
+  IOS --> Argo
   classDef ai fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef sec fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
   classDef ops fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   class Review,Context ai;
-  class Local,Vault,IAM sec;
-  class Deploy,Build,Argo ops;`,
+  class Local,Vault,IAM,Internal sec;
+  class Deploy,Build,Android,IOS,Argo ops;`,
 );
 
 const membershipBatchPartitionDiagram = localized(
@@ -386,14 +435,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     en: 'Project Portfolio',
   },
   eyebrow: {
-    ko: '결제, 앱, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
-    en: 'Selected cases across payments, apps, pricing, membership, promotions, DX, and personal products',
+    ko: '결제, 앱, 로밍, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
+    en: 'Selected cases across payments, apps, roaming, pricing, membership, promotions, DX, and personal products',
   },
   intro: {
     ko:
-      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
+      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
     en:
-      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
+      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
   },
   roleFocus: [
     {
@@ -407,6 +456,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       ko: 'Flutter/WebView 기반 하이브리드 앱과 앱 검증 도구 개발 경험',
       en: 'Hybrid app and app-validation tooling experience with Flutter/WebView',
+    },
+    {
+      ko: '공공 연계 로밍 데이터의 이벤트 처리, 재처리, 월간 재동기화 기반 운영 안정화 경험',
+      en: 'Operational stabilization of public roaming integrations using events, retries, and monthly resync',
     },
     {
       ko: 'Pub/Sub DLQ, Athena 배치, 월간 파티션, 서킷브레이커 기반 운영 안정화 경험',
@@ -438,9 +491,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       summary: {
         ko:
-          '결제 서비스 초기 설계부터 구현까지 전담하며, 단일 결제 구조를 멀티 벤더사를 수용하는 모듈 구조로 확장하고, DLQ 기반 미수 이벤트 처리와 자동 복구 체계를 구성했습니다.',
+          '결제 서비스 초기 설계부터 구현까지 전담하며, 단일 결제 구조를 멀티 벤더사를 수용하는 모듈 구조로 확장하고, DLQ 기반 미수 이벤트 처리와 자동 복구 체계를 구성했습니다. 이후 DLQ retry stuck 방지, PG not-found 후속 재결제, 취소 알림톡 분기까지 운영 안정화 영역을 보강했습니다.',
         en:
-          'Owned the payment service from initial design through implementation, expanding a single payment flow into a modular structure that supports multiple payment vendors and building DLQ-based unpaid-event processing with automatic recovery.',
+          'Owned the payment service from initial design through implementation, expanding a single payment flow into a modular structure that supports multiple payment vendors and building DLQ-based unpaid-event processing with automatic recovery. Later hardened operational paths such as DLQ retry stuck prevention, PG not-found repayment continuity, and cancellation-message branching.',
       },
       challenge: {
         ko:
@@ -461,6 +514,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: '재시도, DLQ, NACK 기반 자동 복구 경로를 구현해 미수 이벤트가 결제 보완 처리 흐름으로 이어지도록 구성했습니다.',
           en: 'Implemented retries, DLQ, and NACK-based recovery paths so unpaid events could flow into follow-up payment recovery.',
         },
+        {
+          ko: 'FAILOVER 상태 전이와 retry timestamp 기록을 보강해 dead-letter 재시도가 stuck 되지 않도록 만들고, PG not-found 응답에서도 비정상 재결제 플로우가 이어지도록 수정했습니다.',
+          en: 'Hardened FAILOVER transitions and retry timestamp recording to prevent dead-letter retries from getting stuck, while keeping abnormal repayment flows moving on PG not-found responses.',
+        },
+        {
+          ko: '전액 취소, 부분 취소, 로밍 결제 취소 알림톡 context를 분리하고 금액 포맷팅을 정리해 사용자 커뮤니케이션 정확도를 높였습니다.',
+          en: 'Separated AlimTalk contexts for full, partial, and roaming payment cancellations and normalized amount formatting to improve user-facing communication accuracy.',
+        },
       ],
       engineeringViews: [
         {
@@ -475,6 +536,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: 'PG 네트워크 불확실성은 repair, 컨슈머 재시도, failover 배치로 층을 나눠 즉시 복구와 운영 개입 경계를 분리했습니다.',
           en: 'Split PG-network uncertainty into repair, consumer retries, and failover batches so immediate recovery and operator intervention remain clearly separated.',
         },
+        {
+          ko: '재시도 자체도 운영 관찰 대상이라고 보고, 실패 이벤트가 어디에서 멈췄는지 latestRetriedAt과 상태 전이로 남겨 후속 보정 판단이 가능하게 했습니다.',
+          en: 'Treated retries themselves as observable operations, leaving latestRetriedAt and state transitions behind so operators can tell where a failed event stopped.',
+        },
       ],
       outcomes: [
         {
@@ -484,6 +549,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: 'DLQ 기반 미수 이벤트 처리와 자동 복구 경로를 운영에 적용했습니다.',
           en: 'Applied DLQ-based unpaid-event processing and automatic recovery paths in operation.',
+        },
+        {
+          ko: '외부 PG 응답 예외와 취소 알림 분기를 보강해 정산 보완 경로와 사용자 안내 메시지의 신뢰도를 높였습니다.',
+          en: 'Improved trust in settlement recovery and user-facing cancellation messages by hardening external PG exception handling and cancellation-message branching.',
         },
       ],
       note: {
@@ -535,14 +604,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: '회원 식별 통합, AuthMethod 연결, 카드 등록 상태 설계',
-        en: 'Unified member identity, linked AuthMethod records, and designed card registration state',
+        ko: '회원 식별 통합, AuthMethod 연결, 카드 등록 상태와 t_partner_user_token 기준 설계',
+        en: 'Unified member identity, linked AuthMethod records, and designed card-registration state around t_partner_user_token',
       },
       summary: {
         ko:
-          'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, FEAPP 한 스텝 API에서 결제수단 등록 세션 생성부터 billing의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다.',
+          'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, FEAPP 한 스텝 API에서 결제수단 등록 세션 생성부터 billing의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다. 이후 `t_partner_user_token`을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리해 검색, 해지 검증, 앱 콜백 activate 흐름을 안정화했습니다.',
         en:
-          'Designed the flow that links KakaoT external accounts to existing VoltUp members through encrypted CI and carries payment-method registration from the FEAPP one-step API through billing READY-state and ACTIVE-state transitions.',
+          'Designed the flow that links KakaoT external accounts to existing VoltUp members through encrypted CI and carries payment-method registration from the FEAPP one-step API through billing READY-state and ACTIVE-state transitions. Later promoted `t_partner_user_token` as the key between external payment methods and internal user context, stabilizing lookup, unlink validation, and app-callback activate flows.',
       },
       challenge: {
         ko:
@@ -576,6 +645,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: 'billing에서는 `pg_payloads`에 `session_key`를 저장하고, confirm 시 `pgPayKey`와 `t_partner_user_token`을 확정하는 상태 전이를 구현했습니다.',
           en: 'In billing, implemented the state transition that stores the `session_key` in `pg_payloads` and finalizes `pgPayKey` plus `t_partner_user_token` during confirm.',
         },
+        {
+          ko: '`t_partner_user_token` 검색 필터와 복합 인덱스를 추가하고, 카카오T 해지 시 현재 사용자의 T_PAYMENTS인지 검증하는 경로를 보강했습니다.',
+          en: 'Added `t_partner_user_token` lookup filters plus a composite index, and hardened unlink validation so KakaoT teardown checks whether the T_PAYMENTS record belongs to the current user.',
+        },
+        {
+          ko: '앱 콜백 전용 activate API를 분리하고 DTO alias, `@JsonProperty`, 검색 로그를 보강해 외부 스키마 차이와 운영 추적성을 흡수했습니다.',
+          en: 'Separated the app-callback-specific activate API and added DTO aliases, `@JsonProperty`, and search logs to absorb external schema drift and improve operational traceability.',
+        },
       ],
       engineeringViews: [
         {
@@ -590,6 +667,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: '`READY -> ACTIVE` 전이에서 필요한 `session_key`, `partner_user_token`, `pgPayKey`를 같은 subscription 행에 모아 이후 승인/취소 호출도 재사용 가능하게 했습니다.',
           en: 'Grouped the `session_key`, `partner_user_token`, and `pgPayKey` around the same subscription row during the `READY -> ACTIVE` transition so later approve/cancel calls can reuse them.',
         },
+        {
+          ko: '`t_partner_user_token`을 단순 응답 필드가 아니라 사용자-외부 결제수단 정합성을 확인하는 운영 키로 보고, 조회와 해지 검증이 같은 기준을 공유하도록 정리했습니다.',
+          en: 'Treated `t_partner_user_token` not as a response field but as an operational key for user-to-external-payment consistency, so lookup and unlink validation share the same basis.',
+        },
       ],
       outcomes: [
         {
@@ -599,6 +680,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '결제수단 등록 완료 후 subscription이 ACTIVE 상태를 유지하며 승인, 취소, 조회가 같은 식별 컨텍스트를 재사용하도록 만들었습니다.',
           en: 'Made subscriptions stay in the ACTIVE state after registration so approve, cancel, and lookup operations can reuse the same identity context.',
+        },
+        {
+          ko: '앱 콜백, 웹 로그인, 해지 검증이 섞이는 상황에서도 현재 사용자와 결제수단의 매칭 기준이 흔들리지 않도록 만들었습니다.',
+          en: 'Kept the current user and payment method matching basis stable across mixed app-callback, web-login, and unlink-validation flows.',
         },
       ],
         note: {
@@ -777,20 +862,20 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: 'coupon-service 발급/매핑/만료 흐름과 포인트 지갑 구조 설계',
-        en: 'Designed coupon-service issuance/mapping/expiry flows and point-wallet structure',
+        ko: 'coupon-service 정책 확장, 결제수단 제한, 포인트 지갑 구조 설계',
+        en: 'Extended coupon-service policy, payment-vendor restrictions, and point-wallet structure',
       },
       summary: {
         ko:
-          'VoltUp `coupon-service`에서는 쿠폰팩의 등록 기간과 사용 기간을 기준으로 코드 발급, 코드 등록, 코드 없이 유저 직접 할당, 만료 알림 배치를 처리했고, 별도로 포인트는 accrual 단위 만료를 다루기 위해 지갑 구조와 차감 순서를 설계했습니다.',
+          'VoltUp `coupon-service`에서는 쿠폰팩의 등록 기간과 사용 기간을 기준으로 코드 발급, 코드 등록, 코드 없이 유저 직접 할당, 만료 알림 배치를 처리했고, 제휴 쿠폰별 허용 결제수단 정책까지 발급/조회/사용/Admin 생성 흐름에 반영했습니다. 별도로 포인트는 accrual 단위 만료를 다루기 위해 지갑 구조와 차감 순서를 설계했습니다.',
         en:
-          'In VoltUp `coupon-service`, handled code issuance, code registration, direct user assignment without codes, and expiry reminder batches based on coupon-pack registration and usage windows, while separately designing point wallets and redemption order for per-accrual expiration.',
+          'In VoltUp `coupon-service`, handled code issuance, code registration, direct user assignment without codes, and expiry reminder batches based on coupon-pack registration and usage windows, while applying partner-coupon payment-vendor restrictions across issuance, lookup, usage, and Admin creation flows. Separately designed point wallets and redemption order for per-accrual expiration.',
       },
       challenge: {
         ko:
-          '넥센, 도요타, 블루멤버스 등 제휴사별 요구사항을 수용하면서도, 쿠폰은 코드형 발급과 무코드 직접 할당을 같이 지원해야 했고, 포인트는 적립 건마다 다른 만료일을 가진 구조를 안정적으로 처리해야 했습니다.',
+          '넥센, 도요타, 블루멤버스 등 제휴사별 요구사항을 수용하면서도, 쿠폰은 코드형 발급과 무코드 직접 할당을 같이 지원해야 했고, 일부 쿠폰팩은 카카오T/일반 카드/카카오페이처럼 허용 결제수단이 달라야 했습니다. 포인트는 적립 건마다 다른 만료일을 가진 구조를 안정적으로 처리해야 했습니다.',
         en:
-          'The project had to support partner-specific promotion requirements while handling both code-based coupon issuance and direct coupon assignment without codes, alongside a point model where each accrual can expire at a different date.',
+          'The project had to support partner-specific promotion requirements while handling both code-based coupon issuance and direct coupon assignment without codes, and some coupon packs needed different allowed payment vendors such as KakaoT, normal cards, or KakaoPay. The point model also had to handle per-accrual expiration reliably.',
       },
       actions: [
         {
@@ -804,6 +889,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '코드 없이 유저에게 바로 주는 경우에는 `mapping(code=null)` 또는 `batchMapping(userIds)`로 쿠폰 행을 직접 만들고, 코드 등록은 `coupon-mapping:{code}` 락 안에서 사용자와 연결했습니다.',
           en: 'For direct assignment without coupon codes, created coupon rows through `mapping(code=null)` or `batchMapping(userIds)`, while code registration linked the user inside a `coupon-mapping:{code}` lock.',
+        },
+        {
+          ko: '`allowedPaymentVendors`를 쿠폰팩 정책으로 추가하고, 빈 값은 전체 허용으로 해석해 기존 쿠폰과의 호환성을 유지하면서 발급/조회/사용 단계에 같은 제한을 적용했습니다.',
+          en: 'Added `allowedPaymentVendors` as a coupon-pack policy, treating empty values as allowing all vendors to preserve compatibility while applying the same restriction across issuance, lookup, and usage.',
+        },
+        {
+          ko: 'Admin 쿠폰팩 생성 폼에는 허용 결제수단 멀티셀렉과 Encoded ID 노출을 추가해 운영자가 정책을 생성 시점부터 확인할 수 있게 했습니다.',
+          en: 'Added an allowed-payment-vendor multiselect and Encoded ID exposure to the Admin coupon-pack creation flow so operators can verify the policy from creation time.',
         },
         {
           ko: '포인트는 `addBulk`에서 `expiredAt`이 있으면 새 `PointWallet`을 만들고, 없으면 같은 `type + chargeType` 지갑에 합산해 적립 단위와 만료 단위를 함께 관리했습니다.',
@@ -832,6 +925,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Handled expiry without adding another online coupon state: the batch reads coupon packs by `usableEndAt` and emits `EXPIRED` events only for unused assigned coupons.',
         },
         {
+          ko: '결제수단 제한은 화면 조건으로만 두지 않고 쿠폰팩 도메인 정책으로 끌어올려, Admin에서 만든 정책이 사용자 발급/조회/사용 단계까지 같은 의미로 흐르도록 했습니다.',
+          en: 'Promoted payment-vendor restrictions from a UI condition into a coupon-pack domain policy, so policies created in Admin carry the same meaning through user issuance, lookup, and usage.',
+        },
+        {
           ko: '포인트를 단일 잔액이 아닌 `PointWallets` 엔티티로 분리하고, `expiredAt`이 있는 적립은 새 wallet, 없는 적립은 동일 `type + chargeType` 지갑에 합산해 만료 규칙이 데이터 구조에 직접 드러나게 했습니다.',
           en: 'Split points into `PointWallets` entities instead of one balance, creating new wallets for expiring accruals and merging non-expiring ones into the same `type + chargeType` wallet so expiration rules are visible in the data model.',
         },
@@ -844,6 +941,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '코드형 쿠폰 발급, 코드 등록, 무코드 직접 할당, 만료 알림 배치를 `coupon-service` 안에서 같은 모델로 운영할 수 있게 정리했습니다.',
           en: 'Organized code issuance, code registration, direct assignment without codes, and expiry reminder batches under the same `coupon-service` model.',
+        },
+        {
+          ko: '제휴 프로모션의 결제수단 제한 요구를 쿠폰팩 정책으로 흡수해 할인 정책과 실제 결제/정산 조건이 어긋날 가능성을 줄였습니다.',
+          en: 'Absorbed partner-promotion payment-vendor requirements into coupon-pack policy, reducing the chance that discount policy drifts from payment and settlement conditions.',
         },
         {
           ko: '포인트 지갑, 만료 순서 차감, 다음 달 히스토리 배치 반영도 함께 운영해 쿠폰과 포인트를 하나의 프로모션 백엔드에서 설명할 수 있게 했습니다.',
@@ -1079,6 +1180,103 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
     },
     {
+      slug: 'roaming-reliability',
+      title: {
+        ko: '로밍 서비스 안정성: 공공 연계 상태 재동기화와 재처리',
+        en: 'Roaming Reliability: Public-Integration Resync and Retry',
+      },
+      period: {
+        ko: '2026.02 - 현재',
+        en: 'Feb 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: '환경부 로밍 카드 상태 재설계, 공공 API 재처리, 월간 전체 재동기화',
+        en: 'MCEE roaming card-state redesign, public API retries, and monthly full resync',
+      },
+      summary: {
+        ko:
+          '기후에너지환경부 공공 로밍 연계에서 회원카드 상태가 외부 시스템과 장기적으로 어긋나지 않도록 카드 상태 갱신 기준을 결제 응답에서 빌링 미수 이벤트 중심으로 재설계했습니다. 공공 API 오류 재처리와 월 1회 전체 재동기화 스케줄러를 더해 이벤트 누락이나 일시 장애 이후에도 기준 데이터를 회복할 수 있게 했습니다.',
+        en:
+          'Redesigned the Ministry of Climate, Energy and Environment public roaming integration so member-card state does not drift long-term from the external system, moving card-state updates from payment responses to billing-arrears events. Added public API retry handling and a monthly full-resync scheduler so baseline data can recover after missed events or transient failures.',
+      },
+      challenge: {
+        ko:
+          '공공 로밍 연계 데이터는 외부 시스템의 상태와 계속 맞아야 하지만, 온라인 이벤트만으로는 누락이나 일시 장애 뒤의 불일치를 자연스럽게 회복하기 어려웠습니다. 회원카드처럼 기준 데이터에 가까운 항목과 충전기 상태처럼 일부 누락을 감내할 수 있는 항목도 같은 우선순위로 처리하면 재처리 비용이 커질 수 있었습니다.',
+        en:
+          'Public roaming data needs to stay aligned with the external system, but online events alone cannot reliably recover after missed events or transient failures. Treating baseline-like member-card data and more tolerably lossy charger-status data with the same priority could also waste retry capacity.',
+      },
+      actions: [
+        {
+          ko: '카드 상태 업데이트 기준을 결제 응답 중심에서 빌링 미수 이벤트 중심으로 바꾸고, 미수 발생 건에 대해서만 선별적으로 상태를 갱신하도록 정리했습니다.',
+          en: 'Moved card-state updates from payment-response-driven logic to billing-arrears-event-driven logic, updating state selectively only for arrears cases.',
+        },
+        {
+          ko: '로밍 카드 상태 처리 경로를 단순화하고 빌링 조회를 통합해 변환/조회 오버헤드를 줄였습니다.',
+          en: 'Simplified the roaming card-state processing path and consolidated billing lookups to reduce transformation and lookup overhead.',
+        },
+        {
+          ko: '공공 API 오류 재처리는 회원카드처럼 기준 데이터 성격이 강한 항목을 우선 처리하고, 충전기 상태처럼 누락 허용 가능한 항목은 후순위로 분리했습니다.',
+          en: 'For public API retries, prioritized baseline-like member-card data and separated more tolerably lossy charger-status data into a lower-priority path.',
+        },
+        {
+          ko: '환경부 회원카드 월 1회 전체 재동기화 스케줄러와 task seed를 추가해 온라인 이벤트가 놓친 차이를 주기적으로 복구할 수 있게 했습니다.',
+          en: 'Added a monthly full-resync scheduler and task seed for MCEE member cards so differences missed by online events can be periodically restored.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: '상태 갱신 기준을 결제 응답에 묶어두면 정상 결제 흐름까지 로밍 상태 변경의 원인이 될 수 있어, 실제 보정이 필요한 미수 이벤트로 기준을 좁혔습니다.',
+          en: 'Keeping state updates tied to payment responses could make normal payment flows a cause of roaming-state changes, so I narrowed the trigger to arrears events where correction is actually needed.',
+        },
+        {
+          ko: '재처리는 “무조건 다시 시도”가 아니라 데이터 중요도에 따라 우선순위를 나누는 운영 설계로 봤습니다. 회원카드는 기준 데이터라 먼저 회복하고, 충전기 상태는 후순위로 두어 비용을 조절했습니다.',
+          en: 'I treated retries as an operational design problem rather than “try everything again.” Member cards recover first because they are baseline data, while charger status is lower priority to control retry cost.',
+        },
+        {
+          ko: '월간 전체 재동기화는 온라인 이벤트 처리의 보완재로 두었습니다. 이벤트 누락을 완전히 없애려 하기보다, 누락이 생겨도 장기 drift가 누적되지 않는 회복 경로를 만든 것입니다.',
+          en: 'The monthly full resync complements online event handling. Instead of trying to eliminate every missed event, it creates a recovery path that prevents long-term drift from accumulating.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '카드 상태 업데이트 기준을 재설계해 불필요한 상태 변경 가능성을 줄이고 데이터 정확성을 높였습니다.',
+          en: 'Reduced unnecessary state-change risk and improved data accuracy by redesigning the card-state update basis.',
+        },
+        {
+          ko: '공공 API 오류 이후에도 중요 데이터가 우선 복구되는 재처리 경로를 운영 기준으로 만들었습니다.',
+          en: 'Established an operational retry path where important data recovers first after public API errors.',
+        },
+        {
+          ko: '월간 전체 재동기화로 이벤트 누락이나 일시 장애 이후에도 회원카드 기준 데이터가 외부 시스템과 다시 맞춰지는 안전망을 확보했습니다.',
+          en: 'Added a monthly full-resync safety net so member-card baseline data realigns with the external system after missed events or transient failures.',
+        },
+      ],
+      note: {
+        ko: '외부 공공 시스템과 내부 상태를 장기적으로 맞추기 위해 온라인 이벤트, 재처리, 전체 재동기화를 함께 설계한 운영 안정화 프로젝트입니다.',
+        en: 'An operational reliability project that combines online events, retries, and full resync to keep internal state aligned with an external public system over time.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'Spring Batch', 'GCP Pub/Sub', 'Scheduler'],
+      diagrams: [
+        {
+          title: {
+            ko: '공공 로밍 데이터의 이벤트 처리, 재처리, 월간 재동기화',
+            en: 'Event handling, retries, and monthly resync for public roaming data',
+          },
+          description: {
+            ko:
+              '빌링 미수 이벤트 기준 상태 갱신, 중요도별 공공 API 재처리, 월간 전체 재동기화를 함께 두어 외부 시스템과의 장기 drift를 줄이는 구조입니다.',
+            en:
+              'Shows how billing-arrears-based updates, priority-based public API retries, and monthly full resync work together to reduce long-term drift from the external system.',
+          },
+          code: roamingReliabilityDiagram,
+        },
+      ],
+    },
+    {
       slug: 'devops-automation',
       title: {
         ko: '개발 생산성 자동화 및 DevOps 개선',
@@ -1093,20 +1291,20 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: 'AI 리뷰 워크플로우, Vault-로컬 환경 동기화, Jenkins/ArgoCD 표준화',
-        en: 'Standardized AI review workflows, Vault-to-local environment sync, and Jenkins/ArgoCD delivery',
+        ko: 'AI 리뷰, Vault-로컬 동기화, 내부 API 표준, 모바일 CI/CD 보안 개선',
+        en: 'AI review, Vault-to-local sync, internal API standards, and mobile CI/CD security hardening',
       },
       summary: {
         ko:
-          '볼트업 조직에서 반복적으로 발생하던 PR 리뷰, 로컬 환경 셋업, 서비스 배포 작업을 공통 workflow로 묶었습니다. 특히 로컬 환경값은 공개 저장소에 둘 수도 없고 개별 전달도 번거로워서, Vault 값을 `application-local.yaml`로 바로 동기화하는 Gradle 로직을 만들어 키가 추가될 때도 개발자 간 로컬 설정이 자동으로 같은 기준을 유지하도록 했고 Jenkins/ArgoCD 파이프라인까지 함께 표준화했습니다.',
+          '볼트업 조직에서 반복적으로 발생하던 PR 리뷰, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 공통 workflow로 묶었습니다. 특히 로컬 환경값은 공개 저장소에 둘 수도 없고 개별 전달도 번거로워서, Vault 값을 `application-local.yaml`로 바로 동기화하는 Gradle 로직을 만들었습니다. 이후 Admin internal API 호출 규약과 Workload Identity 기반 모바일 배포까지 표준화했습니다.',
         en:
-          'Turned recurring PR review, local environment setup, and delivery work in Voltup into shared workflows. In particular, I built Gradle logic that syncs Vault values directly into `application-local.yaml`, so newly added keys stay aligned across developers automatically, then standardized Jenkins/ArgoCD delivery around the same operating model.',
+          'Turned recurring PR review, local environment setup, internal API integration, and service/app delivery work in Voltup into shared workflows. In particular, I built Gradle logic that syncs Vault values directly into `application-local.yaml`, then extended the standardization into Admin internal API conventions and Workload Identity-based mobile delivery.',
       },
       challenge: {
         ko:
-          'MSA가 늘수록 코드 리뷰 기준, 마이크로서비스별 작업 컨벤션, 반복 작업 방식, 로컬 환경값 전달, 배포 절차가 사람마다 달라지기 쉬웠습니다. 특히 환경값은 보안상 공개 저장소에 둘 수 없고, 그렇다고 매번 사람 손으로 따로 전달하는 것도 운영 비용이 컸습니다.',
+          'MSA가 늘수록 코드 리뷰 기준, 마이크로서비스별 작업 컨벤션, 반복 작업 방식, 로컬 환경값 전달, 내부 API 호출 방식, 배포 절차가 사람마다 달라지기 쉬웠습니다. 모바일 배포는 Service Account JSON 키 보관과 외부 CDN rate-limit, skip 조건 오발동 같은 운영 리스크도 함께 줄여야 했습니다.',
         en:
-          'As the number of services grew, review rules, microservice-level working conventions, recurring task patterns, local secret delivery, and deployment steps were drifting per person. The hardest part was local environment setup: secrets could not live in a public repo, but handing them out manually every time also created too much operational cost.',
+          'As the number of services grew, review rules, microservice-level conventions, recurring task patterns, local secret delivery, internal API invocation, and delivery steps were drifting per person. Mobile delivery also needed to reduce operational risks such as Service Account JSON key storage, external CDN rate limits, and skip-condition misfires.',
       },
       actions: [
         {
@@ -1126,8 +1324,20 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Added an `updateCodefCertificatesToVault` task in `feapp-domain-service` that Base64-encodes certificates and `conf.json` fields into Vault, so developers can refresh sensitive assets themselves without sharing files through the repo or chat.',
         },
         {
+          ko: 'Admin 내부 연동 API가 늘어나는 상황에서 `admin-internal-*` 클라이언트 패턴과 `X-Internal-Caller` 헤더 규약을 문서화하고 적용해 호출 주체와 신뢰 경계를 일관되게 관리했습니다.',
+          en: 'Documented and applied an `admin-internal-*` client pattern plus `X-Internal-Caller` header convention so growing Admin internal API integrations keep a consistent caller identity and trust boundary.',
+        },
+        {
           ko: '배포는 `devops-cicd` Jenkins shared library 위에서 서비스별 `Jenkinsfile`이 job name으로 API/BATCH/CONSUMER/APP target을 분기하고, Docker build/push 후 ArgoCD 배포로 이어지도록 통일했습니다. Android 앱은 cache, track 선택, 알림까지 같은 패턴으로 자동화했습니다.',
           en: 'Standardized delivery on top of the `devops-cicd` Jenkins shared library so each service `Jenkinsfile` routes API/BATCH/CONSUMER/APP targets by job name and continues into Docker build/push plus ArgoCD deploy. The Android app pipeline follows the same pattern with cache restore/save, release track selection, and notifications.',
+        },
+        {
+          ko: 'Android 배포를 fastlane/Service Account JSON 키 중심에서 Workload Identity 기반 Gradle/Play Store REST API와 `firebase-tools` 흐름으로 전환하고, Jenkins 로깅·Slack 알림·토큰 노출 방지를 보강했습니다.',
+          en: 'Moved Android delivery away from fastlane and Service Account JSON keys to Workload Identity with Gradle/Play Store REST API plus `firebase-tools`, while improving Jenkins logging, Slack notifications, and token exposure guards.',
+        },
+        {
+          ko: 'iOS 배포 workflow의 skip 조건이 커밋 본문에 의해 오발동하지 않도록 수정하고, CocoaPods CDN raw.githubusercontent.com 429 회피를 위해 netrc 인증을 추가했습니다.',
+          en: 'Fixed iOS delivery skip checks so commit bodies do not accidentally suppress workflows, and added netrc authentication to avoid CocoaPods CDN raw.githubusercontent.com 429 failures.',
         },
       ],
       engineeringViews: [
@@ -1142,6 +1352,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '배포 파이프라인은 서비스별로 완전히 다르게 두지 않고 job name 기반 target 분기와 shared library 위로 수렴시켜, 운영 절차를 공통화하면서도 앱/백엔드 차이는 target 수준에서만 드러나게 했습니다.',
           en: 'Converged delivery onto a shared-library model with job-name-based target routing so operational steps stay standardized while app/backend differences appear only at the target layer.',
+        },
+        {
+          ko: '모바일 배포 인증은 오래 보관되는 JSON 키를 없애는 방향으로 보고 Workload Identity로 바꿨고, 배포 실패 원인은 Slack 메시지와 로그에서 바로 추적할 수 있게 했습니다.',
+          en: 'Moved mobile delivery authentication toward removing long-lived JSON keys via Workload Identity, and made deployment failures easier to trace from Slack messages and logs.',
         },
         {
           ko: '반복 작업이 팀 운영 리스크가 된다고 느낀 지점에서는 문서만 남기지 않고 직접 Gradle 태스크, workflow, Jenkins 파이프라인으로 만들어 팀이 바로 쓸 수 있게 바꿨습니다.',
@@ -1161,12 +1375,16 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: 'Jenkins shared library와 ArgoCD 중심 배포 패턴으로 서비스/앱 배포 절차를 단순화하고 수작업 분기를 줄였습니다.',
           en: 'Simplified service and app delivery with Jenkins shared-library plus ArgoCD deployment patterns, reducing manual branching in release operations.',
         },
+        {
+          ko: 'Admin internal API와 모바일 배포 인증 방식을 표준화해 운영자 도구 확장과 앱 릴리즈에서 반복되는 보안/운영 리스크를 줄였습니다.',
+          en: 'Standardized Admin internal APIs and mobile delivery authentication, reducing recurring security and operational risks around operator-tool expansion and app releases.',
+        },
       ],
       note: {
-        ko: '보안 때문에 공개할 수 없는 로컬 환경값 문제를 Vault-local sync 구조로 풀어, 키 변경이 생겨도 개발자 간 설정이 자동으로 맞춰지게 만들고 그 흐름을 AI workflow와 배포 파이프라인까지 연결한 DX/DevOps 프로젝트입니다.',
-        en: 'A DX/DevOps project centered on a Vault-to-local sync model that keeps developer configs aligned automatically as keys change, then connects that flow to AI workflows and delivery pipelines.',
+        ko: '보안 때문에 공개할 수 없는 로컬 환경값 문제를 Vault-local sync 구조로 풀고, 내부 API 호출/모바일 배포 인증처럼 운영 중 반복적으로 흔들리는 경계를 표준화한 DX/DevOps 프로젝트입니다.',
+        en: 'A DX/DevOps project that uses Vault-to-local sync for non-public local secrets and standardizes repeatedly fragile boundaries such as internal API calls and mobile delivery authentication.',
       },
-      tech: ['Vault CLI', 'Gradle Kotlin DSL', 'GitHub Actions', 'Jenkins', 'ArgoCD', 'Gemini API', 'GitHub Copilot', 'Claude Code', 'gcloud CLI'],
+      tech: ['Vault CLI', 'Gradle Kotlin DSL', 'GitHub Actions', 'Jenkins', 'ArgoCD', 'Workload Identity', 'Firebase CLI', 'Gemini API', 'GitHub Copilot', 'Claude Code', 'gcloud CLI'],
       diagrams: [
         {
           title: {

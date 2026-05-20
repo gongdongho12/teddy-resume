@@ -386,11 +386,15 @@ projectSections:
             - 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이·토스페이먼츠·카카오T를 수용하는 멀티 벤더 결제 아키텍처 구축
             - GCP Pub/Sub 기반 DLQ(Dead-Letter Queue) 패턴을 구현해 실패 이벤트를 별도 큐로 격리하고 미수 처리 대상 추적이 가능하도록 구성
             - DLQ 미수 처리 및 영구 미수 대상 처리 시스템을 구축하고 재시도, NACK, 보완 배치 기반 복구 흐름으로 미수 처리 누락 방지
+            - DLQ 재시도 정체를 막기 위해 failover 상태 전이와 latestRetriedAt 기록을 보강하고, PG not-found 응답에서도 미수 재결제 플로우가 끊기지 않도록 개선
+            - 결제 취소 알림톡을 전액/부분 취소 및 로밍 결제 취소 케이스로 분리해 사용자에게 표시되는 취소 금액과 상태 메시지 정확도 개선
           en:
             - Owned payment service 0→1 as core engineer
             - Designed vendor strategy pattern with abstract base classes to integrate 3 PG providers with unified interface
             - GCP Pub/Sub DLQ pattern to isolate failed payment events and keep arrears-processing targets traceable
             - DLQ-based arrears and permanent-arrears handling system with retries, NACKs, and recovery batches to prevent missed arrears handling
+            - Hardened failover transitions and latestRetriedAt recording to prevent stuck DLQ retries, while keeping unpaid-payment recovery flows intact on PG not-found responses
+            - Split payment-cancel AlimTalk contexts for full, partial, and roaming cancellations to improve the accuracy of user-facing cancellation amounts and status messages
 
       - title:
           ko: 통합 프로모션(쿠폰/포인트) 플랫폼 구축 및 고도화
@@ -402,9 +406,9 @@ projectSections:
         summary:
           ko: |
             다양한 제휴사(넥센, 도요타, 블루멤버스)의 프로모션 요구사항을 수용하는 범용 쿠폰·포인트 백엔드 시스템을
-            구축했습니다.
+            구축하고, 쿠폰팩별 결제수단 제한 정책까지 발급/조회/사용/관리 화면 전 구간에 반영했습니다.
           en: |
-            Built a reusable coupon and points backend that supports partner-driven promotions such as Nexen, Toyota, and Bluemembers.
+            Built a reusable coupon and points backend for partner-driven promotions such as Nexen, Toyota, and Bluemembers, including coupon-pack payment-vendor restrictions across issuance, lookup, usage, and admin management.
         tech:
           - Kotlin
           - Spring Boot
@@ -416,12 +420,14 @@ projectSections:
             - 포인트 사용 시 무상 포인트 우선, 유효기간 임박순 차감 정책 구현 — 결제 취소 시에는 역순(유효기간 긴 지갑부터 환불)으로 사용자 유리하게 설계
             - Hold→Confirm→Release 3단계 포인트 차감 라이프사이클로 결제 실패 시 자동 복원 보장
             - 제휴사(넥센/도요타/블루멤버스) 쿠폰 만료일·중복발급·금액 설정 등 비즈니스 요구사항에 맞춘 유연한 프로모션 로직 개발
+            - 쿠폰팩별 허용 결제수단(카카오T/일반 카드/카카오페이 등)을 정책화하고 발급·조회·사용·Admin 생성 폼까지 동일한 제한 기준 적용
             - 프로모션 쿠폰 발급 배치 구상 및 개발
           en:
             - Designed point wallet system with per-deposit expiration — separate wallet entity per deposit, aggregated balance with 7-day expiry-soon tracking
             - "Point deduction policy: free points first, then earliest-expiring; cancellation refunds in reverse order (longest-expiry wallets first) to benefit users"
             - Hold→Confirm→Release 3-phase point lifecycle ensuring auto-restoration on payment failure
             - Partner-specific promo rules — expiry, duplicate issuance, amount settings (Nexen/Toyota/Bluemembers)
+            - Modeled allowed payment vendors per coupon pack and applied the same restriction across issuance, lookup, usage, and Admin creation flows
             - Promotion coupon issuance batch — designed and developed
 
       - title:
@@ -445,11 +451,13 @@ projectSections:
         highlights:
           ko:
             - 카카오T 계정/결제 연동을 4개 MSA(auth→user→billing→feapp)에 걸쳐 설계 및 구현 — OAuth2 기반 계정 연동, 결제수단 등록(5단계), 결제 승인/부분 취소까지 전체 플로우 담당
+            - t_partner_user_token을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리하고, 검색 인덱스·해지 검증·앱 콜백 전용 activate API를 보강
             - 차량 등록 서비스 및 PnC(Plug & Charge) 인증 등록 서비스 개발
             - 프로모션 쿠폰 발급 배치 구상 및 개발
             - 외부 인증서 서비스에 서킷브레이커 패턴 적용 — 장애 인증서 자동 비활성화 및 복구, 전체 장애 시 강제 리셋 복구 경로 구성
           en:
-          - Designed and implemented KakaoT account/payment integration across 4 MSAs (auth→user→billing→feapp) — OAuth2 account linking, 5-step card registration, payment approval/partial cancellation
+            - Designed and implemented KakaoT account/payment integration across 4 MSAs (auth→user→billing→feapp) — OAuth2 account linking, 5-step card registration, payment approval/partial cancellation
+            - Promoted t_partner_user_token as the key between external payment methods and internal user context, adding search indexes, unlink validation, and an app-callback-specific activate API
             - Vehicle registration service and PnC (Plug & Charge) authentication registration service
             - Promotion coupon issuance batch — designed and developed
             - Circuit breaker pattern for external certificate service — auto-disable on failure with recovery and a force-reset recovery path for total outages
@@ -457,7 +465,7 @@ projectSections:
           ko:
             - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현
           en:
-          - "Full KakaoT partner integration: card registration, payment, cancellation, and promotion lifecycle implemented across 4 MSA services"
+            - "Full KakaoT partner integration: card registration, payment, cancellation, and promotion lifecycle implemented across 4 MSA services"
 
       - title:
           ko: 볼트업 하이브리드 앱 (Flutter - iOS/Android)
@@ -543,32 +551,38 @@ projectSections:
       - title:
           ko: 로밍 서비스 안정성 및 성능 최적화
           en: Roaming service reliability & performance
+        portfolioSlug: roaming-reliability
         period:
-          ko: "2026.02"
-          en: "Feb 2026"
+          ko: "2026.02 ~ 현재"
+          en: "Feb 2026 — Present"
         summary:
-          ko: 기후에너지환경부 공공 로밍 연계 서비스의 카드 상태 관리 로직을 재설계하고 처리 성능을 개선했습니다.
-          en: Redesigned card-state management for the Ministry of Climate, Energy and Environment public roaming integration service and improved processing performance.
+          ko: 기후에너지환경부 공공 로밍 연계 서비스의 카드 상태 관리 로직을 재설계하고, 이벤트 누락/일시 장애 이후에도 기준 데이터를 회복할 수 있도록 재처리·월간 재동기화 경로를 구성했습니다.
+          en: Redesigned card-state management for the Ministry of Climate, Energy and Environment public roaming integration and added retry/monthly resync paths so baseline data can recover after missed events or transient failures.
         tech:
           - Kotlin
           - Spring Boot
           - GCP Pub/Sub
+          - Spring Batch
         highlights:
           ko:
             - 기후에너지환경부 공공 로밍 카드 상태 업데이트 로직을 결제 응답 기반에서 빌링 미수 이벤트 기반으로 재설계 — 미수 발생 건에 대해서만 선별적 상태 업데이트로 데이터 정확성 향상
             - 로밍 카드 상태 처리 경로를 단순화하고 빌링 조회를 통합해 처리 성능 개선
             - 공공 API 에러 발생 시 재처리 프로세스 구성 — 회원카드 등 중요 데이터는 우선 재처리, 충전기 상태 등 누락 허용 가능한 항목은 후순위로 분리
+            - 환경부 회원카드 월 1회 전체 재동기화 스케줄러와 task seed를 추가해 외부 시스템과 장기 상태 불일치가 누적되지 않도록 보강
           en:
             - Redesigned card-state updates in the Ministry of Climate, Energy and Environment public roaming flow from payment-response-based to billing-arrears-event-driven — selective updates only for arrears events
             - Simplified the roaming card-state processing path and consolidated billing lookups to improve throughput
             - Built an MCEE API retry process that prioritizes critical data (membership cards) over tolerably-lossy items (charger status)
+            - Added a monthly full resync scheduler and task seed for MCEE member cards to prevent long-term drift from the external system
         results:
           ko:
             - 카드 상태 업데이트 로직 재설계로 데이터 정확성 향상
             - 변환 오버헤드 제거 및 통합 조회로 처리 성능 개선
+            - 이벤트 누락이나 일시 장애 이후에도 회원카드 기준 데이터를 주기적으로 복구할 수 있는 운영 안전망 확보
           en:
             - Improved data accuracy by rearchitecting card state update logic
             - Reduced processing overhead by eliminating serialization and consolidating billing queries
+            - Added an operational safety net that periodically restores member-card baseline data after missed events or transient failures
 
       - title:
           ko: 개발 생산성 자동화 및 DevOps 개선
@@ -578,8 +592,8 @@ projectSections:
           ko: 2024.10 ~ 현재
           en: Oct 2024 — Present
         summary:
-          ko: 반복되는 운영 업무와 개발 비효율을 제거하기 위해 AI 코드 리뷰, 배포 자동화, MSA 개발 환경 도구를 구축했습니다.
-          en: AI-first reviews, mobile CI/CD hardening, remote Gradle cache, iOS TestFlight automation, obfuscation policy, and Firebase distribution.
+          ko: 반복되는 운영 업무와 개발 비효율을 제거하기 위해 AI 코드 리뷰, 배포 자동화, MSA 개발 환경 도구, 내부 API 호출 표준을 구축했습니다.
+          en: AI-first reviews, mobile CI/CD hardening, remote Gradle cache, iOS TestFlight automation, obfuscation policy, Firebase distribution, and internal Admin API standards.
         tech:
           - Gemini API
           - GitHub Copilot
@@ -589,6 +603,7 @@ projectSections:
           - Firebase
           - Docker
           - Gradle
+          - Workload Identity
         highlights:
           ko:
             - 여러 생성형 LLM에서 활용할 수 있도록 각 마이크로서비스의 작업 컨벤션과 공통 작업 형상을 재사용 가능한 스킬 레포지토리로 구축 (Claude Code, Cursor, Gemini 등)
@@ -596,6 +611,8 @@ projectSections:
             - Docusaurus + GitHub Actions 기반 개발 문서 자동 생성 시스템 구축 — Git Polling 방식으로 코드 변경 감지 시 문서 자동 갱신
             - Firebase App Distribution 도입으로 QA/배포 프로세스 병목 제거
             - MSA 환경의 설정 파일(application-local.yaml) 자동 생성 도구 개발
+            - Admin 내부 API 호출이 늘어나는 상황에서 admin-internal-* 클라이언트와 X-Internal-Caller 헤더 규약을 도입해 운영자 도구의 내부 호출 경계 표준화
+            - Android 배포를 fastlane/Service Account JSON 키 중심에서 Workload Identity 기반 Gradle/Play Store REST API 및 firebase-tools 흐름으로 전환하고 iOS skip 조건·CocoaPods CDN rate-limit 대응 보강
             - Android Jenkins 파이프라인 공통 라이브러리화, GCS Gradle 캐시, iOS 자동 배포, ProGuard/R8 정책 등
           en:
             - Built a reusable skill repository of microservice conventions and recurring task shapes so it could be applied across generative LLM tools such as Claude Code, Cursor, and Gemini
@@ -603,16 +620,20 @@ projectSections:
             - Docusaurus + GitHub Actions auto-doc system with git-polling change detection
             - Firebase App Distribution for faster QA and release cycles
             - Gradle generator for application-local.yaml
+            - Standardized Admin internal API boundaries with admin-internal-* clients and an X-Internal-Caller header convention
+            - Moved Android delivery away from fastlane/Service Account JSON keys to Workload Identity with Gradle/Play Store REST API and firebase-tools, while hardening iOS skip conditions and CocoaPods CDN rate-limit handling
             - Refactored Android Jenkins into shared libs; GCS remote cache; iOS GA/TestFlight pipeline; 300+ line R8 rules
         results:
           ko:
             - AI 코드 리뷰 자동화로 리뷰 리소스 절감
             - Firebase 도입으로 QA 배포 사이클 단축 및 QA 자체 검증 편의성 향상
             - 문서 자동 생성 시스템 구축으로 관리 리소스 절감
+            - 모바일 배포 인증 키 관리 부담과 외부 rate-limit/skip 오발동 리스크를 줄여 릴리즈 안정성 개선
           en:
             - Reduced review overhead via automated first-pass AI review
             - Shortened QA/deploy cycle and improved QA self-serve with Firebase Distribution
             - Auto-doc system reduced manual documentation maintenance
+            - Improved release stability by reducing mobile delivery key-management burden and external rate-limit/skip misfire risk
 
   - heading:
       ko: 프로젝트 — 카카오스타일 (2022.06 ~ 2024.09)

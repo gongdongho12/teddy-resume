@@ -515,8 +515,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Implemented retries, DLQ, and NACK-based recovery paths so unpaid events could flow into follow-up payment recovery.',
         },
         {
-          ko: 'FAILOVER 상태 전이와 retry timestamp 기록을 보강해 dead-letter 재시도가 stuck 되지 않도록 만들고, PG not-found 응답에서도 비정상 재결제 플로우가 이어지도록 수정했습니다.',
-          en: 'Hardened FAILOVER transitions and retry timestamp recording to prevent dead-letter retries from getting stuck, while keeping abnormal repayment flows moving on PG not-found responses.',
+          ko: 'FAILOVER 상태 전이와 retry timestamp 기록을 보강해 dead-letter 재시도가 stuck 되지 않도록 만들고, PG not-found 응답에서도 미수 재결제 플로우가 끊기지 않도록 수정했습니다.',
+          en: 'Hardened FAILOVER transitions and retry timestamp recording to prevent dead-letter retries from getting stuck, while keeping unpaid-payment recovery flows intact on PG not-found responses.',
         },
         {
           ko: '전액 취소, 부분 취소, 로밍 결제 취소 알림톡 context를 분리하고 금액 포맷팅을 정리해 사용자 커뮤니케이션 정확도를 높였습니다.',
@@ -551,8 +551,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Applied DLQ-based unpaid-event processing and automatic recovery paths in operation.',
         },
         {
-          ko: '외부 PG 응답 예외와 취소 알림 분기를 보강해 정산 보완 경로와 사용자 안내 메시지의 신뢰도를 높였습니다.',
-          en: 'Improved trust in settlement recovery and user-facing cancellation messages by hardening external PG exception handling and cancellation-message branching.',
+          ko: '외부 PG 응답 예외와 취소 알림 분기를 보강해 미수 복구 흐름과 사용자 안내 메시지의 신뢰도를 높였습니다.',
+          en: 'Improved trust in unpaid-payment recovery and user-facing cancellation messages by hardening external PG exception handling and cancellation-message branching.',
         },
       ],
       note: {

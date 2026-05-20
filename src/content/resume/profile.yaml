@@ -40,12 +40,12 @@ experience:
       en: ""
     description:
       ko: |
-        빌링 - DLQ 및 다단계 미수 배치로 결제/정산 안정성 확보
+        빌링 - DLQ 및 다단계 미수 배치로 결제/미수 처리 안정성 확보
         프로모션(쿠폰/포인트) - 고객 리텐션 증대
         유저사이드 - 차량 조회, PnC(Plug & Charge) 인증 및 유저사이드 백엔드와 모바일 앱 담당
         DX 인프라 - AI 워크플로우 표준화, CI/CD 통합, 문서 자동 생성 적용
       en: |
-        Billing - Improved payment and settlement stability with DLQ and multi-stage unpaid batches
+        Billing - Improved payment and arrears-handling reliability with DLQ and multi-stage unpaid batches
         Promotions (coupon/points) - Improved customer retention
         User-side - Owned vehicle lookup, PnC (Plug & Charge) authorization, user-side backend, and the mobile app
         DX infrastructure - Standardized AI workflows and applied CI/CD integration and automated documentation
@@ -361,8 +361,8 @@ projectSections:
       en: Projects — LGU+ VoltUp
     projects:
       - title:
-          ko: 멀티 벤더 결제 시스템 및 정산 안정화
-          en: Multi-vendor billing & settlement reliability
+          ko: 멀티 벤더 결제 시스템 및 미수 복구 안정화
+          en: Multi-vendor payment system & arrears recovery
         portfolioSlug: multi-pg-payment
         period:
           ko: 2024.10 ~ 현재
@@ -370,10 +370,10 @@ projectSections:
         summary:
           ko: |
             결제 서비스를 초기 설계부터 주도하여 단일 결제에서 멀티 벤더사를 수용하는 모듈로 확장하고,
-            다층 미수 관리 시스템을 구축하여 매출 정산의 정확도를 확보했습니다.
+            다층 미수 관리 시스템을 구축하여 결제 상태 정합성과 실패/미수 결제의 복구 가능성을 높였습니다.
           en: |
-            Led billing design from the start; expanded from a single payment flow into a modular structure that supports multiple payment vendors,
-            and improved settlement accuracy through a layered arrears-management system.
+            Led payment design from the start; expanded from a single payment flow into a modular structure that supports multiple payment vendors,
+            and improved payment-state consistency and failed/unpaid payment recovery through a layered arrears-management system.
         tech:
           - Kotlin
           - Spring Boot
@@ -384,13 +384,13 @@ projectSections:
           ko:
             - 결제 서비스를 프로젝트 초기 설계부터 구현까지 전담하며 핵심 개발자로 주도
             - 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이·토스페이먼츠·카카오T를 수용하는 멀티 벤더 결제 아키텍처 구축
-            - GCP Pub/Sub 기반 DLQ(Dead-Letter Queue) 패턴 구현 — 커스텀 어노테이션 및 핸들러 자동 디스커버리로 결제 이벤트 유실 방지
-            - DLQ 미수 처리 및 영구 미수 대상 처리 시스템 구축 — 재시도→DLQ, NACK 기반 자동 복구로 정산 누락 방지
+            - GCP Pub/Sub 기반 DLQ(Dead-Letter Queue) 패턴을 구현해 실패 이벤트를 별도 큐로 격리하고 미수 처리 대상 추적이 가능하도록 구성
+            - DLQ 미수 처리 및 영구 미수 대상 처리 시스템을 구축하고 재시도, NACK, 보완 배치 기반 복구 흐름으로 미수 처리 누락 방지
           en:
-            - Owned billing 0→1 as core engineer
+            - Owned payment service 0→1 as core engineer
             - Designed vendor strategy pattern with abstract base classes to integrate 3 PG providers with unified interface
-            - GCP Pub/Sub DLQ pattern with custom annotation-based handler discovery for payment event resilience
-            - DLQ-based arrears processing and permanent arrears handling system — retry→DLQ, NACK-based auto-recovery to prevent settlement gaps
+            - GCP Pub/Sub DLQ pattern to isolate failed payment events and keep arrears-processing targets traceable
+            - DLQ-based arrears and permanent-arrears handling system with retries, NACKs, and recovery batches to prevent missed arrears handling
 
       - title:
           ko: 통합 프로모션(쿠폰/포인트) 플랫폼 구축 및 고도화

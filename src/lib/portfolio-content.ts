@@ -421,8 +421,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       slug: 'multi-pg-payment',
       title: {
-        ko: '멀티 벤더 결제 시스템 및 정산 안정화',
-        en: 'Multi-Vendor Payment System and Settlement Stabilization',
+        ko: '멀티 벤더 결제 시스템 및 미수 복구 안정화',
+        en: 'Multi-Vendor Payment System and Arrears Recovery',
       },
       period: {
         ko: '2024.10 - 현재',
@@ -454,12 +454,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Built a PG integration architecture with an abstract-class-based vendor strategy pattern.',
         },
         {
-          ko: 'GCP Pub/Sub 기반 DLQ 패턴을 구현하고 커스텀 어노테이션 및 핸들러 자동 디스커버리를 적용했습니다.',
-          en: 'Implemented a GCP Pub/Sub-based DLQ pattern with custom annotations and handler auto-discovery.',
+          ko: 'GCP Pub/Sub 기반 DLQ 패턴을 구현하고 실패 이벤트를 별도 큐로 격리해 미수 처리 대상이 추적 가능하도록 구성했습니다.',
+          en: 'Implemented a GCP Pub/Sub-based DLQ pattern that isolates failed events and keeps arrears-processing targets traceable.',
         },
         {
-          ko: '재시도, DLQ, NACK 기반 자동 복구 경로를 구현해 미수 이벤트가 정산 보완 경로로 이어지도록 구성했습니다.',
-          en: 'Implemented retries, DLQ, and NACK-based recovery paths so unpaid events could flow into settlement recovery.',
+          ko: '재시도, DLQ, NACK 기반 자동 복구 경로를 구현해 미수 이벤트가 결제 보완 처리 흐름으로 이어지도록 구성했습니다.',
+          en: 'Implemented retries, DLQ, and NACK-based recovery paths so unpaid events could flow into follow-up payment recovery.',
         },
       ],
       engineeringViews: [

@@ -453,12 +453,14 @@ projectSections:
             - 카카오T 계정/결제 연동을 4개 MSA(auth→user→billing→feapp)에 걸쳐 설계 및 구현 — OAuth2 기반 계정 연동, 결제수단 등록(5단계), 결제 승인/부분 취소까지 전체 플로우 담당
             - t_partner_user_token을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리하고, 검색 인덱스·해지 검증·앱 콜백 전용 activate API를 보강
             - 차량 등록 서비스 및 PnC(Plug & Charge) 인증 등록 서비스 개발
+            - 홈페이지 통계 Public API 구축 — 전월 누적합·전일 누적 delta·당일 실시간 합산을 하나의 누적 지표로 결합하고, 공개 트래픽을 고려해 Local/RemoteCache와 분산 락으로 원본 부하 최소화
             - 프로모션 쿠폰 발급 배치 구상 및 개발
             - 외부 인증서 서비스에 서킷브레이커 패턴 적용 — 장애 인증서 자동 비활성화 및 복구, 전체 장애 시 강제 리셋 복구 경로 구성
           en:
             - Designed and implemented KakaoT account/payment integration across 4 MSAs (auth→user→billing→feapp) — OAuth2 account linking, 5-step card registration, payment approval/partial cancellation
             - Promoted t_partner_user_token as the key between external payment methods and internal user context, adding search indexes, unlink validation, and an app-callback-specific activate API
             - Vehicle registration service and PnC (Plug & Charge) authentication registration service
+            - Built homepage statistics public API — combined prior-month cumulative totals, daily cumulative deltas, and same-day real-time sums into one cumulative metric, using Local/RemoteCache and distributed locks to protect origins from public traffic
             - Promotion coupon issuance batch — designed and developed
             - Circuit breaker pattern for external certificate service — auto-disable on failure with recovery and a force-reset recovery path for total outages
         results:

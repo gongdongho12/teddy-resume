@@ -431,6 +431,52 @@ projectSections:
             - Promotion coupon issuance batch — designed and developed
 
       - title:
+          ko: U+ VIP콕 제휴 쿠폰 및 VoC 운영 대행 시스템
+          en: U+ VIP partnership coupons and VoC operations support
+        portfolioSlug: uplus-vip-coupon-ops
+        period:
+          ko: 2026.06 ~ 현재
+          en: Jun 2026 — Present
+        summary:
+          ko: |
+            LGU+ 멤버십 VIP/VVIP 고객의 월 1회 U+ VIP콕 혜택 쿠폰 발급을 위해
+            feapp, coupon-service, voltup-admin-fe를 연결하고, 운영팀이 고객 문의 중 직접 조회·대행·판단할 수 있는 Admin 흐름을 구축했습니다.
+          en: |
+            Connected feapp, coupon-service, and voltup-admin-fe for monthly U+ VIP benefit coupon issuance for LGU+ Membership VIP/VVIP customers,
+            while building Admin flows that let operations search, proxy, and decide during customer inquiries.
+        tech:
+          - Kotlin
+          - Spring Boot
+          - Spring Batch
+          - React
+          - TypeScript
+          - MySQL
+          - QueryDSL
+          - Feign
+        highlights:
+          ko:
+            - coupon-service에 UPLUS_VIP 쿠폰팩 타입, 혜택 월 기준 활성 기간 중복 제한, 결제수단 제한 정책을 추가하고 쿠폰 미리보기·조회·사용·Admin 생성 흐름에 일관 적용
+            - feapp에 휴대폰번호 카드조회, 회원 생년월일 검증, 사용자/카드 월 1회 제한, LGU+ 승인, 쿠폰 발급, 실패 시 승인 취소 보상을 묶은 UplusMembershipIssueService 구성
+            - Admin API/화면에 회원 상세 U+ VIP콕 대행 패널, 휴대폰번호 카드조회, 본인확인 불일치 사전 점검, 발급/쿠폰 매핑 이력 조회를 구현
+            - UPLUS_VIP 쿠폰팩 생성 옵션, 혜택 월 자동 입력, 정액 할인 최소사용금액 보정, 허용 결제수단 멀티셀렉을 admin-fe에 반영
+            - 고객 대상 문자/푸시/알림톡 1회 발송 어드민과 즉시/예약 발송을 위한 dispatch batch, 발송 이력 조회 흐름 구축
+          en:
+            - Added the UPLUS_VIP coupon-pack type, benefit-month overlap prevention, and payment-vendor restrictions to coupon-service, applying them consistently across preview, search, use, and Admin creation
+            - Built UplusMembershipIssueService in feapp for phone-based card lookup, member birthday verification, once-per-user/card monthly limits, LGU+ approval, coupon issuance, and compensating approval cancellation on failure
+            - Implemented Admin APIs and screens for the member-detail U+ VIP proxy panel, phone-based card lookup, identity-mismatch pre-checks, and issue/coupon mapping history
+            - Reflected UPLUS_VIP coupon-pack creation options, benefit-month autofill, fixed-discount minimum-amount correction, and allowed-payment-vendor multiselect in admin-fe
+            - Built one-time SMS/push/AlimTalk customer-message Admin tooling with immediate/scheduled dispatch batches and send-history search
+        results:
+          ko:
+            - 외부 LGU+ 멤버십 승인과 내부 쿠폰 발급 상태를 end-to-end로 연결해 고객 혜택 발급과 운영 대행을 같은 검증 기준 안에서 처리
+            - 운영팀이 개발자에게 수동 로그/정책 조회를 요청하던 VoC 대응 지점을 Admin 조회·사전 점검 화면으로 옮겨 고객 응대 속도를 높일 수 있는 기반 마련
+            - 반복 캠페인성 고객 메시지 발송을 Admin과 배치 기반으로 전환해 개발자 의존 운영 요청을 줄이는 방향으로 확장
+          en:
+            - Connected external LGU+ membership approval and internal coupon issuance end-to-end so customer issue and operations proxy issue follow the same validation rules
+            - Moved developer-dependent manual log/policy checks into Admin search and pre-check surfaces, creating a foundation for faster customer VoC response
+            - Shifted repeated customer-message campaigns toward Admin and batch-based operation, reducing developer-dependent operations requests
+
+      - title:
           ko: 유저 사이드 백엔드
           en: User-side Backend
         portfolioSlug: kakao-t-integration

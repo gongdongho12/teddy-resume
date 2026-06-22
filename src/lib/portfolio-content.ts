@@ -330,6 +330,45 @@ const devopsAutomationDiagram = localized(
   class Deploy,Build,Android,IOS,Argo ops;`,
 );
 
+const voltbotCrewDiagram = localized(
+  `flowchart TD
+  Voc["운영팀 VoC<br/>고객 상황 / 시간대 / 식별값"] --> Crew["Voltbot Crew<br/>자동 에이전트 라우팅"]
+  Crew --> Auth["권한 있는 에이전트만 후보화"]
+  Auth --> Policy["코드 정책 조회 에이전트<br/>정상 동작 조건 / 예외 규칙"]
+  Auth --> Log["로그 조회 에이전트<br/>trace / order / user 기준 검색"]
+  Policy --> Shared["공유 컨텍스트<br/>정책 + 실제 실행 로그"]
+  Log --> Shared
+  Shared --> Triage{"1차 원인 분류"}
+  Triage --> Expected["정상 정책에 의한 차단"]
+  Triage --> External["외부 API / PG 오류"]
+  Triage --> Internal["내부 상태 불일치"]
+  Triage --> Reply["운영팀 답변 초안<br/>개발자 확인 대기 단축"]
+  classDef ops fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef ai fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Voc,Crew,Auth ops;
+  class Policy,Log,Shared ai;
+  class Triage,Expected,External,Internal,Reply result;`,
+  `flowchart TD
+  Voc["Ops VoC<br/>customer context / time range / identifiers"] --> Crew["Voltbot Crew<br/>automatic agent routing"]
+  Crew --> Auth["candidate agents<br/>limited by user permission"]
+  Auth --> Policy["Code-policy agent<br/>expected behavior / exception rules"]
+  Auth --> Log["Log agent<br/>trace / order / user search"]
+  Policy --> Shared["shared context<br/>policy + runtime logs"]
+  Log --> Shared
+  Shared --> Triage{"first-pass triage"}
+  Triage --> Expected["expected policy block"]
+  Triage --> External["external API / PG failure"]
+  Triage --> Internal["internal state mismatch"]
+  Triage --> Reply["ops response draft<br/>shorter developer wait"]
+  classDef ops fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef ai fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Voc,Crew,Auth ops;
+  class Policy,Log,Shared ai;
+  class Triage,Expected,External,Internal,Reply result;`,
+);
+
 const membershipBatchPartitionDiagram = localized(
   `flowchart TD
   Source["Athena source<br/>vip_confirmed_paid_partitioned<br/>stamp_date=2023-10-08"] --> Reader["reader paging<br/>queryExecutionId + nextToken"]
@@ -435,14 +474,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     en: 'Project Portfolio',
   },
   eyebrow: {
-    ko: '결제, 앱, 로밍, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
-    en: 'Selected cases across payments, apps, roaming, pricing, membership, promotions, DX, and personal products',
+    ko: '결제, 앱, 로밍, 프라이싱, 멤버십, 프로모션, AI 에이전트, DX, 개인 서비스의 주요 사례',
+    en: 'Selected cases across payments, apps, roaming, pricing, membership, promotions, AI agents, DX, and personal products',
   },
   intro: {
     ko:
-      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
+      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, AI 에이전트 라우팅, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
     en:
-      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
+      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, pricing APIs, membership migration, point-wallet design, AI-agent routing, DX automation, and Commit Map as a personal product built from a real planning problem.',
   },
   roleFocus: [
     {
@@ -470,8 +509,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       en: 'Operational stabilization with Pub/Sub DLQ, Athena batches, monthly partitions, and circuit-breaker patterns',
     },
     {
-      ko: 'run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
-      en: 'DX improvements using run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
+      ko: 'LLM 라우팅, run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
+      en: 'DX improvements using LLM routing, run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
     },
   ],
   projects: [
@@ -1180,6 +1219,111 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
               'Shows how the extension recreates app-dependent flows without app attachment, then turns captured API requests into row-based replay for both development QA and Admin-unsupported operational corrections.',
           },
           code: voltupAppExtensionDiagram,
+        },
+      ],
+    },
+    {
+      slug: 'voltbot-crew',
+      title: {
+        ko: 'Voltbot Crew: 업무 맥락 기반 AI 에이전트 라우팅',
+        en: 'Voltbot Crew: Context-Aware AI Agent Routing',
+      },
+      period: {
+        ko: '2026.05 - 현재',
+        en: 'May 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: '다중 에이전트 세션 프로토타입, 자동 라우팅 구조, 운영 VoC 진단 확장 제안',
+        en: 'Multi-agent session prototype, automatic routing, and ops VoC triage extension proposal',
+      },
+      summary: {
+        ko:
+          '사내 AI 에이전트 플랫폼 Voltbot에서 사용자의 요청 의도를 분석해 적절한 전문 에이전트로 연결하는 `Voltbot Crew` 기능을 설계했습니다. 운영팀이 고객 VoC를 개발자에게 전달하고, 개발자가 코드 정책과 로그를 따로 확인해 답변하는 반복 지연을 줄이기 위해, 에이전트 간 컨텍스트 공유와 자동 라우팅 구조를 제안하고 프로토타입을 구현했습니다.',
+        en:
+          'Designed `Voltbot Crew` for Voltbot, an internal AI agent platform, to route user requests to the right specialist agent. The work started from a recurring operations bottleneck: ops teams had to relay customer VoCs to developers, who then checked code policy and logs separately before responding. I proposed context sharing and automatic routing across agents, then built the prototype path.',
+      },
+      challenge: {
+        ko:
+          '고객 문의가 들어오면 운영팀은 “어떤 정책 때문에 막혔는지”, “실제 로그에서는 어떤 오류가 났는지”를 개발자에게 반복 확인해야 했습니다. 사용자가 코드 정책 조회, 데이터 분석, 운영 조회 등 목적에 맞는 에이전트를 직접 고르는 방식도 복합 문의에서는 판단 비용을 만들었습니다.',
+        en:
+          'For customer issues, operators repeatedly had to ask developers whether a case was blocked by expected policy or caused by an actual runtime error. Requiring users to manually choose between code-policy, data-analysis, or operations agents also added decision cost for mixed requests.',
+      },
+      actions: [
+        {
+          ko: '초기에는 하나의 대화 세션에서 2개의 에이전트를 조합하고 같은 대화 컨텍스트를 공유하는 `TEAM` 에이전트 구조를 프로토타입으로 구현했습니다.',
+          en: 'First prototyped a `TEAM` agent structure where two agents could be combined inside one conversation session and share the same dialogue context.',
+        },
+        {
+          ko: '세션-에이전트 매핑 테이블, 메시지별 담당 에이전트 기록, WebSocket 요청 확장, 프론트엔드 2개 에이전트 선택 UX까지 end-to-end 흐름을 구성했습니다.',
+          en: 'Built the end-to-end path across session-agent mapping, per-message agent attribution, WebSocket request expansion, and a two-agent selection UX on the frontend.',
+        },
+        {
+          ko: 'PR 리뷰와 제품 방향 조정을 거치며, 사용자가 `Voltbot Crew`를 선택하면 권한 있는 전문 에이전트 후보 중 가장 적절한 에이전트를 LLM이 자동 배정하는 `AUTO_ROUTING` 구조로 전환했습니다.',
+          en: 'After PR review and product-direction alignment, evolved the design into `AUTO_ROUTING`: when a user selects `Voltbot Crew`, the LLM chooses the most suitable specialist from agents the user is allowed to use.',
+        },
+        {
+          ko: '`AgentRouter`에서 에이전트 이름과 설명, 현재 대화 맥락을 LLM에 전달해 라우팅하고, 매칭 실패 시 fallback을 두어 대화가 중단되지 않도록 설계했습니다.',
+          en: 'Implemented `AgentRouter` so the LLM receives candidate agent names, descriptions, and current context, with fallback behavior to avoid breaking the conversation when matching fails.',
+        },
+        {
+          ko: '향후 로그 조회 에이전트와 연결해 고객 상황 입력 한 번으로 코드 정책과 실제 실행 로그를 함께 확인하고 1차 원인 분류까지 지원하는 운영 진단 흐름을 제안했습니다.',
+          en: 'Proposed a future log-agent integration where one customer-context input can retrieve both expected code policy and actual execution logs, supporting first-pass operational triage.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: '`Voltbot Crew`는 직접 답변하는 에이전트가 아니라 라우터 역할을 맡도록 분리했습니다. 실제 답변은 선택된 전문 에이전트가 담당하므로, 기존 도구 권한과 시스템 프롬프트 경계를 유지하면서 진입점만 단순화할 수 있었습니다.',
+          en: '`Voltbot Crew` was separated as a router rather than a direct answering agent. The selected specialist still owns the actual response, keeping existing tool permissions and system-prompt boundaries intact while simplifying the entry point.',
+        },
+        {
+          ko: '라우팅 후보는 사용자가 이미 권한을 가진 에이전트로 제한했습니다. 운영 편의성을 높이더라도 권한이 없는 도구나 민감 데이터 접근 경로가 우회되지 않도록 한 설계입니다.',
+          en: 'Candidate agents are limited to those the user is already authorized to use, so operational convenience does not bypass tool permission or sensitive-data boundaries.',
+        },
+        {
+          ko: '다중 에이전트 세션 프로토타입에서 얻은 컨텍스트 공유 아이디어를, 제품 적용이 더 단순한 자동 라우팅 구조로 바꾸었습니다. 복잡한 세션 모델을 최종 사용자에게 노출하기보다, “무엇을 도와야 하는지”를 시스템이 먼저 판단하게 한 것입니다.',
+          en: 'The context-sharing idea from the multi-agent session prototype was turned into a simpler automatic-routing product shape. Instead of exposing a complex session model to users, the system first decides what kind of help is needed.',
+        },
+        {
+          ko: '운영팀 VoC 대응 확장은 코드 정책 조회와 로그 조회를 같은 컨텍스트 안에서 이어 붙이는 방향으로 봤습니다. 정책상 정상 차단인지, 외부 API/PG 오류인지, 내부 상태 불일치인지 빠르게 나누는 것이 목표입니다.',
+          en: 'The ops VoC extension connects code-policy lookup and log lookup inside one shared context, aiming to quickly distinguish expected policy blocks, external API/PG failures, and internal state mismatches.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '사용자가 에이전트 종류를 먼저 판단하지 않아도 요청 맥락에 맞는 전문 에이전트로 연결할 수 있는 기반을 마련했습니다.',
+          en: 'Created the foundation for routing users to the right specialist agent without requiring them to classify the request first.',
+        },
+        {
+          ko: '팀 에이전트 프로토타입에서 최종 `AUTO_ROUTING` 구조까지 검증하며, 다중 에이전트 협업 경험을 제품에 맞는 형태로 좁혀갈 수 있었습니다.',
+          en: 'Validated the path from a team-agent prototype to the final `AUTO_ROUTING` structure, narrowing multi-agent collaboration into a product-fit experience.',
+        },
+        {
+          ko: '운영팀의 개발자 확인 대기 시간을 줄이고 고객 VoC 응답 속도를 높이기 위한 코드 정책 조회 + 로그 조회 통합 진단 흐름의 설계 출발점을 만들었습니다.',
+          en: 'Established the design starting point for integrated code-policy and log-based diagnosis, intended to reduce developer wait time and speed up customer VoC responses.',
+        },
+      ],
+      note: {
+        ko: 'AI 에이전트를 단순 기능으로 붙인 것이 아니라, 운영팀과 개발자 사이의 반복 확인 병목을 줄이기 위한 업무 흐름 개선으로 제안하고 구현한 프로젝트입니다.',
+        en: 'A project that applies AI agents not as a standalone feature, but as workflow improvement for reducing repeated confirmation loops between operations and developers.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'Gemini API', 'LLM Routing', 'Multi-Agent', 'Context Summarization'],
+      diagrams: [
+        {
+          title: {
+            ko: '운영 VoC 대응을 위한 코드 정책 + 로그 조회 통합 흐름',
+            en: 'Integrated code-policy and log lookup for ops VoC response',
+          },
+          description: {
+            ko:
+              '`Voltbot Crew`가 운영팀의 고객 상황을 진입점으로 받아 권한 있는 에이전트 후보를 고르고, 코드 정책 조회와 로그 조회 결과를 같은 컨텍스트에서 모아 1차 원인 분류와 답변 초안까지 이어가는 확장 방향입니다.',
+            en:
+              'Shows the intended extension where `Voltbot Crew` receives customer context from operations, routes to authorized agents, combines code-policy and log lookup results in one context, and supports first-pass triage plus response drafting.',
+          },
+          code: voltbotCrewDiagram,
         },
       ],
     },

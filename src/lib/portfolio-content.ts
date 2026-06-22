@@ -71,6 +71,25 @@ const vehiclePncDiagram = localized(
   Auth --> Charge["start charge"]`,
 );
 
+const vehicleDataTreeDiagram = localized(
+  `flowchart TD
+  Lookup["CODEF 조회<br/>plate=12가3456 owner=강**"] --> Codef["brandNm=현대<br/>repCarClassNm=아이오닉<br/>carClassNm=아이오닉5"]
+  Codef --> Normalize["findOrCreateCarByNames()"]
+  Normalize --> Brand["CAR_BRAND<br/>현대"]
+  Brand --> Class["CAR_CLASS<br/>아이오닉"]
+  Class --> Car["CAR<br/>아이오닉5"]
+  Car --> Model["vehicle_model<br/>image / registrationCount"]
+  Model --> VehicleInfo["userVehicleInfo<br/>plate + vehicleModelId"]`,
+  `flowchart TD
+  Lookup["CODEF lookup<br/>plate=12GA3456 owner=K**"] --> Codef["brandNm=Hyundai<br/>repCarClassNm=Ioniq<br/>carClassNm=Ioniq 5"]
+  Codef --> Normalize["findOrCreateCarByNames()"]
+  Normalize --> Brand["CAR_BRAND<br/>Hyundai"]
+  Brand --> Class["CAR_CLASS<br/>Ioniq"]
+  Class --> Car["CAR<br/>Ioniq 5"]
+  Car --> Model["vehicle_model<br/>image / registrationCount"]
+  Model --> VehicleInfo["userVehicleInfo<br/>plate + vehicleModelId"]`,
+);
+
 const voltupHybridAppDiagram = localized(
   `flowchart TD
   Web["VoltUp WebView 화면"] --> Bridge["JSBridge 계약<br/>frontend -> native"]
@@ -760,22 +779,30 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: '차량 정보 검증, 양방향 자동 매핑, PnC(Plug & Charge) 인증 흐름 설계',
-        en: 'Designed vehicle verification, bidirectional auto-mapping, and PnC (Plug & Charge) authorization flows',
+        ko: 'CODEF 차량 조회, 계층형 차량 모델 정규화, 양방향 자동 매핑, PnC(Plug & Charge) 인증 흐름 설계',
+        en: 'Designed CODEF vehicle lookup, hierarchical vehicle-model normalization, bidirectional auto-mapping, and PnC (Plug & Charge) authorization flows',
       },
       summary: {
         ko:
-          '차량번호 기반 차량 정보와 바로충전용 차량 엔티티가 서로 다른 시점에 들어오는 구조에서, 매핑되지 않은 쌍이 정확히 1개일 때만 자동 연결하고 이후 PnC(Plug & Charge) 인증이 같은 차량 컨텍스트를 참조하도록 구성했습니다.',
+          'CODEF 차량 조회 결과를 `브랜드 > 차급 > 차량` 3단계 기준 데이터로 정규화하고, 차량번호 기반 차량 정보와 바로충전용 차량 엔티티가 서로 다른 시점에 들어와도 같은 차량 컨텍스트로 이어지도록 구성했습니다.',
         en:
-          'Designed a flow where plate-number vehicle info and Plug & Charge vehicle entities arrive independently, auto-link only when exactly one unmatched pair exists, and then feed the same vehicle context into PnC (Plug & Charge) authorization.',
+          'Normalized CODEF vehicle lookup results into a 3-level `brand > class > car` reference tree, then connected plate-number vehicle info and Plug & Charge entities into the same vehicle context even when they arrive independently.',
       },
       challenge: {
         ko:
-          '차량 정보(`plateNumber`)와 바로충전 식별자(`evccId`)는 서로 다른 시점에 등록되기 때문에, 잘못된 자동 연결을 막으면서도 사용자가 매번 수동 선택하지 않도록 매핑 기준이 필요했습니다.',
+          '차량번호 기반 외부 조회 결과, 사용자가 직접 선택하는 차량 모델, 바로충전 식별자(`evccId`)가 서로 다른 경로와 시점에 들어오기 때문에, 차량 기준 데이터를 일관되게 만들면서도 잘못된 자동 연결을 막는 기준이 필요했습니다.',
         en:
-          'Because vehicle info (`plateNumber`) and PnC (Plug & Charge) identifiers (`evccId`) are registered at different times, the system needed an auto-linking rule that avoids wrong matches without forcing users into manual selection every time.',
+          'Because external plate-number lookup results, user-selected vehicle models, and PnC (Plug & Charge) identifiers (`evccId`) arrive through different paths and timing, the system needed a consistent vehicle reference model plus conservative auto-linking rules.',
       },
       actions: [
+        {
+          ko: 'CODEF 응답의 `brandNm`, `repCarClassNm`, `carClassNm`, 연식, 연료, 대표 이미지를 내부 차량 등록 DTO로 변환하고, 민감정보를 마스킹한 원본 응답은 `optionalData`로 보관했습니다.',
+          en: 'Mapped CODEF fields such as `brandNm`, `repCarClassNm`, `carClassNm`, release year, fuel type, and representative image into the internal vehicle-registration DTO, while storing the masked raw response in `optionalData`.',
+        },
+        {
+          ko: '`vehicle_tree`를 `CAR_BRAND > CAR_CLASS > CAR` 구조로 설계하고, 등록 시점에 없는 브랜드/차급/차량은 `findOrCreateCarByNames` 흐름에서 생성되도록 구성했습니다.',
+          en: 'Modeled `vehicle_tree` as `CAR_BRAND > CAR_CLASS > CAR`, then created missing brand, class, and car nodes through the `findOrCreateCarByNames` flow at registration time.',
+        },
         {
           ko: '차량 정보 등록과 PnC(Plug & Charge) 등록 양쪽에서 모두 “매핑 안 된 대상이 정확히 1개인지”를 검사하는 양방향 자동 매핑 규칙을 적용했습니다.',
           en: 'Applied a bidirectional auto-mapping rule that checks whether exactly one unmatched counterpart exists from both the vehicle-info and PnC (Plug & Charge) registration sides.',
@@ -791,6 +818,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       engineeringViews: [
         {
+          ko: '외부 조회 결과를 그대로 저장하지 않고 서비스 기준 트리로 승격해, `현대 > 아이오닉 > 아이오닉5`처럼 UI 선택 구조와 사용자 차량 등록 데이터가 같은 기준을 공유하도록 만들었습니다.',
+          en: 'Promoted external lookup results into the service reference tree so UI selection and registered user vehicles share the same structure, such as `Hyundai > Ioniq > Ioniq 5`.',
+        },
+        {
+          ko: '브랜드/차급/차량 노드는 parent 기준 unique 제약과 분산 락을 함께 사용해, 동시에 같은 차량이 등록되어도 기준 데이터가 중복 생성되지 않도록 설계했습니다.',
+          en: 'Combined parent-scoped uniqueness with a distributed lock so concurrent registrations do not create duplicate reference nodes for the same vehicle.',
+        },
+        {
           ko: '자동 매핑은 편의 기능이지만 잘못 연결되면 위험하므로, “정확히 1개일 때만 연결”이라는 보수적 규칙으로 설계했습니다.',
           en: 'Auto-linking is a convenience feature with high downside risk, so it was designed conservatively: link only when there is exactly one unmatched counterpart.',
         },
@@ -805,6 +840,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       outcomes: [
         {
+          ko: '차량번호 조회만으로 제조사, 차급, 상세 모델, 연식, 연료, 이미지까지 가져와 사용자가 차량 등록을 이어갈 수 있는 기반을 마련했습니다.',
+          en: 'Enabled users to continue vehicle registration from a plate-number lookup that resolves manufacturer, class, detailed model, release year, fuel type, and image.',
+        },
+        {
           ko: '차량 정보 등록과 바로충전 등록 어느 쪽을 먼저 하더라도 조건이 맞으면 자동 매핑되도록 정리했습니다.',
           en: 'Enabled auto-mapping from either direction so the system can link correctly whether vehicle info or PnC (Plug & Charge) registration happens first.',
         },
@@ -814,41 +853,54 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
       ],
       note: {
-          ko: '차량번호와 차량 고유 키가 언제 자동 연결되고 언제 수동 선택으로 넘겨야 하는지 설명하기 좋은 프로젝트입니다.',
-          en: 'A good project for explaining when plate numbers and vehicle keys should auto-link and when the flow must fall back to manual choice.',
+        ko: '외부 차량 조회 결과를 내부 기준 데이터로 정규화한 뒤, 차량번호와 차량 고유 키가 언제 자동 연결되고 언제 수동 선택으로 넘어가야 하는지 설명하기 좋은 프로젝트입니다.',
+        en: 'A good project for explaining how external vehicle lookup results become internal reference data, then when plate numbers and vehicle keys should auto-link or fall back to manual choice.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'JPA', 'Redis', 'CODEF API'],
+      referenceImages: [
+        {
+          src: '/images/portfolio/voltup-plug-and-charge.png',
+          title: {
+            ko: '차량 관리: 등록 차량과 바로충전 진입 화면',
+            en: 'Vehicle management: registered car and Plug & Charge entry',
+          },
+          caption: {
+            ko: '차량 등록 이후 바로충전(PnC) 기능으로 이어지는 사용자 화면 예시로, 차량 컨텍스트와 충전 인증 흐름이 서비스 안에서 어떻게 만나는지 보여줍니다.',
+            en: 'A user-facing screen that leads from vehicle registration into Plug & Charge, showing how vehicle context and charging authorization meet in the product flow.',
+          },
+          alt: {
+            ko: 'VoltUp 차량 등록 및 바로충전 화면',
+            en: 'VoltUp vehicle registration and Plug & Charge screen',
+          },
         },
-    tech: ['Kotlin', 'Spring Boot', 'JPA', 'Redis'],
-        referenceImages: [
-          {
-            src: '/images/portfolio/voltup-plug-and-charge.png',
-            title: {
-              ko: '차량 관리: 등록 차량과 바로충전 진입 화면',
-              en: 'Vehicle management: registered car and Plug & Charge entry',
-            },
-            caption: {
-              ko: '차량 등록 이후 바로충전(PnC) 기능으로 이어지는 사용자 화면 예시로, 차량 컨텍스트와 충전 인증 흐름이 서비스 안에서 어떻게 만나는지 보여줍니다.',
-              en: 'A user-facing screen that leads from vehicle registration into Plug & Charge, showing how vehicle context and charging authorization meet in the product flow.',
-            },
-            alt: {
-              ko: 'VoltUp 차량 등록 및 바로충전 화면',
-              en: 'VoltUp vehicle registration and Plug & Charge screen',
-            },
+      ],
+      diagrams: [
+        {
+          title: {
+            ko: 'CODEF 차량 조회 결과를 서비스 차량 트리로 정규화하는 흐름',
+            en: 'Normalizing CODEF vehicle lookup results into the service vehicle tree',
           },
-        ],
-        diagrams: [
-          {
-            title: {
-              ko: '차량 정보와 차량 고유 키를 안전하게 자동 매핑하는 흐름',
-              en: 'Safe auto-mapping flow between vehicle info and vehicle keys',
-            },
-            description: {
-              ko:
-                '차량 정보와 차량 고유 키 등록 예시 값을 노드에 직접 넣고, 자동 링크 조건과 최종 인증 결과까지 한 흐름 안에서 읽히게 했습니다.',
-              en:
-                'Embeds the vehicle and vehicle-key example values directly into the nodes so the auto-link condition and final authorization result read as one flow.',
-            },
-            code: vehiclePncDiagram,
+          description: {
+            ko:
+              '차량번호와 소유자명으로 조회한 CODEF 결과가 브랜드, 차급, 차량 노드로 분해되고 최종 사용자 차량 정보의 `vehicleModelId`로 연결되는 흐름입니다.',
+            en:
+              'Shows how CODEF lookup results from plate number and owner name are split into brand, class, and car nodes, then linked to the registered user vehicle through `vehicleModelId`.',
           },
+          code: vehicleDataTreeDiagram,
+        },
+        {
+          title: {
+            ko: '차량 정보와 차량 고유 키를 안전하게 자동 매핑하는 흐름',
+            en: 'Safe auto-mapping flow between vehicle info and vehicle keys',
+          },
+          description: {
+            ko:
+              '차량 정보와 차량 고유 키 등록 예시 값을 노드에 직접 넣고, 자동 링크 조건과 최종 인증 결과까지 한 흐름 안에서 읽히게 했습니다.',
+            en:
+              'Embeds the vehicle and vehicle-key example values directly into the nodes so the auto-link condition and final authorization result read as one flow.',
+          },
+          code: vehiclePncDiagram,
+        },
       ],
     },
     {

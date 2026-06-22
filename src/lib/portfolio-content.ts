@@ -90,6 +90,29 @@ const vehicleDataTreeDiagram = localized(
   Model --> VehicleInfo["userVehicleInfo<br/>plate + vehicleModelId"]`,
 );
 
+const vehicleWarningTreeDiagram = localized(
+  `flowchart TD
+  Admin["Admin 차량 공지 생성<br/>vehicleTreeId=현대(CAR_BRAND)"] --> Notice["vehicle_error<br/>target=현대"]
+  Notice --> Down["getChildVehicleTreeIds()<br/>BRAND/CLASS -> 하위 CAR"]
+  Down --> Cars["아이오닉5 / 아이오닉6 / 코나 EV"]
+  Cars --> Models["vehicle_model ids"]
+  Models --> Users["findUserIdsByVehicleModelIds()<br/>대상 사용자 dedupe"]
+  Users --> Push["앱 푸시 / 알림 생성"]
+  App["사용자 차량 상세<br/>vehicleTreeId=아이오닉5"] --> Up["getParentIdsRecursive()<br/>CAR -> CLASS -> BRAND"]
+  Up --> Display["아이오닉5 + 아이오닉 + 현대 공지 표시"]
+  Notice --> Display`,
+  `flowchart TD
+  Admin["Admin creates notice<br/>vehicleTreeId=Hyundai(CAR_BRAND)"] --> Notice["vehicle_error<br/>target=Hyundai"]
+  Notice --> Down["getChildVehicleTreeIds()<br/>BRAND/CLASS -> descendant CAR"]
+  Down --> Cars["Ioniq 5 / Ioniq 6 / Kona EV"]
+  Cars --> Models["vehicle_model ids"]
+  Models --> Users["findUserIdsByVehicleModelIds()<br/>dedupe target users"]
+  Users --> Push["app push / notification"]
+  App["user vehicle detail<br/>vehicleTreeId=Ioniq 5"] --> Up["getParentIdsRecursive()<br/>CAR -> CLASS -> BRAND"]
+  Up --> Display["show Ioniq 5 + Ioniq + Hyundai notices"]
+  Notice --> Display`,
+);
+
 const voltupHybridAppDiagram = localized(
   `flowchart TD
   Web["VoltUp WebView 화면"] --> Bridge["JSBridge 계약<br/>frontend -> native"]
@@ -790,9 +813,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       challenge: {
         ko:
-          '차량번호 기반 외부 조회 결과, 사용자가 직접 선택하는 차량 모델, 바로충전 식별자(`evccId`)가 서로 다른 경로와 시점에 들어오기 때문에, 차량 기준 데이터를 일관되게 만들면서도 잘못된 자동 연결을 막는 기준이 필요했습니다.',
+          '차량번호 기반 외부 조회 결과, 사용자가 직접 선택하는 차량 모델, 바로충전 식별자(`evccId`), 특정 브랜드/차급/차량 대상 경고 공지가 서로 다른 경로와 시점에 들어오기 때문에, 차량 기준 데이터를 일관되게 만들면서도 중복과 잘못된 자동 연결을 막는 기준이 필요했습니다.',
         en:
-          'Because external plate-number lookup results, user-selected vehicle models, and PnC (Plug & Charge) identifiers (`evccId`) arrive through different paths and timing, the system needed a consistent vehicle reference model plus conservative auto-linking rules.',
+          'Because external plate-number lookup results, user-selected vehicle models, PnC (Plug & Charge) identifiers (`evccId`), and brand/class/car-level warning notices arrive through different paths and timing, the system needed a consistent vehicle reference model plus conservative deduplication and auto-linking rules.',
       },
       actions: [
         {
@@ -802,6 +825,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '`vehicle_tree`를 `CAR_BRAND > CAR_CLASS > CAR` 구조로 설계하고, 등록 시점에 없는 브랜드/차급/차량은 `findOrCreateCarByNames` 흐름에서 생성되도록 구성했습니다.',
           en: 'Modeled `vehicle_tree` as `CAR_BRAND > CAR_CLASS > CAR`, then created missing brand, class, and car nodes through the `findOrCreateCarByNames` flow at registration time.',
+        },
+        {
+          ko: '차량 경고/공지는 `vehicle_error.vehicle_tree_id`가 브랜드, 차급, 차량 중 하나를 참조하도록 설계해, “현대 전체”, “아이오닉 계열”, “아이오닉5”처럼 같은 테이블에서 범위를 다르게 지정할 수 있게 했습니다.',
+          en: 'Designed vehicle warning notices so `vehicle_error.vehicle_tree_id` can reference a brand, class, or car node, allowing one table to target scopes such as all Hyundai vehicles, the Ioniq class, or Ioniq 5.',
+        },
+        {
+          ko: '사용자 화면에서는 선택한 차량의 조상 노드까지 조회해 상위 브랜드/차급 공지를 함께 노출하고, 알림 발송 시에는 브랜드/차급을 하위 CAR 목록으로 풀어 사용자 ID를 중복 제거한 뒤 발송했습니다.',
+          en: 'On user-facing screens, resolved ancestor nodes for the selected car so brand/class notices appear together; for notification delivery, expanded brand/class targets into descendant CAR nodes and deduplicated user IDs before sending.',
         },
         {
           ko: '차량 정보 등록과 PnC(Plug & Charge) 등록 양쪽에서 모두 “매핑 안 된 대상이 정확히 1개인지”를 검사하는 양방향 자동 매핑 규칙을 적용했습니다.',
@@ -826,6 +857,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Combined parent-scoped uniqueness with a distributed lock so concurrent registrations do not create duplicate reference nodes for the same vehicle.',
         },
         {
+          ko: '경고 데이터를 차량마다 복제하지 않고 상위 카테고리에 한 번만 저장한 뒤, 조회 방향에 따라 `상위로 수집` 또는 `하위로 전개`하도록 만들어 운영 데이터 중복을 줄였습니다.',
+          en: 'Reduced operational duplication by storing a warning once at the highest relevant category, then either collecting ancestors for display or expanding descendants for notification delivery.',
+        },
+        {
           ko: '자동 매핑은 편의 기능이지만 잘못 연결되면 위험하므로, “정확히 1개일 때만 연결”이라는 보수적 규칙으로 설계했습니다.',
           en: 'Auto-linking is a convenience feature with high downside risk, so it was designed conservatively: link only when there is exactly one unmatched counterpart.',
         },
@@ -842,6 +877,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '차량번호 조회만으로 제조사, 차급, 상세 모델, 연식, 연료, 이미지까지 가져와 사용자가 차량 등록을 이어갈 수 있는 기반을 마련했습니다.',
           en: 'Enabled users to continue vehicle registration from a plate-number lookup that resolves manufacturer, class, detailed model, release year, fuel type, and image.',
+        },
+        {
+          ko: '브랜드/차급/차량 단위 공지를 같은 차량 트리 위에서 처리해 특정 브랜드 경고 표시와 대상 사용자 알림 발송을 별도 모델 없이 지원했습니다.',
+          en: 'Supported brand/class/car-level warning display and target-user notification on the same vehicle tree without introducing a separate category model.',
         },
         {
           ko: '차량 정보 등록과 바로충전 등록 어느 쪽을 먼저 하더라도 조건이 맞으면 자동 매핑되도록 정리했습니다.',
@@ -887,6 +926,19 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
               'Shows how CODEF lookup results from plate number and owner name are split into brand, class, and car nodes, then linked to the registered user vehicle through `vehicleModelId`.',
           },
           code: vehicleDataTreeDiagram,
+        },
+        {
+          title: {
+            ko: '차량 트리를 재사용한 브랜드/차급/차량 경고 표시와 알림 발송',
+            en: 'Brand/class/car warning display and notification delivery on the vehicle tree',
+          },
+          description: {
+            ko:
+              '경고 공지는 상위 카테고리에 한 번만 저장하고, 앱 조회에서는 조상 노드로 모아 보여주며 알림 발송에서는 하위 차량으로 전개해 대상자를 중복 제거하는 흐름입니다.',
+            en:
+              'Shows how one warning notice can be stored at a higher category, collected through ancestors for app display, and expanded through descendant cars for deduplicated notification delivery.',
+          },
+          code: vehicleWarningTreeDiagram,
         },
         {
           title: {

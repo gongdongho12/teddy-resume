@@ -284,6 +284,82 @@ const voltupCouponServiceDiagram = localized(`flowchart TD
   Expire --> Scan["getAllByCouponPackId<br/>completeAt is null"]
   Scan --> Event["publish coupon.event<br/>eventType=EXPIRED"]`);
 
+const uplusVipCouponOpsDiagram = localized(
+  `flowchart TD
+  Pack["Admin 쿠폰팩 사전 등록<br/>type=UPLUS_VIP<br/>혜택 월 + 사용 기간"] --> Policy["coupon-service 정책<br/>결제수단 제한<br/>동일 월 활성 기간 중복 차단"]
+  Policy --> UserFlow["고객 발급 플로우<br/>휴대폰번호 + 생년월일<br/>카드 조회"]
+  Policy --> AdminFlow["Admin VoC 대행<br/>회원 상세 패널<br/>휴대폰번호 카드조회"]
+  UserFlow --> Guard["사전 검증<br/>회원 생일 일치<br/>유저 월 1회<br/>카드 월 1회"]
+  AdminFlow --> Guard
+  Guard --> Approve["LGU+ Membership G/W<br/>승인 요청"]
+  Approve --> Issue["coupon-service 발급<br/>UPLUS_VIP coupon"]
+  Issue --> History["발급/쿠폰 매핑 이력<br/>Admin 목록 조회"]
+  Issue --> Fail{"쿠폰 발급 실패?"}
+  Fail -->|yes| Cancel["LGU+ 승인 취소 보상<br/>응답코드 진단 로그"]
+  Fail -->|no| Complete["고객 혜택 지급 완료"]
+  History --> Ops["운영팀 VoC 대응<br/>개발자 수동 조회 의존 감소"]
+  classDef policy fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef flow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Pack,Policy policy;
+  class UserFlow,AdminFlow,Guard,Approve,Issue,History flow;
+  class Cancel,Complete,Ops result;`,
+  `flowchart TD
+  Pack["Admin pre-registers coupon pack<br/>type=UPLUS_VIP<br/>benefit month + usable window"] --> Policy["coupon-service policy<br/>payment-vendor restriction<br/>no overlapping active pack in same month"]
+  Policy --> UserFlow["Customer issue flow<br/>phone + birthday<br/>card lookup"]
+  Policy --> AdminFlow["Admin VoC proxy<br/>member detail panel<br/>phone-based card lookup"]
+  UserFlow --> Guard["Pre-checks<br/>member birthday match<br/>once per user per month<br/>once per card per month"]
+  AdminFlow --> Guard
+  Guard --> Approve["LGU+ Membership G/W<br/>approval request"]
+  Approve --> Issue["coupon-service issue<br/>UPLUS_VIP coupon"]
+  Issue --> History["Issue/coupon mapping history<br/>Admin list search"]
+  Issue --> Fail{"Coupon issue failed?"}
+  Fail -->|yes| Cancel["Compensating LGU+ cancel<br/>response-code diagnostics"]
+  Fail -->|no| Complete["Customer benefit granted"]
+  History --> Ops["Operations VoC response<br/>less developer manual lookup"]
+  classDef policy fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef flow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Pack,Policy policy;
+  class UserFlow,AdminFlow,Guard,Approve,Issue,History flow;
+  class Cancel,Complete,Ops result;`,
+);
+
+const customerMessageOpsDiagram = localized(
+  `flowchart TD
+  Admin["Admin 메시지 발송<br/>문자 / 푸시 / 알림톡"] --> Template["커스텀 템플릿<br/>대상자 + 변수"]
+  Template --> Source["발송 source of truth<br/>즉시 / 예약 동일 모델"]
+  Source --> Immediate["즉시 발송<br/>send orchestrator"]
+  Source --> Reserved["예약 발송<br/>customerMessageDispatchJob"]
+  Reserved --> Dispatch["Dispatch tasklet<br/>발송 가능 시각 조회"]
+  Immediate --> Provider["메시지 provider 호출"]
+  Dispatch --> Provider
+  Provider --> History["발송 이력 / 실패 상태<br/>Admin 조회"]
+  History --> Ops["운영 캠페인 대응<br/>반복 개발 요청 감소"]
+  classDef admin fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef process fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Admin,Template admin;
+  class Source,Immediate,Reserved,Dispatch,Provider process;
+  class History,Ops result;`,
+  `flowchart TD
+  Admin["Admin message send<br/>SMS / push / AlimTalk"] --> Template["Custom template<br/>targets + variables"]
+  Template --> Source["Send source of truth<br/>same model for immediate/scheduled"]
+  Source --> Immediate["Immediate send<br/>send orchestrator"]
+  Source --> Reserved["Scheduled send<br/>customerMessageDispatchJob"]
+  Reserved --> Dispatch["Dispatch tasklet<br/>queries sendable time"]
+  Immediate --> Provider["Message provider call"]
+  Dispatch --> Provider
+  Provider --> History["Send history / failure status<br/>Admin search"]
+  History --> Ops["Operations campaign response<br/>fewer repeated dev requests"]
+  classDef admin fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef process fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Admin,Template admin;
+  class Source,Immediate,Reserved,Dispatch,Provider process;
+  class History,Ops result;`,
+);
+
 const pricingPlatformDiagram = localized(
   `flowchart TD
   Req["request<br/>product=421 user=3001 site=KR"] --> Match
@@ -380,6 +456,45 @@ const devopsAutomationDiagram = localized(
   class Review,Context ai;
   class Local,Vault,IAM,Internal sec;
   class Deploy,Build,Android,IOS,Argo ops;`,
+);
+
+const voltbotCrewDiagram = localized(
+  `flowchart TD
+  Voc["운영팀 VoC<br/>고객 상황 / 시간대 / 식별값"] --> Crew["Voltbot Crew<br/>자동 에이전트 라우팅"]
+  Crew --> Auth["권한 있는 에이전트만 후보화"]
+  Auth --> Policy["코드 정책 조회 에이전트<br/>정상 동작 조건 / 예외 규칙"]
+  Auth --> Log["로그 조회 에이전트<br/>trace / order / user 기준 검색"]
+  Policy --> Shared["공유 컨텍스트<br/>정책 + 실제 실행 로그"]
+  Log --> Shared
+  Shared --> Triage{"1차 원인 분류"}
+  Triage --> Expected["정상 정책에 의한 차단"]
+  Triage --> External["외부 API / PG 오류"]
+  Triage --> Internal["내부 상태 불일치"]
+  Triage --> Reply["운영팀 답변 초안<br/>개발자 확인 대기 단축"]
+  classDef ops fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef ai fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Voc,Crew,Auth ops;
+  class Policy,Log,Shared ai;
+  class Triage,Expected,External,Internal,Reply result;`,
+  `flowchart TD
+  Voc["Ops VoC<br/>customer context / time range / identifiers"] --> Crew["Voltbot Crew<br/>automatic agent routing"]
+  Crew --> Auth["candidate agents<br/>limited by user permission"]
+  Auth --> Policy["Code-policy agent<br/>expected behavior / exception rules"]
+  Auth --> Log["Log agent<br/>trace / order / user search"]
+  Policy --> Shared["shared context<br/>policy + runtime logs"]
+  Log --> Shared
+  Shared --> Triage{"first-pass triage"}
+  Triage --> Expected["expected policy block"]
+  Triage --> External["external API / PG failure"]
+  Triage --> Internal["internal state mismatch"]
+  Triage --> Reply["ops response draft<br/>shorter developer wait"]
+  classDef ops fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef ai fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Voc,Crew,Auth ops;
+  class Policy,Log,Shared ai;
+  class Triage,Expected,External,Internal,Reply result;`,
 );
 
 const membershipBatchPartitionDiagram = localized(
@@ -487,14 +602,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     en: 'Project Portfolio',
   },
   eyebrow: {
-    ko: '결제, 앱, 로밍, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
-    en: 'Selected cases across payments, apps, roaming, pricing, membership, promotions, DX, and personal products',
+    ko: '결제, 앱, 로밍, 프라이싱, 멤버십, 프로모션, AI 에이전트, DX, 개인 서비스의 주요 사례',
+    en: 'Selected cases across payments, apps, roaming, pricing, membership, promotions, AI agents, DX, and personal products',
   },
   intro: {
     ko:
-      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
+      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, AI 에이전트 라우팅, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
     en:
-      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
+      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, pricing APIs, membership migration, point-wallet design, AI-agent routing, DX automation, and Commit Map as a personal product built from a real planning problem.',
   },
   roleFocus: [
     {
@@ -504,6 +619,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       ko: 'OAuth2, PG, 게이트웨이, 외부 인증서 서비스가 포함된 MSA 연동 경험',
       en: 'Experience integrating MSAs with OAuth2, PGs, gateways, and external certificate services',
+    },
+    {
+      ko: '제휴 쿠폰 정책, 외부 멤버십 G/W, 운영 어드민을 연결한 VoC 대응 흐름 설계 경험',
+      en: 'Experience designing VoC response flows across partner-coupon policy, external membership gateways, and Admin tooling',
     },
     {
       ko: 'Flutter/WebView 기반 하이브리드 앱과 앱 검증 도구 개발 경험',
@@ -522,8 +641,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       en: 'Operational stabilization with Pub/Sub DLQ, Athena batches, monthly partitions, and circuit-breaker patterns',
     },
     {
-      ko: 'run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
-      en: 'DX improvements using run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
+      ko: 'LLM 라우팅, run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
+      en: 'DX improvements using LLM routing, run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
     },
   ],
   projects: [
@@ -1088,6 +1207,132 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
     },
     {
+      slug: 'uplus-vip-coupon-ops',
+      title: {
+        ko: 'U+ VIP콕 제휴 쿠폰 및 VoC 운영 대행 시스템',
+        en: 'U+ VIP Partnership Coupons and VoC Operations Support',
+      },
+      period: {
+        ko: '2026.06 - 현재',
+        en: 'Jun 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: 'feapp, coupon-service, Admin을 관통한 제휴 쿠폰 발급/운영 대응 흐름 설계',
+        en: 'Designed partner-coupon issuing and operations flows across feapp, coupon-service, and Admin',
+      },
+      summary: {
+        ko:
+          'LGU+ 멤버십 VIP/VVIP 고객에게 월 1회 U+ VIP콕 쿠폰을 지급하기 위해 `UPLUS_VIP` 쿠폰팩 정책, LGU+ Membership G/W 연동, 발급/취소 보상, Admin VoC 대행 화면과 이력 조회까지 연결했습니다. 운영팀이 고객 문의 때 개발자에게 로그/정책 확인을 요청하던 흐름을 Admin에서 직접 조회하고 판단할 수 있는 구조로 옮기는 데 초점을 뒀습니다.',
+        en:
+          'Connected `UPLUS_VIP` coupon-pack policy, LGU+ Membership G/W integration, issue/cancel compensation, Admin VoC proxy screens, and issue-history search so LGU+ VIP/VVIP customers can receive a monthly U+ VIP benefit coupon. The core goal was to move developer-dependent log and policy checks into Admin surfaces that operations can use directly during customer inquiries.',
+      },
+      challenge: {
+        ko:
+          '외부 멤버십 승인과 내부 쿠폰 발급이 하나의 사용자 경험으로 보여야 했지만, 혜택 월 기준 쿠폰팩 사전 등록, 사용자/카드 단위 월 1회 제한, 생년월일 본인확인, 쿠폰 발급 실패 시 외부 승인 취소 보상, Admin 대행 발급의 권한/검증 기준을 동시에 맞춰야 했습니다. 여기에 결제수단 제한 쿠폰 정책과 고객 메시지 예약 발송처럼 운영팀의 반복 요청을 줄이는 어드민 도구도 함께 정리해야 했습니다.',
+        en:
+          'External membership approval and internal coupon issuance had to feel like one user flow while satisfying pre-registered benefit-month coupon packs, once-per-user and once-per-card monthly limits, birthday verification, compensating approval cancellation on coupon failure, and Admin proxy-issue validation rules. The work also included Admin tooling for payment-vendor-restricted coupons and scheduled customer messages to reduce repeated operations requests.',
+      },
+      actions: [
+        {
+          ko: '`coupon-service`에 `UPLUS_VIP` 쿠폰팩 타입과 혜택 월 기준 활성 기간 중복 제한을 추가하고, `allowedPaymentVendors` 정책이 미리보기/조회/사용/Admin 생성까지 같은 의미로 흐르도록 정리했습니다.',
+          en: 'Added the `UPLUS_VIP` coupon-pack type to `coupon-service`, blocked overlapping active packs within the same benefit month, and made `allowedPaymentVendors` carry the same meaning through preview, search, use, and Admin creation.',
+        },
+        {
+          ko: '`feapp`의 핵심 발급 로직을 `UplusMembershipIssueService`로 분리해 휴대폰번호 카드조회, 회원 생일 검증, 사용자/카드 월 1회 제한, LGU+ 승인, 쿠폰 발급, 실패 시 승인 취소 보상을 한 흐름으로 묶었습니다.',
+          en: 'Extracted core issuing logic into `UplusMembershipIssueService`, tying phone-based card lookup, member birthday verification, once-per-user/card monthly limits, LGU+ approval, coupon issue, and compensating approval cancellation into one flow.',
+        },
+        {
+          ko: 'LGU+ 응답코드별 진단 로그와 한도 초과 분기를 보강하고, 카드번호/키는 마스킹과 암호화 경계를 지켜 운영 로그에 민감값이 남지 않도록 했습니다.',
+          en: 'Added diagnostics for LGU+ response codes and limit-exceeded branches while keeping card numbers and keys behind masking and encryption boundaries so sensitive values do not leak into operational logs.',
+        },
+        {
+          ko: 'Admin API에는 회원 상세에서 휴대폰번호로 카드조회 후 혜택 발급을 대행하는 경로, 본인확인 불일치 사전 점검, 발급/쿠폰 매핑 이력 조회를 추가했습니다.',
+          en: 'Added Admin APIs for phone-based card lookup and benefit proxy issue from member detail, pre-checks for identity mismatches, and searchable issue/coupon mapping history.',
+        },
+        {
+          ko: '`voltup-admin-fe`에는 회원 상세 U+ VIP콕 대행 패널, 발급/쿠폰 매핑 이력 페이지, `UPLUS_VIP` 쿠폰팩 생성 옵션, 혜택 월 자동 입력, 정액 할인 최소사용금액 보정, 허용 결제수단 멀티셀렉을 구현했습니다.',
+          en: 'Implemented the member-detail U+ VIP proxy panel, issue/coupon mapping history page, `UPLUS_VIP` coupon-pack option, benefit-month autofill, fixed-discount minimum-amount correction, and allowed-payment-vendor multiselect in `voltup-admin-fe`.',
+        },
+        {
+          ko: '고객 대상 문자/푸시/알림톡 1회 발송 어드민을 만들고, 즉시/예약 발송을 같은 source of truth로 다루도록 예약 디스패치 배치와 발송 이력 조회를 구성했습니다.',
+          en: 'Built a one-time customer SMS/push/AlimTalk Admin tool and modeled immediate and scheduled sends around the same source of truth, backed by a scheduled dispatch batch and send-history search.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: 'U+ VIP콕은 단순 쿠폰 타입 추가가 아니라 외부 승인 상태와 내부 쿠폰 상태를 맞추는 문제였습니다. 그래서 사전 검증을 통과한 뒤에만 LGU+ 승인을 호출하고, 내부 쿠폰 발급 실패 시 외부 승인 취소를 보상 트랜잭션처럼 붙였습니다.',
+          en: 'U+ VIP benefits were not just another coupon type; they were a state-alignment problem between external approval and internal coupon issuance. I called LGU+ approval only after local pre-checks and attached compensating cancellation when internal coupon issuance failed.',
+        },
+        {
+          ko: 'Admin 대행 발급은 규칙 우회가 아니라 운영자가 같은 검증 기준을 더 빠르게 실행하는 화면으로 봤습니다. 회원 상세 패널과 이력 조회를 붙여 고객 문의의 현재 상태, 실패 원인, 재시도 가능성을 한 자리에서 확인하게 했습니다.',
+          en: 'I treated Admin proxy issue as a faster execution path for the same rules, not as a bypass. The member-detail panel and history search let operations see current status, failure causes, and retry feasibility in one place.',
+        },
+        {
+          ko: '쿠폰팩 생성 정책은 FE 조건으로 흩어두지 않고 coupon-service 도메인 정책으로 유지했습니다. Admin은 그 정책을 입력하고 확인하는 표면이고, 사용자 발급/조회/사용은 같은 정책 값을 읽는 구조로 맞췄습니다.',
+          en: 'Coupon-pack creation rules stayed as coupon-service domain policy instead of scattered frontend conditions. Admin became the surface for entering and reviewing policy, while user issue/search/use flows read the same policy values.',
+        },
+        {
+          ko: '고객 메시지 발송은 캠페인 요청마다 별도 코드를 만드는 방식 대신 발송 요청 자체를 데이터로 남기고, 즉시 발송과 예약 디스패치가 같은 발송 원장을 공유하도록 설계했습니다.',
+          en: 'For customer messages, I stored send requests as data instead of creating bespoke code for each campaign, letting immediate sends and scheduled dispatches share the same send ledger.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: 'U+ VIP/VVIP 혜택 쿠폰 발급을 고객 화면, 쿠폰 정책, 외부 LGU+ 승인, Admin 대행, 발급 이력까지 end-to-end로 운영 가능한 상태로 연결했습니다.',
+          en: 'Connected U+ VIP/VVIP benefit issuing end-to-end across customer flow, coupon policy, external LGU+ approval, Admin proxy issue, and issue history.',
+        },
+        {
+          ko: '운영팀이 고객 VoC 대응 중 개발자에게 수동 로그/정책 확인을 요청하던 지점을 Admin 조회와 사전 점검 화면으로 옮겨 응답 속도를 높일 수 있는 기반을 만들었습니다.',
+          en: 'Moved developer-dependent manual log and policy checks into Admin search and pre-check surfaces, creating a foundation for faster operations responses to customer VoC.',
+        },
+        {
+          ko: '결제수단 제한, 쿠폰 미리보기, U+ VIP콕 쿠폰팩 생성, 소프트삭제 후 재발급 제약 같은 프로모션 정책 정합성을 coupon-service와 Admin 양쪽에서 맞췄습니다.',
+          en: 'Aligned promotion-policy consistency across coupon-service and Admin for payment-vendor restrictions, coupon preview, U+ VIP coupon-pack creation, and reissue after soft deletion.',
+        },
+        {
+          ko: '고객 메시지 발송 어드민과 예약 발송 배치를 통해 반복 캠페인/공지성 발송을 개발자 작업 없이 운영팀이 처리할 수 있는 방향으로 확장했습니다.',
+          en: 'Extended operations tooling with customer-message Admin sends and scheduled dispatch batches so repeated campaign or notice sends can be handled without developer intervention.',
+        },
+      ],
+      note: {
+        ko: '제휴 API 연동, 쿠폰 도메인 정책, Admin 운영 도구, VoC 대응 속도 개선을 하나의 운영 흐름으로 설명하기 좋은 프로젝트입니다.',
+        en: 'A strong project for explaining partner API integration, coupon-domain policy, Admin operations tooling, and faster VoC response as one operational flow.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'Spring Batch', 'React', 'TypeScript', 'MySQL', 'JPA', 'QueryDSL', 'Feign', 'Flyway'],
+      diagrams: [
+        {
+          title: {
+            ko: 'U+ VIP콕: 외부 멤버십 승인과 내부 쿠폰 발급을 잇는 운영 흐름',
+            en: 'U+ VIP: operational flow connecting external membership approval and internal coupon issue',
+          },
+          description: {
+            ko:
+              'Admin 쿠폰팩 사전 등록부터 휴대폰번호 카드조회, 본인확인, LGU+ 승인, coupon-service 발급, 실패 보상, 발급 이력 조회까지 고객/운영 흐름을 한 장으로 정리했습니다.',
+            en:
+              'Shows the customer and operations flow from Admin coupon-pack pre-registration through phone-based card lookup, identity check, LGU+ approval, coupon-service issue, failure compensation, and issue-history search.',
+          },
+          code: uplusVipCouponOpsDiagram,
+        },
+        {
+          title: {
+            ko: '고객 메시지 발송 어드민: 즉시/예약 발송 source of truth',
+            en: 'Customer-message Admin: source of truth for immediate and scheduled sends',
+          },
+          description: {
+            ko:
+              '문자/푸시/알림톡 발송 요청을 발송 원장으로 남기고 즉시 발송과 예약 디스패치 배치가 같은 데이터를 처리하는 구조를 보여줍니다.',
+            en:
+              'Shows how SMS, push, and AlimTalk send requests are stored in a send ledger and processed by both immediate sends and scheduled dispatch batches.',
+          },
+          code: customerMessageOpsDiagram,
+        },
+      ],
+    },
+    {
       slug: 'voltup-hybrid-app',
       title: {
         ko: '볼트업 하이브리드 앱: WebView 브릿지와 네이티브 기능',
@@ -1278,6 +1523,111 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
               'Shows how the extension recreates app-dependent flows without app attachment, then turns captured API requests into row-based replay for both development QA and Admin-unsupported operational corrections.',
           },
           code: voltupAppExtensionDiagram,
+        },
+      ],
+    },
+    {
+      slug: 'voltbot-crew',
+      title: {
+        ko: 'Voltbot Crew: 업무 맥락 기반 AI 에이전트 라우팅',
+        en: 'Voltbot Crew: Context-Aware AI Agent Routing',
+      },
+      period: {
+        ko: '2026.05 - 현재',
+        en: 'May 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: '다중 에이전트 세션 프로토타입, 자동 라우팅 구조, 운영 VoC 진단 확장 제안',
+        en: 'Multi-agent session prototype, automatic routing, and ops VoC triage extension proposal',
+      },
+      summary: {
+        ko:
+          '사내 AI 에이전트 플랫폼 Voltbot에서 사용자의 요청 의도를 분석해 적절한 전문 에이전트로 연결하는 `Voltbot Crew` 기능을 설계했습니다. 운영팀이 고객 VoC를 개발자에게 전달하고, 개발자가 코드 정책과 로그를 따로 확인해 답변하는 반복 지연을 줄이기 위해, 에이전트 간 컨텍스트 공유와 자동 라우팅 구조를 제안하고 프로토타입을 구현했습니다.',
+        en:
+          'Designed `Voltbot Crew` for Voltbot, an internal AI agent platform, to route user requests to the right specialist agent. The work started from a recurring operations bottleneck: ops teams had to relay customer VoCs to developers, who then checked code policy and logs separately before responding. I proposed context sharing and automatic routing across agents, then built the prototype path.',
+      },
+      challenge: {
+        ko:
+          '고객 문의가 들어오면 운영팀은 “어떤 정책 때문에 막혔는지”, “실제 로그에서는 어떤 오류가 났는지”를 개발자에게 반복 확인해야 했습니다. 사용자가 코드 정책 조회, 데이터 분석, 운영 조회 등 목적에 맞는 에이전트를 직접 고르는 방식도 복합 문의에서는 판단 비용을 만들었습니다.',
+        en:
+          'For customer issues, operators repeatedly had to ask developers whether a case was blocked by expected policy or caused by an actual runtime error. Requiring users to manually choose between code-policy, data-analysis, or operations agents also added decision cost for mixed requests.',
+      },
+      actions: [
+        {
+          ko: '초기에는 하나의 대화 세션에서 2개의 에이전트를 조합하고 같은 대화 컨텍스트를 공유하는 `TEAM` 에이전트 구조를 프로토타입으로 구현했습니다.',
+          en: 'First prototyped a `TEAM` agent structure where two agents could be combined inside one conversation session and share the same dialogue context.',
+        },
+        {
+          ko: '세션-에이전트 매핑 테이블, 메시지별 담당 에이전트 기록, WebSocket 요청 확장, 프론트엔드 2개 에이전트 선택 UX까지 end-to-end 흐름을 구성했습니다.',
+          en: 'Built the end-to-end path across session-agent mapping, per-message agent attribution, WebSocket request expansion, and a two-agent selection UX on the frontend.',
+        },
+        {
+          ko: 'PR 리뷰와 제품 방향 조정을 거치며, 사용자가 `Voltbot Crew`를 선택하면 권한 있는 전문 에이전트 후보 중 가장 적절한 에이전트를 LLM이 자동 배정하는 `AUTO_ROUTING` 구조로 전환했습니다.',
+          en: 'After PR review and product-direction alignment, evolved the design into `AUTO_ROUTING`: when a user selects `Voltbot Crew`, the LLM chooses the most suitable specialist from agents the user is allowed to use.',
+        },
+        {
+          ko: '`AgentRouter`에서 에이전트 이름과 설명, 현재 대화 맥락을 LLM에 전달해 라우팅하고, 매칭 실패 시 fallback을 두어 대화가 중단되지 않도록 설계했습니다.',
+          en: 'Implemented `AgentRouter` so the LLM receives candidate agent names, descriptions, and current context, with fallback behavior to avoid breaking the conversation when matching fails.',
+        },
+        {
+          ko: '향후 로그 조회 에이전트와 연결해 고객 상황 입력 한 번으로 코드 정책과 실제 실행 로그를 함께 확인하고 1차 원인 분류까지 지원하는 운영 진단 흐름을 제안했습니다.',
+          en: 'Proposed a future log-agent integration where one customer-context input can retrieve both expected code policy and actual execution logs, supporting first-pass operational triage.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: '`Voltbot Crew`는 직접 답변하는 에이전트가 아니라 라우터 역할을 맡도록 분리했습니다. 실제 답변은 선택된 전문 에이전트가 담당하므로, 기존 도구 권한과 시스템 프롬프트 경계를 유지하면서 진입점만 단순화할 수 있었습니다.',
+          en: '`Voltbot Crew` was separated as a router rather than a direct answering agent. The selected specialist still owns the actual response, keeping existing tool permissions and system-prompt boundaries intact while simplifying the entry point.',
+        },
+        {
+          ko: '라우팅 후보는 사용자가 이미 권한을 가진 에이전트로 제한했습니다. 운영 편의성을 높이더라도 권한이 없는 도구나 민감 데이터 접근 경로가 우회되지 않도록 한 설계입니다.',
+          en: 'Candidate agents are limited to those the user is already authorized to use, so operational convenience does not bypass tool permission or sensitive-data boundaries.',
+        },
+        {
+          ko: '다중 에이전트 세션 프로토타입에서 얻은 컨텍스트 공유 아이디어를, 제품 적용이 더 단순한 자동 라우팅 구조로 바꾸었습니다. 복잡한 세션 모델을 최종 사용자에게 노출하기보다, “무엇을 도와야 하는지”를 시스템이 먼저 판단하게 한 것입니다.',
+          en: 'The context-sharing idea from the multi-agent session prototype was turned into a simpler automatic-routing product shape. Instead of exposing a complex session model to users, the system first decides what kind of help is needed.',
+        },
+        {
+          ko: '운영팀 VoC 대응 확장은 코드 정책 조회와 로그 조회를 같은 컨텍스트 안에서 이어 붙이는 방향으로 봤습니다. 정책상 정상 차단인지, 외부 API/PG 오류인지, 내부 상태 불일치인지 빠르게 나누는 것이 목표입니다.',
+          en: 'The ops VoC extension connects code-policy lookup and log lookup inside one shared context, aiming to quickly distinguish expected policy blocks, external API/PG failures, and internal state mismatches.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '사용자가 에이전트 종류를 먼저 판단하지 않아도 요청 맥락에 맞는 전문 에이전트로 연결할 수 있는 기반을 마련했습니다.',
+          en: 'Created the foundation for routing users to the right specialist agent without requiring them to classify the request first.',
+        },
+        {
+          ko: '팀 에이전트 프로토타입에서 최종 `AUTO_ROUTING` 구조까지 검증하며, 다중 에이전트 협업 경험을 제품에 맞는 형태로 좁혀갈 수 있었습니다.',
+          en: 'Validated the path from a team-agent prototype to the final `AUTO_ROUTING` structure, narrowing multi-agent collaboration into a product-fit experience.',
+        },
+        {
+          ko: '운영팀의 개발자 확인 대기 시간을 줄이고 고객 VoC 응답 속도를 높이기 위한 코드 정책 조회 + 로그 조회 통합 진단 흐름의 설계 출발점을 만들었습니다.',
+          en: 'Established the design starting point for integrated code-policy and log-based diagnosis, intended to reduce developer wait time and speed up customer VoC responses.',
+        },
+      ],
+      note: {
+        ko: 'AI 에이전트를 단순 기능으로 붙인 것이 아니라, 운영팀과 개발자 사이의 반복 확인 병목을 줄이기 위한 업무 흐름 개선으로 제안하고 구현한 프로젝트입니다.',
+        en: 'A project that applies AI agents not as a standalone feature, but as workflow improvement for reducing repeated confirmation loops between operations and developers.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'Gemini API', 'LLM Routing', 'Multi-Agent', 'Context Summarization'],
+      diagrams: [
+        {
+          title: {
+            ko: '운영 VoC 대응을 위한 코드 정책 + 로그 조회 통합 흐름',
+            en: 'Integrated code-policy and log lookup for ops VoC response',
+          },
+          description: {
+            ko:
+              '`Voltbot Crew`가 운영팀의 고객 상황을 진입점으로 받아 권한 있는 에이전트 후보를 고르고, 코드 정책 조회와 로그 조회 결과를 같은 컨텍스트에서 모아 1차 원인 분류와 답변 초안까지 이어가는 확장 방향입니다.',
+            en:
+              'Shows the intended extension where `Voltbot Crew` receives customer context from operations, routes to authorized agents, combines code-policy and log lookup results in one context, and supports first-pass triage plus response drafting.',
+          },
+          code: voltbotCrewDiagram,
         },
       ],
     },

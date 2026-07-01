@@ -42,12 +42,12 @@ experience:
       ko: |
         빌링 - DLQ 및 다단계 미수 배치로 결제/미수 처리 안정성 확보
         프로모션(쿠폰/포인트) - 고객 리텐션 증대
-        유저사이드 - 차량 조회, PnC(Plug & Charge) 인증 및 유저사이드 백엔드와 모바일 앱 담당
+        유저사이드 - 차량정보 조회, PnC(Plug & Charge) 인증 및 유저사이드 백엔드와 모바일 앱 담당
         DX 인프라 - AI 워크플로우 표준화, CI/CD 통합, 문서 자동 생성 적용
       en: |
         Billing - Improved payment and arrears-handling reliability with DLQ and multi-stage unpaid batches
         Promotions (coupon/points) - Improved customer retention
-        User-side - Owned vehicle lookup, PnC (Plug & Charge) authorization, user-side backend, and the mobile app
+        User-side - Owned vehicle information lookup, PnC (Plug & Charge) authorization, user-side backend, and the mobile app
         DX infrastructure - Standardized AI workflows and applied CI/CD integration and automated documentation
 
   - company:
@@ -497,14 +497,14 @@ projectSections:
         highlights:
           ko:
             - 카카오T 계정/결제 연동을 4개 MSA(auth→user→billing→feapp)에 걸쳐 설계 및 구현 — OAuth2 기반 계정 연동, 결제수단 등록(5단계), 결제 승인/부분 취소까지 전체 플로우 담당
-            - t_partner_user_token을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리하고, 검색 인덱스·해지 검증·앱 콜백 전용 activate API를 보강
+            - 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리하고, 검색 인덱스·해지 검증·앱 콜백 전용 activate API를 보강
             - 차량 등록 서비스 및 PnC(Plug & Charge) 인증 등록 서비스 개발
             - 홈페이지 통계 Public API 구축 — 전월 누적합·전일 누적 delta·당일 실시간 합산을 하나의 누적 지표로 결합하고, 공개 트래픽을 고려해 Local/RemoteCache와 분산 락으로 원본 부하 최소화
             - 프로모션 쿠폰 발급 배치 구상 및 개발
             - 외부 인증서 서비스에 서킷브레이커 패턴 적용 — 장애 인증서 자동 비활성화 및 복구, 전체 장애 시 강제 리셋 복구 경로 구성
           en:
             - Designed and implemented KakaoT account/payment integration across 4 MSAs (auth→user→billing→feapp) — OAuth2 account linking, 5-step card registration, payment approval/partial cancellation
-            - Promoted t_partner_user_token as the key between external payment methods and internal user context, adding search indexes, unlink validation, and an app-callback-specific activate API
+            - Promoted the partner customer token as the key between external payment methods and internal user context, adding search indexes, unlink validation, and an app-callback-specific activate API
             - Vehicle registration service and PnC (Plug & Charge) authentication registration service
             - Built homepage statistics public API — combined prior-month cumulative totals, daily cumulative deltas, and same-day real-time sums into one cumulative metric, using Local/RemoteCache and distributed locks to protect origins from public traffic
             - Promotion coupon issuance batch — designed and developed
@@ -542,19 +542,19 @@ projectSections:
             - 새창 처리, QR 스캔, 카메라 권한, 강제 업데이트, WebView User-Agent 주입 등 WebView 기반 앱 UX 흐름 구현
             - ML Kit 기반 커스텀 QR 스캐너 페이지와 반응형 스캔 UI 구현
             - FCM 기반 푸시 알림 시스템 구축
-            - Crashlytics 기반 Dart/native 오류 수집 및 NPE·카메라 lifecycle·FCM token throttle 안정화
+            - Crashlytics 기반 Dart/native 오류 수집과 카메라/FCM 안정화
           en:
             - Rapid Android/iOS hybrid delivery via Flutter for 2.0 launch (2025.03)
             - JSBridge for frontend–hardware and app message communication — developed 20+ native bridge flows
             - Built WebView app UX flows such as new-window handling, QR scanning, camera permission, forced updates, and WebView User-Agent injection
             - Custom ML Kit-based QR scanner page and responsive scan UI
             - FCM-based push notification system
-            - Crashlytics-driven stabilization for Dart/native errors, NPEs, camera lifecycle crashes, and FCM token throttling
+            - Crashlytics-driven Dart/native error collection and camera/FCM stabilization
         results:
           ko:
             - 2개월 이내 런칭 (2024.12 ~ 2025.02)
             - 프론트엔드에서 JS Bridge로 네이티브 기능을 호출할 수 있는 규약 설계
-            - 운영 중 Crashlytics 기반 안정화와 QR/권한/업데이트 흐름 개선으로 앱 핵심 진입점 품질 개선
+            - Crashlytics 기반 안정화와 QR/권한/업데이트 흐름 개선으로 앱 핵심 진입점 품질 개선
           en:
             - Launched within 2 months (Dec 2024 — Feb 2025)
             - designed protocols for frontend to invoke native functions via JS Bridge
@@ -698,7 +698,7 @@ projectSections:
             - Firebase App Distribution 도입으로 QA/배포 프로세스 병목 제거
             - MSA 환경의 설정 파일(application-local.yaml) 자동 생성 도구 개발
             - Admin 내부 API 호출이 늘어나는 상황에서 admin-internal-* 클라이언트와 X-Internal-Caller 헤더 규약을 도입해 운영자 도구의 내부 호출 경계 표준화
-            - Android 배포를 fastlane/Service Account JSON 키 중심에서 Workload Identity 기반 Gradle/Play Store REST API 및 firebase-tools 흐름으로 전환하고 iOS skip 조건·CocoaPods CDN rate-limit 대응 보강
+            - Android/iOS 앱 배포 과정을 정리해 인증 키 관리 부담과 불필요한 실패 요인을 줄임
             - Android Jenkins 파이프라인 공통 라이브러리화, GCS Gradle 캐시, iOS 자동 배포, ProGuard/R8 정책 등
           en:
             - Built a reusable skill repository of microservice conventions and recurring task shapes so it could be applied across generative LLM tools such as Claude Code, Cursor, and Gemini
@@ -707,19 +707,19 @@ projectSections:
             - Firebase App Distribution for faster QA and release cycles
             - Gradle generator for application-local.yaml
             - Standardized Admin internal API boundaries with admin-internal-* clients and an X-Internal-Caller header convention
-            - Moved Android delivery away from fastlane/Service Account JSON keys to Workload Identity with Gradle/Play Store REST API and firebase-tools, while hardening iOS skip conditions and CocoaPods CDN rate-limit handling
+            - Simplified Android/iOS app delivery to reduce key-management burden and avoidable failure points
             - Refactored Android Jenkins into shared libs; GCS remote cache; iOS GA/TestFlight pipeline; 300+ line R8 rules
         results:
           ko:
             - AI 코드 리뷰 자동화로 리뷰 리소스 절감
             - Firebase 도입으로 QA 배포 사이클 단축 및 QA 자체 검증 편의성 향상
             - 문서 자동 생성 시스템 구축으로 관리 리소스 절감
-            - 모바일 배포 인증 키 관리 부담과 외부 rate-limit/skip 오발동 리스크를 줄여 릴리즈 안정성 개선
+            - 모바일 배포의 인증 키 관리 부담과 불필요한 실패 요인을 줄여 릴리즈 안정성 개선
           en:
             - Reduced review overhead via automated first-pass AI review
             - Shortened QA/deploy cycle and improved QA self-serve with Firebase Distribution
             - Auto-doc system reduced manual documentation maintenance
-            - Improved release stability by reducing mobile delivery key-management burden and external rate-limit/skip misfire risk
+            - Improved release stability by reducing mobile delivery key-management burden and avoidable failure points
 
   - heading:
       ko: 프로젝트 — 카카오스타일 (2022.06 ~ 2024.09)

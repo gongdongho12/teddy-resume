@@ -56,69 +56,75 @@ const kakaoTLinkAndCardDiagram = localized(
 
 const vehiclePncDiagram = localized(
   `flowchart TD
-  VehicleInfoReg["차량 정보 등록<br/>plate=12가3456"] --> CheckA["tryAutoLinkPncVehicle()"]
-  PncReg["PnC 등록<br/>evccId=EVCC-A1B2"] --> CheckB["tryAutoLinkVehicleInfo()"]
-  CheckA --> Match{"unlinked counterpart<br/>count == 1 ?"}
+  VehicleInfoReg["차량 정보 등록<br/>차량번호=12가3456"] --> CheckA["차량 정보 기준<br/>자동 매핑 시도"]
+  PncReg["PnC 등록<br/>차량식별자=VID-7K3Q9M"] --> CheckB["차량식별자 기준<br/>자동 매핑 시도"]
+  CheckA --> Match{"매핑 안 된 상대가<br/>정확히 1개?"}
   CheckB --> Match
-  Match -->|yes| Link["linkPncVehicle(501,88)<br/>user_vehicle_id unique"]
-  Match -->|no| Manual["manual select"]
-  Manual --> Confirm["user-confirmed link"]
-  Link --> Auth["authorizeByEvccId<br/>userId / idTag"]
+  Match -->|yes| Link["차량 정보와 식별자 연결<br/>중복 연결 방지"]
+  Match -->|no| Manual["사용자 선택으로 전환"]
+  Manual --> Confirm["사용자 확인 후 연결"]
+  Link --> Auth["충전 인증<br/>사용자 / 인증 태그"]
   Confirm --> Auth
-  Auth --> Context["mapped vehicleInfo<br/>plate for app/admin context"]
-  Auth --> Charge["start charge"]`,
+  Auth --> Context["앱/운영 화면<br/>차량 컨텍스트"]
+  Auth --> Charge["충전 시작"]`,
   `flowchart TD
-  VehicleInfoReg["vehicle info registration<br/>plate=12GA3456"] --> CheckA["tryAutoLinkPncVehicle()"]
-  PncReg["PnC registration<br/>evccId=EVCC-A1B2"] --> CheckB["tryAutoLinkVehicleInfo()"]
-  CheckA --> Match{"unlinked counterpart<br/>count == 1 ?"}
+  VehicleInfoReg["vehicle info registration<br/>plate=12GA3456"] --> CheckA["try auto-link<br/>from vehicle info"]
+  PncReg["PnC registration<br/>vehicle identifier=VID-7K3Q9M"] --> CheckB["try auto-link<br/>from vehicle identifier"]
+  CheckA --> Match{"exactly one<br/>unlinked counterpart?"}
   CheckB --> Match
-  Match -->|yes| Link["linkPncVehicle(501,88)<br/>user_vehicle_id unique"]
-  Match -->|no| Manual["manual select"]
+  Match -->|yes| Link["link vehicle info<br/>and identifier"]
+  Match -->|no| Manual["switch to user selection"]
   Manual --> Confirm["user-confirmed link"]
-  Link --> Auth["authorizeByEvccId<br/>userId / idTag"]
+  Link --> Auth["charging authorization<br/>user / auth tag"]
   Confirm --> Auth
-  Auth --> Context["mapped vehicleInfo<br/>plate for app/admin context"]
-  Auth --> Charge["start charge"]`,
+  Auth --> Context["vehicle context<br/>for app/admin"]
+  Auth --> Charge["start charging"]`,
 );
 
 const vehicleDataTreeDiagram = localized(
   `flowchart TD
-  Lookup["CODEF 조회<br/>plate=12가3456 owner=강**"] --> Codef["brandNm=현대<br/>repCarClassNm=아이오닉<br/>carClassNm=아이오닉5"]
-  Codef --> Normalize["findOrCreateCarByNames()"]
-  Normalize --> Brand["CAR_BRAND<br/>현대"]
-  Brand --> Class["CAR_CLASS<br/>아이오닉"]
-  Class --> Car["CAR<br/>아이오닉5"]
-  Car --> Model["vehicle_model<br/>image / registrationCount"]
-  Model --> VehicleInfo["userVehicleInfo<br/>plate + vehicleModelId"]`,
+  Lookup["차량정보 조회<br/>차량번호=12가3456 소유자=강**"] --> LookupResult["브랜드명=현대<br/>차급명=아이오닉<br/>차종명=아이오닉5"]
+  LookupResult --> Normalize["차량 트리 노드<br/>조회 또는 생성"]
+  Normalize --> Brand["브랜드 노드<br/>현대"]
+  Brand --> Class["차급 노드<br/>아이오닉"]
+  Class --> Car["차종 노드<br/>아이오닉5"]
+  Car --> Model["차량 모델 기준 데이터<br/>이미지 / 등록 수"]
+  Model --> VehicleInfo["사용자 차량 정보<br/>차량번호 + 차량 모델 연결"]
+  Brand --> BrandNotice["현대 전체<br/>경고 / 알림 대상"]
+  Class --> ClassNotice["아이오닉 계열<br/>경고 / 알림 대상"]
+  Car --> CarNotice["아이오닉5<br/>경고 / 알림 대상"]`,
   `flowchart TD
-  Lookup["CODEF lookup<br/>plate=12GA3456 owner=K**"] --> Codef["brandNm=Hyundai<br/>repCarClassNm=Ioniq<br/>carClassNm=Ioniq 5"]
-  Codef --> Normalize["findOrCreateCarByNames()"]
-  Normalize --> Brand["CAR_BRAND<br/>Hyundai"]
-  Brand --> Class["CAR_CLASS<br/>Ioniq"]
-  Class --> Car["CAR<br/>Ioniq 5"]
-  Car --> Model["vehicle_model<br/>image / registrationCount"]
-  Model --> VehicleInfo["userVehicleInfo<br/>plate + vehicleModelId"]`,
+  Lookup["vehicle information lookup<br/>plate=12GA3456 owner=K**"] --> LookupResult["brand name=Hyundai<br/>class name=Ioniq<br/>model name=Ioniq 5"]
+  LookupResult --> Normalize["look up or create<br/>vehicle-tree nodes"]
+  Normalize --> Brand["brand node<br/>Hyundai"]
+  Brand --> Class["class node<br/>Ioniq"]
+  Class --> Car["model node<br/>Ioniq 5"]
+  Car --> Model["vehicle-model reference<br/>image / registration count"]
+  Model --> VehicleInfo["user vehicle info<br/>plate + model link"]
+  Brand --> BrandNotice["all Hyundai<br/>warning / notification target"]
+  Class --> ClassNotice["Ioniq class<br/>warning / notification target"]
+  Car --> CarNotice["Ioniq 5<br/>warning / notification target"]`,
 );
 
 const vehicleWarningTreeDiagram = localized(
   `flowchart TD
-  Admin["Admin 차량 공지 생성<br/>vehicleTreeId=현대(CAR_BRAND)"] --> Notice["vehicle_error<br/>target=현대"]
-  Notice --> Down["getChildVehicleTreeIds()<br/>BRAND/CLASS -> 하위 CAR"]
+  Admin["Admin 차량 공지 생성<br/>대상=현대 전체"] --> Notice["차량 경고<br/>target=현대"]
+  Notice --> Down["하위 차종 대상으로 전개<br/>브랜드/차급 -> 차종"]
   Down --> Cars["아이오닉5 / 아이오닉6 / 코나 EV"]
-  Cars --> Models["vehicle_model ids"]
-  Models --> Users["findUserIdsByVehicleModelIds()<br/>대상 사용자 dedupe"]
+  Cars --> Models["차량 모델 대상"]
+  Models --> Users["대상 사용자 추출<br/>중복 제거"]
   Users --> Push["앱 푸시 / 알림 생성"]
-  App["사용자 차량 상세<br/>vehicleTreeId=아이오닉5"] --> Up["getParentIdsRecursive()<br/>CAR -> CLASS -> BRAND"]
+  App["사용자 차량 상세<br/>차종=아이오닉5"] --> Up["상위 카테고리 공지 수집<br/>차종 -> 차급 -> 브랜드"]
   Up --> Display["아이오닉5 + 아이오닉 + 현대 공지 표시"]
   Notice --> Display`,
   `flowchart TD
-  Admin["Admin creates notice<br/>vehicleTreeId=Hyundai(CAR_BRAND)"] --> Notice["vehicle_error<br/>target=Hyundai"]
-  Notice --> Down["getChildVehicleTreeIds()<br/>BRAND/CLASS -> descendant CAR"]
+  Admin["Admin creates notice<br/>target=all Hyundai"] --> Notice["vehicle warning<br/>target=Hyundai"]
+  Notice --> Down["expand to descendant models<br/>brand/class -> model"]
   Down --> Cars["Ioniq 5 / Ioniq 6 / Kona EV"]
-  Cars --> Models["vehicle_model ids"]
-  Models --> Users["findUserIdsByVehicleModelIds()<br/>dedupe target users"]
+  Cars --> Models["vehicle-model targets"]
+  Models --> Users["resolve target users<br/>deduplicated"]
   Users --> Push["app push / notification"]
-  App["user vehicle detail<br/>vehicleTreeId=Ioniq 5"] --> Up["getParentIdsRecursive()<br/>CAR -> CLASS -> BRAND"]
+  App["user vehicle detail<br/>model=Ioniq 5"] --> Up["collect parent notices<br/>model -> class -> brand"]
   Up --> Display["show Ioniq 5 + Ioniq + Hyundai notices"]
   Notice --> Display`,
 );
@@ -136,7 +142,7 @@ const voltupHybridAppDiagram = localized(
   Push --> Native
   Version --> Native
   Native --> Observe["Crashlytics<br/>Dart + native error tracking"]
-  Observe --> Fix["NPE / camera / token throttle 안정화"]
+  Observe --> Fix["camera / FCM 안정화"]
   classDef web fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef native fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef ops fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
@@ -155,7 +161,7 @@ const voltupHybridAppDiagram = localized(
   Push --> Native
   Version --> Native
   Native --> Observe["Crashlytics<br/>Dart + native error tracking"]
-  Observe --> Fix["NPE / camera / token throttle stabilization"]
+  Observe --> Fix["camera / FCM stabilization"]
   classDef web fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef native fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef ops fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
@@ -425,8 +431,8 @@ const devopsAutomationDiagram = localized(
   Pain --> Internal["admin-internal-* client<br/>X-Internal-Caller"]
   Pain --> Deploy["Jenkins shared library<br/>job name -> target 분기"]
   Deploy --> Build["docker/app build<br/>cache / track / notifications"]
-  Deploy --> Android["Android Workload Identity<br/>Play REST API + firebase-tools"]
-  Deploy --> IOS["iOS workflow hardening<br/>skip 조건 / CocoaPods CDN"]
+  Deploy --> Android["Android release<br/>키 관리 부담 축소"]
+  Deploy --> IOS["iOS release<br/>불필요한 실패 방지"]
   Build --> Argo["deployArgoCD"]
   Android --> Argo
   IOS --> Argo
@@ -445,8 +451,8 @@ const devopsAutomationDiagram = localized(
   Pain --> Internal["admin-internal-* client<br/>X-Internal-Caller"]
   Pain --> Deploy["Jenkins shared library<br/>job name -> target routing"]
   Deploy --> Build["docker/app build<br/>cache / track / notifications"]
-  Deploy --> Android["Android Workload Identity<br/>Play REST API + firebase-tools"]
-  Deploy --> IOS["iOS workflow hardening<br/>skip conditions / CocoaPods CDN"]
+  Deploy --> Android["Android release<br/>less key burden"]
+  Deploy --> IOS["iOS release<br/>fewer avoidable failures"]
   Build --> Argo["deployArgoCD"]
   Android --> Argo
   IOS --> Argo
@@ -779,14 +785,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: '회원 식별 통합, AuthMethod 연결, 카드 등록 상태와 t_partner_user_token 기준 설계',
-        en: 'Unified member identity, linked AuthMethod records, and designed card-registration state around t_partner_user_token',
+        ko: '회원 식별 통합, AuthMethod 연결, 카드 등록 상태와 제휴사 고객 토큰 기준 설계',
+        en: 'Unified member identity, linked AuthMethod records, and designed card-registration state around the partner customer token',
       },
       summary: {
         ko:
-          'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, FEAPP 한 스텝 API에서 결제수단 등록 세션 생성부터 billing의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다. 이후 `t_partner_user_token`을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리해 검색, 해지 검증, 앱 콜백 activate 흐름을 안정화했습니다.',
+          'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, FEAPP 한 스텝 API에서 결제수단 등록 세션 생성부터 billing의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다. 이후 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리해 검색, 해지 검증, 앱 콜백 activate 흐름을 안정화했습니다.',
         en:
-          'Designed the flow that links KakaoT external accounts to existing VoltUp members through encrypted CI and carries payment-method registration from the FEAPP one-step API through billing READY-state and ACTIVE-state transitions. Later promoted `t_partner_user_token` as the key between external payment methods and internal user context, stabilizing lookup, unlink validation, and app-callback activate flows.',
+          'Designed the flow that links KakaoT external accounts to existing VoltUp members through encrypted CI and carries payment-method registration from the FEAPP one-step API through billing READY-state and ACTIVE-state transitions. Later promoted the partner customer token as the key between external payment methods and internal user context, stabilizing lookup, unlink validation, and app-callback activate flows.',
       },
       challenge: {
         ko:
@@ -817,12 +823,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Built the one-step FEAPP flow that uses the current user encrypted CI to create the KakaoT payment-link session.',
         },
         {
-          ko: 'billing에서는 `pg_payloads`에 `session_key`를 저장하고, confirm 시 `pgPayKey`와 `t_partner_user_token`을 확정하는 상태 전이를 구현했습니다.',
-          en: 'In billing, implemented the state transition that stores the `session_key` in `pg_payloads` and finalizes `pgPayKey` plus `t_partner_user_token` during confirm.',
+          ko: 'billing에서는 `pg_payloads`에 `session_key`를 저장하고, confirm 시 `pgPayKey`와 제휴사 고객 토큰을 확정하는 상태 전이를 구현했습니다.',
+          en: 'In billing, implemented the state transition that stores the `session_key` in `pg_payloads` and finalizes `pgPayKey` plus the partner customer token during confirm.',
         },
         {
-          ko: '`t_partner_user_token` 검색 필터와 복합 인덱스를 추가하고, 카카오T 해지 시 현재 사용자의 T_PAYMENTS인지 검증하는 경로를 보강했습니다.',
-          en: 'Added `t_partner_user_token` lookup filters plus a composite index, and hardened unlink validation so KakaoT teardown checks whether the T_PAYMENTS record belongs to the current user.',
+          ko: '제휴사 고객 토큰 검색 필터와 복합 인덱스를 추가하고, 카카오T 해지 시 현재 사용자의 T_PAYMENTS인지 검증하는 경로를 보강했습니다.',
+          en: 'Added partner-customer-token lookup filters plus a composite index, and hardened unlink validation so KakaoT teardown checks whether the T_PAYMENTS record belongs to the current user.',
         },
         {
           ko: '앱 콜백 전용 activate API를 분리하고 DTO alias, `@JsonProperty`, 검색 로그를 보강해 외부 스키마 차이와 운영 추적성을 흡수했습니다.',
@@ -839,12 +845,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Prevented identity mismatches by not starting card registration until account linking is complete, then creating sessions and activate calls only afterward.',
         },
         {
-          ko: '`READY -> ACTIVE` 전이에서 필요한 `session_key`, `partner_user_token`, `pgPayKey`를 같은 subscription 행에 모아 이후 승인/취소 호출도 재사용 가능하게 했습니다.',
-          en: 'Grouped the `session_key`, `partner_user_token`, and `pgPayKey` around the same subscription row during the `READY -> ACTIVE` transition so later approve/cancel calls can reuse them.',
+          ko: '`READY -> ACTIVE` 전이에서 필요한 `session_key`, 제휴사 고객 토큰, `pgPayKey`를 같은 subscription 행에 모아 이후 승인/취소 호출도 재사용 가능하게 했습니다.',
+          en: 'Grouped the `session_key`, partner customer token, and `pgPayKey` around the same subscription row during the `READY -> ACTIVE` transition so later approve/cancel calls can reuse them.',
         },
         {
-          ko: '`t_partner_user_token`을 단순 응답 필드가 아니라 사용자-외부 결제수단 정합성을 확인하는 운영 키로 보고, 조회와 해지 검증이 같은 기준을 공유하도록 정리했습니다.',
-          en: 'Treated `t_partner_user_token` not as a response field but as an operational key for user-to-external-payment consistency, so lookup and unlink validation share the same basis.',
+          ko: '제휴사 고객 토큰을 단순 응답 필드가 아니라 사용자-외부 결제수단 정합성을 확인하는 운영 키로 보고, 조회와 해지 검증이 같은 기준을 공유하도록 정리했습니다.',
+          en: 'Treated the partner customer token not as a response field but as an operational key for user-to-external-payment consistency, so lookup and unlink validation share the same basis.',
         },
       ],
       outcomes: [
@@ -917,8 +923,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       slug: 'vehicle-pnc-auth',
       title: {
-        ko: '차량 등록 / PnC 식별자(evccId) 안전 매핑 / Plug & Charge 인증',
-        en: 'Vehicle Registration, PnC Identifier (evccId) Safe Mapping, and Plug & Charge Authorization',
+        ko: '차량 등록 / 차량식별자 안전 매핑 / Plug & Charge 인증',
+        en: 'Vehicle Registration, Vehicle Identifier Safe Mapping, and Plug & Charge Authorization',
       },
       referenceLayout: 'split-with-context',
       fullWidthImplementationAfterContext: true,
@@ -931,45 +937,45 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: 'CODEF 차량 조회 안정화, 계층형 차량 모델 정규화, PnC 식별자(evccId) 안전 매핑 설계',
-        en: 'Designed CODEF vehicle lookup hardening, hierarchical vehicle-model normalization, and safe PnC identifier (evccId) mapping',
+        ko: '차량정보 조회 안정화, 계층형 차량 모델 정규화, 차량식별자 안전 매핑 설계',
+        en: 'Designed vehicle information lookup hardening, hierarchical vehicle-model normalization, and safe vehicle identifier mapping',
       },
       summary: {
         ko:
-          'CODEF 차량 조회 결과를 `브랜드 > 차급 > 차량` 3단계 기준 데이터로 정규화하고, 차량 정보와 PnC 식별자(evccId)가 서로 다른 시점에 들어와도 안전하게 같은 사용자 차량 컨텍스트로 이어지도록 구성했습니다.',
+          '차량정보 조회 결과를 `브랜드 > 차급 > 차량` 3단계 기준 데이터로 정규화하고, 차량 정보와 차량식별자가 서로 다른 시점에 들어와도 안전하게 같은 사용자 차량 컨텍스트로 이어지도록 구성했습니다.',
         en:
-          'Normalized CODEF vehicle lookup results into a 3-level `brand > class > car` reference tree, then safely connected vehicle info and PnC identifiers (evccId) into the same user-vehicle context even when they arrive independently.',
+          'Normalized vehicle information lookup results into a 3-level `brand > class > car` reference tree, then safely connected vehicle info and vehicle identifiers into the same user-vehicle context even when they arrive independently.',
       },
       challenge: {
         ko:
-          '차량번호/소유자명 기반 외부 조회 결과, 사용자가 직접 선택하는 차량 모델, PnC 식별자(`evccId`), 브랜드/차급/차량 대상 경고 공지가 서로 다른 경로로 들어오기 때문에, 차량 기준 데이터를 일관되게 만들면서 중복과 잘못된 자동 연결을 막는 기준이 필요했습니다.',
+          '차량번호/소유자명 기반 외부 조회 결과, 사용자가 직접 선택하는 차량 모델, 차량식별자, 브랜드/차급/차량 대상 경고 공지가 서로 다른 경로로 들어오기 때문에, 차량 기준 데이터를 일관되게 만들면서 중복과 잘못된 자동 연결을 막는 기준이 필요했습니다.',
         en:
-          'Because external plate-number/owner-name lookup results, user-selected vehicle models, PnC identifiers (`evccId`), and brand/class/car-level warning notices arrive through different paths, the system needed a consistent vehicle reference model plus conservative deduplication and auto-linking rules.',
+          'Because external plate-number/owner-name lookup results, user-selected vehicle models, vehicle identifiers, and brand/class/car-level warning notices arrive through different paths, the system needed a consistent vehicle reference model plus conservative deduplication and auto-linking rules.',
       },
       actions: [
         {
-          ko: 'CODEF 응답의 `brandNm`, `repCarClassNm`, `carClassNm`, 연식, 연료, 대표 이미지를 내부 차량 등록 DTO로 변환하고, 소유자명 필드 등 필요한 민감 필드를 마스킹한 CODEF 응답은 `optionalData`로 보관했습니다.',
-          en: 'Mapped CODEF fields such as `brandNm`, `repCarClassNm`, `carClassNm`, release year, fuel type, and representative image into the internal vehicle-registration DTO, while storing the CODEF response with required sensitive fields such as owner-name fields masked in `optionalData`.',
+          ko: '차량정보 조회 응답의 브랜드명, 차급명, 차종명, 연식, 연료, 대표 이미지를 내부 차량 등록 정보로 변환하고, 소유자명 등 필요한 민감 필드를 마스킹한 원본 응답은 추적용 부가 데이터로 보관했습니다.',
+          en: 'Mapped vehicle information lookup values such as brand name, class name, model name, release year, fuel type, and representative image into internal vehicle-registration data, while storing the original response with sensitive owner-name values masked as trace metadata.',
         },
         {
-          ko: 'CODEF 호출에는 토큰 만료 시 강제 갱신, 활성 인증서 순회, fallback 대상 오류 코드 분리를 적용해 외부 조회 실패가 차량 등록 흐름 전체를 쉽게 막지 않도록 보강했습니다.',
-          en: 'Hardened CODEF calls with forced token refresh on token expiry, active-certificate iteration, and fallback-result-code filtering so external lookup failures do not easily block the full vehicle-registration flow.',
+          ko: '차량정보 조회 호출에는 토큰 만료 시 강제 갱신, 활성 인증서 순회, fallback 대상 오류 코드 분리를 적용해 외부 조회 실패가 차량 등록 흐름 전체를 쉽게 막지 않도록 보강했습니다.',
+          en: 'Hardened vehicle information lookup calls with forced token refresh on token expiry, active-certificate iteration, and fallback-result-code filtering so external lookup failures do not easily block the full vehicle-registration flow.',
         },
         {
-          ko: '`vehicle_tree`를 `CAR_BRAND > CAR_CLASS > CAR` 구조로 설계하고, 등록 시점에 없는 브랜드/차급/차량은 `findOrCreateCarByNames` 흐름에서 생성되도록 구성했습니다.',
-          en: 'Modeled `vehicle_tree` as `CAR_BRAND > CAR_CLASS > CAR`, then created missing brand, class, and car nodes through the `findOrCreateCarByNames` flow at registration time.',
+          ko: '차량 기준 데이터를 `브랜드 > 차급 > 차종` 계층으로 설계하고, 등록 시점에 없는 브랜드/차급/차종은 차량 트리 노드 조회·생성 흐름에서 자동으로 보강되도록 구성했습니다.',
+          en: 'Modeled vehicle reference data as a `brand > class > model` hierarchy, then let the vehicle-tree lookup/create flow fill in missing brand, class, and model nodes at registration time.',
         },
         {
-          ko: '차량 경고/공지는 `vehicle_error.vehicle_tree_id`가 브랜드, 차급, 차량 중 하나를 참조하도록 설계해, “현대 전체”, “아이오닉 계열”, “아이오닉5”처럼 같은 테이블에서 범위를 다르게 지정할 수 있게 했습니다.',
-          en: 'Designed vehicle warning notices so `vehicle_error.vehicle_tree_id` can reference a brand, class, or car node, allowing one table to target scopes such as all Hyundai vehicles, the Ioniq class, or Ioniq 5.',
+          ko: '차량 경고/공지는 브랜드, 차급, 차종 중 하나를 대상으로 걸 수 있게 설계해, “현대 전체”, “아이오닉 계열”, “아이오닉5”처럼 범위를 다르게 지정할 수 있게 했습니다.',
+          en: 'Designed vehicle warning notices so they can target a brand, class, or model scope, such as all Hyundai vehicles, the Ioniq class, or Ioniq 5.',
         },
         {
           ko: '차량 정보 등록과 PnC(Plug & Charge) 등록 양쪽에서 모두 “매핑 안 된 대상이 정확히 1개인지”를 검사하는 양방향 자동 매핑 규칙을 적용했습니다.',
           en: 'Applied a bidirectional auto-mapping rule that checks whether exactly one unmatched counterpart exists from both the vehicle-info and PnC (Plug & Charge) registration sides.',
         },
         {
-          ko: '차량 정보는 `plateNumber`, PnC 차량은 `evccId`를 중심으로 따로 저장하고, `authorizeByEvccId`는 사용자와 `idTag` 인증에 집중하도록 두어 차량번호 컨텍스트는 앱/운영 화면의 매핑 정보에서 이어보게 했습니다.',
-          en: 'Stored vehicle info around `plateNumber` and PnC vehicles around `evccId`, keeping `authorizeByEvccId` focused on user and `idTag` authorization while plate-number context is preserved through the mapped app/admin vehicle info.',
+          ko: '차량 정보는 차량번호, PnC 차량은 차량식별자를 중심으로 따로 저장하고, 충전 인증은 사용자와 인증 태그 확인에 집중하도록 두어 차량번호 컨텍스트는 앱/운영 화면의 매핑 정보에서 이어보게 했습니다.',
+          en: 'Stored vehicle info around the plate number and PnC vehicles around the vehicle identifier, keeping charging authorization focused on the user and auth tag while plate-number context is preserved through the mapped app/admin vehicle info.',
         },
       ],
       engineeringViews: [
@@ -992,23 +998,23 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       outcomes: [
         {
-          ko: '차량번호와 소유자명 기반 CODEF 조회로 제조사, 차급, 상세 모델, 연식, 연료, 이미지 정보를 등록 흐름에 연결했습니다.',
-          en: 'Connected manufacturer, class, detailed model, release year, fuel type, and image information into registration through CODEF lookup by plate number and owner name.',
+          ko: '차량번호와 소유자명 기반 차량정보 조회로 제조사, 차급, 상세 모델, 연식, 연료, 이미지 정보를 등록 흐름에 연결했습니다.',
+          en: 'Connected manufacturer, class, detailed model, release year, fuel type, and image information into registration through vehicle information lookup by plate number and owner name.',
         },
         {
           ko: '브랜드/차급/차량 단위 공지를 같은 차량 트리 위에서 처리해 특정 브랜드 경고 표시와 대상 사용자 알림 발송을 별도 모델 없이 지원했습니다.',
           en: 'Supported brand/class/car-level warning display and target-user notification on the same vehicle tree without introducing a separate category model.',
         },
         {
-          ko: '차량 정보 등록과 PnC 등록 어느 쪽을 먼저 하더라도 조건이 맞으면 자동 매핑하고, 충전 인증은 `evccId -> userId/idTag` 기준으로 안정적으로 이어지게 했습니다.',
-          en: 'Enabled auto-mapping from either vehicle-info or PnC registration when conditions match, while keeping charging authorization stable on the `evccId -> userId/idTag` path.',
+          ko: '차량 정보 등록과 PnC 등록 어느 쪽을 먼저 하더라도 조건이 맞으면 자동 매핑하고, 충전 인증은 차량식별자와 사용자 인증 정보를 기준으로 안정적으로 이어지게 했습니다.',
+          en: 'Enabled auto-mapping from either vehicle-info or PnC registration when conditions match, while keeping charging authorization stable around the vehicle identifier and user auth context.',
         },
       ],
       note: {
-        ko: '외부 차량 조회 결과를 내부 기준 데이터로 정규화한 뒤, 차량 정보와 PnC 식별자(evccId)가 언제 자동 연결되고 언제 수동 선택으로 넘어가야 하는지 설명하기 좋은 프로젝트입니다.',
-        en: 'A good project for explaining how external vehicle lookup results become internal reference data, then when vehicle info and PnC identifiers (evccId) should auto-link or fall back to manual choice.',
+        ko: '외부 차량정보 조회 결과를 내부 기준 데이터로 정규화한 뒤, 차량 정보와 차량식별자가 언제 자동 연결되고 언제 수동 선택으로 넘어가야 하는지 설명하기 좋은 프로젝트입니다.',
+        en: 'A good project for explaining how external vehicle information lookup results become internal reference data, then when vehicle info and vehicle identifiers should auto-link or fall back to manual choice.',
       },
-      tech: ['Kotlin', 'Spring Boot', 'JPA', 'Redis', 'CODEF API'],
+      tech: ['Kotlin', 'Spring Boot', 'JPA', 'Redis', '차량정보 조회 API'],
       referenceImages: [
         {
           src: '/images/portfolio/voltup-plug-and-charge.png',
@@ -1029,21 +1035,21 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       diagrams: [
         {
           title: {
-            ko: 'CODEF 차량 조회 결과를 서비스 차량 트리로 정규화하는 흐름',
-            en: 'Normalizing CODEF vehicle lookup results into the service vehicle tree',
+            ko: '차량정보 조회 결과를 브랜드/차급/차량 노드로 재사용하는 구조',
+            en: 'Reusing vehicle information lookup results as brand/class/car nodes',
           },
           description: {
             ko:
-              '차량번호와 소유자명으로 조회한 CODEF 결과가 브랜드, 차급, 차량 노드로 분해되고 최종 사용자 차량 정보의 `vehicleModelId`로 연결되는 흐름입니다.',
+              '차량번호와 소유자명으로 조회한 차량정보 결과를 브랜드, 차급, 차종 노드로 나누고 최종 사용자 차량 정보의 차량 모델 기준값으로 연결하는 흐름입니다. 이렇게 만든 트리는 차량 선택 UI뿐 아니라 특정 제조사·차종 경고 표시와 대상 사용자 알림 발송에도 같은 기준으로 재사용할 수 있습니다.',
             en:
-              'Shows how CODEF lookup results from plate number and owner name are split into brand, class, and car nodes, then linked to the registered user vehicle through `vehicleModelId`.',
+              'Shows how vehicle information lookup results from plate number and owner name are split into brand, class, and model nodes, then linked to the registered user vehicle through the vehicle-model reference. The same tree can also be reused for vehicle selection, manufacturer/model-level warnings, and targeted user notifications.',
           },
           code: vehicleDataTreeDiagram,
         },
         {
           title: {
-            ko: '차량 정보와 PnC 식별자(evccId)를 안전하게 자동/수동 매핑하는 흐름',
-            en: 'Safe auto/manual mapping flow between vehicle info and PnC identifiers (evccId)',
+            ko: '차량 정보와 차량식별자를 안전하게 자동/수동 매핑하는 흐름',
+            en: 'Safe auto/manual mapping flow between vehicle info and vehicle identifiers',
           },
           description: {
             ko:
@@ -1376,8 +1382,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Built a custom ML Kit-based QR scanner page with responsive scan UI to control the QR recognition experience and reduce dependency on the previous scanner package.',
         },
         {
-          ko: 'Crashlytics 기반으로 Dart/native 오류 수집 경로를 연결하고, null-safe 처리, 카메라 lifecycle 예외, FCM token upload throttle을 보강했습니다.',
-          en: 'Connected Crashlytics for Dart/native error collection and hardened null-safe handling, camera lifecycle exceptions, and FCM token upload throttling.',
+          ko: 'Crashlytics 기반으로 Dart/native 오류 수집 경로를 연결하고, 카메라와 FCM 흐름을 안정화했습니다.',
+          en: 'Connected Crashlytics for Dart/native error collection and stabilized camera and FCM flows.',
         },
       ],
       engineeringViews: [
@@ -1390,8 +1396,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Because QR scanning and camera permission are key entry points for starting a charge, I focused on controlling device layout, lifecycle, and permission states inside the app UX rather than just wrapping a scanner package.',
         },
         {
-          ko: '운영 중 앱 안정성은 Crashlytics 신호를 기준으로 개선했습니다. NPE 후보, camera pause 중 예외, FCM token upload 중복/회복력 같은 작은 크래시 원인을 묶어 사용자 진입 흐름의 안정성을 높였습니다.',
-          en: 'Production stability improvements were driven by Crashlytics signals. I grouped small crash causes such as NPE candidates, camera pause exceptions, and FCM-token upload throttling to improve reliability around user entry flows.',
+          ko: '운영 중 앱 안정성은 Crashlytics 신호를 기준으로 개선했습니다. 카메라 예외와 FCM 중복 호출처럼 사용자 진입 흐름을 흔드는 문제를 묶어 안정성을 높였습니다.',
+          en: 'Production stability improvements were driven by Crashlytics signals. I grouped camera exceptions and repeated FCM calls that affected user entry flows, improving reliability around those paths.',
         },
       ],
       outcomes: [
@@ -1748,15 +1754,15 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       summary: {
         ko:
-          '볼트업 조직에서 반복적으로 발생하던 PR 리뷰, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 공통 workflow로 묶었습니다. 특히 로컬 환경값은 공개 저장소에 둘 수도 없고 개별 전달도 번거로워서, Vault 값을 `application-local.yaml`로 바로 동기화하는 Gradle 로직을 만들었습니다. 이후 Admin internal API 호출 규약과 Workload Identity 기반 모바일 배포까지 표준화했습니다.',
+          '볼트업 조직에서 반복적으로 발생하던 PR 리뷰, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 공통 workflow로 묶었습니다. 특히 로컬 환경값은 공개 저장소에 둘 수도 없고 개별 전달도 번거로워서, Vault 값을 `application-local.yaml`로 바로 동기화하는 Gradle 로직을 만들었습니다. 이후 Admin internal API 호출 규약과 모바일 배포 흐름까지 표준화했습니다.',
         en:
-          'Turned recurring PR review, local environment setup, internal API integration, and service/app delivery work in Voltup into shared workflows. In particular, I built Gradle logic that syncs Vault values directly into `application-local.yaml`, then extended the standardization into Admin internal API conventions and Workload Identity-based mobile delivery.',
+          'Turned recurring PR review, local environment setup, internal API integration, and service/app delivery work in Voltup into shared workflows. In particular, I built Gradle logic that syncs Vault values directly into `application-local.yaml`, then extended the standardization into Admin internal API conventions and mobile delivery workflows.',
       },
       challenge: {
         ko:
-          'MSA가 늘수록 코드 리뷰 기준, 마이크로서비스별 작업 컨벤션, 반복 작업 방식, 로컬 환경값 전달, 내부 API 호출 방식, 배포 절차가 사람마다 달라지기 쉬웠습니다. 모바일 배포는 Service Account JSON 키 보관과 외부 CDN rate-limit, skip 조건 오발동 같은 운영 리스크도 함께 줄여야 했습니다.',
+          'MSA가 늘수록 코드 리뷰 기준, 마이크로서비스별 작업 컨벤션, 반복 작업 방식, 로컬 환경값 전달, 내부 API 호출 방식, 배포 절차가 사람마다 달라지기 쉬웠습니다. 모바일 배포는 인증 키 관리 부담과 불필요한 실패 요인도 함께 줄여야 했습니다.',
         en:
-          'As the number of services grew, review rules, microservice-level conventions, recurring task patterns, local secret delivery, internal API invocation, and delivery steps were drifting per person. Mobile delivery also needed to reduce operational risks such as Service Account JSON key storage, external CDN rate limits, and skip-condition misfires.',
+          'As the number of services grew, review rules, microservice-level conventions, recurring task patterns, local secret delivery, internal API invocation, and delivery steps were drifting per person. Mobile delivery also needed to reduce key-management burden and avoidable failure points.',
       },
       actions: [
         {
@@ -1772,8 +1778,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Added root `build.gradle.kts` logic that replaces base-yaml placeholders from Vault and generates `application-local.yaml`, checking both project-specific paths and `secret/SHARED/voltup/dev`. It also verifies Vault CLI login, handles non-interactive environments, and fills `IAM_DB_USER_NAME` from the current `gcloud` account so local environments stay automatically aligned across developers even when new keys are added.',
         },
         {
-          ko: '`feapp-domain-service`에는 인증서와 `conf.json`을 Base64 인코딩해 Vault에 반영하는 `updateCodefCertificatesToVault` 태스크를 만들어, 민감 파일을 저장소나 메신저로 공유하지 않고도 필요한 개발자가 스스로 갱신할 수 있게 했습니다.',
-          en: 'Added an `updateCodefCertificatesToVault` task in `feapp-domain-service` that Base64-encodes certificates and `conf.json` fields into Vault, so developers can refresh sensitive assets themselves without sharing files through the repo or chat.',
+          ko: '`feapp-domain-service`에는 인증서와 `conf.json`을 Base64 인코딩해 Vault에 반영하는 민감 인증서 갱신 태스크를 만들어, 민감 파일을 저장소나 메신저로 공유하지 않고도 필요한 개발자가 스스로 갱신할 수 있게 했습니다.',
+          en: 'Added a sensitive-certificate refresh task in `feapp-domain-service` that Base64-encodes certificates and `conf.json` fields into Vault, so developers can refresh sensitive assets themselves without sharing files through the repo or chat.',
         },
         {
           ko: 'Admin 내부 연동 API가 늘어나는 상황에서 `admin-internal-*` 클라이언트 패턴과 `X-Internal-Caller` 헤더 규약을 문서화하고 적용해 호출 주체와 신뢰 경계를 일관되게 관리했습니다.',
@@ -1784,12 +1790,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Standardized delivery on top of the `devops-cicd` Jenkins shared library so each service `Jenkinsfile` routes API/BATCH/CONSUMER/APP targets by job name and continues into Docker build/push plus ArgoCD deploy. The Android app pipeline follows the same pattern with cache restore/save, release track selection, and notifications.',
         },
         {
-          ko: 'Android 배포를 fastlane/Service Account JSON 키 중심에서 Workload Identity 기반 Gradle/Play Store REST API와 `firebase-tools` 흐름으로 전환하고, Jenkins 로깅·Slack 알림·토큰 노출 방지를 보강했습니다.',
-          en: 'Moved Android delivery away from fastlane and Service Account JSON keys to Workload Identity with Gradle/Play Store REST API plus `firebase-tools`, while improving Jenkins logging, Slack notifications, and token exposure guards.',
+          ko: 'Android 앱 배포에서 오래 보관되는 인증 키 의존을 줄이고, 배포 로그·Slack 알림·토큰 노출 방지를 보강해 릴리즈 흐름을 안정화했습니다.',
+          en: 'Reduced long-lived key dependency in Android delivery and improved release stability with clearer logs, Slack notifications, and token-exposure guards.',
         },
         {
-          ko: 'iOS 배포 workflow의 skip 조건이 커밋 본문에 의해 오발동하지 않도록 수정하고, CocoaPods CDN raw.githubusercontent.com 429 회피를 위해 netrc 인증을 추가했습니다.',
-          en: 'Fixed iOS delivery skip checks so commit bodies do not accidentally suppress workflows, and added netrc authentication to avoid CocoaPods CDN raw.githubusercontent.com 429 failures.',
+          ko: 'iOS 배포가 커밋 문구나 외부 의존 문제 때문에 불필요하게 멈추지 않도록 배포 조건과 인증 흐름을 보강했습니다.',
+          en: 'Hardened iOS delivery conditions and authentication flow so releases are not unnecessarily blocked by commit text or external dependency failures.',
         },
       ],
       engineeringViews: [
@@ -1806,8 +1812,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Converged delivery onto a shared-library model with job-name-based target routing so operational steps stay standardized while app/backend differences appear only at the target layer.',
         },
         {
-          ko: '모바일 배포 인증은 오래 보관되는 JSON 키를 없애는 방향으로 보고 Workload Identity로 바꿨고, 배포 실패 원인은 Slack 메시지와 로그에서 바로 추적할 수 있게 했습니다.',
-          en: 'Moved mobile delivery authentication toward removing long-lived JSON keys via Workload Identity, and made deployment failures easier to trace from Slack messages and logs.',
+          ko: '모바일 배포 인증은 오래 보관되는 키 의존을 줄이는 방향으로 정리했고, 배포 실패 원인은 Slack 메시지와 로그에서 바로 추적할 수 있게 했습니다.',
+          en: 'Reduced long-lived key dependency in mobile delivery authentication and made deployment failures easier to trace from Slack messages and logs.',
         },
         {
           ko: '반복 작업이 팀 운영 리스크가 된다고 느낀 지점에서는 문서만 남기지 않고 직접 Gradle 태스크, workflow, Jenkins 파이프라인으로 만들어 팀이 바로 쓸 수 있게 바꿨습니다.',

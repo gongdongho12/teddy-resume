@@ -499,16 +499,16 @@ projectSections:
             - 카카오T 계정/결제 연동을 4개 MSA(auth→user→billing→feapp)에 걸쳐 설계 및 구현 — OAuth2 기반 계정 연동, 결제수단 등록(5단계), 결제 승인/부분 취소까지 전체 플로우 담당
             - 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리하고, 검색 인덱스·해지 검증·앱 콜백 전용 activate API를 보강
             - 차량 등록 서비스 및 PnC(Plug & Charge) 인증 등록 서비스 개발
-            - 홈페이지 통계 Public API 구축 — 전월 누적합·전일 누적 delta·당일 실시간 합산을 하나의 누적 지표로 결합하고, 공개 트래픽을 고려해 Local/RemoteCache와 분산 락으로 원본 부하 최소화
+            - 홈페이지 통계 API — 전월 누적합·전일 누적 delta·당일 실시간 합산을 하나의 누적 지표로 결합하고, 공개 트래픽을 고려해 Local/RemoteCache와 분산 락으로 원본 부하 최소화
             - 프로모션 쿠폰 발급 배치 구상 및 개발
-            - 외부 인증서 서비스에 서킷브레이커 패턴 적용 — 장애 인증서 자동 비활성화 및 복구, 전체 장애 시 강제 리셋 복구 경로 구성
+            - 외부 인증서 서비스에 서킷브레이커 패턴 — 장애 인증서 자동 비활성화 및 복구, 전체 장애 시 강제 리셋 복구 경로 지정
           en:
             - Designed and implemented KakaoT account/payment integration across 4 MSAs (auth→user→billing→feapp) — OAuth2 account linking, 5-step card registration, payment approval/partial cancellation
             - Promoted the partner customer token as the key between external payment methods and internal user context, adding search indexes, unlink validation, and an app-callback-specific activate API
             - Vehicle registration service and PnC (Plug & Charge) authentication registration service
-            - Built homepage statistics public API — combined prior-month cumulative totals, daily cumulative deltas, and same-day real-time sums into one cumulative metric, using Local/RemoteCache and distributed locks to protect origins from public traffic
+            - Built homepage statistics API — combined prior-month cumulative totals, daily cumulative deltas, and same-day real-time sums into one cumulative metric, using Local/RemoteCache and distributed locks to protect origins from public traffic
             - Promotion coupon issuance batch — designed and developed
-            - Circuit breaker pattern for external certificate service — auto-disable on failure with recovery and a force-reset recovery path for total outages
+            - Circuit breaker pattern for external certificate service — auto-disable and recover failed certificates, with a force-reset recovery path for total outages
         results:
           ko:
             - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현
@@ -538,15 +538,15 @@ projectSections:
         highlights:
           ko:
             - 서비스 개발 가능 범위 산정(PoC) 및 Android/iOS 하이브리드 앱 신속 개발 및 런칭(2025.03)
-            - JSBridge를 통해 프론트엔드와 하드웨어·앱 메시지 통신 구현 — 20개 이상의 다수 네이티브 브릿지 로직 개발
-            - 새창 처리, QR 스캔, 카메라 권한, 강제 업데이트, WebView User-Agent 주입 등 WebView 기반 앱 UX 흐름 구현
+            - JSBridge를 통해 프론트엔드와 하드웨어·앱 메시지 통신 구현
+            - 새창 처리, QR 스캔, 카메라 권한, 강제 업데이트, WebView 기반 UX 구현
             - ML Kit 기반 커스텀 QR 스캐너 페이지와 반응형 스캔 UI 구현
             - FCM 기반 푸시 알림 시스템 구축
             - Crashlytics 기반 Dart/native 오류 수집과 카메라/FCM 안정화
           en:
             - Rapid Android/iOS hybrid delivery via Flutter for 2.0 launch (2025.03)
-            - JSBridge for frontend–hardware and app message communication — developed 20+ native bridge flows
-            - Built WebView app UX flows such as new-window handling, QR scanning, camera permission, forced updates, and WebView User-Agent injection
+            - JSBridge for frontend–hardware and app message communication
+            - Built WebView-based UX flows for new-window handling, QR scanning, camera permission, and forced updates
             - Custom ML Kit-based QR scanner page and responsive scan UI
             - FCM-based push notification system
             - Crashlytics-driven Dart/native error collection and camera/FCM stabilization
@@ -575,19 +575,15 @@ projectSections:
         tech:
           - TypeScript
           - Chrome Extension
-          - Vitest
-          - GitHub Actions
         highlights:
           ko:
             - 새창, QR 스캔, 카메라 권한, 강제 업데이트 버전 분기 등 앱이 지원하는 흐름을 앱 연결 없이 테스트할 수 있도록 브라우저 익스텐션으로 재현
             - API 요청 capture/replay 구조를 구현해 앱 개발 검증 시간을 단축하고 반복 QA 흐름을 자동화
             - 충전존 생성 오류 대응처럼 Admin 화면에서 직접 지원하지 않는 단일 API 보정 작업을 row 기반 Bulk Replay로 처리할 수 있도록 확장
-            - 실행 전 confirm, 401/403 조기 중단, skip 일괄 통보, parser/executor 테스트와 CI 구성
           en:
             - Recreated app-supported flows such as new windows, QR scanning, camera permission, and forced-update version branches in a browser extension without connecting the app
             - Built API capture/replay to shorten app-development validation time and automate repeated QA flows
             - Extended the tool into row-based Bulk Replay for single-API corrections not directly supported by Admin, such as charge-zone correction cases
-            - Added confirmation, 401/403 early-stop guards, batch skip notifications, parser/executor tests, and CI
         results:
           ko:
             - 앱 연결이 필요한 기능 검증을 브라우저에서 빠르게 확인할 수 있게 해 개발 대기/반복 조작 시간을 단축
@@ -736,9 +732,7 @@ projectSections:
           en: Built a mobile IP pool proxy infrastructure to bypass crawling blocks and automated a dynamic pricing pipeline based on price competitiveness.
         tech:
           - Docker
-          - MitmProxy
           - K8S
-          - ADB
           - Node.js
           - Kotlin
           - Spring Batch
@@ -770,7 +764,6 @@ projectSections:
           - Kotlin
           - Spring Boot
           - Spring Batch
-          - DGS Framework(GraphQL)
           - MySQL
           - Spring Kafka
           - AWS Athena

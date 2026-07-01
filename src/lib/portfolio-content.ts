@@ -83,50 +83,59 @@ const vehiclePncDiagram = localized(
 
 const vehicleDataTreeDiagram = localized(
   `flowchart TD
-  Lookup["차량정보 조회<br/>차량번호=12가3456 소유자=강**"] --> LookupResult["브랜드명=현대<br/>차급명=아이오닉<br/>차종명=아이오닉5"]
-  LookupResult --> Normalize["차량 트리 노드<br/>조회 또는 생성"]
+  Lookup["차량정보 조회<br/>차량번호=12가3456 소유자=강**"] --> LookupResult["브랜드명=현대<br/>차량군=전기 SUV<br/>모델명=아이오닉 5"]
+  LookupResult --> Normalize["차량 기준 트리<br/>조회 또는 생성"]
   Normalize --> Brand["브랜드 노드<br/>현대"]
-  Brand --> Class["차급 노드<br/>아이오닉"]
-  Class --> Car["차종 노드<br/>아이오닉5"]
-  Car --> Model["차량 모델 기준 데이터<br/>이미지 / 등록 수"]
+  Brand --> Category["차량군 노드<br/>전기 SUV"]
+  Category --> ModelNode["모델 노드<br/>아이오닉 5"]
+  ModelNode --> Model["차량 모델 기준 데이터<br/>이미지 / 등록 수"]
   Model --> VehicleInfo["사용자 차량 정보<br/>차량번호 + 차량 모델 연결"]
-  Brand --> BrandNotice["현대 전체<br/>경고 / 알림 대상"]
-  Class --> ClassNotice["아이오닉 계열<br/>경고 / 알림 대상"]
-  Car --> CarNotice["아이오닉5<br/>경고 / 알림 대상"]`,
+  Brand --> Selection["차량 선택 UI<br/>공통 기준"]
+  Category --> Selection
+  ModelNode --> Selection
+  Notice["운영 공지<br/>선택 노출"] -.-> Brand
+  Notice -.-> Category
+  Notice -.-> ModelNode
+  Warning["차량 경고<br/>주의 노출"] -.-> Brand
+  Warning -.-> Category
+  Warning -.-> ModelNode
+  Brand -.-> Display["앱 차량 상세<br/>조건에 따라 노출"]
+  Category -.-> Display
+  ModelNode -.-> Display
+  Brand -.-> Notify["대상자 알림 발송<br/>조건 충족 시 전개"]
+  Category -.-> Notify
+  ModelNode -.-> Notify
+  classDef notice fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;
+  classDef warning fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d;
+  class Notice notice;
+  class Warning warning;`,
   `flowchart TD
-  Lookup["vehicle information lookup<br/>plate=12GA3456 owner=K**"] --> LookupResult["brand name=Hyundai<br/>class name=Ioniq<br/>model name=Ioniq 5"]
-  LookupResult --> Normalize["look up or create<br/>vehicle-tree nodes"]
+  Lookup["vehicle information lookup<br/>plate=12GA3456 owner=K**"] --> LookupResult["brand name=Hyundai<br/>category=electric SUV<br/>model name=Ioniq 5"]
+  LookupResult --> Normalize["look up or create<br/>vehicle reference tree"]
   Normalize --> Brand["brand node<br/>Hyundai"]
-  Brand --> Class["class node<br/>Ioniq"]
-  Class --> Car["model node<br/>Ioniq 5"]
-  Car --> Model["vehicle-model reference<br/>image / registration count"]
+  Brand --> Category["category node<br/>electric SUV"]
+  Category --> ModelNode["model node<br/>Ioniq 5"]
+  ModelNode --> Model["vehicle-model reference<br/>image / registration count"]
   Model --> VehicleInfo["user vehicle info<br/>plate + model link"]
-  Brand --> BrandNotice["all Hyundai<br/>warning / notification target"]
-  Class --> ClassNotice["Ioniq class<br/>warning / notification target"]
-  Car --> CarNotice["Ioniq 5<br/>warning / notification target"]`,
-);
-
-const vehicleWarningTreeDiagram = localized(
-  `flowchart TD
-  Admin["Admin 차량 공지 생성<br/>대상=현대 전체"] --> Notice["차량 경고<br/>target=현대"]
-  Notice --> Down["하위 차종 대상으로 전개<br/>브랜드/차급 -> 차종"]
-  Down --> Cars["아이오닉5 / 아이오닉6 / 코나 EV"]
-  Cars --> Models["차량 모델 대상"]
-  Models --> Users["대상 사용자 추출<br/>중복 제거"]
-  Users --> Push["앱 푸시 / 알림 생성"]
-  App["사용자 차량 상세<br/>차종=아이오닉5"] --> Up["상위 카테고리 공지 수집<br/>차종 -> 차급 -> 브랜드"]
-  Up --> Display["아이오닉5 + 아이오닉 + 현대 공지 표시"]
-  Notice --> Display`,
-  `flowchart TD
-  Admin["Admin creates notice<br/>target=all Hyundai"] --> Notice["vehicle warning<br/>target=Hyundai"]
-  Notice --> Down["expand to descendant models<br/>brand/class -> model"]
-  Down --> Cars["Ioniq 5 / Ioniq 6 / Kona EV"]
-  Cars --> Models["vehicle-model targets"]
-  Models --> Users["resolve target users<br/>deduplicated"]
-  Users --> Push["app push / notification"]
-  App["user vehicle detail<br/>model=Ioniq 5"] --> Up["collect parent notices<br/>model -> class -> brand"]
-  Up --> Display["show Ioniq 5 + Ioniq + Hyundai notices"]
-  Notice --> Display`,
+  Brand --> Selection["vehicle selection UI<br/>shared reference"]
+  Category --> Selection
+  ModelNode --> Selection
+  Notice["operational notice<br/>optional exposure"] -.-> Brand
+  Notice -.-> Category
+  Notice -.-> ModelNode
+  Warning["vehicle warning<br/>attention exposure"] -.-> Brand
+  Warning -.-> Category
+  Warning -.-> ModelNode
+  Brand -.-> Display["vehicle detail screen<br/>conditionally shown"]
+  Category -.-> Display
+  ModelNode -.-> Display
+  Brand -.-> Notify["targeted notifications<br/>expand when matched"]
+  Category -.-> Notify
+  ModelNode -.-> Notify
+  classDef notice fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;
+  classDef warning fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d;
+  class Notice notice;
+  class Warning warning;`,
 );
 
 const voltupHybridAppDiagram = localized(
@@ -177,15 +186,14 @@ const voltupAppExtensionDiagram = localized(
   Extension --> Capture["API request capture"]
   Capture --> Template["row parser<br/>variable template"]
   Template --> Replay["Bulk Replay executor"]
-  Replay --> Guard["confirm / 401·403 early stop<br/>skip 일괄 통보"]
-  Guard --> QA["개발 QA 반복 시간 단축"]
+  Replay --> QA["개발 QA 반복 시간 단축"]
   Replay --> Ops["Admin 미지원 단일 API<br/>운영 보정"]
   Ops --> Share["일회성 JS fetch -> 팀 도구"]
   classDef pain fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef tool fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
   class Pain pain;
-  class Extension,Sim,Capture,Template,Replay,Guard tool;
+  class Extension,Sim,Capture,Template,Replay tool;
   class QA,Ops,Share result;`,
   `flowchart TD
   Pain["app-attachment bottleneck<br/>new window / QR / camera / version"] --> Extension["Chrome Extension<br/>app-like controls"]
@@ -193,15 +201,14 @@ const voltupAppExtensionDiagram = localized(
   Extension --> Capture["API request capture"]
   Capture --> Template["row parser<br/>variable template"]
   Template --> Replay["Bulk Replay executor"]
-  Replay --> Guard["confirm / 401·403 early stop<br/>batch skip notification"]
-  Guard --> QA["shorter repeated dev QA"]
+  Replay --> QA["shorter repeated dev QA"]
   Replay --> Ops["single-API ops correction<br/>beyond Admin UI"]
   Ops --> Share["one-off JS fetch -> team tool"]
   classDef pain fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef tool fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
   class Pain pain;
-  class Extension,Sim,Capture,Template,Replay,Guard tool;
+  class Extension,Sim,Capture,Template,Replay tool;
   class QA,Ops,Share result;`,
 );
 
@@ -334,7 +341,7 @@ const uplusVipCouponOpsDiagram = localized(
 const customerMessageOpsDiagram = localized(
   `flowchart TD
   Admin["Admin 메시지 발송<br/>문자 / 푸시 / 알림톡"] --> Template["커스텀 템플릿<br/>대상자 + 변수"]
-  Template --> Source["발송 source of truth<br/>즉시 / 예약 동일 모델"]
+  Template --> Source["발송 원장<br/>즉시 / 예약 동일 기록"]
   Source --> Immediate["즉시 발송<br/>send orchestrator"]
   Source --> Reserved["예약 발송<br/>customerMessageDispatchJob"]
   Reserved --> Dispatch["Dispatch tasklet<br/>발송 가능 시각 조회"]
@@ -350,7 +357,7 @@ const customerMessageOpsDiagram = localized(
   class History,Ops result;`,
   `flowchart TD
   Admin["Admin message send<br/>SMS / push / AlimTalk"] --> Template["Custom template<br/>targets + variables"]
-  Template --> Source["Send source of truth<br/>same model for immediate/scheduled"]
+  Template --> Source["Send ledger<br/>same record for immediate/scheduled"]
   Source --> Immediate["Immediate send<br/>send orchestrator"]
   Source --> Reserved["Scheduled send<br/>customerMessageDispatchJob"]
   Reserved --> Dispatch["Dispatch tasklet<br/>queries sendable time"]
@@ -937,37 +944,33 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: '차량정보 조회 안정화, 계층형 차량 모델 정규화, 차량식별자 안전 매핑 설계',
-        en: 'Designed vehicle information lookup hardening, hierarchical vehicle-model normalization, and safe vehicle identifier mapping',
+        ko: '차량정보 조회 안정화, 차량 기준 트리 설계, 차량식별자 안전 매핑',
+        en: 'Designed vehicle information lookup hardening, vehicle reference tree, and safe vehicle identifier mapping',
       },
       summary: {
         ko:
-          '차량정보 조회 결과를 `브랜드 > 차급 > 차량` 3단계 기준 데이터로 정규화하고, 차량 정보와 차량식별자가 서로 다른 시점에 들어와도 안전하게 같은 사용자 차량 컨텍스트로 이어지도록 구성했습니다.',
+          '차량정보 조회 결과를 `브랜드 > 차량군 > 모델` 기준 트리로 정규화해 차량 등록, 선택 UI, 경고 표시, 대상자 알림의 공통 기준으로 쓰고, 차량 정보와 차량식별자가 서로 다른 시점에 들어와도 안전하게 같은 사용자 차량 컨텍스트로 이어지도록 구성했습니다.',
         en:
-          'Normalized vehicle information lookup results into a 3-level `brand > class > car` reference tree, then safely connected vehicle info and vehicle identifiers into the same user-vehicle context even when they arrive independently.',
+          'Normalized vehicle information lookup results into a `brand > category > model` reference tree used across registration, selection UI, warning display, and targeted notifications, then safely connected vehicle info and vehicle identifiers into the same user-vehicle context even when they arrive independently.',
       },
       challenge: {
         ko:
-          '차량번호/소유자명 기반 외부 조회 결과, 사용자가 직접 선택하는 차량 모델, 차량식별자, 브랜드/차급/차량 대상 경고 공지가 서로 다른 경로로 들어오기 때문에, 차량 기준 데이터를 일관되게 만들면서 중복과 잘못된 자동 연결을 막는 기준이 필요했습니다.',
+          '차량번호/소유자명 기반 외부 조회 결과, 사용자가 직접 선택하는 차량 모델, 차량식별자, 브랜드/차량군/모델 대상 경고 공지가 서로 다른 경로로 들어오기 때문에, 차량 기준 데이터를 일관되게 만들면서 중복과 잘못된 자동 연결을 막는 기준이 필요했습니다.',
         en:
-          'Because external plate-number/owner-name lookup results, user-selected vehicle models, vehicle identifiers, and brand/class/car-level warning notices arrive through different paths, the system needed a consistent vehicle reference model plus conservative deduplication and auto-linking rules.',
+          'Because external plate-number/owner-name lookup results, user-selected vehicle models, vehicle identifiers, and brand/category/model-level warning notices arrive through different paths, the system needed a consistent vehicle reference model plus conservative deduplication and auto-linking rules.',
       },
       actions: [
         {
-          ko: '차량정보 조회 응답의 브랜드명, 차급명, 차종명, 연식, 연료, 대표 이미지를 내부 차량 등록 정보로 변환하고, 소유자명 등 필요한 민감 필드를 마스킹한 원본 응답은 추적용 부가 데이터로 보관했습니다.',
-          en: 'Mapped vehicle information lookup values such as brand name, class name, model name, release year, fuel type, and representative image into internal vehicle-registration data, while storing the original response with sensitive owner-name values masked as trace metadata.',
+          ko: '차량정보 조회 응답의 브랜드명, 차량군, 모델명, 연식, 연료, 대표 이미지를 내부 차량 등록 정보로 변환하고, 소유자명 등 필요한 민감 필드를 마스킹한 원본 응답은 추적용 부가 데이터로 보관했습니다.',
+          en: 'Mapped vehicle information lookup values such as brand name, vehicle category, model name, release year, fuel type, and representative image into internal vehicle-registration data, while storing the original response with sensitive owner-name values masked as trace metadata.',
         },
         {
           ko: '차량정보 조회 호출에는 토큰 만료 시 강제 갱신, 활성 인증서 순회, fallback 대상 오류 코드 분리를 적용해 외부 조회 실패가 차량 등록 흐름 전체를 쉽게 막지 않도록 보강했습니다.',
           en: 'Hardened vehicle information lookup calls with forced token refresh on token expiry, active-certificate iteration, and fallback-result-code filtering so external lookup failures do not easily block the full vehicle-registration flow.',
         },
         {
-          ko: '차량 기준 데이터를 `브랜드 > 차급 > 차종` 계층으로 설계하고, 등록 시점에 없는 브랜드/차급/차종은 차량 트리 노드 조회·생성 흐름에서 자동으로 보강되도록 구성했습니다.',
-          en: 'Modeled vehicle reference data as a `brand > class > model` hierarchy, then let the vehicle-tree lookup/create flow fill in missing brand, class, and model nodes at registration time.',
-        },
-        {
-          ko: '차량 경고/공지는 브랜드, 차급, 차종 중 하나를 대상으로 걸 수 있게 설계해, “현대 전체”, “아이오닉 계열”, “아이오닉5”처럼 범위를 다르게 지정할 수 있게 했습니다.',
-          en: 'Designed vehicle warning notices so they can target a brand, class, or model scope, such as all Hyundai vehicles, the Ioniq class, or Ioniq 5.',
+          ko: '차량정보 조회 결과를 `브랜드 > 차량군 > 모델` 기준 트리로 승격하고, 등록 시점에 없는 노드는 조회·생성 흐름에서 자동 보강해 차량 선택, 사용자 차량 등록, 브랜드/차량군/모델 단위 경고·알림이 같은 기준을 공유하도록 구성했습니다.',
+          en: 'Promoted vehicle information lookup results into a `brand > category > model` reference tree, automatically filling missing nodes at registration time so vehicle selection, user-vehicle registration, and brand/category/model warning notifications share the same reference.',
         },
         {
           ko: '차량 정보 등록과 PnC(Plug & Charge) 등록 양쪽에서 모두 “매핑 안 된 대상이 정확히 1개인지”를 검사하는 양방향 자동 매핑 규칙을 적용했습니다.',
@@ -980,16 +983,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       engineeringViews: [
         {
-          ko: '외부 조회 결과를 그대로 저장하지 않고 서비스 기준 트리로 승격해, `현대 > 아이오닉 > 아이오닉5`처럼 UI 선택 구조와 사용자 차량 등록 데이터가 같은 기준을 공유하도록 만들었습니다.',
-          en: 'Promoted external lookup results into the service reference tree so UI selection and registered user vehicles share the same structure, such as `Hyundai > Ioniq > Ioniq 5`.',
+          ko: '차량 트리를 단순 선택값이 아니라 운영 기준 데이터로 두어, `현대 > 전기 SUV > 아이오닉 5` 구조 하나가 사용자 차량 등록, UI 선택, 상위 공지 수집, 하위 대상자 전개를 함께 담당하게 했습니다.',
+          en: 'Treated the vehicle tree as operational reference data rather than a simple selection list, so one `Hyundai > electric SUV > Ioniq 5` structure supports user-vehicle registration, UI selection, ancestor-notice collection, and descendant-user expansion.',
         },
         {
-          ko: '브랜드/차급/차량 노드는 parent 기준 unique 제약과 분산 락을 함께 사용해, 동시에 같은 차량이 등록되어도 기준 데이터가 중복 생성되지 않도록 설계했습니다.',
+          ko: '브랜드/차량군/모델 노드는 parent 기준 unique 제약과 분산 락을 함께 사용해, 동시에 같은 차량이 등록되어도 기준 데이터가 중복 생성되지 않도록 설계했습니다.',
           en: 'Combined parent-scoped uniqueness with a distributed lock so concurrent registrations do not create duplicate reference nodes for the same vehicle.',
-        },
-        {
-          ko: '경고 데이터를 차량마다 복제하지 않고 상위 카테고리에 한 번만 저장한 뒤, 조회 방향에 따라 `상위로 수집` 또는 `하위로 전개`하도록 만들어 운영 데이터 중복을 줄였습니다.',
-          en: 'Reduced operational duplication by storing a warning once at the highest relevant category, then either collecting ancestors for display or expanding descendants for notification delivery.',
         },
         {
           ko: '자동 매핑은 편의 기능이지만 잘못 연결되면 위험하므로, 차량 정보와 PnC 엔티티를 분리 저장하고 “정확히 1개일 때만 연결”하는 보수적 규칙으로 설계했습니다.',
@@ -998,12 +997,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       outcomes: [
         {
-          ko: '차량번호와 소유자명 기반 차량정보 조회로 제조사, 차급, 상세 모델, 연식, 연료, 이미지 정보를 등록 흐름에 연결했습니다.',
-          en: 'Connected manufacturer, class, detailed model, release year, fuel type, and image information into registration through vehicle information lookup by plate number and owner name.',
-        },
-        {
-          ko: '브랜드/차급/차량 단위 공지를 같은 차량 트리 위에서 처리해 특정 브랜드 경고 표시와 대상 사용자 알림 발송을 별도 모델 없이 지원했습니다.',
-          en: 'Supported brand/class/car-level warning display and target-user notification on the same vehicle tree without introducing a separate category model.',
+          ko: '차량정보 조회로 얻은 제조사, 차량군, 상세 모델, 연식, 연료, 이미지를 차량 기준 트리에 연결하고, 같은 트리에서 특정 브랜드·차량군·모델 경고 표시와 대상 사용자 알림 발송까지 처리했습니다.',
+          en: 'Connected manufacturer, vehicle category, detailed model, release year, fuel type, and image data from vehicle information lookup into the vehicle reference tree, then used the same tree for brand/category/model warning display and targeted notification delivery.',
         },
         {
           ko: '차량 정보 등록과 PnC 등록 어느 쪽을 먼저 하더라도 조건이 맞으면 자동 매핑하고, 충전 인증은 차량식별자와 사용자 인증 정보를 기준으로 안정적으로 이어지게 했습니다.',
@@ -1035,14 +1030,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       diagrams: [
         {
           title: {
-            ko: '차량정보 조회 결과를 브랜드/차급/차량 노드로 재사용하는 구조',
-            en: 'Reusing vehicle information lookup results as brand/class/car nodes',
+            ko: '차량 기준 트리로 등록·선택·경고·알림을 연결한 구조',
+            en: 'Vehicle reference tree connecting registration, selection, warnings, and notifications',
           },
           description: {
             ko:
-              '차량번호와 소유자명으로 조회한 차량정보 결과를 브랜드, 차급, 차종 노드로 나누고 최종 사용자 차량 정보의 차량 모델 기준값으로 연결하는 흐름입니다. 이렇게 만든 트리는 차량 선택 UI뿐 아니라 특정 제조사·차종 경고 표시와 대상 사용자 알림 발송에도 같은 기준으로 재사용할 수 있습니다.',
+              '차량번호와 소유자명으로 조회한 차량정보 결과를 브랜드, 차량군, 모델 노드로 승격하고, 같은 트리를 사용자 차량 등록과 선택 UI, 특정 브랜드·차량군·모델 공지/경고의 선택 노출 및 대상 사용자 알림 발송 기준으로 재사용하는 흐름입니다. 점선은 조건이 맞을 때만 노출되거나 발송되는 선택 연결을 의미합니다.',
             en:
-              'Shows how vehicle information lookup results from plate number and owner name are split into brand, class, and model nodes, then linked to the registered user vehicle through the vehicle-model reference. The same tree can also be reused for vehicle selection, manufacturer/model-level warnings, and targeted user notifications.',
+              'Shows how vehicle information lookup results from plate number and owner name become brand, category, and model nodes, then the same tree is reused as the shared reference for user-vehicle registration, selection UI, optional brand/category/model notice-warning exposure, and targeted notifications. Dotted edges indicate conditional exposure or delivery.',
           },
           code: vehicleDataTreeDiagram,
         },
@@ -1058,19 +1053,6 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
               'Shows how either vehicle-info or PnC registration can trigger auto-linking only when exactly one unmatched counterpart exists, with all other cases falling back to user confirmation.',
           },
           code: vehiclePncDiagram,
-        },
-        {
-          title: {
-            ko: '차량 트리를 재사용한 브랜드/차급/차량 경고 표시와 알림 발송',
-            en: 'Brand/class/car warning display and notification delivery on the vehicle tree',
-          },
-          description: {
-            ko:
-              '경고 공지는 상위 카테고리에 한 번만 저장하고, 앱 조회에서는 조상 노드로 모아 보여주며 알림 발송에서는 하위 차량으로 전개해 대상자를 중복 제거하는 흐름입니다.',
-            en:
-              'Shows how one warning notice can be stored at a higher category, collected through ancestors for app display, and expanded through descendant cars for deduplicated notification delivery.',
-          },
-          code: vehicleWarningTreeDiagram,
         },
       ],
     },
@@ -1264,8 +1246,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Implemented the member-detail U+ VIP proxy panel, issue/coupon mapping history page, `UPLUS_VIP` coupon-pack option, benefit-month autofill, fixed-discount minimum-amount correction, and allowed-payment-vendor multiselect in `voltup-admin-fe`.',
         },
         {
-          ko: '고객 대상 문자/푸시/알림톡 1회 발송 어드민을 만들고, 즉시/예약 발송을 같은 source of truth로 다루도록 예약 디스패치 배치와 발송 이력 조회를 구성했습니다.',
-          en: 'Built a one-time customer SMS/push/AlimTalk Admin tool and modeled immediate and scheduled sends around the same source of truth, backed by a scheduled dispatch batch and send-history search.',
+          ko: '고객 대상 문자/푸시/알림톡 1회 발송 어드민을 만들고, 즉시/예약 발송이 같은 발송 기록을 기준으로 처리되도록 예약 디스패치 배치와 발송 이력 조회를 구성했습니다.',
+          en: 'Built a one-time customer SMS/push/AlimTalk Admin tool so immediate and scheduled sends are processed from the same send record, backed by a scheduled dispatch batch and send-history search.',
         },
       ],
       engineeringViews: [
@@ -1325,8 +1307,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           title: {
-            ko: '고객 메시지 발송 어드민: 즉시/예약 발송 source of truth',
-            en: 'Customer-message Admin: source of truth for immediate and scheduled sends',
+            ko: '고객 메시지 발송 어드민: 즉시/예약 발송 원장',
+            en: 'Customer-message Admin: send ledger for immediate and scheduled sends',
           },
           description: {
             ko:
@@ -1478,10 +1460,6 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: 'Admin 화면에서 직접 지원하지 않는 단일 API 보정 작업을 위해 variable template, row parser, executor를 구성하고 Bulk Replay로 실행할 수 있게 했습니다.',
           en: 'Added variable templates, row parsing, and an executor so single-API correction work beyond the Admin UI can run through Bulk Replay.',
         },
-        {
-          ko: '호스트별 popup 모드를 분리하고, 실행 전 confirm, 401/403 조기 중단, skip 일괄 통보, Vitest 기반 parser/executor 테스트와 CI를 구성했습니다.',
-          en: 'Separated popup modes by host and added confirmation, 401/403 early-stop guards, batch skip notifications, Vitest-based parser/executor tests, and CI.',
-        },
       ],
       engineeringViews: [
         {
@@ -1493,8 +1471,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'After handling a charge-zone creation issue with a hand-written JS `fetch` script, I turned that pattern into a row-based execution tool the team can reuse instead of writing one-off scripts every time.',
         },
         {
-          ko: 'app/admin 호스트가 섞여 있는 환경에서는 잘못된 화면에 잘못된 조작을 노출하지 않도록 호스트별 UI를 분리하고, 권한 만료나 접근 오류는 대량 replay 전에 멈추도록 설계했습니다.',
-          en: 'Because app/admin hosts coexist, I separated host-specific UI to avoid exposing the wrong operation in the wrong context, and designed permission expiration or access errors to stop before bulk replay proceeds.',
+          ko: 'app/admin 호스트가 섞여 있는 환경에서는 잘못된 화면에 잘못된 조작을 노출하지 않도록 호스트별 UI를 분리했습니다.',
+          en: 'Because app/admin hosts coexist, I separated host-specific UI to avoid exposing the wrong operation in the wrong context.',
         },
       ],
       outcomes: [
@@ -1515,7 +1493,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko: '앱 기능 자체가 아니라 앱 개발과 운영 대응을 빠르게 만드는 도구성 프로젝트입니다. 병목을 발견하고 작은 내부 도구로 구체화하는 일하는 방식을 보여주기에 좋습니다.',
         en: 'A tooling project for speeding up app development and operations response rather than an app feature itself. It is useful for showing a working style of spotting bottlenecks and turning them into small internal tools.',
       },
-      tech: ['TypeScript', 'Chrome Extension', 'Vitest', 'GitHub Actions', 'API Replay', 'WebView Debugging'],
+      tech: ['TypeScript', 'Chrome Extension', 'API Replay', 'WebView Debugging'],
       diagrams: [
         {
           title: {
@@ -1986,7 +1964,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko: 'PIM이 외부 상품 값과 프로모션의 파이널 프라이싱 값을 함께 받아 고객에게 보여줄 합리적 최적가를 노출하도록 만든 서비스 경계를 설명하기 좋은 프로젝트입니다.',
         en: 'A strong project for explaining the boundary where PIM combines external product values with Promotion Final Pricing to expose a rational best price to users.',
       },
-      tech: ['Kotlin', 'Spring Boot', 'DGS Framework(GraphQL)', 'AWS Athena'],
+      tech: ['Kotlin', 'Spring Boot', 'AWS Athena'],
       diagrams: [
         {
           title: {
@@ -2060,7 +2038,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       engineeringViews: [
         {
           ko: 'AI는 완성본을 대신 쓰게 하기보다, 처음 루트를 잡아주는 초안 생성기로 두고 최종 계획의 진실은 Markdown 데이터에 남기도록 설계했습니다.',
-          en: 'Treated AI not as the final planner but as a draft generator for the first route pass, while keeping the source of truth in Markdown data.',
+          en: 'Treated AI not as the final planner but as a draft generator for the first route pass, while keeping the final plan data in Markdown.',
         },
         {
           ko: '여행 콘텐츠는 글만 있는 블로그보다 지도, 타임라인, 장소 데이터가 함께 보여야 공유 가치가 높다고 보고, 시각화와 데이터 구조를 한 흐름으로 묶었습니다.',

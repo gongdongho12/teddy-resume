@@ -232,6 +232,82 @@ const voltupCouponServiceDiagram = localized(`flowchart TD
   Expire --> Scan["getAllByCouponPackId<br/>completeAt is null"]
   Scan --> Event["publish coupon.event<br/>eventType=EXPIRED"]`);
 
+const uplusVipCouponOpsDiagram = localized(
+  `flowchart TD
+  Pack["Admin 쿠폰팩 사전 등록<br/>type=UPLUS_VIP<br/>혜택 월 + 사용 기간"] --> Policy["coupon-service 정책<br/>결제수단 제한<br/>동일 월 활성 기간 중복 차단"]
+  Policy --> UserFlow["고객 발급 플로우<br/>휴대폰번호 + 생년월일<br/>카드 조회"]
+  Policy --> AdminFlow["Admin VoC 대행<br/>회원 상세 패널<br/>휴대폰번호 카드조회"]
+  UserFlow --> Guard["사전 검증<br/>회원 생일 일치<br/>유저 월 1회<br/>카드 월 1회"]
+  AdminFlow --> Guard
+  Guard --> Approve["LGU+ Membership G/W<br/>승인 요청"]
+  Approve --> Issue["coupon-service 발급<br/>UPLUS_VIP coupon"]
+  Issue --> History["발급/쿠폰 매핑 이력<br/>Admin 목록 조회"]
+  Issue --> Fail{"쿠폰 발급 실패?"}
+  Fail -->|yes| Cancel["LGU+ 승인 취소 보상<br/>응답코드 진단 로그"]
+  Fail -->|no| Complete["고객 혜택 지급 완료"]
+  History --> Ops["운영팀 VoC 대응<br/>개발자 수동 조회 의존 감소"]
+  classDef policy fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef flow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Pack,Policy policy;
+  class UserFlow,AdminFlow,Guard,Approve,Issue,History flow;
+  class Cancel,Complete,Ops result;`,
+  `flowchart TD
+  Pack["Admin pre-registers coupon pack<br/>type=UPLUS_VIP<br/>benefit month + usable window"] --> Policy["coupon-service policy<br/>payment-vendor restriction<br/>no overlapping active pack in same month"]
+  Policy --> UserFlow["Customer issue flow<br/>phone + birthday<br/>card lookup"]
+  Policy --> AdminFlow["Admin VoC proxy<br/>member detail panel<br/>phone-based card lookup"]
+  UserFlow --> Guard["Pre-checks<br/>member birthday match<br/>once per user per month<br/>once per card per month"]
+  AdminFlow --> Guard
+  Guard --> Approve["LGU+ Membership G/W<br/>approval request"]
+  Approve --> Issue["coupon-service issue<br/>UPLUS_VIP coupon"]
+  Issue --> History["Issue/coupon mapping history<br/>Admin list search"]
+  Issue --> Fail{"Coupon issue failed?"}
+  Fail -->|yes| Cancel["Compensating LGU+ cancel<br/>response-code diagnostics"]
+  Fail -->|no| Complete["Customer benefit granted"]
+  History --> Ops["Operations VoC response<br/>less developer manual lookup"]
+  classDef policy fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef flow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Pack,Policy policy;
+  class UserFlow,AdminFlow,Guard,Approve,Issue,History flow;
+  class Cancel,Complete,Ops result;`,
+);
+
+const customerMessageOpsDiagram = localized(
+  `flowchart TD
+  Admin["Admin 메시지 발송<br/>문자 / 푸시 / 알림톡"] --> Template["커스텀 템플릿<br/>대상자 + 변수"]
+  Template --> Source["발송 source of truth<br/>즉시 / 예약 동일 모델"]
+  Source --> Immediate["즉시 발송<br/>send orchestrator"]
+  Source --> Reserved["예약 발송<br/>customerMessageDispatchJob"]
+  Reserved --> Dispatch["Dispatch tasklet<br/>발송 가능 시각 조회"]
+  Immediate --> Provider["메시지 provider 호출"]
+  Dispatch --> Provider
+  Provider --> History["발송 이력 / 실패 상태<br/>Admin 조회"]
+  History --> Ops["운영 캠페인 대응<br/>반복 개발 요청 감소"]
+  classDef admin fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef process fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Admin,Template admin;
+  class Source,Immediate,Reserved,Dispatch,Provider process;
+  class History,Ops result;`,
+  `flowchart TD
+  Admin["Admin message send<br/>SMS / push / AlimTalk"] --> Template["Custom template<br/>targets + variables"]
+  Template --> Source["Send source of truth<br/>same model for immediate/scheduled"]
+  Source --> Immediate["Immediate send<br/>send orchestrator"]
+  Source --> Reserved["Scheduled send<br/>customerMessageDispatchJob"]
+  Reserved --> Dispatch["Dispatch tasklet<br/>queries sendable time"]
+  Immediate --> Provider["Message provider call"]
+  Dispatch --> Provider
+  Provider --> History["Send history / failure status<br/>Admin search"]
+  History --> Ops["Operations campaign response<br/>fewer repeated dev requests"]
+  classDef admin fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef process fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Admin,Template admin;
+  class Source,Immediate,Reserved,Dispatch,Provider process;
+  class History,Ops result;`,
+);
+
 const pricingPlatformDiagram = localized(
   `flowchart TD
   Req["request<br/>product=421 user=3001 site=KR"] --> Match
@@ -452,6 +528,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       ko: 'OAuth2, PG, 게이트웨이, 외부 인증서 서비스가 포함된 MSA 연동 경험',
       en: 'Experience integrating MSAs with OAuth2, PGs, gateways, and external certificate services',
+    },
+    {
+      ko: '제휴 쿠폰 정책, 외부 멤버십 G/W, 운영 어드민을 연결한 VoC 대응 흐름 설계 경험',
+      en: 'Experience designing VoC response flows across partner-coupon policy, external membership gateways, and Admin tooling',
     },
     {
       ko: 'Flutter/WebView 기반 하이브리드 앱과 앱 검증 도구 개발 경험',
@@ -986,6 +1066,132 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
               'Separates point handling from coupon flow and shows, with concrete example data, how partner points split into wallets and move through active-wallet scan, ordering, hold, and confirm/release.',
           },
           code: voltupPointWalletDiagram,
+        },
+      ],
+    },
+    {
+      slug: 'uplus-vip-coupon-ops',
+      title: {
+        ko: 'U+ VIP콕 제휴 쿠폰 및 VoC 운영 대행 시스템',
+        en: 'U+ VIP Partnership Coupons and VoC Operations Support',
+      },
+      period: {
+        ko: '2026.06 - 현재',
+        en: 'Jun 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: 'feapp, coupon-service, Admin을 관통한 제휴 쿠폰 발급/운영 대응 흐름 설계',
+        en: 'Designed partner-coupon issuing and operations flows across feapp, coupon-service, and Admin',
+      },
+      summary: {
+        ko:
+          'LGU+ 멤버십 VIP/VVIP 고객에게 월 1회 U+ VIP콕 쿠폰을 지급하기 위해 `UPLUS_VIP` 쿠폰팩 정책, LGU+ Membership G/W 연동, 발급/취소 보상, Admin VoC 대행 화면과 이력 조회까지 연결했습니다. 운영팀이 고객 문의 때 개발자에게 로그/정책 확인을 요청하던 흐름을 Admin에서 직접 조회하고 판단할 수 있는 구조로 옮기는 데 초점을 뒀습니다.',
+        en:
+          'Connected `UPLUS_VIP` coupon-pack policy, LGU+ Membership G/W integration, issue/cancel compensation, Admin VoC proxy screens, and issue-history search so LGU+ VIP/VVIP customers can receive a monthly U+ VIP benefit coupon. The core goal was to move developer-dependent log and policy checks into Admin surfaces that operations can use directly during customer inquiries.',
+      },
+      challenge: {
+        ko:
+          '외부 멤버십 승인과 내부 쿠폰 발급이 하나의 사용자 경험으로 보여야 했지만, 혜택 월 기준 쿠폰팩 사전 등록, 사용자/카드 단위 월 1회 제한, 생년월일 본인확인, 쿠폰 발급 실패 시 외부 승인 취소 보상, Admin 대행 발급의 권한/검증 기준을 동시에 맞춰야 했습니다. 여기에 결제수단 제한 쿠폰 정책과 고객 메시지 예약 발송처럼 운영팀의 반복 요청을 줄이는 어드민 도구도 함께 정리해야 했습니다.',
+        en:
+          'External membership approval and internal coupon issuance had to feel like one user flow while satisfying pre-registered benefit-month coupon packs, once-per-user and once-per-card monthly limits, birthday verification, compensating approval cancellation on coupon failure, and Admin proxy-issue validation rules. The work also included Admin tooling for payment-vendor-restricted coupons and scheduled customer messages to reduce repeated operations requests.',
+      },
+      actions: [
+        {
+          ko: '`coupon-service`에 `UPLUS_VIP` 쿠폰팩 타입과 혜택 월 기준 활성 기간 중복 제한을 추가하고, `allowedPaymentVendors` 정책이 미리보기/조회/사용/Admin 생성까지 같은 의미로 흐르도록 정리했습니다.',
+          en: 'Added the `UPLUS_VIP` coupon-pack type to `coupon-service`, blocked overlapping active packs within the same benefit month, and made `allowedPaymentVendors` carry the same meaning through preview, search, use, and Admin creation.',
+        },
+        {
+          ko: '`feapp`의 핵심 발급 로직을 `UplusMembershipIssueService`로 분리해 휴대폰번호 카드조회, 회원 생일 검증, 사용자/카드 월 1회 제한, LGU+ 승인, 쿠폰 발급, 실패 시 승인 취소 보상을 한 흐름으로 묶었습니다.',
+          en: 'Extracted core issuing logic into `UplusMembershipIssueService`, tying phone-based card lookup, member birthday verification, once-per-user/card monthly limits, LGU+ approval, coupon issue, and compensating approval cancellation into one flow.',
+        },
+        {
+          ko: 'LGU+ 응답코드별 진단 로그와 한도 초과 분기를 보강하고, 카드번호/키는 마스킹과 암호화 경계를 지켜 운영 로그에 민감값이 남지 않도록 했습니다.',
+          en: 'Added diagnostics for LGU+ response codes and limit-exceeded branches while keeping card numbers and keys behind masking and encryption boundaries so sensitive values do not leak into operational logs.',
+        },
+        {
+          ko: 'Admin API에는 회원 상세에서 휴대폰번호로 카드조회 후 혜택 발급을 대행하는 경로, 본인확인 불일치 사전 점검, 발급/쿠폰 매핑 이력 조회를 추가했습니다.',
+          en: 'Added Admin APIs for phone-based card lookup and benefit proxy issue from member detail, pre-checks for identity mismatches, and searchable issue/coupon mapping history.',
+        },
+        {
+          ko: '`voltup-admin-fe`에는 회원 상세 U+ VIP콕 대행 패널, 발급/쿠폰 매핑 이력 페이지, `UPLUS_VIP` 쿠폰팩 생성 옵션, 혜택 월 자동 입력, 정액 할인 최소사용금액 보정, 허용 결제수단 멀티셀렉을 구현했습니다.',
+          en: 'Implemented the member-detail U+ VIP proxy panel, issue/coupon mapping history page, `UPLUS_VIP` coupon-pack option, benefit-month autofill, fixed-discount minimum-amount correction, and allowed-payment-vendor multiselect in `voltup-admin-fe`.',
+        },
+        {
+          ko: '고객 대상 문자/푸시/알림톡 1회 발송 어드민을 만들고, 즉시/예약 발송을 같은 source of truth로 다루도록 예약 디스패치 배치와 발송 이력 조회를 구성했습니다.',
+          en: 'Built a one-time customer SMS/push/AlimTalk Admin tool and modeled immediate and scheduled sends around the same source of truth, backed by a scheduled dispatch batch and send-history search.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: 'U+ VIP콕은 단순 쿠폰 타입 추가가 아니라 외부 승인 상태와 내부 쿠폰 상태를 맞추는 문제였습니다. 그래서 사전 검증을 통과한 뒤에만 LGU+ 승인을 호출하고, 내부 쿠폰 발급 실패 시 외부 승인 취소를 보상 트랜잭션처럼 붙였습니다.',
+          en: 'U+ VIP benefits were not just another coupon type; they were a state-alignment problem between external approval and internal coupon issuance. I called LGU+ approval only after local pre-checks and attached compensating cancellation when internal coupon issuance failed.',
+        },
+        {
+          ko: 'Admin 대행 발급은 규칙 우회가 아니라 운영자가 같은 검증 기준을 더 빠르게 실행하는 화면으로 봤습니다. 회원 상세 패널과 이력 조회를 붙여 고객 문의의 현재 상태, 실패 원인, 재시도 가능성을 한 자리에서 확인하게 했습니다.',
+          en: 'I treated Admin proxy issue as a faster execution path for the same rules, not as a bypass. The member-detail panel and history search let operations see current status, failure causes, and retry feasibility in one place.',
+        },
+        {
+          ko: '쿠폰팩 생성 정책은 FE 조건으로 흩어두지 않고 coupon-service 도메인 정책으로 유지했습니다. Admin은 그 정책을 입력하고 확인하는 표면이고, 사용자 발급/조회/사용은 같은 정책 값을 읽는 구조로 맞췄습니다.',
+          en: 'Coupon-pack creation rules stayed as coupon-service domain policy instead of scattered frontend conditions. Admin became the surface for entering and reviewing policy, while user issue/search/use flows read the same policy values.',
+        },
+        {
+          ko: '고객 메시지 발송은 캠페인 요청마다 별도 코드를 만드는 방식 대신 발송 요청 자체를 데이터로 남기고, 즉시 발송과 예약 디스패치가 같은 발송 원장을 공유하도록 설계했습니다.',
+          en: 'For customer messages, I stored send requests as data instead of creating bespoke code for each campaign, letting immediate sends and scheduled dispatches share the same send ledger.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: 'U+ VIP/VVIP 혜택 쿠폰 발급을 고객 화면, 쿠폰 정책, 외부 LGU+ 승인, Admin 대행, 발급 이력까지 end-to-end로 운영 가능한 상태로 연결했습니다.',
+          en: 'Connected U+ VIP/VVIP benefit issuing end-to-end across customer flow, coupon policy, external LGU+ approval, Admin proxy issue, and issue history.',
+        },
+        {
+          ko: '운영팀이 고객 VoC 대응 중 개발자에게 수동 로그/정책 확인을 요청하던 지점을 Admin 조회와 사전 점검 화면으로 옮겨 응답 속도를 높일 수 있는 기반을 만들었습니다.',
+          en: 'Moved developer-dependent manual log and policy checks into Admin search and pre-check surfaces, creating a foundation for faster operations responses to customer VoC.',
+        },
+        {
+          ko: '결제수단 제한, 쿠폰 미리보기, U+ VIP콕 쿠폰팩 생성, 소프트삭제 후 재발급 제약 같은 프로모션 정책 정합성을 coupon-service와 Admin 양쪽에서 맞췄습니다.',
+          en: 'Aligned promotion-policy consistency across coupon-service and Admin for payment-vendor restrictions, coupon preview, U+ VIP coupon-pack creation, and reissue after soft deletion.',
+        },
+        {
+          ko: '고객 메시지 발송 어드민과 예약 발송 배치를 통해 반복 캠페인/공지성 발송을 개발자 작업 없이 운영팀이 처리할 수 있는 방향으로 확장했습니다.',
+          en: 'Extended operations tooling with customer-message Admin sends and scheduled dispatch batches so repeated campaign or notice sends can be handled without developer intervention.',
+        },
+      ],
+      note: {
+        ko: '제휴 API 연동, 쿠폰 도메인 정책, Admin 운영 도구, VoC 대응 속도 개선을 하나의 운영 흐름으로 설명하기 좋은 프로젝트입니다.',
+        en: 'A strong project for explaining partner API integration, coupon-domain policy, Admin operations tooling, and faster VoC response as one operational flow.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'Spring Batch', 'React', 'TypeScript', 'MySQL', 'JPA', 'QueryDSL', 'Feign', 'Flyway'],
+      diagrams: [
+        {
+          title: {
+            ko: 'U+ VIP콕: 외부 멤버십 승인과 내부 쿠폰 발급을 잇는 운영 흐름',
+            en: 'U+ VIP: operational flow connecting external membership approval and internal coupon issue',
+          },
+          description: {
+            ko:
+              'Admin 쿠폰팩 사전 등록부터 휴대폰번호 카드조회, 본인확인, LGU+ 승인, coupon-service 발급, 실패 보상, 발급 이력 조회까지 고객/운영 흐름을 한 장으로 정리했습니다.',
+            en:
+              'Shows the customer and operations flow from Admin coupon-pack pre-registration through phone-based card lookup, identity check, LGU+ approval, coupon-service issue, failure compensation, and issue-history search.',
+          },
+          code: uplusVipCouponOpsDiagram,
+        },
+        {
+          title: {
+            ko: '고객 메시지 발송 어드민: 즉시/예약 발송 source of truth',
+            en: 'Customer-message Admin: source of truth for immediate and scheduled sends',
+          },
+          description: {
+            ko:
+              '문자/푸시/알림톡 발송 요청을 발송 원장으로 남기고 즉시 발송과 예약 디스패치 배치가 같은 데이터를 처리하는 구조를 보여줍니다.',
+            en:
+              'Shows how SMS, push, and AlimTalk send requests are stored in a send ledger and processed by both immediate sends and scheduled dispatch batches.',
+          },
+          code: customerMessageOpsDiagram,
         },
       ],
     },

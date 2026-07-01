@@ -56,19 +56,71 @@ const kakaoTLinkAndCardDiagram = localized(
 
 const vehiclePncDiagram = localized(
   `flowchart TD
-  Vehicle["vehicleInfo 501<br/>plate=12가3456"] --> Match{"unlinked pair<br/>count == 1 ?"}
-  Pnc["userVehicle 88<br/>evccId=EVCC-A1B2"] --> Match
-  Match -->|yes| Link["linkPncVehicle(501,88)"]
+  VehicleInfoReg["차량 정보 등록<br/>plate=12가3456"] --> CheckA["tryAutoLinkPncVehicle()"]
+  PncReg["PnC 등록<br/>evccId=EVCC-A1B2"] --> CheckB["tryAutoLinkVehicleInfo()"]
+  CheckA --> Match{"unlinked counterpart<br/>count == 1 ?"}
+  CheckB --> Match
+  Match -->|yes| Link["linkPncVehicle(501,88)<br/>user_vehicle_id unique"]
   Match -->|no| Manual["manual select"]
-  Link --> Auth["authorizeByEvccId<br/>user=421 plate=12가3456"]
+  Manual --> Confirm["user-confirmed link"]
+  Link --> Auth["authorizeByEvccId<br/>userId / idTag"]
+  Confirm --> Auth
+  Auth --> Context["mapped vehicleInfo<br/>plate for app/admin context"]
   Auth --> Charge["start charge"]`,
   `flowchart TD
-  Vehicle["vehicleInfo 501<br/>plate=12GA3456"] --> Match{"unlinked pair<br/>count == 1 ?"}
-  Pnc["userVehicle 88<br/>evccId=EVCC-A1B2"] --> Match
-  Match -->|yes| Link["linkPncVehicle(501,88)"]
+  VehicleInfoReg["vehicle info registration<br/>plate=12GA3456"] --> CheckA["tryAutoLinkPncVehicle()"]
+  PncReg["PnC registration<br/>evccId=EVCC-A1B2"] --> CheckB["tryAutoLinkVehicleInfo()"]
+  CheckA --> Match{"unlinked counterpart<br/>count == 1 ?"}
+  CheckB --> Match
+  Match -->|yes| Link["linkPncVehicle(501,88)<br/>user_vehicle_id unique"]
   Match -->|no| Manual["manual select"]
-  Link --> Auth["authorizeByEvccId<br/>user=421 plate=12GA3456"]
+  Manual --> Confirm["user-confirmed link"]
+  Link --> Auth["authorizeByEvccId<br/>userId / idTag"]
+  Confirm --> Auth
+  Auth --> Context["mapped vehicleInfo<br/>plate for app/admin context"]
   Auth --> Charge["start charge"]`,
+);
+
+const vehicleDataTreeDiagram = localized(
+  `flowchart TD
+  Lookup["CODEF 조회<br/>plate=12가3456 owner=강**"] --> Codef["brandNm=현대<br/>repCarClassNm=아이오닉<br/>carClassNm=아이오닉5"]
+  Codef --> Normalize["findOrCreateCarByNames()"]
+  Normalize --> Brand["CAR_BRAND<br/>현대"]
+  Brand --> Class["CAR_CLASS<br/>아이오닉"]
+  Class --> Car["CAR<br/>아이오닉5"]
+  Car --> Model["vehicle_model<br/>image / registrationCount"]
+  Model --> VehicleInfo["userVehicleInfo<br/>plate + vehicleModelId"]`,
+  `flowchart TD
+  Lookup["CODEF lookup<br/>plate=12GA3456 owner=K**"] --> Codef["brandNm=Hyundai<br/>repCarClassNm=Ioniq<br/>carClassNm=Ioniq 5"]
+  Codef --> Normalize["findOrCreateCarByNames()"]
+  Normalize --> Brand["CAR_BRAND<br/>Hyundai"]
+  Brand --> Class["CAR_CLASS<br/>Ioniq"]
+  Class --> Car["CAR<br/>Ioniq 5"]
+  Car --> Model["vehicle_model<br/>image / registrationCount"]
+  Model --> VehicleInfo["userVehicleInfo<br/>plate + vehicleModelId"]`,
+);
+
+const vehicleWarningTreeDiagram = localized(
+  `flowchart TD
+  Admin["Admin 차량 공지 생성<br/>vehicleTreeId=현대(CAR_BRAND)"] --> Notice["vehicle_error<br/>target=현대"]
+  Notice --> Down["getChildVehicleTreeIds()<br/>BRAND/CLASS -> 하위 CAR"]
+  Down --> Cars["아이오닉5 / 아이오닉6 / 코나 EV"]
+  Cars --> Models["vehicle_model ids"]
+  Models --> Users["findUserIdsByVehicleModelIds()<br/>대상 사용자 dedupe"]
+  Users --> Push["앱 푸시 / 알림 생성"]
+  App["사용자 차량 상세<br/>vehicleTreeId=아이오닉5"] --> Up["getParentIdsRecursive()<br/>CAR -> CLASS -> BRAND"]
+  Up --> Display["아이오닉5 + 아이오닉 + 현대 공지 표시"]
+  Notice --> Display`,
+  `flowchart TD
+  Admin["Admin creates notice<br/>vehicleTreeId=Hyundai(CAR_BRAND)"] --> Notice["vehicle_error<br/>target=Hyundai"]
+  Notice --> Down["getChildVehicleTreeIds()<br/>BRAND/CLASS -> descendant CAR"]
+  Down --> Cars["Ioniq 5 / Ioniq 6 / Kona EV"]
+  Cars --> Models["vehicle_model ids"]
+  Models --> Users["findUserIdsByVehicleModelIds()<br/>dedupe target users"]
+  Users --> Push["app push / notification"]
+  App["user vehicle detail<br/>vehicleTreeId=Ioniq 5"] --> Up["getParentIdsRecursive()<br/>CAR -> CLASS -> BRAND"]
+  Up --> Display["show Ioniq 5 + Ioniq + Hyundai notices"]
+  Notice --> Display`,
 );
 
 const voltupHybridAppDiagram = localized(
@@ -746,8 +798,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       slug: 'vehicle-pnc-auth',
       title: {
-        ko: '차량 등록 / 차량 고유 키 자동 매핑 / PnC(Plug & Charge) 인증',
-        en: 'Vehicle Registration, Vehicle-Key Auto-Mapping, and PnC (Plug & Charge) Authorization',
+        ko: '차량 등록 / PnC 식별자(evccId) 안전 매핑 / Plug & Charge 인증',
+        en: 'Vehicle Registration, PnC Identifier (evccId) Safe Mapping, and Plug & Charge Authorization',
       },
       referenceLayout: 'split-with-context',
       fullWidthImplementationAfterContext: true,
@@ -760,95 +812,141 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: '차량 정보 검증, 양방향 자동 매핑, PnC(Plug & Charge) 인증 흐름 설계',
-        en: 'Designed vehicle verification, bidirectional auto-mapping, and PnC (Plug & Charge) authorization flows',
+        ko: 'CODEF 차량 조회 안정화, 계층형 차량 모델 정규화, PnC 식별자(evccId) 안전 매핑 설계',
+        en: 'Designed CODEF vehicle lookup hardening, hierarchical vehicle-model normalization, and safe PnC identifier (evccId) mapping',
       },
       summary: {
         ko:
-          '차량번호 기반 차량 정보와 바로충전용 차량 엔티티가 서로 다른 시점에 들어오는 구조에서, 매핑되지 않은 쌍이 정확히 1개일 때만 자동 연결하고 이후 PnC(Plug & Charge) 인증이 같은 차량 컨텍스트를 참조하도록 구성했습니다.',
+          'CODEF 차량 조회 결과를 `브랜드 > 차급 > 차량` 3단계 기준 데이터로 정규화하고, 차량 정보와 PnC 식별자(evccId)가 서로 다른 시점에 들어와도 안전하게 같은 사용자 차량 컨텍스트로 이어지도록 구성했습니다.',
         en:
-          'Designed a flow where plate-number vehicle info and Plug & Charge vehicle entities arrive independently, auto-link only when exactly one unmatched pair exists, and then feed the same vehicle context into PnC (Plug & Charge) authorization.',
+          'Normalized CODEF vehicle lookup results into a 3-level `brand > class > car` reference tree, then safely connected vehicle info and PnC identifiers (evccId) into the same user-vehicle context even when they arrive independently.',
       },
       challenge: {
         ko:
-          '차량 정보(`plateNumber`)와 바로충전 식별자(`evccId`)는 서로 다른 시점에 등록되기 때문에, 잘못된 자동 연결을 막으면서도 사용자가 매번 수동 선택하지 않도록 매핑 기준이 필요했습니다.',
+          '차량번호/소유자명 기반 외부 조회 결과, 사용자가 직접 선택하는 차량 모델, PnC 식별자(`evccId`), 브랜드/차급/차량 대상 경고 공지가 서로 다른 경로로 들어오기 때문에, 차량 기준 데이터를 일관되게 만들면서 중복과 잘못된 자동 연결을 막는 기준이 필요했습니다.',
         en:
-          'Because vehicle info (`plateNumber`) and PnC (Plug & Charge) identifiers (`evccId`) are registered at different times, the system needed an auto-linking rule that avoids wrong matches without forcing users into manual selection every time.',
+          'Because external plate-number/owner-name lookup results, user-selected vehicle models, PnC identifiers (`evccId`), and brand/class/car-level warning notices arrive through different paths, the system needed a consistent vehicle reference model plus conservative deduplication and auto-linking rules.',
       },
       actions: [
+        {
+          ko: 'CODEF 응답의 `brandNm`, `repCarClassNm`, `carClassNm`, 연식, 연료, 대표 이미지를 내부 차량 등록 DTO로 변환하고, 소유자명 필드 등 필요한 민감 필드를 마스킹한 CODEF 응답은 `optionalData`로 보관했습니다.',
+          en: 'Mapped CODEF fields such as `brandNm`, `repCarClassNm`, `carClassNm`, release year, fuel type, and representative image into the internal vehicle-registration DTO, while storing the CODEF response with required sensitive fields such as owner-name fields masked in `optionalData`.',
+        },
+        {
+          ko: 'CODEF 호출에는 토큰 만료 시 강제 갱신, 활성 인증서 순회, fallback 대상 오류 코드 분리를 적용해 외부 조회 실패가 차량 등록 흐름 전체를 쉽게 막지 않도록 보강했습니다.',
+          en: 'Hardened CODEF calls with forced token refresh on token expiry, active-certificate iteration, and fallback-result-code filtering so external lookup failures do not easily block the full vehicle-registration flow.',
+        },
+        {
+          ko: '`vehicle_tree`를 `CAR_BRAND > CAR_CLASS > CAR` 구조로 설계하고, 등록 시점에 없는 브랜드/차급/차량은 `findOrCreateCarByNames` 흐름에서 생성되도록 구성했습니다.',
+          en: 'Modeled `vehicle_tree` as `CAR_BRAND > CAR_CLASS > CAR`, then created missing brand, class, and car nodes through the `findOrCreateCarByNames` flow at registration time.',
+        },
+        {
+          ko: '차량 경고/공지는 `vehicle_error.vehicle_tree_id`가 브랜드, 차급, 차량 중 하나를 참조하도록 설계해, “현대 전체”, “아이오닉 계열”, “아이오닉5”처럼 같은 테이블에서 범위를 다르게 지정할 수 있게 했습니다.',
+          en: 'Designed vehicle warning notices so `vehicle_error.vehicle_tree_id` can reference a brand, class, or car node, allowing one table to target scopes such as all Hyundai vehicles, the Ioniq class, or Ioniq 5.',
+        },
         {
           ko: '차량 정보 등록과 PnC(Plug & Charge) 등록 양쪽에서 모두 “매핑 안 된 대상이 정확히 1개인지”를 검사하는 양방향 자동 매핑 규칙을 적용했습니다.',
           en: 'Applied a bidirectional auto-mapping rule that checks whether exactly one unmatched counterpart exists from both the vehicle-info and PnC (Plug & Charge) registration sides.',
         },
         {
-          ko: '차량 정보는 `plateNumber`, PnC(Plug & Charge) 차량은 `evccId`를 중심으로 따로 저장하고, 연결 시점에만 `userVehicleInfo.userVehicleId`를 채우는 방식으로 상태를 분리했습니다.',
-          en: 'Stored vehicle info around `plateNumber` and PnC (Plug & Charge) vehicles around `evccId`, then filled `userVehicleInfo.userVehicleId` only at link time to keep state transitions explicit.',
-        },
-        {
-          ko: '이후 `authorizeByEvccId` 경로가 매핑된 차량 정보를 참조하도록 만들어, 충전기 인증 시에도 차량번호와 사용자 컨텍스트가 일관되게 이어지게 했습니다.',
-          en: 'Made `authorizeByEvccId` resolve through the mapped vehicle so charger authorization can reuse the same plate-number and user context consistently.',
+          ko: '차량 정보는 `plateNumber`, PnC 차량은 `evccId`를 중심으로 따로 저장하고, `authorizeByEvccId`는 사용자와 `idTag` 인증에 집중하도록 두어 차량번호 컨텍스트는 앱/운영 화면의 매핑 정보에서 이어보게 했습니다.',
+          en: 'Stored vehicle info around `plateNumber` and PnC vehicles around `evccId`, keeping `authorizeByEvccId` focused on user and `idTag` authorization while plate-number context is preserved through the mapped app/admin vehicle info.',
         },
       ],
       engineeringViews: [
         {
-          ko: '자동 매핑은 편의 기능이지만 잘못 연결되면 위험하므로, “정확히 1개일 때만 연결”이라는 보수적 규칙으로 설계했습니다.',
-          en: 'Auto-linking is a convenience feature with high downside risk, so it was designed conservatively: link only when there is exactly one unmatched counterpart.',
+          ko: '외부 조회 결과를 그대로 저장하지 않고 서비스 기준 트리로 승격해, `현대 > 아이오닉 > 아이오닉5`처럼 UI 선택 구조와 사용자 차량 등록 데이터가 같은 기준을 공유하도록 만들었습니다.',
+          en: 'Promoted external lookup results into the service reference tree so UI selection and registered user vehicles share the same structure, such as `Hyundai > Ioniq > Ioniq 5`.',
         },
         {
-          ko: '차량 정보와 PnC(Plug & Charge) 엔티티를 동일 테이블에 억지로 합치지 않고 분리 저장한 뒤 링크로 결합해 등록 시점 차이를 자연스럽게 흡수했습니다.',
-          en: 'Handled different registration timing naturally by storing vehicle info and PnC (Plug & Charge) entities separately and joining them through an explicit link instead of forcing them into one record early.',
+          ko: '브랜드/차급/차량 노드는 parent 기준 unique 제약과 분산 락을 함께 사용해, 동시에 같은 차량이 등록되어도 기준 데이터가 중복 생성되지 않도록 설계했습니다.',
+          en: 'Combined parent-scoped uniqueness with a distributed lock so concurrent registrations do not create duplicate reference nodes for the same vehicle.',
         },
         {
-          ko: '매핑 이후에는 `evccId -> userId/plateNumber` 조회가 가능해져 실제 충전 인증 경로가 데이터 모델 위에서 바로 설명되도록 만들었습니다.',
-          en: 'After linking, `evccId -> userId/plateNumber` resolution becomes possible, making the real charging authorization path directly explainable from the data model.',
+          ko: '경고 데이터를 차량마다 복제하지 않고 상위 카테고리에 한 번만 저장한 뒤, 조회 방향에 따라 `상위로 수집` 또는 `하위로 전개`하도록 만들어 운영 데이터 중복을 줄였습니다.',
+          en: 'Reduced operational duplication by storing a warning once at the highest relevant category, then either collecting ancestors for display or expanding descendants for notification delivery.',
+        },
+        {
+          ko: '자동 매핑은 편의 기능이지만 잘못 연결되면 위험하므로, 차량 정보와 PnC 엔티티를 분리 저장하고 “정확히 1개일 때만 연결”하는 보수적 규칙으로 설계했습니다.',
+          en: 'Auto-linking is convenient but risky when wrong, so vehicle info and PnC entities were stored separately and linked only under the conservative exactly-one-unmatched-counterpart rule.',
         },
       ],
       outcomes: [
         {
-          ko: '차량 정보 등록과 바로충전 등록 어느 쪽을 먼저 하더라도 조건이 맞으면 자동 매핑되도록 정리했습니다.',
-          en: 'Enabled auto-mapping from either direction so the system can link correctly whether vehicle info or PnC (Plug & Charge) registration happens first.',
+          ko: '차량번호와 소유자명 기반 CODEF 조회로 제조사, 차급, 상세 모델, 연식, 연료, 이미지 정보를 등록 흐름에 연결했습니다.',
+          en: 'Connected manufacturer, class, detailed model, release year, fuel type, and image information into registration through CODEF lookup by plate number and owner name.',
         },
         {
-          ko: 'PnC(Plug & Charge) 인증 시 `evccId`로 사용자를 식별하고 연결된 차량번호를 함께 참조하는 흐름을 운영 기준으로 만들었습니다.',
-          en: 'Established an operational flow where PnC (Plug & Charge) authorization identifies the user by `evccId` and resolves the linked plate number together.',
+          ko: '브랜드/차급/차량 단위 공지를 같은 차량 트리 위에서 처리해 특정 브랜드 경고 표시와 대상 사용자 알림 발송을 별도 모델 없이 지원했습니다.',
+          en: 'Supported brand/class/car-level warning display and target-user notification on the same vehicle tree without introducing a separate category model.',
+        },
+        {
+          ko: '차량 정보 등록과 PnC 등록 어느 쪽을 먼저 하더라도 조건이 맞으면 자동 매핑하고, 충전 인증은 `evccId -> userId/idTag` 기준으로 안정적으로 이어지게 했습니다.',
+          en: 'Enabled auto-mapping from either vehicle-info or PnC registration when conditions match, while keeping charging authorization stable on the `evccId -> userId/idTag` path.',
         },
       ],
       note: {
-          ko: '차량번호와 차량 고유 키가 언제 자동 연결되고 언제 수동 선택으로 넘겨야 하는지 설명하기 좋은 프로젝트입니다.',
-          en: 'A good project for explaining when plate numbers and vehicle keys should auto-link and when the flow must fall back to manual choice.',
+        ko: '외부 차량 조회 결과를 내부 기준 데이터로 정규화한 뒤, 차량 정보와 PnC 식별자(evccId)가 언제 자동 연결되고 언제 수동 선택으로 넘어가야 하는지 설명하기 좋은 프로젝트입니다.',
+        en: 'A good project for explaining how external vehicle lookup results become internal reference data, then when vehicle info and PnC identifiers (evccId) should auto-link or fall back to manual choice.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'JPA', 'Redis', 'CODEF API'],
+      referenceImages: [
+        {
+          src: '/images/portfolio/voltup-plug-and-charge.png',
+          title: {
+            ko: '차량 관리: 등록 차량과 바로충전 진입 화면',
+            en: 'Vehicle management: registered car and Plug & Charge entry',
+          },
+          caption: {
+            ko: '차량 등록 이후 바로충전(PnC) 기능으로 이어지는 사용자 화면 예시로, 차량 컨텍스트와 충전 인증 흐름이 서비스 안에서 어떻게 만나는지 보여줍니다.',
+            en: 'A user-facing screen that leads from vehicle registration into Plug & Charge, showing how vehicle context and charging authorization meet in the product flow.',
+          },
+          alt: {
+            ko: 'VoltUp 차량 등록 및 바로충전 화면',
+            en: 'VoltUp vehicle registration and Plug & Charge screen',
+          },
         },
-    tech: ['Kotlin', 'Spring Boot', 'JPA', 'Redis'],
-        referenceImages: [
-          {
-            src: '/images/portfolio/voltup-plug-and-charge.png',
-            title: {
-              ko: '차량 관리: 등록 차량과 바로충전 진입 화면',
-              en: 'Vehicle management: registered car and Plug & Charge entry',
-            },
-            caption: {
-              ko: '차량 등록 이후 바로충전(PnC) 기능으로 이어지는 사용자 화면 예시로, 차량 컨텍스트와 충전 인증 흐름이 서비스 안에서 어떻게 만나는지 보여줍니다.',
-              en: 'A user-facing screen that leads from vehicle registration into Plug & Charge, showing how vehicle context and charging authorization meet in the product flow.',
-            },
-            alt: {
-              ko: 'VoltUp 차량 등록 및 바로충전 화면',
-              en: 'VoltUp vehicle registration and Plug & Charge screen',
-            },
+      ],
+      diagrams: [
+        {
+          title: {
+            ko: 'CODEF 차량 조회 결과를 서비스 차량 트리로 정규화하는 흐름',
+            en: 'Normalizing CODEF vehicle lookup results into the service vehicle tree',
           },
-        ],
-        diagrams: [
-          {
-            title: {
-              ko: '차량 정보와 차량 고유 키를 안전하게 자동 매핑하는 흐름',
-              en: 'Safe auto-mapping flow between vehicle info and vehicle keys',
-            },
-            description: {
-              ko:
-                '차량 정보와 차량 고유 키 등록 예시 값을 노드에 직접 넣고, 자동 링크 조건과 최종 인증 결과까지 한 흐름 안에서 읽히게 했습니다.',
-              en:
-                'Embeds the vehicle and vehicle-key example values directly into the nodes so the auto-link condition and final authorization result read as one flow.',
-            },
-            code: vehiclePncDiagram,
+          description: {
+            ko:
+              '차량번호와 소유자명으로 조회한 CODEF 결과가 브랜드, 차급, 차량 노드로 분해되고 최종 사용자 차량 정보의 `vehicleModelId`로 연결되는 흐름입니다.',
+            en:
+              'Shows how CODEF lookup results from plate number and owner name are split into brand, class, and car nodes, then linked to the registered user vehicle through `vehicleModelId`.',
           },
+          code: vehicleDataTreeDiagram,
+        },
+        {
+          title: {
+            ko: '차량 정보와 PnC 식별자(evccId)를 안전하게 자동/수동 매핑하는 흐름',
+            en: 'Safe auto/manual mapping flow between vehicle info and PnC identifiers (evccId)',
+          },
+          description: {
+            ko:
+              '차량 정보 등록과 PnC 등록 어느 쪽이 먼저 들어와도 매핑 안 된 상대가 정확히 1개일 때만 자동 연결하고, 그 외에는 사용자 확인으로 넘기는 흐름입니다.',
+            en:
+              'Shows how either vehicle-info or PnC registration can trigger auto-linking only when exactly one unmatched counterpart exists, with all other cases falling back to user confirmation.',
+          },
+          code: vehiclePncDiagram,
+        },
+        {
+          title: {
+            ko: '차량 트리를 재사용한 브랜드/차급/차량 경고 표시와 알림 발송',
+            en: 'Brand/class/car warning display and notification delivery on the vehicle tree',
+          },
+          description: {
+            ko:
+              '경고 공지는 상위 카테고리에 한 번만 저장하고, 앱 조회에서는 조상 노드로 모아 보여주며 알림 발송에서는 하위 차량으로 전개해 대상자를 중복 제거하는 흐름입니다.',
+            en:
+              'Shows how one warning notice can be stored at a higher category, collected through ancestors for app display, and expanded through descendant cars for deduplicated notification delivery.',
+          },
+          code: vehicleWarningTreeDiagram,
+        },
       ],
     },
     {

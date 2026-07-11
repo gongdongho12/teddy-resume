@@ -589,8 +589,8 @@ const pricingPlatformDiagram = localized(
 
 const devopsAutomationDiagram = localized(
   `flowchart TD
-  Pain["반복 작업<br/>PR 리뷰 / 로컬 ENV / 배포 / 내부 API"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
-  Review --> Context["project-context + prompts + skills<br/>repo별 규칙 주입"]
+  Pain["반복 운영 작업<br/>PR 리뷰 / 로컬 ENV / 배포 / 내부 API"] --> Review["voltup-workflow<br/>/gemini-review<br/>조직 공통 AI 리뷰"]
+  Review --> Context["project-context + prompts + skills<br/>repo별 운영 문맥 주입"]
   Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
   Local --> Vault["Vault CLI login<br/>project path + SHARED path<br/>secret commit 없음"]
   Local --> IAM["gcloud account -><br/>IAM_DB_USER_NAME"]
@@ -609,8 +609,8 @@ const devopsAutomationDiagram = localized(
   class Local,Vault,IAM,Internal sec;
   class Deploy,Build,Android,IOS,Argo ops;`,
   `flowchart TD
-  Pain["Repeated work<br/>PR review / local env / deploy / internal APIs"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
-  Review --> Context["project-context + prompts + skills<br/>repo-specific rules injected"]
+  Pain["Repeated operational work<br/>PR review / local env / deploy / internal APIs"] --> Review["voltup-workflow<br/>/gemini-review<br/>org-wide AI review"]
+  Review --> Context["project-context + prompts + skills<br/>repo-specific ops context injected"]
   Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
   Local --> Vault["Vault CLI login<br/>project path + SHARED path<br/>no secret commits"]
   Local --> IAM["gcloud account -><br/>IAM_DB_USER_NAME"]
@@ -628,6 +628,49 @@ const devopsAutomationDiagram = localized(
   class Review,Context ai;
   class Local,Vault,IAM,Internal sec;
   class Deploy,Build,Android,IOS,Argo ops;`,
+);
+
+const voltupWorkflowReviewLoopDiagram = localized(
+  `flowchart TD
+  Comment["PR 댓글<br/>/gemini-review"] --> Workflow["voltup-workflow<br/>GitHub Actions reusable workflow"]
+  Workflow --> Secret["Organization Secret<br/>GEMINI_API_KEY"]
+  Workflow --> RepoCtx["저장소별 context<br/>project-context / review-template / docs"]
+  Workflow --> Diff["PR diff + 변경 파일"]
+  Secret --> Gemini["run-gemini-cli<br/>1차 리뷰 실행"]
+  RepoCtx --> Gemini
+  Diff --> Gemini
+  Gemini --> CommentBack["PR 리뷰 댓글<br/>위험 / 누락 / 개선 제안"]
+  CommentBack --> Human["개발자 검토<br/>최종 판단은 사람"]
+  Human --> Update["수정 커밋 또는 논의"]
+  Update --> Comment
+  classDef trigger fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef workflow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef context fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Comment trigger;
+  class Workflow,Gemini workflow;
+  class Secret,RepoCtx,Diff context;
+  class CommentBack,Human,Update result;`,
+  `flowchart TD
+  Comment["PR comment<br/>/gemini-review"] --> Workflow["voltup-workflow<br/>GitHub Actions reusable workflow"]
+  Workflow --> Secret["Organization Secret<br/>GEMINI_API_KEY"]
+  Workflow --> RepoCtx["repo-local context<br/>project-context / review-template / docs"]
+  Workflow --> Diff["PR diff + changed files"]
+  Secret --> Gemini["run-gemini-cli<br/>first-pass review"]
+  RepoCtx --> Gemini
+  Diff --> Gemini
+  Gemini --> CommentBack["PR review comment<br/>risks / gaps / suggestions"]
+  CommentBack --> Human["developer review<br/>human owns final judgment"]
+  Human --> Update["follow-up commit or discussion"]
+  Update --> Comment
+  classDef trigger fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef workflow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef context fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Comment trigger;
+  class Workflow,Gemini workflow;
+  class Secret,RepoCtx,Diff context;
+  class CommentBack,Human,Update result;`,
 );
 
 const voltbotCrewDiagram = localized(
@@ -2027,8 +2070,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       slug: 'devops-automation',
       title: {
-        ko: '개발 생산성 자동화 및 DevOps 개선',
-        en: 'Developer Productivity Automation and DevOps Improvements',
+        ko: 'Voltup Workflow: AI 운영 자동화와 DevOps 표준화',
+        en: 'Voltup Workflow: AI Operations Automation and DevOps Standardization',
+      },
+      indexLabel: {
+        ko: 'Voltup Workflow (AI 운영 자동화)',
+        en: 'Voltup Workflow (AI Ops Automation)',
       },
       period: {
         ko: '2024.10 - 현재',
@@ -2039,29 +2086,29 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: 'AI 리뷰, Vault-로컬 동기화, 내부 API 표준, 모바일 CI/CD 보안 개선',
-        en: 'AI review, Vault-to-local sync, internal API standards, and mobile CI/CD security hardening',
+        ko: '조직 공통 AI 리뷰 workflow, repo-local 운영 문맥, Vault-local sync, CI/CD 표준화',
+        en: 'Org-wide AI review workflow, repo-local operational context, Vault-local sync, and CI/CD standardization',
       },
       summary: {
         ko:
-          '볼트업 조직에서 반복적으로 발생하던 PR 리뷰, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 공통 workflow로 묶었습니다. 특히 로컬 환경값은 공개 저장소에 둘 수도 없고 개별 전달도 번거로워서, Vault 값을 `application-local.yaml`로 바로 동기화하는 Gradle 로직을 만들었습니다. 이후 Admin internal API 호출 규약과 모바일 배포 흐름까지 표준화했습니다.',
+          'Voltup Workflow는 개발과 운영 사이에서 반복되던 PR 리뷰, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 재사용 가능한 workflow와 자동화 도구로 묶은 프로젝트입니다. `/gemini-review` 댓글 기반 AI 리뷰는 저장소별 `project-context`, `review-template`, `docs`를 읽어 repo-local 운영 문맥을 반영하고, Vault-local sync와 Jenkins/ArgoCD 표준화를 함께 구성해 운영 효율과 릴리즈 안정성을 높이는 방향으로 정리했습니다.',
         en:
-          'Turned recurring PR review, local environment setup, internal API integration, and service/app delivery work in Voltup into shared workflows. In particular, I built Gradle logic that syncs Vault values directly into `application-local.yaml`, then extended the standardization into Admin internal API conventions and mobile delivery workflows.',
+          'Voltup Workflow turns repeated work between development and operations, including PR review, local environment setup, internal API integration, and service/app delivery, into reusable workflows and automation tools. The `/gemini-review` AI review flow reads repo-local `project-context`, `review-template`, and docs, while Vault-local sync and Jenkins/ArgoCD standardization improve operational efficiency and release reliability.',
       },
       challenge: {
         ko:
-          'MSA가 늘수록 코드 리뷰 기준, 마이크로서비스별 작업 컨벤션, 반복 작업 방식, 로컬 환경값 전달, 내부 API 호출 방식, 배포 절차가 사람마다 달라지기 쉬웠습니다. 모바일 배포는 인증 키 관리 부담과 불필요한 실패 요인도 함께 줄여야 했습니다.',
+          'MSA가 늘수록 코드 리뷰 기준, 마이크로서비스별 작업 컨벤션, 반복 작업 방식, 로컬 환경값 전달, 내부 API 호출 방식, 배포 절차가 사람마다 달라지기 쉬웠습니다. 개발과 운영이 분리된 상황에서는 이런 drift가 리뷰 누락, 환경 불일치, 배포 실패, 운영자 도구 호출 경계 불명확성으로 이어질 수 있어 공통 workflow와 자동화 체계가 필요했습니다.',
         en:
-          'As the number of services grew, review rules, microservice-level conventions, recurring task patterns, local secret delivery, internal API invocation, and delivery steps were drifting per person. Mobile delivery also needed to reduce key-management burden and avoidable failure points.',
+          'As the number of services grew, review rules, microservice-level conventions, recurring task patterns, local secret delivery, internal API invocation, and delivery steps were drifting per person. In a development/operations split, this drift can turn into missed reviews, environment mismatches, release failures, and unclear operator-tool trust boundaries, so the team needed shared workflows and automation.',
       },
       actions: [
         {
-          ko: '`voltup-workflow`에 `/gemini-review` 댓글 트리거형 GitHub Actions 워크플로우를 만들고, Organization Secret의 `GEMINI_API_KEY`와 저장소별 `project-context`, `review-template`, `docs`를 읽어 재사용 가능한 1차 코드 리뷰 체계를 구성했습니다.',
-          en: 'Built a reusable comment-triggered GitHub Actions workflow in `voltup-workflow` around `/gemini-review`, using the organization-level `GEMINI_API_KEY` plus per-repo `project-context`, `review-template`, and docs to provide consistent first-pass reviews.',
+          ko: '`voltup-workflow`에 `/gemini-review` 댓글 트리거형 GitHub Actions reusable workflow를 만들고, Organization Secret의 `GEMINI_API_KEY`와 저장소별 `project-context`, `review-template`, `docs`를 조합해 PR diff를 repo 문맥에 맞춰 검토하는 1차 AI 리뷰 체계를 구성했습니다.',
+          en: 'Built a reusable GitHub Actions workflow in `voltup-workflow` triggered by `/gemini-review`, combining the organization-level `GEMINI_API_KEY` with per-repo `project-context`, `review-template`, and docs so PR diffs are reviewed against repository-specific context.',
         },
         {
-          ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 넣어 여러 생성형 LLM에서 활용할 수 있도록 각 마이크로서비스의 작업 컨벤션, 공통 작업 형상, API 우선 개발 흐름, 보안 규칙을 재사용 가능한 스킬 체계로 정리했습니다.',
-          en: 'Added `.agent/workflows`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` to the MSA workspace so microservice conventions, recurring task shapes, API-first development flow, and security rules become reusable skills that can be consumed across generative LLM tools.',
+          ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 배치해 각 서비스의 작업 컨벤션, API 우선 개발 흐름, 보안 규칙, 반복 운영 작업 형상을 여러 생성형 LLM 도구에서 공유 가능한 repo-local context로 만들었습니다.',
+          en: 'Added `.agent/workflows`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` to MSA repositories, turning service conventions, API-first development flow, security rules, and recurring operational task shapes into reusable repo-local context for generative LLM tools.',
         },
         {
           ko: '루트 `build.gradle.kts`에는 base yaml의 placeholder를 Vault에서 치환해 `application-local.yaml`을 생성하는 로직을 넣고, 프로젝트 경로와 `secret/SHARED/voltup/dev`를 순차 조회하도록 만들었습니다. Vault CLI 로그인 확인, 비대화형 환경 대응, `gcloud` 계정 기반 `IAM_DB_USER_NAME` 치환까지 포함해 새 키가 추가돼도 개발자별 local 환경이 자동으로 같은 기준을 유지하도록 했습니다.',
@@ -2090,8 +2137,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       engineeringViews: [
         {
-          ko: 'AI 도입을 “모델 하나 붙이기”가 아니라 재사용 가능한 workflow와 repo-local context를 설계하는 문제로 보고, 프로젝트별 문맥을 자동 리뷰 품질에 직접 연결했습니다.',
-          en: 'Treated AI adoption as a workflow-and-context design problem rather than just attaching a model, tying repo-local knowledge directly to review quality.',
+          ko: 'AI 도입을 “모델 하나 붙이기”가 아니라 운영 체계 설계 문제로 봤습니다. 같은 `/gemini-review` 명령이라도 저장소별 context와 review template을 읽도록 만들어, 공통 workflow는 유지하면서 서비스별 운영 문맥은 잃지 않게 했습니다.',
+          en: 'Treated AI adoption as an operating-system design problem rather than just attaching a model. The same `/gemini-review` command reads each repository context and review template, keeping the workflow shared while preserving service-specific operational context.',
         },
         {
           ko: '로컬 환경 셋업은 “누가 비밀값을 전달하느냐”보다 “Vault와 local 환경을 직접 동기화해 인증된 개발자가 같은 기준의 설정을 자동으로 받게 하자”는 방향으로 풀었습니다. 공개 저장이나 수동 배포 대신 Vault CLI 인증을 전제로 yaml 생성과 인증서 갱신을 자동화해, 키가 늘어나도 개발자 간 동기화가 흐트러지지 않도록 만들었습니다.',
@@ -2112,8 +2159,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       outcomes: [
         {
-          ko: '조직 공통 AI 리뷰 워크플로우와 마이크로서비스별 컨벤션·공통 작업 형상 스킬 체계를 만들어, 신규 저장소나 신규 작업도 같은 기준으로 빠르게 온보딩할 수 있게 했습니다.',
-          en: 'Established an organization-wide AI review workflow plus a skill system for microservice conventions and recurring task shapes, so new repos and workstreams can be onboarded under the same standards much faster.',
+          ko: '조직 공통 `voltup-workflow`와 마이크로서비스별 repo-local context 체계를 만들어, 신규 저장소나 신규 작업도 같은 AI 리뷰 기준과 운영 컨벤션으로 빠르게 온보딩할 수 있게 했습니다.',
+          en: 'Established the org-wide `voltup-workflow` plus repo-local context patterns, allowing new repositories and workstreams to onboard under the same AI review standards and operational conventions.',
         },
         {
           ko: '민감한 환경값을 저장소에 두지 않으면서도 Vault와 local 환경을 바로 동기화해, 키가 추가될 때도 개발자 간 설정 sync가 자동으로 유지되도록 만들었습니다.',
@@ -2129,11 +2176,24 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
       ],
       note: {
-        ko: '보안 때문에 공개할 수 없는 로컬 환경값 문제를 Vault-local sync 구조로 풀고, 내부 API 호출/모바일 배포 인증처럼 운영 중 반복적으로 흔들리는 경계를 표준화한 DX/DevOps 프로젝트입니다.',
-        en: 'A DX/DevOps project that uses Vault-to-local sync for non-public local secrets and standardizes repeatedly fragile boundaries such as internal API calls and mobile delivery authentication.',
+        ko: 'LINE SRE 관점에서는 단순 개발 편의 기능이 아니라, 개발/운영 분리 환경에서 반복 리뷰, 환경 drift, 배포 실패, 내부 도구 호출 경계를 workflow와 자동화로 줄인 운영 효율화 사례입니다.',
+        en: 'From an SRE perspective, this is not just developer convenience: it reduces repeated review work, environment drift, release failures, and internal-tool boundary ambiguity in a development/operations split through workflows and automation.',
       },
       tech: ['Vault CLI', 'Gradle Kotlin DSL', 'GitHub Actions', 'Jenkins', 'ArgoCD', 'Workload Identity', 'Firebase CLI', 'Gemini API', 'GitHub Copilot', 'Claude Code', 'gcloud CLI'],
       diagrams: [
+        {
+          title: {
+            ko: 'Voltup Workflow: /gemini-review AI 리뷰 루프',
+            en: 'Voltup Workflow: /gemini-review AI review loop',
+          },
+          description: {
+            ko:
+              'PR 댓글에서 시작된 `/gemini-review`가 조직 공통 workflow를 호출하고, 저장소별 context와 변경 diff를 함께 읽어 PR에 1차 리뷰 코멘트를 남기는 구조입니다.',
+            en:
+              'Shows how `/gemini-review` starts from a PR comment, invokes the org-wide workflow, reads repo-local context plus the PR diff, and posts first-pass review comments back to the PR.',
+          },
+          code: voltupWorkflowReviewLoopDiagram,
+        },
         {
           title: {
             ko: 'AI 리뷰, Vault-로컬 동기화, 배포 표준화',

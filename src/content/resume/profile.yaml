@@ -43,12 +43,14 @@ experience:
         빌링 - DLQ 및 다단계 미수 배치로 결제/미수 처리 안정성 확보
         프로모션(쿠폰/포인트) - 고객 리텐션 증대
         유저사이드 - 차량정보 조회, PnC(Plug & Charge) 인증 및 유저사이드 백엔드와 모바일 앱 담당
-        DX 인프라 - AI 워크플로우 표준화, CI/CD 통합, 문서 자동 생성 적용
+        사내 AI 도구 - 에이전트 라우팅, 로그 진단 자동화, DX 워크플로우 구축
+        DX 인프라 - CI/CD 통합, 문서 자동 생성 적용
       en: |
         Billing - Improved payment and arrears-handling reliability with DLQ and multi-stage unpaid batches
         Promotions (coupon/points) - Improved customer retention
         User-side - Owned vehicle information lookup, PnC (Plug & Charge) authorization, user-side backend, and the mobile app
-        DX infrastructure - Standardized AI workflows and applied CI/CD integration and automated documentation
+        Internal AI tooling - Built agent routing, log-diagnosis automation, and DX workflows
+        DX infrastructure - Applied CI/CD integration and automated documentation
 
   - company:
       ko: 카카오스타일
@@ -176,11 +178,13 @@ skillGroups:
       GitHub Copilot
       Claude Code
       Gemini API
+      Agent Routing / LLM Tool Calling
       Cursor (에이전트 워크플로)
     body_en: |
       GitHub Copilot (11 prompts)
       Claude Code (8 skills)
       Gemini API / run-gemini-cli
+      Agent routing / LLM tool calling
       Cursor workflows
   - label: Mobile
     body_ko: |
@@ -629,6 +633,48 @@ projectSections:
           en:
             - Created the foundation for routing users to the right specialist without requiring them to classify the request first
             - Established an AI-assisted operations diagnosis direction to reduce repeated developer checks for code policy and logs
+
+      - title:
+          ko: Voltbot — 사내 업무 에이전트 플랫폼 및 로그 진단 자동화
+          en: Voltbot — Internal Work-Agent Platform & Log Diagnosis Automation
+        portfolioSlug: voltbot-agent-platform
+        period:
+          ko: "2026.06 ~ 현재"
+          en: "Jun 2026 — Present"
+        summary:
+          ko: |
+            사내 구성원이 하나의 채팅 화면에서 코드 정책, 데이터 분석, 법률 지원, 운영, 로그 분석 에이전트를 사용할 수 있도록
+            Agent Router와 Tool 실행 흐름을 구성하고, 운영/CS의 결제 실패·서비스 오류 문의를 로그·가이드·코드 근거로 진단하는 로그 분석 에이전트를 구축했습니다.
+          en: |
+            Built the Agent Router and tool-execution flow so internal users can use code-policy, data-analysis, legal-support, operations, and log-diagnosis agents from one chat surface,
+            and implemented a log-diagnosis agent that investigates operations/CS payment failures and service errors with logs, guides, and code evidence.
+        tech:
+          - Kotlin
+          - Spring Boot
+          - React
+          - TypeScript
+          - WebSocket
+          - GCP Cloud Logging
+          - Gemini API
+          - GitHub API
+        highlights:
+          ko:
+            - 사용자의 자연어 요청을 의도·권한·에이전트 상태 기준으로 분류해 로그 분석, 데이터 분석, 법률 지원, 코드 정책 등 전문 에이전트로 연결하는 AgentRouter 구현
+            - 공통 Agent/Tool 계약 위에 AgentRunner, ToolHandler, WebSocket 스트리밍을 연결해 Tool 실행 내역, 권한, 쿼터, 중단 요청, 최종 답변이 같은 대화 흐름에 남도록 구성
+            - LogDiagnosisAgent에 고객 모드와 운영 모드를 나누고, userId가 없어도 기간·증상·서비스 패턴으로 GCP 운영 로그를 조사할 수 있는 검색 전략 설계
+            - 로그 분석 가이드 조회 도구와 GitHub 코드 근거 검색을 결합하고, traceId/user_id/order_number 상관키 pivot 및 PII 마스킹 기준을 답변 정책에 반영
+          en:
+            - Implemented AgentRouter to classify natural-language requests by intent, permission, and agent availability, then route to specialist agents such as log diagnosis, data analysis, legal support, and code policy
+            - Connected AgentRunner, ToolHandler, and WebSocket streaming on a shared Agent/Tool contract so tool trails, permissions, quotas, interruptions, and final answers remain visible in the same conversation flow
+            - Split LogDiagnosisAgent into customer and operations modes, with search strategies that can inspect GCP production logs from time windows, symptoms, and service patterns even without a userId
+            - Combined log-diagnosis guide tools with GitHub code evidence, and added traceId/user_id/order_number correlation-key pivoting plus PII masking rules to the answer policy
+        results:
+          ko:
+            - 운영/CS가 고객 결제 실패, 서비스 에러, 특정 기간 장애 패턴을 채팅으로 질의하고 로그 근거와 권장 조치를 함께 받을 수 있는 업무 흐름 마련
+            - Cloud Logging, 사내 가이드, GitHub 코드 검색을 오가던 개발자 의존 반복 진단 절차를 에이전트 Tool 흐름으로 묶는 기반 구축
+          en:
+            - Created a workflow where operations and CS can ask about customer payment failures, service errors, or incident patterns in chat and receive evidence logs plus recommended actions
+            - Built the foundation for replacing repeated developer-dependent diagnosis across Cloud Logging, internal guides, and GitHub code search with an agent tool flow
 
       - title:
           ko: 로밍 서비스 안정성 및 성능 최적화

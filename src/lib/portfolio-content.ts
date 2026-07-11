@@ -212,6 +212,165 @@ const voltupAppExtensionDiagram = localized(
   class QA,Ops,Share result;`,
 );
 
+const voltbotAgentPlatformDiagram = localized(
+  `flowchart TD
+  User["사내 사용자<br/>CS / 운영 / 개발"] --> Chat["Voltbot Web Chat<br/>세션 / 파일첨부 / 공유"]
+  Chat --> Auth["Google OAuth + 권한<br/>role/user 기반 agent access"]
+  Auth --> Router["Intent-based AgentRouter<br/>요청 의도 분류 / agent 결정"]
+  Router --> Select["AgentSelector<br/>수동 선택 / 라우팅 결과 표시"]
+  Select --> Runner["AgentRunner<br/>context / quota / interruption"]
+  Runner --> Tools["ToolHandler<br/>tool_call / approval / answer"]
+  Tools --> Log["GCP 운영 로그 조회"]
+  Tools --> Guide["로그 분석 가이드"]
+  Tools --> Code["GitHub 코드 근거"]
+  Runner --> Stream["WebSocket streaming<br/>tool trail + 최종 답변"]
+  Stream --> Ops["진단 / 근거 / 권장 조치"]
+  classDef user fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef tool fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class User user;
+  class Chat,Auth,Router,Select,Runner,Stream core;
+  class Tools,Log,Guide,Code tool;
+  class Ops result;`,
+  `flowchart TD
+  User["Internal users<br/>CS / operations / engineers"] --> Chat["Voltbot Web Chat<br/>sessions / attachments / sharing"]
+  Chat --> Auth["Google OAuth + permissions<br/>role/user based agent access"]
+  Auth --> Router["Intent-based AgentRouter<br/>classify request / choose agent"]
+  Router --> Select["AgentSelector<br/>manual choice / routing result"]
+  Select --> Runner["AgentRunner<br/>context / quota / interruption"]
+  Runner --> Tools["ToolHandler<br/>tool_call / approval / answer"]
+  Tools --> Log["GCP production-log search"]
+  Tools --> Guide["log-diagnosis guides"]
+  Tools --> Code["GitHub code evidence"]
+  Runner --> Stream["WebSocket streaming<br/>tool trail + final answer"]
+  Stream --> Ops["diagnosis / evidence / actions"]
+  classDef user fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef tool fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class User user;
+  class Chat,Auth,Router,Select,Runner,Stream core;
+  class Tools,Log,Guide,Code tool;
+  class Ops result;`,
+);
+
+const voltbotAgentLoopDiagram = localized(
+  `flowchart TD
+  Input["사용자 메시지<br/>질문 / 파일 / 세션 컨텍스트"] --> Guard["세션·권한·쿼터 확인"]
+  Guard --> Route{"AgentRouter<br/>자동 라우팅 필요?"}
+  Route -->|자동| Pick["의도 분류<br/>권한 있는 agent 후보 선택"]
+  Route -->|수동| Selected["선택된 전문 에이전트"]
+  Pick --> Selected
+  Selected --> Runner["AgentRunner<br/>system prompt + history + context"]
+  Runner --> Turn{"LLM turn<br/>다음 행동 판단"}
+  Turn -->|tool_call| ToolHandler["ToolHandler<br/>schema 검증 / 승인 필요 여부"]
+  ToolHandler --> Approval{"사용자 승인 필요?"}
+  Approval -->|yes| Wait["승인 대기<br/>WebSocket 상태 전송"]
+  Wait -->|approved| Execute["도구 실행<br/>logs / guides / code / files"]
+  Approval -->|no| Execute
+  Execute --> Append["tool result를<br/>대화 컨텍스트에 추가"]
+  Append --> Budget{"컨텍스트 / 토큰 한계?"}
+  Budget -->|compress| Summary["요약 컨텍스트 생성"]
+  Summary --> Runner
+  Budget -->|continue| Runner
+  Turn -->|ask_user| Clarify["추가 질문<br/>필요 정보 요청"]
+  Clarify --> Input
+  Turn -->|final_answer| Answer["최종 답변<br/>진단 / 근거 / 조치"]
+  Answer --> Stream["WebSocket streaming<br/>tool trail + 비용 + 답변"]
+  Guard --> Block["중단 / 권한 없음 / 쿼터 초과"]
+  classDef input fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef loop fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  classDef stop fill:#fff1f2,stroke:#be123c,stroke-width:2px,color:#0f172a;
+  class Input input;
+  class Guard,Route,Pick,Selected,Runner core;
+  class Turn,ToolHandler,Approval,Wait,Execute,Append,Budget,Summary,Clarify loop;
+  class Answer,Stream result;
+  class Block stop;`,
+  `flowchart TD
+  Input["User message<br/>question / file / session context"] --> Guard["session, permission,<br/>and quota checks"]
+  Guard --> Route{"AgentRouter<br/>auto routing needed?"}
+  Route -->|auto| Pick["classify intent<br/>choose authorized agent candidate"]
+  Route -->|manual| Selected["selected specialist agent"]
+  Pick --> Selected
+  Selected --> Runner["AgentRunner<br/>system prompt + history + context"]
+  Runner --> Turn{"LLM turn<br/>decide next action"}
+  Turn -->|tool_call| ToolHandler["ToolHandler<br/>schema validation / approval check"]
+  ToolHandler --> Approval{"user approval needed?"}
+  Approval -->|yes| Wait["wait for approval<br/>stream status over WebSocket"]
+  Wait -->|approved| Execute["execute tool<br/>logs / guides / code / files"]
+  Approval -->|no| Execute
+  Execute --> Append["append tool result<br/>to conversation context"]
+  Append --> Budget{"context / token limit?"}
+  Budget -->|compress| Summary["create compressed context"]
+  Summary --> Runner
+  Budget -->|continue| Runner
+  Turn -->|ask_user| Clarify["ask follow-up<br/>request missing info"]
+  Clarify --> Input
+  Turn -->|final_answer| Answer["final answer<br/>diagnosis / evidence / action"]
+  Answer --> Stream["WebSocket streaming<br/>tool trail + cost + answer"]
+  Guard --> Block["interrupted / unauthorized / quota exceeded"]
+  classDef input fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef loop fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  classDef stop fill:#fff1f2,stroke:#be123c,stroke-width:2px,color:#0f172a;
+  class Input input;
+  class Guard,Route,Pick,Selected,Runner core;
+  class Turn,ToolHandler,Approval,Wait,Execute,Append,Budget,Summary,Clarify loop;
+  class Answer,Stream result;
+  class Block stop;`,
+);
+
+const voltbotLogDiagnosisDiagram = localized(
+  `flowchart TD
+  Ask["운영 질문<br/>결제 실패 / 서비스 에러"] --> Mode{"고객 모드<br/>or 운영 모드"}
+  Mode -->|userId 있음| Timeline["user_id 타임라인 조회"]
+  Mode -->|패턴 조사| Pattern["서비스·에러 패턴 조회"]
+  Timeline --> Signal["에러코드·예외·상관키 추출"]
+  Pattern --> Signal
+  Signal --> Pivot["다관점 pivot<br/>traceId / user_id / order_number"]
+  Pivot --> Flow["서비스 간 연계 플로우<br/>Mermaid sequenceDiagram"]
+  Signal --> Guide["로그 분석 가이드 대조"]
+  Signal --> Github["GitHub 코드 근거 확인"]
+  Flow --> Answer["최종 답변<br/>진단 / 근거 로그 / 권장 조치"]
+  Guide --> Answer
+  Github --> Answer
+  Answer --> Mask["개인정보 마스킹<br/>시스템 식별자는 유지"]
+  classDef ask fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef search fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef evidence fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Ask,Mode ask;
+  class Timeline,Pattern,Signal,Pivot search;
+  class Flow,Guide,Github evidence;
+  class Answer,Mask result;`,
+  `flowchart TD
+  Ask["Operations question<br/>payment failure / service error"] --> Mode{"customer mode<br/>or operations mode"}
+  Mode -->|userId exists| Timeline["user_id timeline search"]
+  Mode -->|pattern search| Pattern["service/error-pattern search"]
+  Timeline --> Signal["extract error codes, exceptions, correlation keys"]
+  Pattern --> Signal
+  Signal --> Pivot["multi-angle pivot<br/>traceId / user_id / order_number"]
+  Pivot --> Flow["cross-service flow<br/>Mermaid sequenceDiagram"]
+  Signal --> Guide["compare diagnosis guides"]
+  Signal --> Github["check GitHub code evidence"]
+  Flow --> Answer["final answer<br/>diagnosis / evidence logs / actions"]
+  Guide --> Answer
+  Github --> Answer
+  Answer --> Mask["PII masking<br/>keep system identifiers"]
+  classDef ask fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef search fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef evidence fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Ask,Mode ask;
+  class Timeline,Pattern,Signal,Pivot search;
+  class Flow,Guide,Github evidence;
+  class Answer,Mask result;`,
+);
+
 const roamingReliabilityDiagram = localized(
   `flowchart TD
   Source["환경부 로밍 API<br/>회원카드 / 충전기 상태"] --> Online["온라인 이벤트 처리<br/>card state update"]
@@ -430,8 +589,8 @@ const pricingPlatformDiagram = localized(
 
 const devopsAutomationDiagram = localized(
   `flowchart TD
-  Pain["반복 작업<br/>PR 리뷰 / 로컬 ENV / 배포 / 내부 API"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
-  Review --> Context["project-context + prompts + skills<br/>repo별 규칙 주입"]
+  Pain["반복 운영 작업<br/>PR 리뷰 / 로컬 ENV / 배포 / 내부 API"] --> Review["voltup-workflow<br/>/gemini-review<br/>조직 공통 AI 리뷰"]
+  Review --> Context["project-context + prompts + skills<br/>repo별 운영 문맥 주입"]
   Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
   Local --> Vault["Vault CLI login<br/>project path + SHARED path<br/>secret commit 없음"]
   Local --> IAM["gcloud account -><br/>IAM_DB_USER_NAME"]
@@ -450,8 +609,8 @@ const devopsAutomationDiagram = localized(
   class Local,Vault,IAM,Internal sec;
   class Deploy,Build,Android,IOS,Argo ops;`,
   `flowchart TD
-  Pain["Repeated work<br/>PR review / local env / deploy / internal APIs"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
-  Review --> Context["project-context + prompts + skills<br/>repo-specific rules injected"]
+  Pain["Repeated operational work<br/>PR review / local env / deploy / internal APIs"] --> Review["voltup-workflow<br/>/gemini-review<br/>org-wide AI review"]
+  Review --> Context["project-context + prompts + skills<br/>repo-specific ops context injected"]
   Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
   Local --> Vault["Vault CLI login<br/>project path + SHARED path<br/>no secret commits"]
   Local --> IAM["gcloud account -><br/>IAM_DB_USER_NAME"]
@@ -469,6 +628,49 @@ const devopsAutomationDiagram = localized(
   class Review,Context ai;
   class Local,Vault,IAM,Internal sec;
   class Deploy,Build,Android,IOS,Argo ops;`,
+);
+
+const voltupWorkflowReviewLoopDiagram = localized(
+  `flowchart TD
+  Comment["PR 댓글<br/>/gemini-review"] --> Workflow["voltup-workflow<br/>GitHub Actions reusable workflow"]
+  Workflow --> Secret["Organization Secret<br/>GEMINI_API_KEY"]
+  Workflow --> RepoCtx["저장소별 context<br/>project-context / review-template / docs"]
+  Workflow --> Diff["PR diff + 변경 파일"]
+  Secret --> Gemini["run-gemini-cli<br/>1차 리뷰 실행"]
+  RepoCtx --> Gemini
+  Diff --> Gemini
+  Gemini --> CommentBack["PR 리뷰 댓글<br/>위험 / 누락 / 개선 제안"]
+  CommentBack --> Human["개발자 검토<br/>최종 판단은 사람"]
+  Human --> Update["수정 커밋 또는 논의"]
+  Update --> Comment
+  classDef trigger fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef workflow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef context fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Comment trigger;
+  class Workflow,Gemini workflow;
+  class Secret,RepoCtx,Diff context;
+  class CommentBack,Human,Update result;`,
+  `flowchart TD
+  Comment["PR comment<br/>/gemini-review"] --> Workflow["voltup-workflow<br/>GitHub Actions reusable workflow"]
+  Workflow --> Secret["Organization Secret<br/>GEMINI_API_KEY"]
+  Workflow --> RepoCtx["repo-local context<br/>project-context / review-template / docs"]
+  Workflow --> Diff["PR diff + changed files"]
+  Secret --> Gemini["run-gemini-cli<br/>first-pass review"]
+  RepoCtx --> Gemini
+  Diff --> Gemini
+  Gemini --> CommentBack["PR review comment<br/>risks / gaps / suggestions"]
+  CommentBack --> Human["developer review<br/>human owns final judgment"]
+  Human --> Update["follow-up commit or discussion"]
+  Update --> Comment
+  classDef trigger fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef workflow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef context fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Comment trigger;
+  class Workflow,Gemini workflow;
+  class Secret,RepoCtx,Diff context;
+  class CommentBack,Human,Update result;`,
 );
 
 const voltbotCrewDiagram = localized(
@@ -580,6 +782,7 @@ export interface PortfolioProject {
   indexLabel?: Localized;
   referenceLayout?: 'stacked' | 'split-with-context';
   fullWidthImplementationAfterContext?: boolean;
+  visual?: 'voltbot-agent-platform';
   period: Localized;
   company: Localized;
   roleLabel: Localized;
@@ -615,14 +818,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     en: 'Project Portfolio',
   },
   eyebrow: {
-    ko: '결제, 앱, 로밍, 프라이싱, 멤버십, 프로모션, AI 에이전트, DX, 개인 서비스의 주요 사례',
-    en: 'Selected cases across payments, apps, roaming, pricing, membership, promotions, AI agents, DX, and personal products',
+    ko: '결제, 앱, 로밍, 사내 AI 에이전트, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
+    en: 'Selected cases across payments, apps, roaming, internal AI agents, pricing, membership, promotions, DX, and personal products',
   },
   intro: {
     ko:
-      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, AI 에이전트 라우팅, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
+      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 사내 AI 에이전트 라우팅과 로그 진단, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
     en:
-      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, pricing APIs, membership migration, point-wallet design, AI-agent routing, DX automation, and Commit Map as a personal product built from a real planning problem.',
+      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, internal AI-agent routing and log diagnosis, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
   },
   roleFocus: [
     {
@@ -654,8 +857,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       en: 'Operational stabilization with Pub/Sub DLQ, Athena batches, monthly partitions, and circuit-breaker patterns',
     },
     {
-      ko: 'LLM 라우팅, run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
-      en: 'DX improvements using LLM routing, run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
+      ko: '채팅 기반 AI 에이전트, LLM 라우팅, Tool Calling, WebSocket 스트리밍, 운영 로그 진단 자동화 경험',
+      en: 'Chat-based AI agents, LLM routing, tool calling, WebSocket streaming, and production-log diagnosis automation',
+    },
+    {
+      ko: 'run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
+      en: 'DX improvements using run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
     },
   ],
   projects: [
@@ -1713,10 +1920,162 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
     },
     {
+      slug: 'voltbot-agent-platform',
+      title: {
+        ko: 'Voltbot: 사내 업무 에이전트 플랫폼과 로그 분석 자동화',
+        en: 'Voltbot: Internal Work-Agent Platform and Log Diagnosis Automation',
+      },
+      indexLabel: {
+        ko: 'Voltbot (사내 AI 업무 에이전트 플랫폼)',
+        en: 'Voltbot (Internal AI Work-Agent Platform)',
+      },
+      visual: 'voltbot-agent-platform',
+      period: {
+        ko: '2026.06 - 현재',
+        en: 'Jun 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: '채팅 기반 멀티 에이전트 업무 도구, 의도 기반 Agent Router, 로그 진단 에이전트 설계',
+        en: 'Designed chat-based multi-agent tooling, an intent-based Agent Router, and log-diagnosis agents',
+      },
+      summary: {
+        ko:
+          'Voltbot은 사내 구성원이 Google 계정으로 로그인해 코드 정책, 데이터 분석, 법률 지원, 운영, 로그 분석 같은 전문 에이전트를 채팅으로 사용하는 업무 도구입니다. 사용자가 에이전트를 매번 고르지 않아도 요청 의도와 권한을 기준으로 적절한 전문 에이전트에 연결되도록 Intent-based Agent Router를 설계·구현했습니다. 운영/CS가 개발자에게 요청하던 로그 조회와 원인 분석 병목을 줄이기 위해, GCP 운영 로그, 사내 로그 분석 가이드, GitHub 코드 근거를 교차 조회하는 로그 분석 에이전트도 구성했습니다.',
+        en:
+          'Voltbot is an internal work tool where employees sign in with Google accounts and use specialized agents for code policy, data analysis, legal support, operations, and log diagnosis through chat. I designed and implemented an intent-based Agent Router so users can be routed to the right specialized agent based on request intent and permissions without manually choosing every time. I also reduced the developer-dependent bottleneck around operations and CS log triage by building a log-diagnosis agent that cross-checks GCP production logs, internal diagnosis guides, and GitHub code evidence.',
+      },
+      challenge: {
+        ko:
+          '고객 결제 실패나 충전 오류 문의가 들어오면 운영자가 Cloud Logging, 에러 코드, 서비스 간 상관키, 코드 근거를 직접 찾기 어려워 개발자에게 수동 분석을 요청해야 했습니다. 동시에 사내 AI 도구는 여러 에이전트를 같은 채팅 표면에서 권한별로 안전하게 제공하고, 어떤 도구를 실행했는지와 답변 근거를 사용자가 확인할 수 있어야 했습니다.',
+        en:
+          'When customer payment or charging failures arrived, operators could not easily inspect Cloud Logging, error codes, cross-service correlation keys, and code evidence without asking engineers for manual triage. The internal AI tool also needed to expose multiple agents through one chat surface, enforce permissions, and keep tool execution plus evidence visible to users.',
+      },
+      actions: [
+        {
+          ko: '`AgentRouter`를 구현해 사용자의 자연어 요청을 의도별로 분류하고, 권한과 에이전트 상태를 고려해 로그 분석·데이터 분석·법률 지원·코드 정책 같은 전문 에이전트로 자동 연결되도록 했습니다.',
+          en: 'Implemented `AgentRouter` to classify natural-language requests by intent and route users to specialized agents such as log diagnosis, data analysis, legal support, and code policy based on permissions and agent availability.',
+        },
+        {
+          ko: '공통 `Agent`/`Tool` 계약 위에서 `AgentRunner`, `AgentRouter`, `ToolHandler` 흐름을 연결해 세션, 컨텍스트, 권한, 쿼터, 중단 요청, Tool 호출/결과가 WebSocket으로 이어지도록 구성했습니다.',
+          en: 'Connected `AgentRunner`, `AgentRouter`, and `ToolHandler` on top of the shared `Agent`/`Tool` contract so sessions, context, permissions, quotas, interruptions, tool calls, and tool results flow through WebSocket responses.',
+        },
+        {
+          ko: '`LogDiagnosisAgent`에는 고객 모드와 운영 모드를 나누고, userId가 없어도 기간·증상·서비스 패턴만으로 조사할 수 있도록 검색 전략을 설계했습니다.',
+          en: 'Split `LogDiagnosisAgent` into customer and operations modes, so it can investigate from time windows, symptoms, and service patterns even without a userId.',
+        },
+        {
+          ko: '`searchUserLogs` 도구를 통해 GCP 운영 로그를 `services`, `severity`, `excludeIstio`, `range/from/to`, `pageToken`, raw LQL 조합으로 조회하고, 결과가 비거나 모호하면 범위 확대와 query 보강을 반복하도록 만들었습니다.',
+          en: 'Implemented `searchUserLogs` for GCP production logs using `services`, `severity`, `excludeIstio`, `range/from/to`, `pageToken`, and raw LQL, with retries for widening ranges or strengthening queries.',
+        },
+        {
+          ko: '로그 분석 가이드 업로드/조회/수정 화면과 `listLogDiagnosisGuides`, `readLogDiagnosisGuide` 도구를 연결해 운영 지식이 에이전트 런타임에 직접 참조되도록 했습니다.',
+          en: 'Connected guide upload/search/edit screens with `listLogDiagnosisGuides` and `readLogDiagnosisGuide`, so operational knowledge can be consulted directly at runtime.',
+        },
+        {
+          ko: 'traceId, user_id, order_number를 상황에 맞게 갈아타는 상관키 pivot 규칙과, 2개 이상 서비스가 얽히면 Mermaid sequenceDiagram으로 연계 플로우를 표현하는 답변 기준을 추가했습니다.',
+          en: 'Added correlation-key pivot rules across traceId, user_id, and order_number, plus answer rules that render a Mermaid sequence diagram when a case spans multiple services.',
+        },
+        {
+          ko: '로그 인용과 진단문에는 자연인 식별 정보를 마스킹하되 user_id, order_number, traceId 같은 시스템 식별자는 추적 가능하도록 남기는 개인정보 표시 정책을 정리했습니다.',
+          en: 'Defined a display policy that masks natural-person identifiers in quoted logs and diagnosis text while keeping system identifiers such as user_id, order_number, and traceId traceable.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: 'Agent Router는 단순 메뉴 선택 기능이 아니라, 사내 사용자가 “무엇을 물어봐야 하는지”보다 “어떤 문제를 해결하고 싶은지”만 말해도 맞는 업무 에이전트로 보내주는 진입점으로 설계했습니다. 명확한 의도는 자동 라우팅하고, 애매한 경우에는 사용자가 직접 에이전트를 선택할 수 있게 했습니다.',
+          en: 'The Agent Router was designed as more than a menu shortcut: it lets internal users describe the problem they want to solve instead of knowing which agent to choose. Clear intent is routed automatically, while ambiguous cases still allow explicit agent selection.',
+        },
+        {
+          ko: '이 프로젝트는 “답변을 잘하는 챗봇”보다 “업무 도구를 호출해 근거를 남기는 에이전트”가 중요했습니다. 그래서 최종 답변보다 먼저 Tool 실행 내역, 근거 로그, 가이드/코드 근거가 확인 가능한 형태로 남도록 설계했습니다.',
+          en: 'The important part was not just a chatbot that answers well, but an agent that calls work tools and leaves evidence. Tool trails, evidence logs, and guide/code basis therefore remain visible before the final answer is trusted.',
+        },
+        {
+          ko: '로그 분석은 한 키로 전체 흐름을 잇기 어렵기 때문에 traceId에만 의존하지 않고 user_id와 order_number 관점을 병행했습니다. 서비스 경계나 Pub/Sub consumer에서 trace가 끊겨도 다른 상관키로 인과 사슬을 이어갈 수 있게 한 점이 핵심입니다.',
+          en: 'Log diagnosis cannot rely on a single key across the whole system, so I paired traceId with user_id and order_number views. The key point is keeping the causal chain traceable even when traces break across service or Pub/Sub consumer boundaries.',
+        },
+        {
+          ko: '여러 에이전트를 같은 채팅 표면에 올릴 때 권한, 개발 중 상태, 승인 대기, 사용량 같은 운영 상태를 제품 UI에 드러내야 한다고 봤습니다.',
+          en: 'When multiple agents share one chat surface, operational states such as permissions, developing status, pending approval, and usage need to be part of the product UI.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '사용자가 에이전트 종류를 미리 알지 못해도 질문 내용만으로 적절한 업무 에이전트에 진입할 수 있게 만들어, 사내 AI 도구의 첫 사용 장벽을 낮췄습니다.',
+          en: 'Lowered the entry barrier for the internal AI tool by letting users reach the right work agent from the question itself, even when they do not know the available agent types in advance.',
+        },
+        {
+          ko: '운영/CS가 고객 결제 실패, 서비스 에러, 특정 기간의 장애 패턴을 채팅으로 질의하고, 로그 근거와 권장 조치를 함께 받을 수 있는 업무 흐름을 만들었습니다.',
+          en: 'Created a workflow where operations and CS can ask about customer payment failures, service errors, or incident patterns in chat and receive evidence logs plus recommended actions.',
+        },
+        {
+          ko: 'Cloud Logging, 사내 가이드, GitHub 코드 검색을 오가던 수동 진단 절차를 에이전트 Tool 흐름으로 묶어 개발자 의존적인 반복 트리아지 비용을 줄일 수 있는 기반을 만들었습니다.',
+          en: 'Turned manual triage across Cloud Logging, internal guides, and GitHub code search into an agent tool flow, creating a foundation for reducing repeated developer-dependent diagnosis work.',
+        },
+        {
+          ko: '코드 정책, 데이터 분석, 법률, 운영, 로그 분석처럼 성격이 다른 사내 에이전트를 권한에 따라 같은 채팅 UI에서 사용할 수 있는 멀티 에이전트 플랫폼 형태로 정리했습니다.',
+          en: 'Organized specialized agents such as code policy, data analysis, legal, operations, and log diagnosis into a permission-aware multi-agent platform.',
+        },
+      ],
+      note: {
+        ko: '사내 반복 업무를 AI로 대체했다기보다, Intent-based Agent Router와 Tool 실행 레이어를 통해 기존 개발자 의존 트리아지 흐름을 권한·근거·가이드·코드 탐색이 있는 제품형 업무 도구로 바꾼 사례입니다.',
+        en: 'This is less about replacing internal work with AI and more about using an intent-based Agent Router plus a tool-execution layer to turn developer-dependent triage into a productized work tool with permissions, evidence, guides, and code exploration.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'GCP Cloud Logging', 'LLM Tool Calling', 'GitHub API', 'Google OAuth', 'MySQL'],
+      diagrams: [
+        {
+          title: {
+            ko: '멀티 에이전트를 채팅으로 사용하는 Voltbot 플랫폼 구조',
+            en: 'Voltbot platform structure for chat-based multi-agent work',
+          },
+          description: {
+            ko:
+              '사용자가 채팅으로 요청하면 권한과 에이전트 설정을 확인하고, AgentRunner와 ToolHandler가 로그·가이드·코드 도구를 실행한 뒤 WebSocket으로 실행 내역과 최종 답변을 돌려주는 구조입니다.',
+            en:
+              'Shows how a chat request passes through permissions and agent selection, then AgentRunner and ToolHandler execute log, guide, and code tools before streaming tool trails and the final answer over WebSocket.',
+          },
+          code: voltbotAgentPlatformDiagram,
+        },
+        {
+          title: {
+            ko: '에이전트 실행 루프: 라우팅, Tool 호출, 재판단',
+            en: 'Agent execution loop: routing, tool calls, and next-action decisions',
+          },
+          description: {
+            ko:
+              '채팅 요청이 들어온 뒤 AgentRouter가 전문 에이전트를 정하고, AgentRunner가 LLM의 다음 행동을 판단하며, ToolHandler 실행 결과를 다시 컨텍스트에 넣어 최종 답변까지 반복하는 루프입니다.',
+            en:
+              'Shows the runtime loop where AgentRouter chooses a specialist, AgentRunner lets the LLM decide the next action, and ToolHandler results are appended back into context until the final answer is ready.',
+          },
+          code: voltbotAgentLoopDiagram,
+        },
+        {
+          title: {
+            ko: '로그 분석 에이전트: 로그, 가이드, 코드 근거를 묶는 진단 흐름',
+            en: 'Log diagnosis agent: joining logs, guides, and code evidence',
+          },
+          description: {
+            ko:
+              '고객 모드와 운영 모드를 나누고, traceId/user_id/order_number 상관키를 갈아타며 로그를 재조회한 뒤, 가이드와 코드 근거를 결합해 진단과 권장 조치를 만드는 흐름입니다.',
+            en:
+              'Splits customer and operations modes, pivots across traceId/user_id/order_number, then combines logs with guide and code evidence to produce diagnosis and recommended actions.',
+          },
+          code: voltbotLogDiagnosisDiagram,
+        },
+      ],
+    },
+    {
       slug: 'devops-automation',
       title: {
-        ko: '개발 생산성 자동화 및 DevOps 개선',
-        en: 'Developer Productivity Automation and DevOps Improvements',
+        ko: 'Voltup Workflow: AI 운영 자동화와 DevOps 표준화',
+        en: 'Voltup Workflow: AI Operations Automation and DevOps Standardization',
+      },
+      indexLabel: {
+        ko: 'Voltup Workflow (AI 운영 자동화)',
+        en: 'Voltup Workflow (AI Ops Automation)',
       },
       period: {
         ko: '2024.10 - 현재',
@@ -1727,29 +2086,29 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: 'AI 리뷰, Vault-로컬 동기화, 내부 API 표준, 모바일 CI/CD 보안 개선',
-        en: 'AI review, Vault-to-local sync, internal API standards, and mobile CI/CD security hardening',
+        ko: '조직 공통 AI 리뷰 workflow, repo-local 운영 문맥, Vault-local sync, CI/CD 표준화',
+        en: 'Org-wide AI review workflow, repo-local operational context, Vault-local sync, and CI/CD standardization',
       },
       summary: {
         ko:
-          '볼트업 조직에서 반복적으로 발생하던 PR 리뷰, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 공통 workflow로 묶었습니다. 특히 로컬 환경값은 공개 저장소에 둘 수도 없고 개별 전달도 번거로워서, Vault 값을 `application-local.yaml`로 바로 동기화하는 Gradle 로직을 만들었습니다. 이후 Admin internal API 호출 규약과 모바일 배포 흐름까지 표준화했습니다.',
+          'Voltup Workflow는 개발과 운영 사이에서 반복되던 PR 리뷰, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 재사용 가능한 workflow와 자동화 도구로 묶은 프로젝트입니다. `/gemini-review` 댓글 기반 AI 리뷰는 저장소별 `project-context`, `review-template`, `docs`를 읽어 repo-local 운영 문맥을 반영하고, Vault-local sync와 Jenkins/ArgoCD 표준화를 함께 구성해 운영 효율과 릴리즈 안정성을 높이는 방향으로 정리했습니다.',
         en:
-          'Turned recurring PR review, local environment setup, internal API integration, and service/app delivery work in Voltup into shared workflows. In particular, I built Gradle logic that syncs Vault values directly into `application-local.yaml`, then extended the standardization into Admin internal API conventions and mobile delivery workflows.',
+          'Voltup Workflow turns repeated work between development and operations, including PR review, local environment setup, internal API integration, and service/app delivery, into reusable workflows and automation tools. The `/gemini-review` AI review flow reads repo-local `project-context`, `review-template`, and docs, while Vault-local sync and Jenkins/ArgoCD standardization improve operational efficiency and release reliability.',
       },
       challenge: {
         ko:
-          'MSA가 늘수록 코드 리뷰 기준, 마이크로서비스별 작업 컨벤션, 반복 작업 방식, 로컬 환경값 전달, 내부 API 호출 방식, 배포 절차가 사람마다 달라지기 쉬웠습니다. 모바일 배포는 인증 키 관리 부담과 불필요한 실패 요인도 함께 줄여야 했습니다.',
+          'MSA가 늘수록 코드 리뷰 기준, 마이크로서비스별 작업 컨벤션, 반복 작업 방식, 로컬 환경값 전달, 내부 API 호출 방식, 배포 절차가 사람마다 달라지기 쉬웠습니다. 개발과 운영이 분리된 상황에서는 이런 drift가 리뷰 누락, 환경 불일치, 배포 실패, 운영자 도구 호출 경계 불명확성으로 이어질 수 있어 공통 workflow와 자동화 체계가 필요했습니다.',
         en:
-          'As the number of services grew, review rules, microservice-level conventions, recurring task patterns, local secret delivery, internal API invocation, and delivery steps were drifting per person. Mobile delivery also needed to reduce key-management burden and avoidable failure points.',
+          'As the number of services grew, review rules, microservice-level conventions, recurring task patterns, local secret delivery, internal API invocation, and delivery steps were drifting per person. In a development/operations split, this drift can turn into missed reviews, environment mismatches, release failures, and unclear operator-tool trust boundaries, so the team needed shared workflows and automation.',
       },
       actions: [
         {
-          ko: '`voltup-workflow`에 `/gemini-review` 댓글 트리거형 GitHub Actions 워크플로우를 만들고, Organization Secret의 `GEMINI_API_KEY`와 저장소별 `project-context`, `review-template`, `docs`를 읽어 재사용 가능한 1차 코드 리뷰 체계를 구성했습니다.',
-          en: 'Built a reusable comment-triggered GitHub Actions workflow in `voltup-workflow` around `/gemini-review`, using the organization-level `GEMINI_API_KEY` plus per-repo `project-context`, `review-template`, and docs to provide consistent first-pass reviews.',
+          ko: '`voltup-workflow`에 `/gemini-review` 댓글 트리거형 GitHub Actions reusable workflow를 만들고, Organization Secret의 `GEMINI_API_KEY`와 저장소별 `project-context`, `review-template`, `docs`를 조합해 PR diff를 repo 문맥에 맞춰 검토하는 1차 AI 리뷰 체계를 구성했습니다.',
+          en: 'Built a reusable GitHub Actions workflow in `voltup-workflow` triggered by `/gemini-review`, combining the organization-level `GEMINI_API_KEY` with per-repo `project-context`, `review-template`, and docs so PR diffs are reviewed against repository-specific context.',
         },
         {
-          ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 넣어 여러 생성형 LLM에서 활용할 수 있도록 각 마이크로서비스의 작업 컨벤션, 공통 작업 형상, API 우선 개발 흐름, 보안 규칙을 재사용 가능한 스킬 체계로 정리했습니다.',
-          en: 'Added `.agent/workflows`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` to the MSA workspace so microservice conventions, recurring task shapes, API-first development flow, and security rules become reusable skills that can be consumed across generative LLM tools.',
+          ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 배치해 각 서비스의 작업 컨벤션, API 우선 개발 흐름, 보안 규칙, 반복 운영 작업 형상을 여러 생성형 LLM 도구에서 공유 가능한 repo-local context로 만들었습니다.',
+          en: 'Added `.agent/workflows`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` to MSA repositories, turning service conventions, API-first development flow, security rules, and recurring operational task shapes into reusable repo-local context for generative LLM tools.',
         },
         {
           ko: '루트 `build.gradle.kts`에는 base yaml의 placeholder를 Vault에서 치환해 `application-local.yaml`을 생성하는 로직을 넣고, 프로젝트 경로와 `secret/SHARED/voltup/dev`를 순차 조회하도록 만들었습니다. Vault CLI 로그인 확인, 비대화형 환경 대응, `gcloud` 계정 기반 `IAM_DB_USER_NAME` 치환까지 포함해 새 키가 추가돼도 개발자별 local 환경이 자동으로 같은 기준을 유지하도록 했습니다.',
@@ -1778,8 +2137,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       engineeringViews: [
         {
-          ko: 'AI 도입을 “모델 하나 붙이기”가 아니라 재사용 가능한 workflow와 repo-local context를 설계하는 문제로 보고, 프로젝트별 문맥을 자동 리뷰 품질에 직접 연결했습니다.',
-          en: 'Treated AI adoption as a workflow-and-context design problem rather than just attaching a model, tying repo-local knowledge directly to review quality.',
+          ko: 'AI 도입을 “모델 하나 붙이기”가 아니라 운영 체계 설계 문제로 봤습니다. 같은 `/gemini-review` 명령이라도 저장소별 context와 review template을 읽도록 만들어, 공통 workflow는 유지하면서 서비스별 운영 문맥은 잃지 않게 했습니다.',
+          en: 'Treated AI adoption as an operating-system design problem rather than just attaching a model. The same `/gemini-review` command reads each repository context and review template, keeping the workflow shared while preserving service-specific operational context.',
         },
         {
           ko: '로컬 환경 셋업은 “누가 비밀값을 전달하느냐”보다 “Vault와 local 환경을 직접 동기화해 인증된 개발자가 같은 기준의 설정을 자동으로 받게 하자”는 방향으로 풀었습니다. 공개 저장이나 수동 배포 대신 Vault CLI 인증을 전제로 yaml 생성과 인증서 갱신을 자동화해, 키가 늘어나도 개발자 간 동기화가 흐트러지지 않도록 만들었습니다.',
@@ -1800,8 +2159,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       outcomes: [
         {
-          ko: '조직 공통 AI 리뷰 워크플로우와 마이크로서비스별 컨벤션·공통 작업 형상 스킬 체계를 만들어, 신규 저장소나 신규 작업도 같은 기준으로 빠르게 온보딩할 수 있게 했습니다.',
-          en: 'Established an organization-wide AI review workflow plus a skill system for microservice conventions and recurring task shapes, so new repos and workstreams can be onboarded under the same standards much faster.',
+          ko: '조직 공통 `voltup-workflow`와 마이크로서비스별 repo-local context 체계를 만들어, 신규 저장소나 신규 작업도 같은 AI 리뷰 기준과 운영 컨벤션으로 빠르게 온보딩할 수 있게 했습니다.',
+          en: 'Established the org-wide `voltup-workflow` plus repo-local context patterns, allowing new repositories and workstreams to onboard under the same AI review standards and operational conventions.',
         },
         {
           ko: '민감한 환경값을 저장소에 두지 않으면서도 Vault와 local 환경을 바로 동기화해, 키가 추가될 때도 개발자 간 설정 sync가 자동으로 유지되도록 만들었습니다.',
@@ -1817,11 +2176,24 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
       ],
       note: {
-        ko: '보안 때문에 공개할 수 없는 로컬 환경값 문제를 Vault-local sync 구조로 풀고, 내부 API 호출/모바일 배포 인증처럼 운영 중 반복적으로 흔들리는 경계를 표준화한 DX/DevOps 프로젝트입니다.',
-        en: 'A DX/DevOps project that uses Vault-to-local sync for non-public local secrets and standardizes repeatedly fragile boundaries such as internal API calls and mobile delivery authentication.',
+        ko: '개발/운영 사이에서 반복되는 리뷰, 환경 drift, 배포 실패, 내부 도구 호출 경계를 workflow와 자동화로 줄여 운영 효율과 릴리즈 안정성을 높인 프로젝트입니다.',
+        en: 'A workflow automation project that improves operational efficiency and release reliability by reducing repeated review work, environment drift, delivery failures, and ambiguity at internal-tool boundaries.',
       },
       tech: ['Vault CLI', 'Gradle Kotlin DSL', 'GitHub Actions', 'Jenkins', 'ArgoCD', 'Workload Identity', 'Firebase CLI', 'Gemini API', 'GitHub Copilot', 'Claude Code', 'gcloud CLI'],
       diagrams: [
+        {
+          title: {
+            ko: 'Voltup Workflow: /gemini-review AI 리뷰 루프',
+            en: 'Voltup Workflow: /gemini-review AI review loop',
+          },
+          description: {
+            ko:
+              'PR 댓글에서 시작된 `/gemini-review`가 조직 공통 workflow를 호출하고, 저장소별 context와 변경 diff를 함께 읽어 PR에 1차 리뷰 코멘트를 남기는 구조입니다.',
+            en:
+              'Shows how `/gemini-review` starts from a PR comment, invokes the org-wide workflow, reads repo-local context plus the PR diff, and posts first-pass review comments back to the PR.',
+          },
+          code: voltupWorkflowReviewLoopDiagram,
+        },
         {
           title: {
             ko: 'AI 리뷰, Vault-로컬 동기화, 배포 표준화',

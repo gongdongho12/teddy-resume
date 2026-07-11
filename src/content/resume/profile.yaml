@@ -43,12 +43,14 @@ experience:
         빌링 - DLQ 및 다단계 미수 배치로 결제/미수 처리 안정성 확보
         프로모션(쿠폰/포인트) - 고객 리텐션 증대
         유저사이드 - 차량정보 조회, PnC(Plug & Charge) 인증 및 유저사이드 백엔드와 모바일 앱 담당
-        DX 인프라 - AI 워크플로우 표준화, CI/CD 통합, 문서 자동 생성 적용
+        사내 AI 도구 - 에이전트 라우팅, 로그 진단 자동화, DX 워크플로우 구축
+        DX 인프라 - CI/CD 통합, 문서 자동 생성 적용
       en: |
         Billing - Improved payment and arrears-handling reliability with DLQ and multi-stage unpaid batches
         Promotions (coupon/points) - Improved customer retention
         User-side - Owned vehicle information lookup, PnC (Plug & Charge) authorization, user-side backend, and the mobile app
-        DX infrastructure - Standardized AI workflows and applied CI/CD integration and automated documentation
+        Internal AI tooling - Built agent routing, log-diagnosis automation, and DX workflows
+        DX infrastructure - Applied CI/CD integration and automated documentation
 
   - company:
       ko: 카카오스타일
@@ -176,11 +178,13 @@ skillGroups:
       GitHub Copilot
       Claude Code
       Gemini API
+      Agent Routing / LLM Tool Calling
       Cursor (에이전트 워크플로)
     body_en: |
       GitHub Copilot (11 prompts)
       Claude Code (8 skills)
       Gemini API / run-gemini-cli
+      Agent routing / LLM tool calling
       Cursor workflows
   - label: Mobile
     body_ko: |
@@ -629,6 +633,57 @@ projectSections:
           en:
             - Created the foundation for routing users to the right specialist without requiring them to classify the request first
             - Established an AI-assisted operations diagnosis direction to reduce repeated developer checks for code policy and logs
+
+      - title:
+          ko: Voltbot — 사내 업무 에이전트 플랫폼 및 로그 진단 자동화
+          en: Voltbot — Internal Work-Agent Platform & Log Diagnosis Automation
+        portfolioSlug: voltbot-agent-platform
+        period:
+          ko: "2026.06 ~ 현재"
+          en: "Jun 2026 — Present"
+        summary:
+          ko: |
+            운영/CS가 “고객 결제 실패 원인을 확인해달라”처럼 업무 언어로 질문하면 Agent Router가 로그 분석 에이전트로 연결하고,
+            에이전트가 GCP 운영 로그, 사내 진단 가이드, GitHub 코드 근거를 순차 조회해 진단·근거·권장 조치로 답변하는 흐름을 구축했습니다.
+            특히 결제 실패처럼 billing-service, consumer, feapp, 외부 PG가 얽힌 이슈에서 traceId가 끊겨도 user_id/order_number로 재조회해 원인 흐름을 이어가도록 설계했습니다.
+          en: |
+            Built a flow where operations and CS can ask in work language, such as “why did this customer's payment fail?”, and the Agent Router sends the request to the log-diagnosis agent.
+            The agent queries GCP production logs, internal diagnosis guides, and GitHub code evidence, then returns a diagnosis, supporting evidence, and recommended action.
+            For payment failures spanning billing-service, consumers, feapp, and external PGs, the flow can continue investigation with user_id/order_number even when traceId continuity breaks.
+        tech:
+          - Kotlin
+          - Spring Boot
+          - React
+          - TypeScript
+          - WebSocket
+          - GCP Cloud Logging
+          - LLM Tool Calling
+          - Gemini API
+          - GitHub API
+        highlights:
+          ko:
+            - 사용자의 자연어 요청을 의도·권한·에이전트 상태 기준으로 분류해 로그 분석, 데이터 분석, 법률 지원, 코드 정책 등 전문 에이전트로 연결하는 AgentRouter 구현
+            - 공통 Agent/Tool 계약 위에 AgentRunner, ToolHandler, WebSocket 스트리밍을 연결해 Tool 실행 내역, 권한, 쿼터, 중단 요청, 최종 답변이 같은 대화 흐름에 남도록 구성
+            - LogDiagnosisAgent에 고객 모드와 운영 모드를 나누고, `services`, `severity`, `range/from/to`, `pageToken`, raw LQL 조건으로 GCP 운영 로그를 반복 조회하는 `searchUserLogs` 도구 흐름 설계
+            - 결제 실패 분석에서 traceId, user_id, order_number를 상황에 맞게 갈아타는 상관키 pivot 규칙을 두어 서비스 경계나 Pub/Sub consumer에서 trace가 끊겨도 인과 흐름을 추적
+            - 로그 분석 가이드 조회 도구와 GitHub 코드 근거 검색을 결합해 에러 코드, 정책상 정상 차단, 외부 PG/카드사 점검, 내부 상태 불일치를 구분하는 답변 기준 정리
+            - 최종 답변을 진단, 근거 로그, 연계 플로우, 운영/고객 안내 조치로 구조화하고 자연인 식별 정보는 마스킹하되 user_id/order_number 같은 시스템 식별자는 추적 가능하게 유지
+          en:
+            - Implemented AgentRouter to classify natural-language requests by intent, permission, and agent availability, then route to specialist agents such as log diagnosis, data analysis, legal support, and code policy
+            - Connected AgentRunner, ToolHandler, and WebSocket streaming on a shared Agent/Tool contract so tool trails, permissions, quotas, interruptions, and final answers remain visible in the same conversation flow
+            - Split LogDiagnosisAgent into customer and operations modes, designing a `searchUserLogs` tool flow that repeatedly queries GCP production logs with `services`, `severity`, `range/from/to`, `pageToken`, and raw LQL conditions
+            - Added correlation-key pivot rules across traceId, user_id, and order_number so payment-failure investigations can remain traceable even when traces break across service boundaries or Pub/Sub consumers
+            - Combined log-diagnosis guide tools with GitHub code evidence to distinguish error codes, expected policy blocks, external PG/card-company maintenance, and internal state mismatches
+            - Structured final answers into diagnosis, evidence logs, linked flow, and operations/customer guidance, while masking natural-person identifiers and keeping system identifiers such as user_id/order_number traceable
+        results:
+          ko:
+            - 운영/CS가 개발자에게 “로그 확인”을 요청하기 전, 고객 결제 실패·서비스 에러·특정 기간 장애 패턴을 채팅에서 1차 진단하고 안내 방향을 잡을 수 있는 업무 흐름 마련
+            - Cloud Logging, 사내 가이드, GitHub 코드 검색을 오가던 개발자 의존 반복 진단 절차를 재사용 가능한 에이전트 Tool 흐름으로 표준화
+            - 결제 실패 원인이 사용자 결제수단 문제인지, 외부 PG/카드사 점검인지, 내부 서비스 상태 불일치인지 근거 중심으로 나눠 운영 답변 품질을 높일 수 있는 기반 구축
+          en:
+            - Created a workflow where operations and CS can perform first-pass diagnosis for customer payment failures, service errors, and incident patterns before asking engineers to “check the logs”
+            - Standardized repeated developer-dependent diagnosis across Cloud Logging, internal guides, and GitHub code search into a reusable agent tool flow
+            - Built a foundation for evidence-based operations responses by separating user payment-method issues, external PG/card-company maintenance, and internal service-state mismatches
 
       - title:
           ko: 로밍 서비스 안정성 및 성능 최적화

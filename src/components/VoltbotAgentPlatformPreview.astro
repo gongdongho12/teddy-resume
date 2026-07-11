@@ -1,0 +1,205 @@
+---
+import type { Lang } from '@/lib/resume-types';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const isKo = lang === 'ko';
+
+const labels = isKo
+  ? {
+      eyebrow: 'Product Preview',
+      title: '채팅으로 쓰는 사내 업무 에이전트 플랫폼',
+      subtitle: '사용자 요청을 Agent Router가 먼저 분류하고, 적절한 전문 에이전트가 로그, 가이드, 코드를 오가며 답을 구성합니다.',
+      sidebarTitle: '에이전트',
+      activeAgent: '로그 분석',
+      agents: ['의도 기반 라우터', '로그 분석', '데이터 분석', '법률 지원', '코드 정책'],
+      userQuestion: '고객 224514가 어제 결제 실패했다는데 원인 확인해줘',
+      routeTitle: 'Agent Router',
+      routeDecision: '결제 실패 / 로그 근거 요청 → 로그 분석 에이전트',
+      routeMeta: '권한 확인 · 에이전트 상태 확인 · 세션 컨텍스트 전달',
+      runTitle: '실행 내역',
+      steps: ['의도 분류 및 에이전트 라우팅', '운영 로그 조회', '가이드 확인', '코드 근거 검색', '연계 플로우 생성'],
+      diagnosisTitle: '진단',
+      diagnosis:
+        '카드사/은행 시스템 점검 시간대에 외부 PG가 결제를 반려한 일시적 실패로 판단했습니다.',
+      evidenceTitle: '근거 로그',
+      evidence: [
+        'svc=billing-service-consumer | code=4902',
+        'order_number=260706170149MSGD',
+        'traceId -> user_id -> order_number 순서로 재조회',
+      ],
+      actionTitle: '권장 조치',
+      actions: ['고객에게 점검 종료 후 재시도 안내', '반복 실패 시 PG 점검 일정 확인', '자연인 정보는 표시 단계에서 마스킹'],
+      safeguards: ['권한 기반 접근', 'PII 마스킹', '토큰/비용 표시', '세션 공유'],
+    }
+  : {
+      eyebrow: 'Product Preview',
+      title: 'Internal work agents in a chat surface',
+      subtitle: 'The Agent Router classifies the request first, then the right specialized agent traverses logs, guides, and code.',
+      sidebarTitle: 'Agents',
+      activeAgent: 'Log Diagnosis',
+      agents: ['Intent Router', 'Log Diagnosis', 'Data Analysis', 'Legal Support', 'Code Policy'],
+      userQuestion: 'Customer 224514 failed payment yesterday. Can you find the cause?',
+      routeTitle: 'Agent Router',
+      routeDecision: 'Payment failure / evidence request → Log Diagnosis Agent',
+      routeMeta: 'Permission check · agent availability · session context handoff',
+      runTitle: 'Execution Trail',
+      steps: ['Classify intent and route agent', 'Search production logs', 'Read diagnosis guides', 'Find code evidence', 'Build linked flow'],
+      diagnosisTitle: 'Diagnosis',
+      diagnosis:
+        'The failure is likely a temporary rejection from an external PG during card or bank maintenance.',
+      evidenceTitle: 'Evidence Logs',
+      evidence: [
+        'svc=billing-service-consumer | code=4902',
+        'order_number=260706170149MSGD',
+        'Re-query by traceId, user_id, then order_number',
+      ],
+      actionTitle: 'Recommended Action',
+      actions: ['Ask the customer to retry after maintenance', 'Check PG schedule if failures continue', 'Mask natural-person data at display time'],
+      safeguards: ['Role-based access', 'PII masking', 'Token/cost display', 'Session sharing'],
+    };
+---
+
+<section class="rounded-[1.45rem] border border-slate-900/10 bg-[linear-gradient(180deg,#fdfefe_0%,#f4fafc_100%)] p-5">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
+        {labels.eyebrow}
+      </p>
+      <h3 class="mt-2 text-xl font-semibold tracking-[-0.02em] text-slate-950">
+        {labels.title}
+      </h3>
+      <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+        {labels.subtitle}
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      {labels.safeguards.map((item) => (
+        <span class="rounded-full border border-sky-800/15 bg-sky-50 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] text-sky-800">
+          {item}
+        </span>
+      ))}
+    </div>
+  </div>
+
+  <div class="mt-5 overflow-hidden rounded-[1.25rem] border border-slate-900/10 bg-white shadow-[0_24px_70px_-48px_rgba(15,23,42,0.48)]">
+    <div class="flex items-center justify-between border-b border-slate-900/10 bg-[#f6f8f7] px-4 py-3">
+      <div class="flex items-center gap-2">
+        <span class="h-2.5 w-2.5 rounded-full bg-[#f87171]"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-[#facc15]"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-[#22c55e]"></span>
+      </div>
+      <div class="text-xs font-semibold tracking-[0.18em] text-slate-400">VOLTBOT</div>
+    </div>
+
+    <div class="grid min-h-[28rem] md:grid-cols-[13rem_minmax(0,1fr)]">
+      <aside class="border-b border-slate-900/10 bg-[#eef0ed] p-4 md:border-b-0 md:border-r">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+          {labels.sidebarTitle}
+        </p>
+        <div class="mt-3 space-y-2">
+          {labels.agents.map((agent) => {
+            const active = agent === labels.activeAgent;
+            return (
+              <div
+                class:list={[
+                  'flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium',
+                  active
+                    ? 'border-lime-300 bg-lime-100 text-slate-950'
+                    : 'border-slate-900/10 bg-white/70 text-slate-500',
+                ]}
+              >
+                <span
+                  class:list={[
+                    'h-2 w-2 rounded-full',
+                    active ? 'bg-lime-500' : 'bg-slate-300',
+                  ]}
+                ></span>
+                <span>{agent}</span>
+              </div>
+            );
+          })}
+        </div>
+      </aside>
+
+      <div class="bg-[#fbfbf9] p-4 sm:p-5">
+        <div class="ml-auto max-w-xl rounded-[1.1rem] bg-lime-300 px-4 py-3 text-sm font-semibold leading-6 text-slate-950">
+          {labels.userQuestion}
+        </div>
+
+        <section class="mt-4 rounded-[1.05rem] border border-sky-800/15 bg-white px-4 py-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-800">
+              {labels.routeTitle}
+            </p>
+            <span class="rounded-full bg-lime-100 px-3 py-1 text-[11px] font-semibold text-lime-900">
+              {isKo ? '자동 연결' : 'Auto-routed'}
+            </span>
+          </div>
+          <p class="mt-2 text-sm font-semibold leading-6 text-slate-900">
+            {labels.routeDecision}
+          </p>
+          <p class="mt-1 text-xs leading-5 text-slate-500">
+            {labels.routeMeta}
+          </p>
+        </section>
+
+        <div class="mt-6 grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+          <section class="rounded-[1.1rem] border border-slate-900/10 bg-white p-4">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-800">
+              {labels.runTitle}
+            </p>
+            <ol class="mt-3 space-y-3">
+              {labels.steps.map((step, index) => (
+                <li class="flex items-start gap-3">
+                  <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[11px] font-semibold text-white">
+                    {index + 1}
+                  </span>
+                  <span class="text-sm leading-6 text-slate-700">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section class="rounded-[1.1rem] border border-slate-900/10 bg-white p-4">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-800">
+              {labels.diagnosisTitle}
+            </p>
+            <p class="mt-3 text-sm font-semibold leading-7 text-slate-900">
+              {labels.diagnosis}
+            </p>
+            <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              <div class="rounded-xl border border-slate-900/10 bg-slate-50 p-3">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                  {labels.evidenceTitle}
+                </p>
+                <ul class="mt-2 space-y-1.5">
+                  {labels.evidence.map((item) => (
+                    <li class="text-xs leading-5 text-slate-600 [overflow-wrap:anywhere]">{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div class="rounded-xl border border-slate-900/10 bg-slate-50 p-3">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                  {labels.actionTitle}
+                </p>
+                <ul class="mt-2 space-y-1.5">
+                  {labels.actions.map((item) => (
+                    <li class="text-xs leading-5 text-slate-600">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="mt-4 rounded-[1rem] border border-slate-900/10 bg-white/82 px-4 py-3 text-right text-xs leading-5 text-slate-400">
+          {isKo ? '토큰 사용량 61.2K · 컨텍스트 23.6K · 예상 비용 $0.09' : 'Usage 61.2K tokens · Context 23.6K · Estimated cost $0.09'}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

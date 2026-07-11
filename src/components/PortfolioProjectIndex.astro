@@ -1,0 +1,103 @@
+---
+import { portfolioText, type PortfolioProject } from '@/lib/portfolio-content';
+import type { Lang } from '@/lib/resume-types';
+
+interface Props {
+  label: string;
+  projects: PortfolioProject[];
+  lang: Lang;
+}
+
+const { label, projects, lang } = Astro.props;
+---
+
+<nav aria-label={label} class="min-w-0 lg:hidden">
+  <div class="min-w-0 overflow-hidden rounded-[1.2rem] border border-slate-900/10 bg-white/72 p-3 shadow-[0_18px_54px_-40px_rgba(15,23,42,0.38)] backdrop-blur-sm">
+    <p class="px-1 text-xs font-semibold uppercase tracking-[0.22em] text-sky-800">
+      {label}
+    </p>
+    <ol class="portfolio-index-strip -mx-1 mt-3 flex max-w-full snap-x gap-2 overflow-x-auto px-1 pb-1 text-sm text-slate-600">
+      {projects.map((project, index) => (
+        <li class="shrink-0 snap-start">
+          <a
+            href={`#${project.slug}`}
+            class="flex h-full w-[min(15.5rem,78vw)] flex-col rounded-xl border border-slate-900/10 bg-slate-50/82 px-3 py-3 transition hover:border-sky-800/20 hover:bg-white hover:text-slate-950"
+          >
+            <span class="block text-xs font-semibold tracking-[0.18em] text-sky-800/70">
+              {(index + 1).toString().padStart(2, '0')}
+            </span>
+            <span class="mt-1 block text-sm font-semibold leading-5 text-slate-800 [overflow-wrap:anywhere]">
+              {portfolioText(project.indexLabel ?? project.title, lang)}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</nav>
+
+<aside class="hidden lg:block">
+  <div class="portfolio-index-card portfolio-index-scroll sticky top-8 space-y-5 overflow-y-auto overscroll-contain rounded-[1.4rem] border border-slate-900/10 bg-white/68 p-5 pr-3 shadow-[0_22px_70px_-44px_rgba(15,23,42,0.35)] backdrop-blur-sm">
+    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-800">
+      {label}
+    </p>
+    <ol class="space-y-2 border-l border-slate-900/10 pl-4 pr-2 text-sm leading-5 text-slate-600">
+      {projects.map((project, index) => (
+        <li>
+          <a
+            href={`#${project.slug}`}
+            class="block min-w-0 rounded-xl px-2 py-2.5 transition hover:bg-slate-50 hover:text-slate-950"
+          >
+            <span class="block text-xs font-semibold tracking-[0.18em] text-sky-800/70">
+              {(index + 1).toString().padStart(2, '0')}
+            </span>
+            <span class="mt-1 block font-medium leading-5 [overflow-wrap:anywhere]">
+              {portfolioText(project.indexLabel ?? project.title, lang)}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</aside>
+
+<style>
+  .portfolio-index-card {
+    max-height: calc(100vh - 4rem);
+    scrollbar-gutter: stable;
+  }
+
+  @supports (height: 100svh) {
+    .portfolio-index-card {
+      max-height: calc(100svh - 4rem);
+    }
+  }
+
+  .portfolio-index-scroll {
+    scrollbar-color: rgb(14 116 144 / 0.32) transparent;
+    scrollbar-width: thin;
+  }
+
+  .portfolio-index-scroll::-webkit-scrollbar {
+    width: 0.45rem;
+  }
+
+  .portfolio-index-scroll::-webkit-scrollbar-thumb {
+    background: rgb(14 116 144 / 0.26);
+    border-radius: 999px;
+  }
+
+  .portfolio-index-strip {
+    scrollbar-width: none;
+  }
+
+  .portfolio-index-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-height: 760px) {
+    .portfolio-index-card {
+      padding-block: 1rem;
+    }
+  }
+</style>

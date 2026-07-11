@@ -212,6 +212,96 @@ const voltupAppExtensionDiagram = localized(
   class QA,Ops,Share result;`,
 );
 
+const voltbotAgentPlatformDiagram = localized(
+  `flowchart TD
+  User["사내 사용자<br/>CS / 운영 / 개발"] --> Chat["Voltbot Web Chat<br/>세션 / 파일첨부 / 공유"]
+  Chat --> Auth["Google OAuth + 권한<br/>role/user 기반 agent access"]
+  Auth --> Router["Intent-based AgentRouter<br/>요청 의도 분류 / agent 결정"]
+  Router --> Select["AgentSelector<br/>수동 선택 / 라우팅 결과 표시"]
+  Select --> Runner["AgentRunner<br/>context / quota / interruption"]
+  Runner --> Tools["ToolHandler<br/>tool_call / approval / answer"]
+  Tools --> Log["GCP 운영 로그 조회"]
+  Tools --> Guide["로그 분석 가이드"]
+  Tools --> Code["GitHub 코드 근거"]
+  Runner --> Stream["WebSocket streaming<br/>tool trail + 최종 답변"]
+  Stream --> Ops["진단 / 근거 / 권장 조치"]
+  classDef user fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef tool fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class User user;
+  class Chat,Auth,Router,Select,Runner,Stream core;
+  class Tools,Log,Guide,Code tool;
+  class Ops result;`,
+  `flowchart TD
+  User["Internal users<br/>CS / operations / engineers"] --> Chat["Voltbot Web Chat<br/>sessions / attachments / sharing"]
+  Chat --> Auth["Google OAuth + permissions<br/>role/user based agent access"]
+  Auth --> Router["Intent-based AgentRouter<br/>classify request / choose agent"]
+  Router --> Select["AgentSelector<br/>manual choice / routing result"]
+  Select --> Runner["AgentRunner<br/>context / quota / interruption"]
+  Runner --> Tools["ToolHandler<br/>tool_call / approval / answer"]
+  Tools --> Log["GCP production-log search"]
+  Tools --> Guide["log-diagnosis guides"]
+  Tools --> Code["GitHub code evidence"]
+  Runner --> Stream["WebSocket streaming<br/>tool trail + final answer"]
+  Stream --> Ops["diagnosis / evidence / actions"]
+  classDef user fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef tool fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class User user;
+  class Chat,Auth,Router,Select,Runner,Stream core;
+  class Tools,Log,Guide,Code tool;
+  class Ops result;`,
+);
+
+const voltbotLogDiagnosisDiagram = localized(
+  `flowchart TD
+  Ask["운영 질문<br/>결제 실패 / 서비스 에러"] --> Mode{"고객 모드<br/>or 운영 모드"}
+  Mode -->|userId 있음| Timeline["user_id 타임라인 조회"]
+  Mode -->|패턴 조사| Pattern["서비스·에러 패턴 조회"]
+  Timeline --> Signal["에러코드·예외·상관키 추출"]
+  Pattern --> Signal
+  Signal --> Pivot["다관점 pivot<br/>traceId / user_id / order_number"]
+  Pivot --> Flow["서비스 간 연계 플로우<br/>Mermaid sequenceDiagram"]
+  Signal --> Guide["로그 분석 가이드 대조"]
+  Signal --> Github["GitHub 코드 근거 확인"]
+  Flow --> Answer["최종 답변<br/>진단 / 근거 로그 / 권장 조치"]
+  Guide --> Answer
+  Github --> Answer
+  Answer --> Mask["개인정보 마스킹<br/>시스템 식별자는 유지"]
+  classDef ask fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef search fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef evidence fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Ask,Mode ask;
+  class Timeline,Pattern,Signal,Pivot search;
+  class Flow,Guide,Github evidence;
+  class Answer,Mask result;`,
+  `flowchart TD
+  Ask["Operations question<br/>payment failure / service error"] --> Mode{"customer mode<br/>or operations mode"}
+  Mode -->|userId exists| Timeline["user_id timeline search"]
+  Mode -->|pattern search| Pattern["service/error-pattern search"]
+  Timeline --> Signal["extract error codes, exceptions, correlation keys"]
+  Pattern --> Signal
+  Signal --> Pivot["multi-angle pivot<br/>traceId / user_id / order_number"]
+  Pivot --> Flow["cross-service flow<br/>Mermaid sequenceDiagram"]
+  Signal --> Guide["compare diagnosis guides"]
+  Signal --> Github["check GitHub code evidence"]
+  Flow --> Answer["final answer<br/>diagnosis / evidence logs / actions"]
+  Guide --> Answer
+  Github --> Answer
+  Answer --> Mask["PII masking<br/>keep system identifiers"]
+  classDef ask fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef search fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef evidence fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Ask,Mode ask;
+  class Timeline,Pattern,Signal,Pivot search;
+  class Flow,Guide,Github evidence;
+  class Answer,Mask result;`,
+);
+
 const roamingReliabilityDiagram = localized(
   `flowchart TD
   Source["환경부 로밍 API<br/>회원카드 / 충전기 상태"] --> Online["온라인 이벤트 처리<br/>card state update"]
@@ -580,6 +670,7 @@ export interface PortfolioProject {
   indexLabel?: Localized;
   referenceLayout?: 'stacked' | 'split-with-context';
   fullWidthImplementationAfterContext?: boolean;
+  visual?: 'voltbot-agent-platform';
   period: Localized;
   company: Localized;
   roleLabel: Localized;
@@ -615,14 +706,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     en: 'Project Portfolio',
   },
   eyebrow: {
-    ko: '결제, 앱, 로밍, 프라이싱, 멤버십, 프로모션, AI 에이전트, DX, 개인 서비스의 주요 사례',
-    en: 'Selected cases across payments, apps, roaming, pricing, membership, promotions, AI agents, DX, and personal products',
+    ko: '결제, 앱, 로밍, 사내 AI 에이전트, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
+    en: 'Selected cases across payments, apps, roaming, internal AI agents, pricing, membership, promotions, DX, and personal products',
   },
   intro: {
     ko:
-      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, AI 에이전트 라우팅, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
+      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 사내 AI 에이전트 라우팅과 로그 진단, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
     en:
-      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, pricing APIs, membership migration, point-wallet design, AI-agent routing, DX automation, and Commit Map as a personal product built from a real planning problem.',
+      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, internal AI-agent routing and log diagnosis, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
   },
   roleFocus: [
     {
@@ -654,8 +745,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       en: 'Operational stabilization with Pub/Sub DLQ, Athena batches, monthly partitions, and circuit-breaker patterns',
     },
     {
-      ko: 'LLM 라우팅, run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
-      en: 'DX improvements using LLM routing, run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
+      ko: '채팅 기반 AI 에이전트, LLM 라우팅, Tool Calling, WebSocket 스트리밍, 운영 로그 진단 자동화 경험',
+      en: 'Chat-based AI agents, LLM routing, tool calling, WebSocket streaming, and production-log diagnosis automation',
+    },
+    {
+      ko: 'run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
+      en: 'DX improvements using run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
     },
   ],
   projects: [
@@ -1709,6 +1804,141 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
               'Shows how billing-arrears-based updates, priority-based public API retries, and monthly full resync work together to reduce long-term drift from the external system.',
           },
           code: roamingReliabilityDiagram,
+        },
+      ],
+    },
+    {
+      slug: 'voltbot-agent-platform',
+      title: {
+        ko: 'Voltbot: 사내 업무 에이전트 플랫폼과 로그 분석 자동화',
+        en: 'Voltbot: Internal Work-Agent Platform and Log Diagnosis Automation',
+      },
+      indexLabel: {
+        ko: 'Voltbot (사내 AI 업무 에이전트 플랫폼)',
+        en: 'Voltbot (Internal AI Work-Agent Platform)',
+      },
+      visual: 'voltbot-agent-platform',
+      period: {
+        ko: '2026.06 - 현재',
+        en: 'Jun 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: '채팅 기반 멀티 에이전트 업무 도구, 의도 기반 Agent Router, 로그 진단 에이전트 설계',
+        en: 'Designed chat-based multi-agent tooling, an intent-based Agent Router, and log-diagnosis agents',
+      },
+      summary: {
+        ko:
+          'Voltbot은 사내 구성원이 Google 계정으로 로그인해 코드 정책, 데이터 분석, 법률 지원, 운영, 로그 분석 같은 전문 에이전트를 채팅으로 사용하는 업무 도구입니다. 사용자가 에이전트를 매번 고르지 않아도 요청 의도와 권한을 기준으로 적절한 전문 에이전트에 연결되도록 Intent-based Agent Router를 설계·구현했습니다. 운영/CS가 개발자에게 요청하던 로그 조회와 원인 분석 병목을 줄이기 위해, GCP 운영 로그, 사내 로그 분석 가이드, GitHub 코드 근거를 교차 조회하는 로그 분석 에이전트도 구성했습니다.',
+        en:
+          'Voltbot is an internal work tool where employees sign in with Google accounts and use specialized agents for code policy, data analysis, legal support, operations, and log diagnosis through chat. I designed and implemented an intent-based Agent Router so users can be routed to the right specialized agent based on request intent and permissions without manually choosing every time. I also reduced the developer-dependent bottleneck around operations and CS log triage by building a log-diagnosis agent that cross-checks GCP production logs, internal diagnosis guides, and GitHub code evidence.',
+      },
+      challenge: {
+        ko:
+          '고객 결제 실패나 충전 오류 문의가 들어오면 운영자가 Cloud Logging, 에러 코드, 서비스 간 상관키, 코드 근거를 직접 찾기 어려워 개발자에게 수동 분석을 요청해야 했습니다. 동시에 사내 AI 도구는 여러 에이전트를 같은 채팅 표면에서 권한별로 안전하게 제공하고, 어떤 도구를 실행했는지와 답변 근거를 사용자가 확인할 수 있어야 했습니다.',
+        en:
+          'When customer payment or charging failures arrived, operators could not easily inspect Cloud Logging, error codes, cross-service correlation keys, and code evidence without asking engineers for manual triage. The internal AI tool also needed to expose multiple agents through one chat surface, enforce permissions, and keep tool execution plus evidence visible to users.',
+      },
+      actions: [
+        {
+          ko: '`AgentRouter`를 구현해 사용자의 자연어 요청을 의도별로 분류하고, 권한과 에이전트 상태를 고려해 로그 분석·데이터 분석·법률 지원·코드 정책 같은 전문 에이전트로 자동 연결되도록 했습니다.',
+          en: 'Implemented `AgentRouter` to classify natural-language requests by intent and route users to specialized agents such as log diagnosis, data analysis, legal support, and code policy based on permissions and agent availability.',
+        },
+        {
+          ko: '공통 `Agent`/`Tool` 계약 위에서 `AgentRunner`, `AgentRouter`, `ToolHandler` 흐름을 연결해 세션, 컨텍스트, 권한, 쿼터, 중단 요청, Tool 호출/결과가 WebSocket으로 이어지도록 구성했습니다.',
+          en: 'Connected `AgentRunner`, `AgentRouter`, and `ToolHandler` on top of the shared `Agent`/`Tool` contract so sessions, context, permissions, quotas, interruptions, tool calls, and tool results flow through WebSocket responses.',
+        },
+        {
+          ko: '`LogDiagnosisAgent`에는 고객 모드와 운영 모드를 나누고, userId가 없어도 기간·증상·서비스 패턴만으로 조사할 수 있도록 검색 전략을 설계했습니다.',
+          en: 'Split `LogDiagnosisAgent` into customer and operations modes, so it can investigate from time windows, symptoms, and service patterns even without a userId.',
+        },
+        {
+          ko: '`searchUserLogs` 도구를 통해 GCP 운영 로그를 `services`, `severity`, `excludeIstio`, `range/from/to`, `pageToken`, raw LQL 조합으로 조회하고, 결과가 비거나 모호하면 범위 확대와 query 보강을 반복하도록 만들었습니다.',
+          en: 'Implemented `searchUserLogs` for GCP production logs using `services`, `severity`, `excludeIstio`, `range/from/to`, `pageToken`, and raw LQL, with retries for widening ranges or strengthening queries.',
+        },
+        {
+          ko: '로그 분석 가이드 업로드/조회/수정 화면과 `listLogDiagnosisGuides`, `readLogDiagnosisGuide` 도구를 연결해 운영 지식이 에이전트 런타임에 직접 참조되도록 했습니다.',
+          en: 'Connected guide upload/search/edit screens with `listLogDiagnosisGuides` and `readLogDiagnosisGuide`, so operational knowledge can be consulted directly at runtime.',
+        },
+        {
+          ko: 'traceId, user_id, order_number를 상황에 맞게 갈아타는 상관키 pivot 규칙과, 2개 이상 서비스가 얽히면 Mermaid sequenceDiagram으로 연계 플로우를 표현하는 답변 기준을 추가했습니다.',
+          en: 'Added correlation-key pivot rules across traceId, user_id, and order_number, plus answer rules that render a Mermaid sequence diagram when a case spans multiple services.',
+        },
+        {
+          ko: '로그 인용과 진단문에는 자연인 식별 정보를 마스킹하되 user_id, order_number, traceId 같은 시스템 식별자는 추적 가능하도록 남기는 개인정보 표시 정책을 정리했습니다.',
+          en: 'Defined a display policy that masks natural-person identifiers in quoted logs and diagnosis text while keeping system identifiers such as user_id, order_number, and traceId traceable.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: 'Agent Router는 단순 메뉴 선택 기능이 아니라, 사내 사용자가 “무엇을 물어봐야 하는지”보다 “어떤 문제를 해결하고 싶은지”만 말해도 맞는 업무 에이전트로 보내주는 진입점으로 설계했습니다. 명확한 의도는 자동 라우팅하고, 애매한 경우에는 사용자가 직접 에이전트를 선택할 수 있게 했습니다.',
+          en: 'The Agent Router was designed as more than a menu shortcut: it lets internal users describe the problem they want to solve instead of knowing which agent to choose. Clear intent is routed automatically, while ambiguous cases still allow explicit agent selection.',
+        },
+        {
+          ko: '이 프로젝트는 “답변을 잘하는 챗봇”보다 “업무 도구를 호출해 근거를 남기는 에이전트”가 중요했습니다. 그래서 최종 답변보다 먼저 Tool 실행 내역, 근거 로그, 가이드/코드 근거가 확인 가능한 형태로 남도록 설계했습니다.',
+          en: 'The important part was not just a chatbot that answers well, but an agent that calls work tools and leaves evidence. Tool trails, evidence logs, and guide/code basis therefore remain visible before the final answer is trusted.',
+        },
+        {
+          ko: '로그 분석은 한 키로 전체 흐름을 잇기 어렵기 때문에 traceId에만 의존하지 않고 user_id와 order_number 관점을 병행했습니다. 서비스 경계나 Pub/Sub consumer에서 trace가 끊겨도 다른 상관키로 인과 사슬을 이어갈 수 있게 한 점이 핵심입니다.',
+          en: 'Log diagnosis cannot rely on a single key across the whole system, so I paired traceId with user_id and order_number views. The key point is keeping the causal chain traceable even when traces break across service or Pub/Sub consumer boundaries.',
+        },
+        {
+          ko: '여러 에이전트를 같은 채팅 표면에 올릴 때 권한, 개발 중 상태, 승인 대기, 사용량 같은 운영 상태를 제품 UI에 드러내야 한다고 봤습니다.',
+          en: 'When multiple agents share one chat surface, operational states such as permissions, developing status, pending approval, and usage need to be part of the product UI.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '사용자가 에이전트 종류를 미리 알지 못해도 질문 내용만으로 적절한 업무 에이전트에 진입할 수 있게 만들어, 사내 AI 도구의 첫 사용 장벽을 낮췄습니다.',
+          en: 'Lowered the entry barrier for the internal AI tool by letting users reach the right work agent from the question itself, even when they do not know the available agent types in advance.',
+        },
+        {
+          ko: '운영/CS가 고객 결제 실패, 서비스 에러, 특정 기간의 장애 패턴을 채팅으로 질의하고, 로그 근거와 권장 조치를 함께 받을 수 있는 업무 흐름을 만들었습니다.',
+          en: 'Created a workflow where operations and CS can ask about customer payment failures, service errors, or incident patterns in chat and receive evidence logs plus recommended actions.',
+        },
+        {
+          ko: 'Cloud Logging, 사내 가이드, GitHub 코드 검색을 오가던 수동 진단 절차를 에이전트 Tool 흐름으로 묶어 개발자 의존적인 반복 트리아지 비용을 줄일 수 있는 기반을 만들었습니다.',
+          en: 'Turned manual triage across Cloud Logging, internal guides, and GitHub code search into an agent tool flow, creating a foundation for reducing repeated developer-dependent diagnosis work.',
+        },
+        {
+          ko: '코드 정책, 데이터 분석, 법률, 운영, 로그 분석처럼 성격이 다른 사내 에이전트를 권한에 따라 같은 채팅 UI에서 사용할 수 있는 멀티 에이전트 플랫폼 형태로 정리했습니다.',
+          en: 'Organized specialized agents such as code policy, data analysis, legal, operations, and log diagnosis into a permission-aware multi-agent platform.',
+        },
+      ],
+      note: {
+        ko: '사내 반복 업무를 AI로 대체했다기보다, Intent-based Agent Router와 Tool 실행 레이어를 통해 기존 개발자 의존 트리아지 흐름을 권한·근거·가이드·코드 탐색이 있는 제품형 업무 도구로 바꾼 사례입니다.',
+        en: 'This is less about replacing internal work with AI and more about using an intent-based Agent Router plus a tool-execution layer to turn developer-dependent triage into a productized work tool with permissions, evidence, guides, and code exploration.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'GCP Cloud Logging', 'LLM Tool Calling', 'GitHub API', 'Google OAuth', 'MySQL'],
+      diagrams: [
+        {
+          title: {
+            ko: '멀티 에이전트를 채팅으로 사용하는 Voltbot 플랫폼 구조',
+            en: 'Voltbot platform structure for chat-based multi-agent work',
+          },
+          description: {
+            ko:
+              '사용자가 채팅으로 요청하면 권한과 에이전트 설정을 확인하고, AgentRunner와 ToolHandler가 로그·가이드·코드 도구를 실행한 뒤 WebSocket으로 실행 내역과 최종 답변을 돌려주는 구조입니다.',
+            en:
+              'Shows how a chat request passes through permissions and agent selection, then AgentRunner and ToolHandler execute log, guide, and code tools before streaming tool trails and the final answer over WebSocket.',
+          },
+          code: voltbotAgentPlatformDiagram,
+        },
+        {
+          title: {
+            ko: '로그 분석 에이전트: 로그, 가이드, 코드 근거를 묶는 진단 흐름',
+            en: 'Log diagnosis agent: joining logs, guides, and code evidence',
+          },
+          description: {
+            ko:
+              '고객 모드와 운영 모드를 나누고, traceId/user_id/order_number 상관키를 갈아타며 로그를 재조회한 뒤, 가이드와 코드 근거를 결합해 진단과 권장 조치를 만드는 흐름입니다.',
+            en:
+              'Splits customer and operations modes, pivots across traceId/user_id/order_number, then combines logs with guide and code evidence to produce diagnosis and recommended actions.',
+          },
+          code: voltbotLogDiagnosisDiagram,
         },
       ],
     },

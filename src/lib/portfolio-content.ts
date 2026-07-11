@@ -255,6 +255,75 @@ const voltbotAgentPlatformDiagram = localized(
   class Ops result;`,
 );
 
+const voltbotAgentLoopDiagram = localized(
+  `flowchart TD
+  Input["사용자 메시지<br/>질문 / 파일 / 세션 컨텍스트"] --> Guard["세션·권한·쿼터 확인"]
+  Guard --> Route{"AgentRouter<br/>자동 라우팅 필요?"}
+  Route -->|자동| Pick["의도 분류<br/>권한 있는 agent 후보 선택"]
+  Route -->|수동| Selected["선택된 전문 에이전트"]
+  Pick --> Selected
+  Selected --> Runner["AgentRunner<br/>system prompt + history + context"]
+  Runner --> Turn{"LLM turn<br/>다음 행동 판단"}
+  Turn -->|tool_call| ToolHandler["ToolHandler<br/>schema 검증 / 승인 필요 여부"]
+  ToolHandler --> Approval{"사용자 승인 필요?"}
+  Approval -->|yes| Wait["승인 대기<br/>WebSocket 상태 전송"]
+  Wait -->|approved| Execute["도구 실행<br/>logs / guides / code / files"]
+  Approval -->|no| Execute
+  Execute --> Append["tool result를<br/>대화 컨텍스트에 추가"]
+  Append --> Budget{"컨텍스트 / 토큰 한계?"}
+  Budget -->|compress| Summary["요약 컨텍스트 생성"]
+  Summary --> Runner
+  Budget -->|continue| Runner
+  Turn -->|ask_user| Clarify["추가 질문<br/>필요 정보 요청"]
+  Clarify --> Input
+  Turn -->|final_answer| Answer["최종 답변<br/>진단 / 근거 / 조치"]
+  Answer --> Stream["WebSocket streaming<br/>tool trail + 비용 + 답변"]
+  Guard --> Block["중단 / 권한 없음 / 쿼터 초과"]
+  classDef input fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef loop fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  classDef stop fill:#fff1f2,stroke:#be123c,stroke-width:2px,color:#0f172a;
+  class Input input;
+  class Guard,Route,Pick,Selected,Runner core;
+  class Turn,ToolHandler,Approval,Wait,Execute,Append,Budget,Summary,Clarify loop;
+  class Answer,Stream result;
+  class Block stop;`,
+  `flowchart TD
+  Input["User message<br/>question / file / session context"] --> Guard["session, permission,<br/>and quota checks"]
+  Guard --> Route{"AgentRouter<br/>auto routing needed?"}
+  Route -->|auto| Pick["classify intent<br/>choose authorized agent candidate"]
+  Route -->|manual| Selected["selected specialist agent"]
+  Pick --> Selected
+  Selected --> Runner["AgentRunner<br/>system prompt + history + context"]
+  Runner --> Turn{"LLM turn<br/>decide next action"}
+  Turn -->|tool_call| ToolHandler["ToolHandler<br/>schema validation / approval check"]
+  ToolHandler --> Approval{"user approval needed?"}
+  Approval -->|yes| Wait["wait for approval<br/>stream status over WebSocket"]
+  Wait -->|approved| Execute["execute tool<br/>logs / guides / code / files"]
+  Approval -->|no| Execute
+  Execute --> Append["append tool result<br/>to conversation context"]
+  Append --> Budget{"context / token limit?"}
+  Budget -->|compress| Summary["create compressed context"]
+  Summary --> Runner
+  Budget -->|continue| Runner
+  Turn -->|ask_user| Clarify["ask follow-up<br/>request missing info"]
+  Clarify --> Input
+  Turn -->|final_answer| Answer["final answer<br/>diagnosis / evidence / action"]
+  Answer --> Stream["WebSocket streaming<br/>tool trail + cost + answer"]
+  Guard --> Block["interrupted / unauthorized / quota exceeded"]
+  classDef input fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef loop fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  classDef stop fill:#fff1f2,stroke:#be123c,stroke-width:2px,color:#0f172a;
+  class Input input;
+  class Guard,Route,Pick,Selected,Runner core;
+  class Turn,ToolHandler,Approval,Wait,Execute,Append,Budget,Summary,Clarify loop;
+  class Answer,Stream result;
+  class Block stop;`,
+);
+
 const voltbotLogDiagnosisDiagram = localized(
   `flowchart TD
   Ask["운영 질문<br/>결제 실패 / 서비스 에러"] --> Mode{"고객 모드<br/>or 운영 모드"}
@@ -1926,6 +1995,19 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
               'Shows how a chat request passes through permissions and agent selection, then AgentRunner and ToolHandler execute log, guide, and code tools before streaming tool trails and the final answer over WebSocket.',
           },
           code: voltbotAgentPlatformDiagram,
+        },
+        {
+          title: {
+            ko: '에이전트 실행 루프: 라우팅, Tool 호출, 재판단',
+            en: 'Agent execution loop: routing, tool calls, and next-action decisions',
+          },
+          description: {
+            ko:
+              '채팅 요청이 들어온 뒤 AgentRouter가 전문 에이전트를 정하고, AgentRunner가 LLM의 다음 행동을 판단하며, ToolHandler 실행 결과를 다시 컨텍스트에 넣어 최종 답변까지 반복하는 루프입니다.',
+            en:
+              'Shows the runtime loop where AgentRouter chooses a specialist, AgentRunner lets the LLM decide the next action, and ToolHandler results are appended back into context until the final answer is ready.',
+          },
+          code: voltbotAgentLoopDiagram,
         },
         {
           title: {

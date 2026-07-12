@@ -435,8 +435,8 @@ projectSections:
             - Promotion coupon issuance batch — designed and developed
 
       - title:
-          ko: U+ VIP콕 제휴 쿠폰 및 VoC 운영 대행 시스템
-          en: U+ VIP partnership coupons and VoC operations support
+          ko: U+ VIP콕 제휴 쿠폰
+          en: U+ VIP Partnership Coupon
         portfolioSlug: uplus-vip-coupon-ops
         period:
           ko: 2026.06 ~ 현재

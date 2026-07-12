@@ -1752,14 +1752,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: '다중 에이전트 세션 프로토타입, 자동 라우팅 구조, 운영 VoC 진단 확장 제안',
-        en: 'Multi-agent session prototype, automatic routing, and ops VoC triage extension proposal',
+        ko: '다중 에이전트 세션, 자동 라우팅, 코드 정책·로그 기반 운영 VoC 진단 구현',
+        en: 'Multi-agent sessions, automatic routing, and code-policy plus log-based ops VoC diagnosis',
       },
       summary: {
         ko:
-          '사내 AI 에이전트 플랫폼 Voltbot에서 사용자의 요청 의도를 분석해 적절한 전문 에이전트로 연결하는 `Voltbot Crew` 기능을 설계했습니다. 운영팀이 고객 VoC를 개발자에게 전달하고, 개발자가 코드 정책과 로그를 따로 확인해 답변하는 반복 지연을 줄이기 위해, 에이전트 간 컨텍스트 공유와 자동 라우팅 구조를 제안하고 프로토타입을 구현했습니다.',
+          '사내 AI 에이전트 플랫폼 Voltbot에서 사용자의 요청 의도를 분석해 적절한 전문 에이전트로 연결하는 `Voltbot Crew`를 설계·구현했습니다. 운영팀이 고객 VoC를 개발자에게 전달하고 코드 정책과 로그를 따로 확인하던 반복 지연을 줄이기 위해, 정책 에이전트의 결과를 공통 컨텍스트로 전달하고 로그 에이전트가 이를 바탕으로 조회 범위를 구체화하는 자동 라우팅·통합 진단 흐름을 구성했습니다.',
         en:
-          'Designed `Voltbot Crew` for Voltbot, an internal AI agent platform, to route user requests to the right specialist agent. The work started from a recurring operations bottleneck: ops teams had to relay customer VoCs to developers, who then checked code policy and logs separately before responding. I proposed context sharing and automatic routing across agents, then built the prototype path.',
+          'Designed and implemented `Voltbot Crew` for Voltbot, an internal AI agent platform, to route requests to the right specialist. To reduce repeated developer handoffs for customer VoCs, I built an automatic routing and integrated diagnosis flow where policy-agent findings enter shared context and the log agent uses them to narrow its investigation.',
       },
       challenge: {
         ko:
@@ -1785,8 +1785,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Implemented `AgentRouter` so the LLM receives candidate agent names, descriptions, and current context, with fallback behavior to avoid breaking the conversation when matching fails.',
         },
         {
-          ko: '향후 로그 조회 에이전트와 연결해 고객 상황 입력 한 번으로 코드 정책과 실제 실행 로그를 함께 확인하고 1차 원인 분류까지 지원하는 운영 진단 흐름을 제안했습니다.',
-          en: 'Proposed a future log-agent integration where one customer-context input can retrieve both expected code policy and actual execution logs, supporting first-pass operational triage.',
+          ko: '코드 정책 에이전트가 정상 조건·상태 전이·에러 코드를 공통 컨텍스트에 남기고, 로그 에이전트가 이를 바탕으로 서비스·시간 범위·상관키를 좁혀 실제 실행 로그를 조회한 뒤 1차 원인을 분류하도록 구현했습니다.',
+          en: 'Implemented a flow where the code-policy agent records expected conditions, state transitions, and error codes in shared context, then the log agent narrows services, time ranges, and correlation keys to inspect runtime logs and classify the first-pass cause.',
         },
       ],
       engineeringViews: [
@@ -1803,8 +1803,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'The context-sharing idea from the multi-agent session prototype was turned into a simpler automatic-routing product shape. Instead of exposing a complex session model to users, the system first decides what kind of help is needed.',
         },
         {
-          ko: '고객 문의 확인 확장은 코드 정책 조회와 로그 조회를 같은 컨텍스트 안에서 이어 붙이는 방향으로 봤습니다. 정책상 정상 차단인지, 외부 API/PG 오류인지, 내부 상태 불일치인지 빠르게 나누는 것이 목표입니다.',
-          en: 'The ops VoC extension connects code-policy lookup and log lookup inside one shared context, aiming to quickly distinguish expected policy blocks, external API/PG failures, and internal state mismatches.',
+          ko: '운영 VoC 진단에서는 코드 정책 조회 결과와 로그 조회 결과를 같은 컨텍스트에서 비교해, 정책상 정상 차단인지 외부 API/PG 오류인지 내부 상태 불일치인지 구분하도록 구성했습니다.',
+          en: 'For ops VoC diagnosis, code-policy findings and log results are compared in the same context to distinguish expected policy blocks, external API or PG failures, and internal state mismatches.',
         },
       ],
       outcomes: [
@@ -1817,12 +1817,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Validated the path from a team-agent prototype to the final `AUTO_ROUTING` structure, narrowing multi-agent collaboration into a product-fit experience.',
         },
         {
-          ko: '운영팀의 개발자 확인 대기 시간을 줄이고 고객 VoC 응답 속도를 높이기 위한 코드 정책 조회 + 로그 조회 통합 진단 흐름의 설계 출발점을 만들었습니다.',
-          en: 'Established the design starting point for integrated code-policy and log-based diagnosis, intended to reduce developer wait time and speed up customer VoC responses.',
+          ko: '코드 정책과 실제 실행 로그를 같은 컨텍스트에서 확인해 운영팀이 고객 오류의 1차 원인과 답변 방향을 판단할 수 있는 통합 진단 흐름을 구현했습니다.',
+          en: 'Implemented an integrated diagnosis flow that combines code policy with runtime logs so operations can identify a first-pass cause and response direction for customer issues.',
         },
       ],
       note: {
-        ko: 'AI 에이전트를 단순 기능으로 붙인 것이 아니라, 운영팀과 개발자 사이의 반복 확인 병목을 줄이기 위한 업무 흐름 개선으로 제안하고 구현한 프로젝트입니다.',
+        ko: 'AI 에이전트를 단순 기능으로 붙인 것이 아니라, 운영팀과 개발자 사이의 반복 확인 병목을 줄이는 업무 흐름으로 설계·구현한 프로젝트입니다.',
         en: 'A project that applies AI agents not as a standalone feature, but as workflow improvement for reducing repeated confirmation loops between operations and developers.',
       },
       tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'LLM', 'Multi-Agent', 'Context Summarization'],
@@ -1834,9 +1834,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           },
           description: {
             ko:
-              '`Voltbot Crew`가 운영팀의 고객 상황을 진입점으로 받아 권한 있는 에이전트 후보를 고르고, 코드 정책 조회와 로그 조회 결과를 같은 컨텍스트에서 모아 1차 원인 분류와 답변 초안까지 이어가는 확장 방향입니다.',
+              '`Voltbot Crew`가 운영팀의 고객 상황을 받아 권한 있는 에이전트를 고르고, 코드 정책 결과를 로그 조회 컨텍스트로 전달해 1차 원인 분류와 답변 초안까지 이어가는 구현 흐름입니다.',
             en:
-              'Shows the intended extension where `Voltbot Crew` receives customer context from operations, routes to authorized agents, combines code-policy and log lookup results in one context, and supports first-pass triage plus response drafting.',
+              'Shows the implemented flow where `Voltbot Crew` receives customer context, routes to authorized agents, carries code-policy findings into log investigation, and continues through first-pass triage and response drafting.',
           },
           code: voltbotCrewDiagram,
         },

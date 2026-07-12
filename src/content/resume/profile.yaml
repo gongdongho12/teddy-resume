@@ -605,9 +605,9 @@ projectSections:
           en: "May 2026 — Present"
         summary:
           ko: |
-            운영팀의 고객 VoC 대응 지연을 줄이기 위해, 코드 정책 조회와 로그 조회 에이전트가 같은 컨텍스트를 공유하는 Voltbot Crew 기반 운영 진단 흐름을 제안하고 자동 라우팅 구조를 설계했습니다.
+            운영팀의 고객 VoC 대응 지연을 줄이기 위해, 코드 정책 조회 결과를 로그 에이전트가 같은 컨텍스트에서 이어받아 실제 실행 로그를 구체적으로 조회하는 Voltbot Crew 기반 운영 진단 및 자동 라우팅 흐름을 설계·구현했습니다.
           en: |
-            Proposed and designed Voltbot Crew, an automatic routing flow where code-policy and log-query agents can share context to reduce delays in operations teams' customer VoC response.
+            Designed and implemented Voltbot Crew, an automatic routing and operations-diagnosis flow where the log agent continues from code-policy context to investigate runtime logs for customer VoCs.
         tech:
           - Kotlin
           - Spring Boot
@@ -620,19 +620,19 @@ projectSections:
             - 하나의 대화 세션에서 2개 에이전트가 컨텍스트를 공유하는 팀 에이전트 구조를 프로토타입으로 구현
             - 세션-에이전트 매핑, 메시지별 담당 에이전트 기록, WebSocket 요청 확장, 프론트엔드 에이전트 선택 UX까지 end-to-end 구성
             - 최종적으로 사용자의 권한 있는 전문 에이전트 후보 중 요청 맥락에 맞는 에이전트를 LLM이 자동 배정하는 AUTO_ROUTING 구조로 전환
-            - 향후 코드 정책 조회 + 로그 조회를 통합해 고객 오류 상황의 1차 원인 분류와 운영팀 답변 속도 개선을 지원하는 방향 제안
+            - 코드 정책의 정상 조건·상태 전이·에러 코드를 공통 컨텍스트로 전달하고 로그 에이전트가 서비스·시간 범위·상관키를 좁혀 실제 로그를 조회하는 통합 진단 흐름 구현
           en:
             - Prototyped a team-agent structure where two agents share context inside one conversation session
             - Built the end-to-end path across session-agent mapping, per-message agent attribution, WebSocket request expansion, and frontend agent selection UX
             - Evolved the design into AUTO_ROUTING, where an LLM chooses the most relevant specialist among agents the user is authorized to use
-            - Proposed an integrated code-policy + log-query flow to support first-pass customer-issue triage and faster operations responses
+            - Implemented integrated diagnosis where policy conditions, state transitions, and error codes enter shared context so the log agent can narrow services, time ranges, and correlation keys for runtime investigation
         results:
           ko:
             - 사용자가 에이전트 종류를 직접 판단하지 않아도 요청 맥락에 맞는 전문 에이전트로 연결할 수 있는 기반 마련
-            - 운영팀이 개발자에게 반복 확인하던 코드 정책/로그 조회 병목을 줄이기 위한 AI 운영 진단 확장 방향 수립
+            - 코드 정책과 실제 실행 로그를 같은 컨텍스트에서 비교해 운영팀이 고객 오류의 1차 원인과 답변 방향을 판단할 수 있는 흐름 구현
           en:
             - Created the foundation for routing users to the right specialist without requiring them to classify the request first
-            - Established an AI-assisted operations diagnosis direction to reduce repeated developer checks for code policy and logs
+            - Implemented a shared-context diagnosis flow that helps operations compare code policy with runtime logs and determine a first-pass cause and response direction
 
       - title:
           ko: Voltbot — 사내 업무 에이전트 플랫폼 및 로그 진단 자동화

@@ -3,9 +3,11 @@ import CommonHead from '@/components/CommonHead.astro';
 import ContactVisibilityToggle from '@/components/ContactVisibilityToggle.astro';
 import LanguageSwitcher from '@/components/LanguageSwitcher.astro';
 import MermaidDiagram from '@/components/MermaidDiagram.astro';
+import PortfolioProjectIndex from '@/components/PortfolioProjectIndex.astro';
 import PortfolioReferenceGallery from '@/components/PortfolioReferenceGallery.astro';
 import PortfolioProjectTitleLink from '@/components/PortfolioProjectTitleLink.astro';
 import StackTagList from '@/components/StackTagList.astro';
+import VoltbotAgentPlatformPreview from '@/components/VoltbotAgentPlatformPreview.astro';
 import { baseUrlJoin } from '@/lib/base-url';
 import { getPortfolioUrl, normalizeLang, SUPPORTED_LANGS } from '@/lib/i18n';
 import { kakaoPiccomaPortfolio, portfolioText } from '@/lib/portfolio-content';
@@ -32,8 +34,10 @@ const orderedTitles = [
   '통합 프로모션(쿠폰/포인트) 플랫폼 구축 및 고도화',
   '볼트업 하이브리드 앱: WebView 브릿지와 네이티브 기능',
   '볼트업 앱 검증/운영 보정 익스텐션',
+  'Voltbot Crew: 업무 맥락 기반 AI 에이전트 라우팅',
   '로밍 서비스 안정성: 공공 연계 상태 재동기화와 재처리',
-  '개발 생산성 자동화 및 DevOps 개선',
+  'Voltbot: 사내 업무 에이전트 플랫폼과 로그 분석 자동화',
+  'Voltup Workflow: AI 운영 자동화와 DevOps 표준화',
   '프라이싱 플랫폼: 상품 관리 시스템과 프로모션 서비스',
   '멤버십/마일리지 서비스 이관 및 고도화',
   'Commit Map',
@@ -382,30 +386,10 @@ const sectionLabels =
         </aside>
       </section>
 
-      <section class="grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)]">
-        <aside class="hidden lg:block">
-          <div class="sticky top-8 space-y-6 rounded-[1.4rem] border border-slate-900/10 bg-white/68 p-5 shadow-[0_22px_70px_-44px_rgba(15,23,42,0.35)] backdrop-blur-sm">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-800">
-              {sectionLabels.index}
-            </p>
-            <ol class="space-y-3 border-l border-slate-900/10 pl-4 text-sm leading-6 text-slate-600">
-              {projects.map((project, index) => (
-                <li>
-                  <a href={`#${project.slug}`} class="block rounded-xl px-2 py-2 transition hover:bg-slate-50 hover:text-slate-950">
-                    <span class="block text-xs font-semibold tracking-[0.18em] text-sky-800/70">
-                      {(index + 1).toString().padStart(2, '0')}
-                    </span>
-                    <span class="mt-1 block font-medium">
-                      {portfolioText(project.indexLabel ?? project.title, lang)}
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </aside>
+      <section class="grid min-w-0 gap-5 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8">
+        <PortfolioProjectIndex label={sectionLabels.index} projects={projects} lang={lang} />
 
-        <section class="space-y-6">
+        <section class="min-w-0 space-y-6">
         {projects.map((project, index) => (
           <article id={project.slug} class="grid gap-6 scroll-mt-8 rounded-[1.75rem] border border-slate-900/10 bg-white/78 p-6 shadow-[0_28px_80px_-52px_rgba(15,23,42,0.38)] backdrop-blur-sm lg:grid-cols-[7rem_minmax(0,1fr)] lg:p-7">
             <div class="flex items-start gap-3 lg:block">
@@ -561,6 +545,10 @@ const sectionLabels =
                   }))}
                 />
               ) : null}
+
+              {project.visual === 'voltbot-agent-platform' && (
+                <VoltbotAgentPlatformPreview lang={lang} />
+              )}
 
               <div class={detailGridClass}>
                 {!useSplitReferenceContext && (

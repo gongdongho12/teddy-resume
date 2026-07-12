@@ -56,19 +56,86 @@ const kakaoTLinkAndCardDiagram = localized(
 
 const vehiclePncDiagram = localized(
   `flowchart TD
-  Vehicle["vehicleInfo 501<br/>plate=12가3456"] --> Match{"unlinked pair<br/>count == 1 ?"}
-  Pnc["userVehicle 88<br/>evccId=EVCC-A1B2"] --> Match
-  Match -->|yes| Link["linkPncVehicle(501,88)"]
-  Match -->|no| Manual["manual select"]
-  Link --> Auth["authorizeByEvccId<br/>user=421 plate=12가3456"]
-  Auth --> Charge["start charge"]`,
+  VehicleInfoReg["차량 정보 등록<br/>차량번호=12가3456"] --> CheckA["차량 정보 기준<br/>자동 매핑 시도"]
+  PncReg["PnC 등록<br/>차량식별자=VID-7K3Q9M"] --> CheckB["차량식별자 기준<br/>자동 매핑 시도"]
+  CheckA --> Match{"매핑 안 된 상대가<br/>정확히 1개?"}
+  CheckB --> Match
+  Match -->|yes| Link["차량 정보와 식별자 연결<br/>중복 연결 방지"]
+  Match -->|no| Manual["사용자 선택으로 전환"]
+  Manual --> Confirm["사용자 확인 후 연결"]
+  Link --> Auth["충전 인증<br/>사용자 / 인증 태그"]
+  Confirm --> Auth
+  Auth --> Context["앱/운영 화면<br/>차량 컨텍스트"]
+  Auth --> Charge["충전 시작"]`,
   `flowchart TD
-  Vehicle["vehicleInfo 501<br/>plate=12GA3456"] --> Match{"unlinked pair<br/>count == 1 ?"}
-  Pnc["userVehicle 88<br/>evccId=EVCC-A1B2"] --> Match
-  Match -->|yes| Link["linkPncVehicle(501,88)"]
-  Match -->|no| Manual["manual select"]
-  Link --> Auth["authorizeByEvccId<br/>user=421 plate=12GA3456"]
-  Auth --> Charge["start charge"]`,
+  VehicleInfoReg["vehicle info registration<br/>plate=12GA3456"] --> CheckA["try auto-link<br/>from vehicle info"]
+  PncReg["PnC registration<br/>vehicle identifier=VID-7K3Q9M"] --> CheckB["try auto-link<br/>from vehicle identifier"]
+  CheckA --> Match{"exactly one<br/>unlinked counterpart?"}
+  CheckB --> Match
+  Match -->|yes| Link["link vehicle info<br/>and identifier"]
+  Match -->|no| Manual["switch to user selection"]
+  Manual --> Confirm["user-confirmed link"]
+  Link --> Auth["charging authorization<br/>user / auth tag"]
+  Confirm --> Auth
+  Auth --> Context["vehicle context<br/>for app/admin"]
+  Auth --> Charge["start charging"]`,
+);
+
+const vehicleDataTreeDiagram = localized(
+  `flowchart TD
+  Lookup["차량정보 조회<br/>차량번호=12가3456 소유자=강**"] --> LookupResult["브랜드명=현대<br/>차량군=전기 SUV<br/>모델명=아이오닉 5"]
+  LookupResult --> Normalize["차량 기준 트리<br/>조회 또는 생성"]
+  Normalize --> Brand["브랜드 노드<br/>현대"]
+  Brand --> Category["차량군 노드<br/>전기 SUV"]
+  Category --> ModelNode["모델 노드<br/>아이오닉 5"]
+  ModelNode --> Model["차량 모델 기준 데이터<br/>이미지 / 등록 수"]
+  Model --> VehicleInfo["사용자 차량 정보<br/>차량번호 + 차량 모델 연결"]
+  Brand --> Selection["차량 선택 UI<br/>공통 기준"]
+  Category --> Selection
+  ModelNode --> Selection
+  Notice["운영 공지<br/>선택 노출"] -.-> Brand
+  Notice -.-> Category
+  Notice -.-> ModelNode
+  Warning["차량 경고<br/>주의 노출"] -.-> Brand
+  Warning -.-> Category
+  Warning -.-> ModelNode
+  Brand -.-> Display["앱 차량 상세<br/>조건에 따라 노출"]
+  Category -.-> Display
+  ModelNode -.-> Display
+  Brand -.-> Notify["대상자 알림 발송<br/>조건 충족 시 전개"]
+  Category -.-> Notify
+  ModelNode -.-> Notify
+  classDef notice fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;
+  classDef warning fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d;
+  class Notice notice;
+  class Warning warning;`,
+  `flowchart TD
+  Lookup["vehicle information lookup<br/>plate=12GA3456 owner=K**"] --> LookupResult["brand name=Hyundai<br/>category=electric SUV<br/>model name=Ioniq 5"]
+  LookupResult --> Normalize["look up or create<br/>vehicle reference tree"]
+  Normalize --> Brand["brand node<br/>Hyundai"]
+  Brand --> Category["category node<br/>electric SUV"]
+  Category --> ModelNode["model node<br/>Ioniq 5"]
+  ModelNode --> Model["vehicle-model reference<br/>image / registration count"]
+  Model --> VehicleInfo["user vehicle info<br/>plate + model link"]
+  Brand --> Selection["vehicle selection UI<br/>shared reference"]
+  Category --> Selection
+  ModelNode --> Selection
+  Notice["operational notice<br/>optional exposure"] -.-> Brand
+  Notice -.-> Category
+  Notice -.-> ModelNode
+  Warning["vehicle warning<br/>attention exposure"] -.-> Brand
+  Warning -.-> Category
+  Warning -.-> ModelNode
+  Brand -.-> Display["vehicle detail screen<br/>conditionally shown"]
+  Category -.-> Display
+  ModelNode -.-> Display
+  Brand -.-> Notify["targeted notifications<br/>expand when matched"]
+  Category -.-> Notify
+  ModelNode -.-> Notify
+  classDef notice fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;
+  classDef warning fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d;
+  class Notice notice;
+  class Warning warning;`,
 );
 
 const voltupHybridAppDiagram = localized(
@@ -84,7 +151,7 @@ const voltupHybridAppDiagram = localized(
   Push --> Native
   Version --> Native
   Native --> Observe["Crashlytics<br/>Dart + native error tracking"]
-  Observe --> Fix["NPE / camera / token throttle 안정화"]
+  Observe --> Fix["camera / FCM 안정화"]
   classDef web fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef native fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef ops fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
@@ -103,7 +170,7 @@ const voltupHybridAppDiagram = localized(
   Push --> Native
   Version --> Native
   Native --> Observe["Crashlytics<br/>Dart + native error tracking"]
-  Observe --> Fix["NPE / camera / token throttle stabilization"]
+  Observe --> Fix["camera / FCM stabilization"]
   classDef web fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef native fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef ops fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
@@ -119,15 +186,14 @@ const voltupAppExtensionDiagram = localized(
   Extension --> Capture["API request capture"]
   Capture --> Template["row parser<br/>variable template"]
   Template --> Replay["Bulk Replay executor"]
-  Replay --> Guard["confirm / 401·403 early stop<br/>skip 일괄 통보"]
-  Guard --> QA["개발 QA 반복 시간 단축"]
+  Replay --> QA["개발 QA 반복 시간 단축"]
   Replay --> Ops["Admin 미지원 단일 API<br/>운영 보정"]
   Ops --> Share["일회성 JS fetch -> 팀 도구"]
   classDef pain fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef tool fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
   class Pain pain;
-  class Extension,Sim,Capture,Template,Replay,Guard tool;
+  class Extension,Sim,Capture,Template,Replay tool;
   class QA,Ops,Share result;`,
   `flowchart TD
   Pain["app-attachment bottleneck<br/>new window / QR / camera / version"] --> Extension["Chrome Extension<br/>app-like controls"]
@@ -135,16 +201,174 @@ const voltupAppExtensionDiagram = localized(
   Extension --> Capture["API request capture"]
   Capture --> Template["row parser<br/>variable template"]
   Template --> Replay["Bulk Replay executor"]
-  Replay --> Guard["confirm / 401·403 early stop<br/>batch skip notification"]
-  Guard --> QA["shorter repeated dev QA"]
+  Replay --> QA["shorter repeated dev QA"]
   Replay --> Ops["single-API ops correction<br/>beyond Admin UI"]
   Ops --> Share["one-off JS fetch -> team tool"]
   classDef pain fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef tool fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
   class Pain pain;
-  class Extension,Sim,Capture,Template,Replay,Guard tool;
+  class Extension,Sim,Capture,Template,Replay tool;
   class QA,Ops,Share result;`,
+);
+
+const voltbotAgentPlatformDiagram = localized(
+  `flowchart TD
+  User["사내 사용자<br/>CS / 운영 / 개발"] --> Chat["Voltbot Web Chat<br/>세션 / 파일첨부 / 공유"]
+  Chat --> Auth["Google OAuth + 권한<br/>role/user 기반 agent access"]
+  Auth --> Router["Intent-based AgentRouter<br/>요청 의도 분류 / agent 결정"]
+  Router --> Select["AgentSelector<br/>수동 선택 / 라우팅 결과 표시"]
+  Select --> Runner["AgentRunner<br/>context / quota / interruption"]
+  Runner --> Tools["ToolHandler<br/>tool_call / approval / answer"]
+  Tools --> Log["GCP 운영 로그 조회"]
+  Tools --> Guide["로그 분석 가이드"]
+  Tools --> Code["GitHub 코드 근거"]
+  Runner --> Stream["WebSocket streaming<br/>tool trail + 최종 답변"]
+  Stream --> Ops["진단 / 근거 / 권장 조치"]
+  classDef user fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef tool fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class User user;
+  class Chat,Auth,Router,Select,Runner,Stream core;
+  class Tools,Log,Guide,Code tool;
+  class Ops result;`,
+  `flowchart TD
+  User["Internal users<br/>CS / operations / engineers"] --> Chat["Voltbot Web Chat<br/>sessions / attachments / sharing"]
+  Chat --> Auth["Google OAuth + permissions<br/>role/user based agent access"]
+  Auth --> Router["Intent-based AgentRouter<br/>classify request / choose agent"]
+  Router --> Select["AgentSelector<br/>manual choice / routing result"]
+  Select --> Runner["AgentRunner<br/>context / quota / interruption"]
+  Runner --> Tools["ToolHandler<br/>tool_call / approval / answer"]
+  Tools --> Log["GCP production-log search"]
+  Tools --> Guide["log-diagnosis guides"]
+  Tools --> Code["GitHub code evidence"]
+  Runner --> Stream["WebSocket streaming<br/>tool trail + final answer"]
+  Stream --> Ops["diagnosis / evidence / actions"]
+  classDef user fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef tool fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class User user;
+  class Chat,Auth,Router,Select,Runner,Stream core;
+  class Tools,Log,Guide,Code tool;
+  class Ops result;`,
+);
+
+const voltbotAgentLoopDiagram = localized(
+  `flowchart TD
+  Input["사용자 메시지<br/>질문 / 파일 / 세션 컨텍스트"] --> Guard["세션·권한·쿼터 확인"]
+  Guard --> Route{"AgentRouter<br/>자동 라우팅 필요?"}
+  Route -->|자동| Pick["의도 분류<br/>권한 있는 agent 후보 선택"]
+  Route -->|수동| Selected["선택된 전문 에이전트"]
+  Pick --> Selected
+  Selected --> Runner["AgentRunner<br/>system prompt + history + context"]
+  Runner --> Turn{"LLM turn<br/>다음 행동 판단"}
+  Turn -->|tool_call| ToolHandler["ToolHandler<br/>schema 검증 / 승인 필요 여부"]
+  ToolHandler --> Approval{"사용자 승인 필요?"}
+  Approval -->|yes| Wait["승인 대기<br/>WebSocket 상태 전송"]
+  Wait -->|approved| Execute["도구 실행<br/>logs / guides / code / files"]
+  Approval -->|no| Execute
+  Execute --> Append["tool result를<br/>대화 컨텍스트에 추가"]
+  Append --> Budget{"컨텍스트 / 토큰 한계?"}
+  Budget -->|compress| Summary["요약 컨텍스트 생성"]
+  Summary --> Runner
+  Budget -->|continue| Runner
+  Turn -->|ask_user| Clarify["추가 질문<br/>필요 정보 요청"]
+  Clarify --> Input
+  Turn -->|final_answer| Answer["최종 답변<br/>진단 / 근거 / 조치"]
+  Answer --> Stream["WebSocket streaming<br/>tool trail + 비용 + 답변"]
+  Guard --> Block["중단 / 권한 없음 / 쿼터 초과"]
+  classDef input fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef loop fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  classDef stop fill:#fff1f2,stroke:#be123c,stroke-width:2px,color:#0f172a;
+  class Input input;
+  class Guard,Route,Pick,Selected,Runner core;
+  class Turn,ToolHandler,Approval,Wait,Execute,Append,Budget,Summary,Clarify loop;
+  class Answer,Stream result;
+  class Block stop;`,
+  `flowchart TD
+  Input["User message<br/>question / file / session context"] --> Guard["session, permission,<br/>and quota checks"]
+  Guard --> Route{"AgentRouter<br/>auto routing needed?"}
+  Route -->|auto| Pick["classify intent<br/>choose authorized agent candidate"]
+  Route -->|manual| Selected["selected specialist agent"]
+  Pick --> Selected
+  Selected --> Runner["AgentRunner<br/>system prompt + history + context"]
+  Runner --> Turn{"LLM turn<br/>decide next action"}
+  Turn -->|tool_call| ToolHandler["ToolHandler<br/>schema validation / approval check"]
+  ToolHandler --> Approval{"user approval needed?"}
+  Approval -->|yes| Wait["wait for approval<br/>stream status over WebSocket"]
+  Wait -->|approved| Execute["execute tool<br/>logs / guides / code / files"]
+  Approval -->|no| Execute
+  Execute --> Append["append tool result<br/>to conversation context"]
+  Append --> Budget{"context / token limit?"}
+  Budget -->|compress| Summary["create compressed context"]
+  Summary --> Runner
+  Budget -->|continue| Runner
+  Turn -->|ask_user| Clarify["ask follow-up<br/>request missing info"]
+  Clarify --> Input
+  Turn -->|final_answer| Answer["final answer<br/>diagnosis / evidence / action"]
+  Answer --> Stream["WebSocket streaming<br/>tool trail + cost + answer"]
+  Guard --> Block["interrupted / unauthorized / quota exceeded"]
+  classDef input fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef core fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef loop fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  classDef stop fill:#fff1f2,stroke:#be123c,stroke-width:2px,color:#0f172a;
+  class Input input;
+  class Guard,Route,Pick,Selected,Runner core;
+  class Turn,ToolHandler,Approval,Wait,Execute,Append,Budget,Summary,Clarify loop;
+  class Answer,Stream result;
+  class Block stop;`,
+);
+
+const voltbotLogDiagnosisDiagram = localized(
+  `flowchart TD
+  Ask["운영 질문<br/>결제 실패 / 서비스 에러"] --> Mode{"고객 모드<br/>or 운영 모드"}
+  Mode -->|userId 있음| Timeline["user_id 타임라인 조회"]
+  Mode -->|패턴 조사| Pattern["서비스·에러 패턴 조회"]
+  Timeline --> Signal["에러코드·예외·상관키 추출"]
+  Pattern --> Signal
+  Signal --> Pivot["다관점 pivot<br/>traceId / user_id / order_number"]
+  Pivot --> Flow["서비스 간 연계 플로우<br/>Mermaid sequenceDiagram"]
+  Signal --> Guide["로그 분석 가이드 대조"]
+  Signal --> Github["GitHub 코드 근거 확인"]
+  Flow --> Answer["최종 답변<br/>진단 / 근거 로그 / 권장 조치"]
+  Guide --> Answer
+  Github --> Answer
+  Answer --> Mask["개인정보 마스킹<br/>시스템 식별자는 유지"]
+  classDef ask fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef search fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef evidence fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Ask,Mode ask;
+  class Timeline,Pattern,Signal,Pivot search;
+  class Flow,Guide,Github evidence;
+  class Answer,Mask result;`,
+  `flowchart TD
+  Ask["Operations question<br/>payment failure / service error"] --> Mode{"customer mode<br/>or operations mode"}
+  Mode -->|userId exists| Timeline["user_id timeline search"]
+  Mode -->|pattern search| Pattern["service/error-pattern search"]
+  Timeline --> Signal["extract error codes, exceptions, correlation keys"]
+  Pattern --> Signal
+  Signal --> Pivot["multi-angle pivot<br/>traceId / user_id / order_number"]
+  Pivot --> Flow["cross-service flow<br/>Mermaid sequenceDiagram"]
+  Signal --> Guide["compare diagnosis guides"]
+  Signal --> Github["check GitHub code evidence"]
+  Flow --> Answer["final answer<br/>diagnosis / evidence logs / actions"]
+  Guide --> Answer
+  Github --> Answer
+  Answer --> Mask["PII masking<br/>keep system identifiers"]
+  classDef ask fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef search fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef evidence fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Ask,Mode ask;
+  class Timeline,Pattern,Signal,Pivot search;
+  class Flow,Guide,Github evidence;
+  class Answer,Mask result;`,
 );
 
 const roamingReliabilityDiagram = localized(
@@ -276,7 +500,7 @@ const uplusVipCouponOpsDiagram = localized(
 const customerMessageOpsDiagram = localized(
   `flowchart TD
   Admin["Admin 메시지 발송<br/>문자 / 푸시 / 알림톡"] --> Template["커스텀 템플릿<br/>대상자 + 변수"]
-  Template --> Source["발송 source of truth<br/>즉시 / 예약 동일 모델"]
+  Template --> Source["발송 원장<br/>즉시 / 예약 동일 기록"]
   Source --> Immediate["즉시 발송<br/>send orchestrator"]
   Source --> Reserved["예약 발송<br/>customerMessageDispatchJob"]
   Reserved --> Dispatch["Dispatch tasklet<br/>발송 가능 시각 조회"]
@@ -292,7 +516,7 @@ const customerMessageOpsDiagram = localized(
   class History,Ops result;`,
   `flowchart TD
   Admin["Admin message send<br/>SMS / push / AlimTalk"] --> Template["Custom template<br/>targets + variables"]
-  Template --> Source["Send source of truth<br/>same model for immediate/scheduled"]
+  Template --> Source["Send ledger<br/>same record for immediate/scheduled"]
   Source --> Immediate["Immediate send<br/>send orchestrator"]
   Source --> Reserved["Scheduled send<br/>customerMessageDispatchJob"]
   Reserved --> Dispatch["Dispatch tasklet<br/>queries sendable time"]
@@ -365,16 +589,16 @@ const pricingPlatformDiagram = localized(
 
 const devopsAutomationDiagram = localized(
   `flowchart TD
-  Pain["반복 작업<br/>PR 리뷰 / 로컬 ENV / 배포 / 내부 API"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
-  Review --> Context["project-context + prompts + skills<br/>repo별 규칙 주입"]
+  Pain["반복 운영 작업<br/>PR 리뷰 / 로컬 ENV / 배포 / 내부 API"] --> Review["voltup-workflow<br/>/gemini-review<br/>조직 공통 AI 리뷰"]
+  Review --> Context["project-context + prompts + skills<br/>repo별 운영 문맥 주입"]
   Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
   Local --> Vault["Vault CLI login<br/>project path + SHARED path<br/>secret commit 없음"]
   Local --> IAM["gcloud account -><br/>IAM_DB_USER_NAME"]
   Pain --> Internal["admin-internal-* client<br/>X-Internal-Caller"]
   Pain --> Deploy["Jenkins shared library<br/>job name -> target 분기"]
   Deploy --> Build["docker/app build<br/>cache / track / notifications"]
-  Deploy --> Android["Android Workload Identity<br/>Play REST API + firebase-tools"]
-  Deploy --> IOS["iOS workflow hardening<br/>skip 조건 / CocoaPods CDN"]
+  Deploy --> Android["Android release<br/>키 관리 부담 축소"]
+  Deploy --> IOS["iOS release<br/>불필요한 실패 방지"]
   Build --> Argo["deployArgoCD"]
   Android --> Argo
   IOS --> Argo
@@ -385,16 +609,16 @@ const devopsAutomationDiagram = localized(
   class Local,Vault,IAM,Internal sec;
   class Deploy,Build,Android,IOS,Argo ops;`,
   `flowchart TD
-  Pain["Repeated work<br/>PR review / local env / deploy / internal APIs"] --> Review["voltup-workflow<br/>/gemini-review<br/>org reusable workflow"]
-  Review --> Context["project-context + prompts + skills<br/>repo-specific rules injected"]
+  Pain["Repeated operational work<br/>PR review / local env / deploy / internal APIs"] --> Review["voltup-workflow<br/>/gemini-review<br/>org-wide AI review"]
+  Review --> Context["project-context + prompts + skills<br/>repo-specific ops context injected"]
   Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
   Local --> Vault["Vault CLI login<br/>project path + SHARED path<br/>no secret commits"]
   Local --> IAM["gcloud account -><br/>IAM_DB_USER_NAME"]
   Pain --> Internal["admin-internal-* client<br/>X-Internal-Caller"]
   Pain --> Deploy["Jenkins shared library<br/>job name -> target routing"]
   Deploy --> Build["docker/app build<br/>cache / track / notifications"]
-  Deploy --> Android["Android Workload Identity<br/>Play REST API + firebase-tools"]
-  Deploy --> IOS["iOS workflow hardening<br/>skip conditions / CocoaPods CDN"]
+  Deploy --> Android["Android release<br/>less key burden"]
+  Deploy --> IOS["iOS release<br/>fewer avoidable failures"]
   Build --> Argo["deployArgoCD"]
   Android --> Argo
   IOS --> Argo
@@ -404,6 +628,49 @@ const devopsAutomationDiagram = localized(
   class Review,Context ai;
   class Local,Vault,IAM,Internal sec;
   class Deploy,Build,Android,IOS,Argo ops;`,
+);
+
+const voltupWorkflowReviewLoopDiagram = localized(
+  `flowchart TD
+  Comment["PR 댓글<br/>/gemini-review"] --> Workflow["voltup-workflow<br/>GitHub Actions reusable workflow"]
+  Workflow --> Secret["Organization Secret<br/>GEMINI_API_KEY"]
+  Workflow --> RepoCtx["저장소별 context<br/>project-context / review-template / docs"]
+  Workflow --> Diff["PR diff + 변경 파일"]
+  Secret --> Gemini["run-gemini-cli<br/>1차 리뷰 실행"]
+  RepoCtx --> Gemini
+  Diff --> Gemini
+  Gemini --> CommentBack["PR 리뷰 댓글<br/>위험 / 누락 / 개선 제안"]
+  CommentBack --> Human["개발자 검토<br/>최종 판단은 사람"]
+  Human --> Update["수정 커밋 또는 논의"]
+  Update --> Comment
+  classDef trigger fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef workflow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef context fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Comment trigger;
+  class Workflow,Gemini workflow;
+  class Secret,RepoCtx,Diff context;
+  class CommentBack,Human,Update result;`,
+  `flowchart TD
+  Comment["PR comment<br/>/gemini-review"] --> Workflow["voltup-workflow<br/>GitHub Actions reusable workflow"]
+  Workflow --> Secret["Organization Secret<br/>GEMINI_API_KEY"]
+  Workflow --> RepoCtx["repo-local context<br/>project-context / review-template / docs"]
+  Workflow --> Diff["PR diff + changed files"]
+  Secret --> Gemini["run-gemini-cli<br/>first-pass review"]
+  RepoCtx --> Gemini
+  Diff --> Gemini
+  Gemini --> CommentBack["PR review comment<br/>risks / gaps / suggestions"]
+  CommentBack --> Human["developer review<br/>human owns final judgment"]
+  Human --> Update["follow-up commit or discussion"]
+  Update --> Comment
+  classDef trigger fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
+  classDef workflow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef context fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
+  classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
+  class Comment trigger;
+  class Workflow,Gemini workflow;
+  class Secret,RepoCtx,Diff context;
+  class CommentBack,Human,Update result;`,
 );
 
 const voltbotCrewDiagram = localized(
@@ -515,6 +782,7 @@ export interface PortfolioProject {
   indexLabel?: Localized;
   referenceLayout?: 'stacked' | 'split-with-context';
   fullWidthImplementationAfterContext?: boolean;
+  visual?: 'voltbot-agent-platform';
   period: Localized;
   company: Localized;
   roleLabel: Localized;
@@ -550,14 +818,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     en: 'Project Portfolio',
   },
   eyebrow: {
-    ko: '결제, 앱, 로밍, 프라이싱, 멤버십, 프로모션, AI 에이전트, DX, 개인 서비스의 주요 사례',
-    en: 'Selected cases across payments, apps, roaming, pricing, membership, promotions, AI agents, DX, and personal products',
+    ko: '결제, 앱, 로밍, 사내 AI 에이전트, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
+    en: 'Selected cases across payments, apps, roaming, internal AI agents, pricing, membership, promotions, DX, and personal products',
   },
   intro: {
     ko:
-      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, AI 에이전트 라우팅, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
+      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 사내 AI 에이전트 라우팅과 로그 진단, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
     en:
-      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, pricing APIs, membership migration, point-wallet design, AI-agent routing, DX automation, and Commit Map as a personal product built from a real planning problem.',
+      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, internal AI-agent routing and log diagnosis, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
   },
   roleFocus: [
     {
@@ -589,8 +857,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       en: 'Operational stabilization with Pub/Sub DLQ, Athena batches, monthly partitions, and circuit-breaker patterns',
     },
     {
-      ko: 'LLM 라우팅, run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
-      en: 'DX improvements using LLM routing, run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
+      ko: '채팅 기반 AI 에이전트, LLM 라우팅, Tool Calling, WebSocket 스트리밍, 운영 로그 진단 자동화 경험',
+      en: 'Chat-based AI agents, LLM routing, tool calling, WebSocket streaming, and production-log diagnosis automation',
+    },
+    {
+      ko: 'run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
+      en: 'DX improvements using run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
     },
   ],
   projects: [
@@ -727,14 +999,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: '회원 식별 통합, AuthMethod 연결, 카드 등록 상태와 t_partner_user_token 기준 설계',
-        en: 'Unified member identity, linked AuthMethod records, and designed card-registration state around t_partner_user_token',
+        ko: '회원 식별 통합, AuthMethod 연결, 카드 등록 상태와 제휴사 고객 토큰 기준 설계',
+        en: 'Unified member identity, linked AuthMethod records, and designed card-registration state around the partner customer token',
       },
       summary: {
         ko:
-          'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, FEAPP 한 스텝 API에서 결제수단 등록 세션 생성부터 billing의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다. 이후 `t_partner_user_token`을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리해 검색, 해지 검증, 앱 콜백 activate 흐름을 안정화했습니다.',
+          'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, FEAPP 한 스텝 API에서 결제수단 등록 세션 생성부터 billing의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다. 이후 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리해 검색, 해지 검증, 앱 콜백 activate 흐름을 안정화했습니다.',
         en:
-          'Designed the flow that links KakaoT external accounts to existing VoltUp members through encrypted CI and carries payment-method registration from the FEAPP one-step API through billing READY-state and ACTIVE-state transitions. Later promoted `t_partner_user_token` as the key between external payment methods and internal user context, stabilizing lookup, unlink validation, and app-callback activate flows.',
+          'Designed the flow that links KakaoT external accounts to existing VoltUp members through encrypted CI and carries payment-method registration from the FEAPP one-step API through billing READY-state and ACTIVE-state transitions. Later promoted the partner customer token as the key between external payment methods and internal user context, stabilizing lookup, unlink validation, and app-callback activate flows.',
       },
       challenge: {
         ko:
@@ -765,12 +1037,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Built the one-step FEAPP flow that uses the current user encrypted CI to create the KakaoT payment-link session.',
         },
         {
-          ko: 'billing에서는 `pg_payloads`에 `session_key`를 저장하고, confirm 시 `pgPayKey`와 `t_partner_user_token`을 확정하는 상태 전이를 구현했습니다.',
-          en: 'In billing, implemented the state transition that stores the `session_key` in `pg_payloads` and finalizes `pgPayKey` plus `t_partner_user_token` during confirm.',
+          ko: 'billing에서는 `pg_payloads`에 `session_key`를 저장하고, confirm 시 `pgPayKey`와 제휴사 고객 토큰을 확정하는 상태 전이를 구현했습니다.',
+          en: 'In billing, implemented the state transition that stores the `session_key` in `pg_payloads` and finalizes `pgPayKey` plus the partner customer token during confirm.',
         },
         {
-          ko: '`t_partner_user_token` 검색 필터와 복합 인덱스를 추가하고, 카카오T 해지 시 현재 사용자의 T_PAYMENTS인지 검증하는 경로를 보강했습니다.',
-          en: 'Added `t_partner_user_token` lookup filters plus a composite index, and hardened unlink validation so KakaoT teardown checks whether the T_PAYMENTS record belongs to the current user.',
+          ko: '제휴사 고객 토큰 검색 필터와 복합 인덱스를 추가하고, 카카오T 해지 시 현재 사용자의 T_PAYMENTS인지 검증하는 경로를 보강했습니다.',
+          en: 'Added partner-customer-token lookup filters plus a composite index, and hardened unlink validation so KakaoT teardown checks whether the T_PAYMENTS record belongs to the current user.',
         },
         {
           ko: '앱 콜백 전용 activate API를 분리하고 DTO alias, `@JsonProperty`, 검색 로그를 보강해 외부 스키마 차이와 운영 추적성을 흡수했습니다.',
@@ -787,12 +1059,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Prevented identity mismatches by not starting card registration until account linking is complete, then creating sessions and activate calls only afterward.',
         },
         {
-          ko: '`READY -> ACTIVE` 전이에서 필요한 `session_key`, `partner_user_token`, `pgPayKey`를 같은 subscription 행에 모아 이후 승인/취소 호출도 재사용 가능하게 했습니다.',
-          en: 'Grouped the `session_key`, `partner_user_token`, and `pgPayKey` around the same subscription row during the `READY -> ACTIVE` transition so later approve/cancel calls can reuse them.',
+          ko: '`READY -> ACTIVE` 전이에서 필요한 `session_key`, 제휴사 고객 토큰, `pgPayKey`를 같은 subscription 행에 모아 이후 승인/취소 호출도 재사용 가능하게 했습니다.',
+          en: 'Grouped the `session_key`, partner customer token, and `pgPayKey` around the same subscription row during the `READY -> ACTIVE` transition so later approve/cancel calls can reuse them.',
         },
         {
-          ko: '`t_partner_user_token`을 단순 응답 필드가 아니라 사용자-외부 결제수단 정합성을 확인하는 운영 키로 보고, 조회와 해지 검증이 같은 기준을 공유하도록 정리했습니다.',
-          en: 'Treated `t_partner_user_token` not as a response field but as an operational key for user-to-external-payment consistency, so lookup and unlink validation share the same basis.',
+          ko: '제휴사 고객 토큰을 단순 응답 필드가 아니라 사용자-외부 결제수단 정합성을 확인하는 운영 키로 보고, 조회와 해지 검증이 같은 기준을 공유하도록 정리했습니다.',
+          en: 'Treated the partner customer token not as a response field but as an operational key for user-to-external-payment consistency, so lookup and unlink validation share the same basis.',
         },
       ],
       outcomes: [
@@ -865,8 +1137,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       slug: 'vehicle-pnc-auth',
       title: {
-        ko: '차량 등록 / 차량 고유 키 자동 매핑 / PnC(Plug & Charge) 인증',
-        en: 'Vehicle Registration, Vehicle-Key Auto-Mapping, and PnC (Plug & Charge) Authorization',
+        ko: '차량 등록 / 차량식별자 안전 매핑 / Plug & Charge 인증',
+        en: 'Vehicle Registration, Vehicle Identifier Safe Mapping, and Plug & Charge Authorization',
       },
       referenceLayout: 'split-with-context',
       fullWidthImplementationAfterContext: true,
@@ -879,95 +1151,116 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: '차량 정보 검증, 양방향 자동 매핑, PnC(Plug & Charge) 인증 흐름 설계',
-        en: 'Designed vehicle verification, bidirectional auto-mapping, and PnC (Plug & Charge) authorization flows',
+        ko: '차량정보 조회 안정화, 차량 기준 트리 설계, 차량식별자 안전 매핑',
+        en: 'Designed vehicle information lookup hardening, vehicle reference tree, and safe vehicle identifier mapping',
       },
       summary: {
         ko:
-          '차량번호 기반 차량 정보와 바로충전용 차량 엔티티가 서로 다른 시점에 들어오는 구조에서, 매핑되지 않은 쌍이 정확히 1개일 때만 자동 연결하고 이후 PnC(Plug & Charge) 인증이 같은 차량 컨텍스트를 참조하도록 구성했습니다.',
+          '차량정보 조회 결과를 `브랜드 > 차량군 > 모델` 기준 트리로 정규화해 차량 등록, 선택 UI, 경고 표시, 대상자 알림의 공통 기준으로 쓰고, 차량 정보와 차량식별자가 서로 다른 시점에 들어와도 안전하게 같은 사용자 차량 컨텍스트로 이어지도록 구성했습니다.',
         en:
-          'Designed a flow where plate-number vehicle info and Plug & Charge vehicle entities arrive independently, auto-link only when exactly one unmatched pair exists, and then feed the same vehicle context into PnC (Plug & Charge) authorization.',
+          'Normalized vehicle information lookup results into a `brand > category > model` reference tree used across registration, selection UI, warning display, and targeted notifications, then safely connected vehicle info and vehicle identifiers into the same user-vehicle context even when they arrive independently.',
       },
       challenge: {
         ko:
-          '차량 정보(`plateNumber`)와 바로충전 식별자(`evccId`)는 서로 다른 시점에 등록되기 때문에, 잘못된 자동 연결을 막으면서도 사용자가 매번 수동 선택하지 않도록 매핑 기준이 필요했습니다.',
+          '차량번호/소유자명 기반 외부 조회 결과, 사용자가 직접 선택하는 차량 모델, 차량식별자, 브랜드/차량군/모델 대상 경고 공지가 서로 다른 경로로 들어오기 때문에, 차량 기준 데이터를 일관되게 만들면서 중복과 잘못된 자동 연결을 막는 기준이 필요했습니다.',
         en:
-          'Because vehicle info (`plateNumber`) and PnC (Plug & Charge) identifiers (`evccId`) are registered at different times, the system needed an auto-linking rule that avoids wrong matches without forcing users into manual selection every time.',
+          'Because external plate-number/owner-name lookup results, user-selected vehicle models, vehicle identifiers, and brand/category/model-level warning notices arrive through different paths, the system needed a consistent vehicle reference model plus conservative deduplication and auto-linking rules.',
       },
       actions: [
+        {
+          ko: '차량정보 조회 응답의 브랜드명, 차량군, 모델명, 연식, 연료, 대표 이미지를 내부 차량 등록 정보로 변환하고, 소유자명 등 필요한 민감 필드를 마스킹한 원본 응답은 추적용 부가 데이터로 보관했습니다.',
+          en: 'Mapped vehicle information lookup values such as brand name, vehicle category, model name, release year, fuel type, and representative image into internal vehicle-registration data, while storing the original response with sensitive owner-name values masked as trace metadata.',
+        },
+        {
+          ko: '차량정보 조회 호출에는 토큰 만료 시 강제 갱신, 활성 인증서 순회, fallback 대상 오류 코드 분리를 적용해 외부 조회 실패가 차량 등록 흐름 전체를 쉽게 막지 않도록 보강했습니다.',
+          en: 'Hardened vehicle information lookup calls with forced token refresh on token expiry, active-certificate iteration, and fallback-result-code filtering so external lookup failures do not easily block the full vehicle-registration flow.',
+        },
+        {
+          ko: '차량정보 조회 결과를 `브랜드 > 차량군 > 모델` 기준 트리로 승격하고, 등록 시점에 없는 노드는 조회·생성 흐름에서 자동 보강해 차량 선택, 사용자 차량 등록, 브랜드/차량군/모델 단위 경고·알림이 같은 기준을 공유하도록 구성했습니다.',
+          en: 'Promoted vehicle information lookup results into a `brand > category > model` reference tree, automatically filling missing nodes at registration time so vehicle selection, user-vehicle registration, and brand/category/model warning notifications share the same reference.',
+        },
         {
           ko: '차량 정보 등록과 PnC(Plug & Charge) 등록 양쪽에서 모두 “매핑 안 된 대상이 정확히 1개인지”를 검사하는 양방향 자동 매핑 규칙을 적용했습니다.',
           en: 'Applied a bidirectional auto-mapping rule that checks whether exactly one unmatched counterpart exists from both the vehicle-info and PnC (Plug & Charge) registration sides.',
         },
         {
-          ko: '차량 정보는 `plateNumber`, PnC(Plug & Charge) 차량은 `evccId`를 중심으로 따로 저장하고, 연결 시점에만 `userVehicleInfo.userVehicleId`를 채우는 방식으로 상태를 분리했습니다.',
-          en: 'Stored vehicle info around `plateNumber` and PnC (Plug & Charge) vehicles around `evccId`, then filled `userVehicleInfo.userVehicleId` only at link time to keep state transitions explicit.',
-        },
-        {
-          ko: '이후 `authorizeByEvccId` 경로가 매핑된 차량 정보를 참조하도록 만들어, 충전기 인증 시에도 차량번호와 사용자 컨텍스트가 일관되게 이어지게 했습니다.',
-          en: 'Made `authorizeByEvccId` resolve through the mapped vehicle so charger authorization can reuse the same plate-number and user context consistently.',
+          ko: '차량 정보는 차량번호, PnC 차량은 차량식별자를 중심으로 따로 저장하고, 충전 인증은 사용자와 인증 태그 확인에 집중하도록 두어 차량번호 컨텍스트는 앱/운영 화면의 매핑 정보에서 이어보게 했습니다.',
+          en: 'Stored vehicle info around the plate number and PnC vehicles around the vehicle identifier, keeping charging authorization focused on the user and auth tag while plate-number context is preserved through the mapped app/admin vehicle info.',
         },
       ],
       engineeringViews: [
         {
-          ko: '자동 매핑은 편의 기능이지만 잘못 연결되면 위험하므로, “정확히 1개일 때만 연결”이라는 보수적 규칙으로 설계했습니다.',
-          en: 'Auto-linking is a convenience feature with high downside risk, so it was designed conservatively: link only when there is exactly one unmatched counterpart.',
+          ko: '차량 트리를 단순 선택값이 아니라 운영 기준 데이터로 두어, `현대 > 전기 SUV > 아이오닉 5` 구조 하나가 사용자 차량 등록, UI 선택, 상위 공지 수집, 하위 대상자 전개를 함께 담당하게 했습니다.',
+          en: 'Treated the vehicle tree as operational reference data rather than a simple selection list, so one `Hyundai > electric SUV > Ioniq 5` structure supports user-vehicle registration, UI selection, ancestor-notice collection, and descendant-user expansion.',
         },
         {
-          ko: '차량 정보와 PnC(Plug & Charge) 엔티티를 동일 테이블에 억지로 합치지 않고 분리 저장한 뒤 링크로 결합해 등록 시점 차이를 자연스럽게 흡수했습니다.',
-          en: 'Handled different registration timing naturally by storing vehicle info and PnC (Plug & Charge) entities separately and joining them through an explicit link instead of forcing them into one record early.',
+          ko: '브랜드/차량군/모델 노드는 parent 기준 unique 제약과 분산 락을 함께 사용해, 동시에 같은 차량이 등록되어도 기준 데이터가 중복 생성되지 않도록 설계했습니다.',
+          en: 'Combined parent-scoped uniqueness with a distributed lock so concurrent registrations do not create duplicate reference nodes for the same vehicle.',
         },
         {
-          ko: '매핑 이후에는 `evccId -> userId/plateNumber` 조회가 가능해져 실제 충전 인증 경로가 데이터 모델 위에서 바로 설명되도록 만들었습니다.',
-          en: 'After linking, `evccId -> userId/plateNumber` resolution becomes possible, making the real charging authorization path directly explainable from the data model.',
+          ko: '자동 매핑은 편의 기능이지만 잘못 연결되면 위험하므로, 차량 정보와 PnC 엔티티를 분리 저장하고 “정확히 1개일 때만 연결”하는 보수적 규칙으로 설계했습니다.',
+          en: 'Auto-linking is convenient but risky when wrong, so vehicle info and PnC entities were stored separately and linked only under the conservative exactly-one-unmatched-counterpart rule.',
         },
       ],
       outcomes: [
         {
-          ko: '차량 정보 등록과 바로충전 등록 어느 쪽을 먼저 하더라도 조건이 맞으면 자동 매핑되도록 정리했습니다.',
-          en: 'Enabled auto-mapping from either direction so the system can link correctly whether vehicle info or PnC (Plug & Charge) registration happens first.',
+          ko: '차량정보 조회로 얻은 제조사, 차량군, 상세 모델, 연식, 연료, 이미지를 차량 기준 트리에 연결하고, 같은 트리에서 특정 브랜드·차량군·모델 경고 표시와 대상 사용자 알림 발송까지 처리했습니다.',
+          en: 'Connected manufacturer, vehicle category, detailed model, release year, fuel type, and image data from vehicle information lookup into the vehicle reference tree, then used the same tree for brand/category/model warning display and targeted notification delivery.',
         },
         {
-          ko: 'PnC(Plug & Charge) 인증 시 `evccId`로 사용자를 식별하고 연결된 차량번호를 함께 참조하는 흐름을 운영 기준으로 만들었습니다.',
-          en: 'Established an operational flow where PnC (Plug & Charge) authorization identifies the user by `evccId` and resolves the linked plate number together.',
+          ko: '차량 정보 등록과 PnC 등록 어느 쪽을 먼저 하더라도 조건이 맞으면 자동 매핑하고, 충전 인증은 차량식별자와 사용자 인증 정보를 기준으로 안정적으로 이어지게 했습니다.',
+          en: 'Enabled auto-mapping from either vehicle-info or PnC registration when conditions match, while keeping charging authorization stable around the vehicle identifier and user auth context.',
         },
       ],
       note: {
-          ko: '차량번호와 차량 고유 키가 언제 자동 연결되고 언제 수동 선택으로 넘겨야 하는지 설명하기 좋은 프로젝트입니다.',
-          en: 'A good project for explaining when plate numbers and vehicle keys should auto-link and when the flow must fall back to manual choice.',
+        ko: '외부 차량정보 조회 결과를 내부 기준 데이터로 정규화한 뒤, 차량 정보와 차량식별자가 언제 자동 연결되고 언제 수동 선택으로 넘어가야 하는지 설명하기 좋은 프로젝트입니다.',
+        en: 'A good project for explaining how external vehicle information lookup results become internal reference data, then when vehicle info and vehicle identifiers should auto-link or fall back to manual choice.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'JPA', 'Redis', '차량정보 조회 API'],
+      referenceImages: [
+        {
+          src: '/images/portfolio/voltup-plug-and-charge.png',
+          title: {
+            ko: '차량 관리: 등록 차량과 바로충전 진입 화면',
+            en: 'Vehicle management: registered car and Plug & Charge entry',
+          },
+          caption: {
+            ko: '차량 등록 이후 바로충전(PnC) 기능으로 이어지는 사용자 화면 예시로, 차량 컨텍스트와 충전 인증 흐름이 서비스 안에서 어떻게 만나는지 보여줍니다.',
+            en: 'A user-facing screen that leads from vehicle registration into Plug & Charge, showing how vehicle context and charging authorization meet in the product flow.',
+          },
+          alt: {
+            ko: 'VoltUp 차량 등록 및 바로충전 화면',
+            en: 'VoltUp vehicle registration and Plug & Charge screen',
+          },
         },
-    tech: ['Kotlin', 'Spring Boot', 'JPA', 'Redis'],
-        referenceImages: [
-          {
-            src: '/images/portfolio/voltup-plug-and-charge.png',
-            title: {
-              ko: '차량 관리: 등록 차량과 바로충전 진입 화면',
-              en: 'Vehicle management: registered car and Plug & Charge entry',
-            },
-            caption: {
-              ko: '차량 등록 이후 바로충전(PnC) 기능으로 이어지는 사용자 화면 예시로, 차량 컨텍스트와 충전 인증 흐름이 서비스 안에서 어떻게 만나는지 보여줍니다.',
-              en: 'A user-facing screen that leads from vehicle registration into Plug & Charge, showing how vehicle context and charging authorization meet in the product flow.',
-            },
-            alt: {
-              ko: 'VoltUp 차량 등록 및 바로충전 화면',
-              en: 'VoltUp vehicle registration and Plug & Charge screen',
-            },
+      ],
+      diagrams: [
+        {
+          title: {
+            ko: '차량 기준 트리로 등록·선택·경고·알림을 연결한 구조',
+            en: 'Vehicle reference tree connecting registration, selection, warnings, and notifications',
           },
-        ],
-        diagrams: [
-          {
-            title: {
-              ko: '차량 정보와 차량 고유 키를 안전하게 자동 매핑하는 흐름',
-              en: 'Safe auto-mapping flow between vehicle info and vehicle keys',
-            },
-            description: {
-              ko:
-                '차량 정보와 차량 고유 키 등록 예시 값을 노드에 직접 넣고, 자동 링크 조건과 최종 인증 결과까지 한 흐름 안에서 읽히게 했습니다.',
-              en:
-                'Embeds the vehicle and vehicle-key example values directly into the nodes so the auto-link condition and final authorization result read as one flow.',
-            },
-            code: vehiclePncDiagram,
+          description: {
+            ko:
+              '차량번호와 소유자명으로 조회한 차량정보 결과를 브랜드, 차량군, 모델 노드로 승격하고, 같은 트리를 사용자 차량 등록과 선택 UI, 특정 브랜드·차량군·모델 공지/경고의 선택 노출 및 대상 사용자 알림 발송 기준으로 재사용하는 흐름입니다. 점선은 조건이 맞을 때만 노출되거나 발송되는 선택 연결을 의미합니다.',
+            en:
+              'Shows how vehicle information lookup results from plate number and owner name become brand, category, and model nodes, then the same tree is reused as the shared reference for user-vehicle registration, selection UI, optional brand/category/model notice-warning exposure, and targeted notifications. Dotted edges indicate conditional exposure or delivery.',
           },
+          code: vehicleDataTreeDiagram,
+        },
+        {
+          title: {
+            ko: '차량 정보와 차량식별자를 안전하게 자동/수동 매핑하는 흐름',
+            en: 'Safe auto/manual mapping flow between vehicle info and vehicle identifiers',
+          },
+          description: {
+            ko:
+              '차량 정보 등록과 PnC 등록 어느 쪽이 먼저 들어와도 매핑 안 된 상대가 정확히 1개일 때만 자동 연결하고, 그 외에는 사용자 확인으로 넘기는 흐름입니다.',
+            en:
+              'Shows how either vehicle-info or PnC registration can trigger auto-linking only when exactly one unmatched counterpart exists, with all other cases falling back to user confirmation.',
+          },
+          code: vehiclePncDiagram,
+        },
       ],
     },
     {
@@ -1160,8 +1453,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Implemented the member-detail U+ VIP proxy panel, issue/coupon mapping history page, `UPLUS_VIP` coupon-pack option, benefit-month autofill, fixed-discount minimum-amount correction, and allowed-payment-vendor multiselect in `voltup-admin-fe`.',
         },
         {
-          ko: '고객 대상 문자/푸시/알림톡 1회 발송 어드민을 만들고, 즉시/예약 발송을 같은 source of truth로 다루도록 예약 디스패치 배치와 발송 이력 조회를 구성했습니다.',
-          en: 'Built a one-time customer SMS/push/AlimTalk Admin tool and modeled immediate and scheduled sends around the same source of truth, backed by a scheduled dispatch batch and send-history search.',
+          ko: '고객 대상 문자/푸시/알림톡 1회 발송 어드민을 만들고, 즉시/예약 발송이 같은 발송 기록을 기준으로 처리되도록 예약 디스패치 배치와 발송 이력 조회를 구성했습니다.',
+          en: 'Built a one-time customer SMS/push/AlimTalk Admin tool so immediate and scheduled sends are processed from the same send record, backed by a scheduled dispatch batch and send-history search.',
         },
       ],
       engineeringViews: [
@@ -1221,8 +1514,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           title: {
-            ko: '고객 메시지 발송 어드민: 즉시/예약 발송 source of truth',
-            en: 'Customer-message Admin: source of truth for immediate and scheduled sends',
+            ko: '고객 메시지 발송 어드민: 즉시/예약 발송 원장',
+            en: 'Customer-message Admin: send ledger for immediate and scheduled sends',
           },
           description: {
             ko:
@@ -1278,8 +1571,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Built a custom ML Kit-based QR scanner page with responsive scan UI to control the QR recognition experience and reduce dependency on the previous scanner package.',
         },
         {
-          ko: 'Crashlytics 기반으로 Dart/native 오류 수집 경로를 연결하고, null-safe 처리, 카메라 lifecycle 예외, FCM token upload throttle을 보강했습니다.',
-          en: 'Connected Crashlytics for Dart/native error collection and hardened null-safe handling, camera lifecycle exceptions, and FCM token upload throttling.',
+          ko: 'Crashlytics 기반으로 Dart/native 오류 수집 경로를 연결하고, 카메라와 FCM 흐름을 안정화했습니다.',
+          en: 'Connected Crashlytics for Dart/native error collection and stabilized camera and FCM flows.',
         },
       ],
       engineeringViews: [
@@ -1292,8 +1585,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Because QR scanning and camera permission are key entry points for starting a charge, I focused on controlling device layout, lifecycle, and permission states inside the app UX rather than just wrapping a scanner package.',
         },
         {
-          ko: '운영 중 앱 안정성은 Crashlytics 신호를 기준으로 개선했습니다. NPE 후보, camera pause 중 예외, FCM token upload 중복/회복력 같은 작은 크래시 원인을 묶어 사용자 진입 흐름의 안정성을 높였습니다.',
-          en: 'Production stability improvements were driven by Crashlytics signals. I grouped small crash causes such as NPE candidates, camera pause exceptions, and FCM-token upload throttling to improve reliability around user entry flows.',
+          ko: '운영 중 앱 안정성은 Crashlytics 신호를 기준으로 개선했습니다. 카메라 예외와 FCM 중복 호출처럼 사용자 진입 흐름을 흔드는 문제를 묶어 안정성을 높였습니다.',
+          en: 'Production stability improvements were driven by Crashlytics signals. I grouped camera exceptions and repeated FCM calls that affected user entry flows, improving reliability around those paths.',
         },
       ],
       outcomes: [
@@ -1374,10 +1667,6 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: 'Admin 화면에서 직접 지원하지 않는 단일 API 보정 작업을 위해 variable template, row parser, executor를 구성하고 Bulk Replay로 실행할 수 있게 했습니다.',
           en: 'Added variable templates, row parsing, and an executor so single-API correction work beyond the Admin UI can run through Bulk Replay.',
         },
-        {
-          ko: '호스트별 popup 모드를 분리하고, 실행 전 confirm, 401/403 조기 중단, skip 일괄 통보, Vitest 기반 parser/executor 테스트와 CI를 구성했습니다.',
-          en: 'Separated popup modes by host and added confirmation, 401/403 early-stop guards, batch skip notifications, Vitest-based parser/executor tests, and CI.',
-        },
       ],
       engineeringViews: [
         {
@@ -1389,8 +1678,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'After handling a charge-zone creation issue with a hand-written JS `fetch` script, I turned that pattern into a row-based execution tool the team can reuse instead of writing one-off scripts every time.',
         },
         {
-          ko: 'app/admin 호스트가 섞여 있는 환경에서는 잘못된 화면에 잘못된 조작을 노출하지 않도록 호스트별 UI를 분리하고, 권한 만료나 접근 오류는 대량 replay 전에 멈추도록 설계했습니다.',
-          en: 'Because app/admin hosts coexist, I separated host-specific UI to avoid exposing the wrong operation in the wrong context, and designed permission expiration or access errors to stop before bulk replay proceeds.',
+          ko: 'app/admin 호스트가 섞여 있는 환경에서는 잘못된 화면에 잘못된 조작을 노출하지 않도록 호스트별 UI를 분리했습니다.',
+          en: 'Because app/admin hosts coexist, I separated host-specific UI to avoid exposing the wrong operation in the wrong context.',
         },
       ],
       outcomes: [
@@ -1411,7 +1700,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko: '앱 기능 자체가 아니라 앱 개발과 운영 대응을 빠르게 만드는 도구성 프로젝트입니다. 병목을 발견하고 작은 내부 도구로 구체화하는 일하는 방식을 보여주기에 좋습니다.',
         en: 'A tooling project for speeding up app development and operations response rather than an app feature itself. It is useful for showing a working style of spotting bottlenecks and turning them into small internal tools.',
       },
-      tech: ['TypeScript', 'Chrome Extension', 'Vitest', 'GitHub Actions', 'API Replay', 'WebView Debugging'],
+      tech: ['TypeScript', 'Chrome Extension', 'API Replay', 'WebView Debugging'],
       diagrams: [
         {
           title: {
@@ -1631,10 +1920,162 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
     },
     {
+      slug: 'voltbot-agent-platform',
+      title: {
+        ko: 'Voltbot: 사내 업무 에이전트 플랫폼과 로그 분석 자동화',
+        en: 'Voltbot: Internal Work-Agent Platform and Log Diagnosis Automation',
+      },
+      indexLabel: {
+        ko: 'Voltbot (사내 AI 업무 에이전트 플랫폼)',
+        en: 'Voltbot (Internal AI Work-Agent Platform)',
+      },
+      visual: 'voltbot-agent-platform',
+      period: {
+        ko: '2026.06 - 현재',
+        en: 'Jun 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: '채팅 기반 멀티 에이전트 업무 도구, 의도 기반 Agent Router, 로그 진단 에이전트 설계',
+        en: 'Designed chat-based multi-agent tooling, an intent-based Agent Router, and log-diagnosis agents',
+      },
+      summary: {
+        ko:
+          'Voltbot은 사내 구성원이 Google 계정으로 로그인해 코드 정책, 데이터 분석, 법률 지원, 운영, 로그 분석 같은 전문 에이전트를 채팅으로 사용하는 업무 도구입니다. 사용자가 에이전트를 매번 고르지 않아도 요청 의도와 권한을 기준으로 적절한 전문 에이전트에 연결되도록 Intent-based Agent Router를 설계·구현했습니다. 운영/CS가 개발자에게 요청하던 로그 조회와 원인 분석 병목을 줄이기 위해, GCP 운영 로그, 사내 로그 분석 가이드, GitHub 코드 근거를 교차 조회하는 로그 분석 에이전트도 구성했습니다.',
+        en:
+          'Voltbot is an internal work tool where employees sign in with Google accounts and use specialized agents for code policy, data analysis, legal support, operations, and log diagnosis through chat. I designed and implemented an intent-based Agent Router so users can be routed to the right specialized agent based on request intent and permissions without manually choosing every time. I also reduced the developer-dependent bottleneck around operations and CS log triage by building a log-diagnosis agent that cross-checks GCP production logs, internal diagnosis guides, and GitHub code evidence.',
+      },
+      challenge: {
+        ko:
+          '고객 결제 실패나 충전 오류 문의가 들어오면 운영자가 Cloud Logging, 에러 코드, 서비스 간 상관키, 코드 근거를 직접 찾기 어려워 개발자에게 수동 분석을 요청해야 했습니다. 동시에 사내 AI 도구는 여러 에이전트를 같은 채팅 표면에서 권한별로 안전하게 제공하고, 어떤 도구를 실행했는지와 답변 근거를 사용자가 확인할 수 있어야 했습니다.',
+        en:
+          'When customer payment or charging failures arrived, operators could not easily inspect Cloud Logging, error codes, cross-service correlation keys, and code evidence without asking engineers for manual triage. The internal AI tool also needed to expose multiple agents through one chat surface, enforce permissions, and keep tool execution plus evidence visible to users.',
+      },
+      actions: [
+        {
+          ko: '`AgentRouter`를 구현해 사용자의 자연어 요청을 의도별로 분류하고, 권한과 에이전트 상태를 고려해 로그 분석·데이터 분석·법률 지원·코드 정책 같은 전문 에이전트로 자동 연결되도록 했습니다.',
+          en: 'Implemented `AgentRouter` to classify natural-language requests by intent and route users to specialized agents such as log diagnosis, data analysis, legal support, and code policy based on permissions and agent availability.',
+        },
+        {
+          ko: '공통 `Agent`/`Tool` 계약 위에서 `AgentRunner`, `AgentRouter`, `ToolHandler` 흐름을 연결해 세션, 컨텍스트, 권한, 쿼터, 중단 요청, Tool 호출/결과가 WebSocket으로 이어지도록 구성했습니다.',
+          en: 'Connected `AgentRunner`, `AgentRouter`, and `ToolHandler` on top of the shared `Agent`/`Tool` contract so sessions, context, permissions, quotas, interruptions, tool calls, and tool results flow through WebSocket responses.',
+        },
+        {
+          ko: '`LogDiagnosisAgent`에는 고객 모드와 운영 모드를 나누고, userId가 없어도 기간·증상·서비스 패턴만으로 조사할 수 있도록 검색 전략을 설계했습니다.',
+          en: 'Split `LogDiagnosisAgent` into customer and operations modes, so it can investigate from time windows, symptoms, and service patterns even without a userId.',
+        },
+        {
+          ko: '`searchUserLogs` 도구를 통해 GCP 운영 로그를 `services`, `severity`, `excludeIstio`, `range/from/to`, `pageToken`, raw LQL 조합으로 조회하고, 결과가 비거나 모호하면 범위 확대와 query 보강을 반복하도록 만들었습니다.',
+          en: 'Implemented `searchUserLogs` for GCP production logs using `services`, `severity`, `excludeIstio`, `range/from/to`, `pageToken`, and raw LQL, with retries for widening ranges or strengthening queries.',
+        },
+        {
+          ko: '로그 분석 가이드 업로드/조회/수정 화면과 `listLogDiagnosisGuides`, `readLogDiagnosisGuide` 도구를 연결해 운영 지식이 에이전트 런타임에 직접 참조되도록 했습니다.',
+          en: 'Connected guide upload/search/edit screens with `listLogDiagnosisGuides` and `readLogDiagnosisGuide`, so operational knowledge can be consulted directly at runtime.',
+        },
+        {
+          ko: 'traceId, user_id, order_number를 상황에 맞게 갈아타는 상관키 pivot 규칙과, 2개 이상 서비스가 얽히면 Mermaid sequenceDiagram으로 연계 플로우를 표현하는 답변 기준을 추가했습니다.',
+          en: 'Added correlation-key pivot rules across traceId, user_id, and order_number, plus answer rules that render a Mermaid sequence diagram when a case spans multiple services.',
+        },
+        {
+          ko: '로그 인용과 진단문에는 자연인 식별 정보를 마스킹하되 user_id, order_number, traceId 같은 시스템 식별자는 추적 가능하도록 남기는 개인정보 표시 정책을 정리했습니다.',
+          en: 'Defined a display policy that masks natural-person identifiers in quoted logs and diagnosis text while keeping system identifiers such as user_id, order_number, and traceId traceable.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: 'Agent Router는 단순 메뉴 선택 기능이 아니라, 사내 사용자가 “무엇을 물어봐야 하는지”보다 “어떤 문제를 해결하고 싶은지”만 말해도 맞는 업무 에이전트로 보내주는 진입점으로 설계했습니다. 명확한 의도는 자동 라우팅하고, 애매한 경우에는 사용자가 직접 에이전트를 선택할 수 있게 했습니다.',
+          en: 'The Agent Router was designed as more than a menu shortcut: it lets internal users describe the problem they want to solve instead of knowing which agent to choose. Clear intent is routed automatically, while ambiguous cases still allow explicit agent selection.',
+        },
+        {
+          ko: '이 프로젝트는 “답변을 잘하는 챗봇”보다 “업무 도구를 호출해 근거를 남기는 에이전트”가 중요했습니다. 그래서 최종 답변보다 먼저 Tool 실행 내역, 근거 로그, 가이드/코드 근거가 확인 가능한 형태로 남도록 설계했습니다.',
+          en: 'The important part was not just a chatbot that answers well, but an agent that calls work tools and leaves evidence. Tool trails, evidence logs, and guide/code basis therefore remain visible before the final answer is trusted.',
+        },
+        {
+          ko: '로그 분석은 한 키로 전체 흐름을 잇기 어렵기 때문에 traceId에만 의존하지 않고 user_id와 order_number 관점을 병행했습니다. 서비스 경계나 Pub/Sub consumer에서 trace가 끊겨도 다른 상관키로 인과 사슬을 이어갈 수 있게 한 점이 핵심입니다.',
+          en: 'Log diagnosis cannot rely on a single key across the whole system, so I paired traceId with user_id and order_number views. The key point is keeping the causal chain traceable even when traces break across service or Pub/Sub consumer boundaries.',
+        },
+        {
+          ko: '여러 에이전트를 같은 채팅 표면에 올릴 때 권한, 개발 중 상태, 승인 대기, 사용량 같은 운영 상태를 제품 UI에 드러내야 한다고 봤습니다.',
+          en: 'When multiple agents share one chat surface, operational states such as permissions, developing status, pending approval, and usage need to be part of the product UI.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '사용자가 에이전트 종류를 미리 알지 못해도 질문 내용만으로 적절한 업무 에이전트에 진입할 수 있게 만들어, 사내 AI 도구의 첫 사용 장벽을 낮췄습니다.',
+          en: 'Lowered the entry barrier for the internal AI tool by letting users reach the right work agent from the question itself, even when they do not know the available agent types in advance.',
+        },
+        {
+          ko: '운영/CS가 고객 결제 실패, 서비스 에러, 특정 기간의 장애 패턴을 채팅으로 질의하고, 로그 근거와 권장 조치를 함께 받을 수 있는 업무 흐름을 만들었습니다.',
+          en: 'Created a workflow where operations and CS can ask about customer payment failures, service errors, or incident patterns in chat and receive evidence logs plus recommended actions.',
+        },
+        {
+          ko: 'Cloud Logging, 사내 가이드, GitHub 코드 검색을 오가던 수동 진단 절차를 에이전트 Tool 흐름으로 묶어 개발자 의존적인 반복 트리아지 비용을 줄일 수 있는 기반을 만들었습니다.',
+          en: 'Turned manual triage across Cloud Logging, internal guides, and GitHub code search into an agent tool flow, creating a foundation for reducing repeated developer-dependent diagnosis work.',
+        },
+        {
+          ko: '코드 정책, 데이터 분석, 법률, 운영, 로그 분석처럼 성격이 다른 사내 에이전트를 권한에 따라 같은 채팅 UI에서 사용할 수 있는 멀티 에이전트 플랫폼 형태로 정리했습니다.',
+          en: 'Organized specialized agents such as code policy, data analysis, legal, operations, and log diagnosis into a permission-aware multi-agent platform.',
+        },
+      ],
+      note: {
+        ko: '사내 반복 업무를 AI로 대체했다기보다, Intent-based Agent Router와 Tool 실행 레이어를 통해 기존 개발자 의존 트리아지 흐름을 권한·근거·가이드·코드 탐색이 있는 제품형 업무 도구로 바꾼 사례입니다.',
+        en: 'This is less about replacing internal work with AI and more about using an intent-based Agent Router plus a tool-execution layer to turn developer-dependent triage into a productized work tool with permissions, evidence, guides, and code exploration.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'GCP Cloud Logging', 'LLM Tool Calling', 'GitHub API', 'Google OAuth', 'MySQL'],
+      diagrams: [
+        {
+          title: {
+            ko: '멀티 에이전트를 채팅으로 사용하는 Voltbot 플랫폼 구조',
+            en: 'Voltbot platform structure for chat-based multi-agent work',
+          },
+          description: {
+            ko:
+              '사용자가 채팅으로 요청하면 권한과 에이전트 설정을 확인하고, AgentRunner와 ToolHandler가 로그·가이드·코드 도구를 실행한 뒤 WebSocket으로 실행 내역과 최종 답변을 돌려주는 구조입니다.',
+            en:
+              'Shows how a chat request passes through permissions and agent selection, then AgentRunner and ToolHandler execute log, guide, and code tools before streaming tool trails and the final answer over WebSocket.',
+          },
+          code: voltbotAgentPlatformDiagram,
+        },
+        {
+          title: {
+            ko: '에이전트 실행 루프: 라우팅, Tool 호출, 재판단',
+            en: 'Agent execution loop: routing, tool calls, and next-action decisions',
+          },
+          description: {
+            ko:
+              '채팅 요청이 들어온 뒤 AgentRouter가 전문 에이전트를 정하고, AgentRunner가 LLM의 다음 행동을 판단하며, ToolHandler 실행 결과를 다시 컨텍스트에 넣어 최종 답변까지 반복하는 루프입니다.',
+            en:
+              'Shows the runtime loop where AgentRouter chooses a specialist, AgentRunner lets the LLM decide the next action, and ToolHandler results are appended back into context until the final answer is ready.',
+          },
+          code: voltbotAgentLoopDiagram,
+        },
+        {
+          title: {
+            ko: '로그 분석 에이전트: 로그, 가이드, 코드 근거를 묶는 진단 흐름',
+            en: 'Log diagnosis agent: joining logs, guides, and code evidence',
+          },
+          description: {
+            ko:
+              '고객 모드와 운영 모드를 나누고, traceId/user_id/order_number 상관키를 갈아타며 로그를 재조회한 뒤, 가이드와 코드 근거를 결합해 진단과 권장 조치를 만드는 흐름입니다.',
+            en:
+              'Splits customer and operations modes, pivots across traceId/user_id/order_number, then combines logs with guide and code evidence to produce diagnosis and recommended actions.',
+          },
+          code: voltbotLogDiagnosisDiagram,
+        },
+      ],
+    },
+    {
       slug: 'devops-automation',
       title: {
-        ko: '개발 생산성 자동화 및 DevOps 개선',
-        en: 'Developer Productivity Automation and DevOps Improvements',
+        ko: 'Voltup Workflow: AI 운영 자동화와 DevOps 표준화',
+        en: 'Voltup Workflow: AI Operations Automation and DevOps Standardization',
+      },
+      indexLabel: {
+        ko: 'Voltup Workflow (AI 운영 자동화)',
+        en: 'Voltup Workflow (AI Ops Automation)',
       },
       period: {
         ko: '2024.10 - 현재',
@@ -1645,37 +2086,37 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: 'AI 리뷰, Vault-로컬 동기화, 내부 API 표준, 모바일 CI/CD 보안 개선',
-        en: 'AI review, Vault-to-local sync, internal API standards, and mobile CI/CD security hardening',
+        ko: '조직 공통 AI 리뷰 workflow, repo-local 운영 문맥, Vault-local sync, CI/CD 표준화',
+        en: 'Org-wide AI review workflow, repo-local operational context, Vault-local sync, and CI/CD standardization',
       },
       summary: {
         ko:
-          '볼트업 조직에서 반복적으로 발생하던 PR 리뷰, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 공통 workflow로 묶었습니다. 특히 로컬 환경값은 공개 저장소에 둘 수도 없고 개별 전달도 번거로워서, Vault 값을 `application-local.yaml`로 바로 동기화하는 Gradle 로직을 만들었습니다. 이후 Admin internal API 호출 규약과 Workload Identity 기반 모바일 배포까지 표준화했습니다.',
+          'Voltup Workflow는 개발과 운영 사이에서 반복되던 PR 리뷰, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 재사용 가능한 workflow와 자동화 도구로 묶은 프로젝트입니다. `/gemini-review` 댓글 기반 AI 리뷰는 저장소별 `project-context`, `review-template`, `docs`를 읽어 repo-local 운영 문맥을 반영하고, Vault-local sync와 Jenkins/ArgoCD 표준화를 함께 구성해 운영 효율과 릴리즈 안정성을 높이는 방향으로 정리했습니다.',
         en:
-          'Turned recurring PR review, local environment setup, internal API integration, and service/app delivery work in Voltup into shared workflows. In particular, I built Gradle logic that syncs Vault values directly into `application-local.yaml`, then extended the standardization into Admin internal API conventions and Workload Identity-based mobile delivery.',
+          'Voltup Workflow turns repeated work between development and operations, including PR review, local environment setup, internal API integration, and service/app delivery, into reusable workflows and automation tools. The `/gemini-review` AI review flow reads repo-local `project-context`, `review-template`, and docs, while Vault-local sync and Jenkins/ArgoCD standardization improve operational efficiency and release reliability.',
       },
       challenge: {
         ko:
-          'MSA가 늘수록 코드 리뷰 기준, 마이크로서비스별 작업 컨벤션, 반복 작업 방식, 로컬 환경값 전달, 내부 API 호출 방식, 배포 절차가 사람마다 달라지기 쉬웠습니다. 모바일 배포는 Service Account JSON 키 보관과 외부 CDN rate-limit, skip 조건 오발동 같은 운영 리스크도 함께 줄여야 했습니다.',
+          'MSA가 늘수록 코드 리뷰 기준, 마이크로서비스별 작업 컨벤션, 반복 작업 방식, 로컬 환경값 전달, 내부 API 호출 방식, 배포 절차가 사람마다 달라지기 쉬웠습니다. 개발과 운영이 분리된 상황에서는 이런 drift가 리뷰 누락, 환경 불일치, 배포 실패, 운영자 도구 호출 경계 불명확성으로 이어질 수 있어 공통 workflow와 자동화 체계가 필요했습니다.',
         en:
-          'As the number of services grew, review rules, microservice-level conventions, recurring task patterns, local secret delivery, internal API invocation, and delivery steps were drifting per person. Mobile delivery also needed to reduce operational risks such as Service Account JSON key storage, external CDN rate limits, and skip-condition misfires.',
+          'As the number of services grew, review rules, microservice-level conventions, recurring task patterns, local secret delivery, internal API invocation, and delivery steps were drifting per person. In a development/operations split, this drift can turn into missed reviews, environment mismatches, release failures, and unclear operator-tool trust boundaries, so the team needed shared workflows and automation.',
       },
       actions: [
         {
-          ko: '`voltup-workflow`에 `/gemini-review` 댓글 트리거형 GitHub Actions 워크플로우를 만들고, Organization Secret의 `GEMINI_API_KEY`와 저장소별 `project-context`, `review-template`, `docs`를 읽어 재사용 가능한 1차 코드 리뷰 체계를 구성했습니다.',
-          en: 'Built a reusable comment-triggered GitHub Actions workflow in `voltup-workflow` around `/gemini-review`, using the organization-level `GEMINI_API_KEY` plus per-repo `project-context`, `review-template`, and docs to provide consistent first-pass reviews.',
+          ko: '`voltup-workflow`에 `/gemini-review` 댓글 트리거형 GitHub Actions reusable workflow를 만들고, Organization Secret의 `GEMINI_API_KEY`와 저장소별 `project-context`, `review-template`, `docs`를 조합해 PR diff를 repo 문맥에 맞춰 검토하는 1차 AI 리뷰 체계를 구성했습니다.',
+          en: 'Built a reusable GitHub Actions workflow in `voltup-workflow` triggered by `/gemini-review`, combining the organization-level `GEMINI_API_KEY` with per-repo `project-context`, `review-template`, and docs so PR diffs are reviewed against repository-specific context.',
         },
         {
-          ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 넣어 여러 생성형 LLM에서 활용할 수 있도록 각 마이크로서비스의 작업 컨벤션, 공통 작업 형상, API 우선 개발 흐름, 보안 규칙을 재사용 가능한 스킬 체계로 정리했습니다.',
-          en: 'Added `.agent/workflows`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` to the MSA workspace so microservice conventions, recurring task shapes, API-first development flow, and security rules become reusable skills that can be consumed across generative LLM tools.',
+          ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 배치해 각 서비스의 작업 컨벤션, API 우선 개발 흐름, 보안 규칙, 반복 운영 작업 형상을 여러 생성형 LLM 도구에서 공유 가능한 repo-local context로 만들었습니다.',
+          en: 'Added `.agent/workflows`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` to MSA repositories, turning service conventions, API-first development flow, security rules, and recurring operational task shapes into reusable repo-local context for generative LLM tools.',
         },
         {
           ko: '루트 `build.gradle.kts`에는 base yaml의 placeholder를 Vault에서 치환해 `application-local.yaml`을 생성하는 로직을 넣고, 프로젝트 경로와 `secret/SHARED/voltup/dev`를 순차 조회하도록 만들었습니다. Vault CLI 로그인 확인, 비대화형 환경 대응, `gcloud` 계정 기반 `IAM_DB_USER_NAME` 치환까지 포함해 새 키가 추가돼도 개발자별 local 환경이 자동으로 같은 기준을 유지하도록 했습니다.',
           en: 'Added root `build.gradle.kts` logic that replaces base-yaml placeholders from Vault and generates `application-local.yaml`, checking both project-specific paths and `secret/SHARED/voltup/dev`. It also verifies Vault CLI login, handles non-interactive environments, and fills `IAM_DB_USER_NAME` from the current `gcloud` account so local environments stay automatically aligned across developers even when new keys are added.',
         },
         {
-          ko: '`feapp-domain-service`에는 인증서와 `conf.json`을 Base64 인코딩해 Vault에 반영하는 `updateCodefCertificatesToVault` 태스크를 만들어, 민감 파일을 저장소나 메신저로 공유하지 않고도 필요한 개발자가 스스로 갱신할 수 있게 했습니다.',
-          en: 'Added an `updateCodefCertificatesToVault` task in `feapp-domain-service` that Base64-encodes certificates and `conf.json` fields into Vault, so developers can refresh sensitive assets themselves without sharing files through the repo or chat.',
+          ko: '`feapp-domain-service`에는 인증서와 `conf.json`을 Base64 인코딩해 Vault에 반영하는 민감 인증서 갱신 태스크를 만들어, 민감 파일을 저장소나 메신저로 공유하지 않고도 필요한 개발자가 스스로 갱신할 수 있게 했습니다.',
+          en: 'Added a sensitive-certificate refresh task in `feapp-domain-service` that Base64-encodes certificates and `conf.json` fields into Vault, so developers can refresh sensitive assets themselves without sharing files through the repo or chat.',
         },
         {
           ko: 'Admin 내부 연동 API가 늘어나는 상황에서 `admin-internal-*` 클라이언트 패턴과 `X-Internal-Caller` 헤더 규약을 문서화하고 적용해 호출 주체와 신뢰 경계를 일관되게 관리했습니다.',
@@ -1686,18 +2127,18 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Standardized delivery on top of the `devops-cicd` Jenkins shared library so each service `Jenkinsfile` routes API/BATCH/CONSUMER/APP targets by job name and continues into Docker build/push plus ArgoCD deploy. The Android app pipeline follows the same pattern with cache restore/save, release track selection, and notifications.',
         },
         {
-          ko: 'Android 배포를 fastlane/Service Account JSON 키 중심에서 Workload Identity 기반 Gradle/Play Store REST API와 `firebase-tools` 흐름으로 전환하고, Jenkins 로깅·Slack 알림·토큰 노출 방지를 보강했습니다.',
-          en: 'Moved Android delivery away from fastlane and Service Account JSON keys to Workload Identity with Gradle/Play Store REST API plus `firebase-tools`, while improving Jenkins logging, Slack notifications, and token exposure guards.',
+          ko: 'Android 앱 배포에서 오래 보관되는 인증 키 의존을 줄이고, 배포 로그·Slack 알림·토큰 노출 방지를 보강해 릴리즈 흐름을 안정화했습니다.',
+          en: 'Reduced long-lived key dependency in Android delivery and improved release stability with clearer logs, Slack notifications, and token-exposure guards.',
         },
         {
-          ko: 'iOS 배포 workflow의 skip 조건이 커밋 본문에 의해 오발동하지 않도록 수정하고, CocoaPods CDN raw.githubusercontent.com 429 회피를 위해 netrc 인증을 추가했습니다.',
-          en: 'Fixed iOS delivery skip checks so commit bodies do not accidentally suppress workflows, and added netrc authentication to avoid CocoaPods CDN raw.githubusercontent.com 429 failures.',
+          ko: 'iOS 배포가 커밋 문구나 외부 의존 문제 때문에 불필요하게 멈추지 않도록 배포 조건과 인증 흐름을 보강했습니다.',
+          en: 'Hardened iOS delivery conditions and authentication flow so releases are not unnecessarily blocked by commit text or external dependency failures.',
         },
       ],
       engineeringViews: [
         {
-          ko: 'AI 도입을 “모델 하나 붙이기”가 아니라 재사용 가능한 workflow와 repo-local context를 설계하는 문제로 보고, 프로젝트별 문맥을 자동 리뷰 품질에 직접 연결했습니다.',
-          en: 'Treated AI adoption as a workflow-and-context design problem rather than just attaching a model, tying repo-local knowledge directly to review quality.',
+          ko: 'AI 도입을 “모델 하나 붙이기”가 아니라 운영 체계 설계 문제로 봤습니다. 같은 `/gemini-review` 명령이라도 저장소별 context와 review template을 읽도록 만들어, 공통 workflow는 유지하면서 서비스별 운영 문맥은 잃지 않게 했습니다.',
+          en: 'Treated AI adoption as an operating-system design problem rather than just attaching a model. The same `/gemini-review` command reads each repository context and review template, keeping the workflow shared while preserving service-specific operational context.',
         },
         {
           ko: '로컬 환경 셋업은 “누가 비밀값을 전달하느냐”보다 “Vault와 local 환경을 직접 동기화해 인증된 개발자가 같은 기준의 설정을 자동으로 받게 하자”는 방향으로 풀었습니다. 공개 저장이나 수동 배포 대신 Vault CLI 인증을 전제로 yaml 생성과 인증서 갱신을 자동화해, 키가 늘어나도 개발자 간 동기화가 흐트러지지 않도록 만들었습니다.',
@@ -1708,8 +2149,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Converged delivery onto a shared-library model with job-name-based target routing so operational steps stay standardized while app/backend differences appear only at the target layer.',
         },
         {
-          ko: '모바일 배포 인증은 오래 보관되는 JSON 키를 없애는 방향으로 보고 Workload Identity로 바꿨고, 배포 실패 원인은 Slack 메시지와 로그에서 바로 추적할 수 있게 했습니다.',
-          en: 'Moved mobile delivery authentication toward removing long-lived JSON keys via Workload Identity, and made deployment failures easier to trace from Slack messages and logs.',
+          ko: '모바일 배포 인증은 오래 보관되는 키 의존을 줄이는 방향으로 정리했고, 배포 실패 원인은 Slack 메시지와 로그에서 바로 추적할 수 있게 했습니다.',
+          en: 'Reduced long-lived key dependency in mobile delivery authentication and made deployment failures easier to trace from Slack messages and logs.',
         },
         {
           ko: '반복 작업이 팀 운영 리스크가 된다고 느낀 지점에서는 문서만 남기지 않고 직접 Gradle 태스크, workflow, Jenkins 파이프라인으로 만들어 팀이 바로 쓸 수 있게 바꿨습니다.',
@@ -1718,8 +2159,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       outcomes: [
         {
-          ko: '조직 공통 AI 리뷰 워크플로우와 마이크로서비스별 컨벤션·공통 작업 형상 스킬 체계를 만들어, 신규 저장소나 신규 작업도 같은 기준으로 빠르게 온보딩할 수 있게 했습니다.',
-          en: 'Established an organization-wide AI review workflow plus a skill system for microservice conventions and recurring task shapes, so new repos and workstreams can be onboarded under the same standards much faster.',
+          ko: '조직 공통 `voltup-workflow`와 마이크로서비스별 repo-local context 체계를 만들어, 신규 저장소나 신규 작업도 같은 AI 리뷰 기준과 운영 컨벤션으로 빠르게 온보딩할 수 있게 했습니다.',
+          en: 'Established the org-wide `voltup-workflow` plus repo-local context patterns, allowing new repositories and workstreams to onboard under the same AI review standards and operational conventions.',
         },
         {
           ko: '민감한 환경값을 저장소에 두지 않으면서도 Vault와 local 환경을 바로 동기화해, 키가 추가될 때도 개발자 간 설정 sync가 자동으로 유지되도록 만들었습니다.',
@@ -1735,11 +2176,24 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
       ],
       note: {
-        ko: '보안 때문에 공개할 수 없는 로컬 환경값 문제를 Vault-local sync 구조로 풀고, 내부 API 호출/모바일 배포 인증처럼 운영 중 반복적으로 흔들리는 경계를 표준화한 DX/DevOps 프로젝트입니다.',
-        en: 'A DX/DevOps project that uses Vault-to-local sync for non-public local secrets and standardizes repeatedly fragile boundaries such as internal API calls and mobile delivery authentication.',
+        ko: '개발/운영 사이에서 반복되는 리뷰, 환경 drift, 배포 실패, 내부 도구 호출 경계를 workflow와 자동화로 줄여 운영 효율과 릴리즈 안정성을 높인 프로젝트입니다.',
+        en: 'A workflow automation project that improves operational efficiency and release reliability by reducing repeated review work, environment drift, delivery failures, and ambiguity at internal-tool boundaries.',
       },
       tech: ['Vault CLI', 'Gradle Kotlin DSL', 'GitHub Actions', 'Jenkins', 'ArgoCD', 'Workload Identity', 'Firebase CLI', 'Gemini API', 'GitHub Copilot', 'Claude Code', 'gcloud CLI'],
       diagrams: [
+        {
+          title: {
+            ko: 'Voltup Workflow: /gemini-review AI 리뷰 루프',
+            en: 'Voltup Workflow: /gemini-review AI review loop',
+          },
+          description: {
+            ko:
+              'PR 댓글에서 시작된 `/gemini-review`가 조직 공통 workflow를 호출하고, 저장소별 context와 변경 diff를 함께 읽어 PR에 1차 리뷰 코멘트를 남기는 구조입니다.',
+            en:
+              'Shows how `/gemini-review` starts from a PR comment, invokes the org-wide workflow, reads repo-local context plus the PR diff, and posts first-pass review comments back to the PR.',
+          },
+          code: voltupWorkflowReviewLoopDiagram,
+        },
         {
           title: {
             ko: 'AI 리뷰, Vault-로컬 동기화, 배포 표준화',
@@ -1882,7 +2336,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko: 'PIM이 외부 상품 값과 프로모션의 파이널 프라이싱 값을 함께 받아 고객에게 보여줄 합리적 최적가를 노출하도록 만든 서비스 경계를 설명하기 좋은 프로젝트입니다.',
         en: 'A strong project for explaining the boundary where PIM combines external product values with Promotion Final Pricing to expose a rational best price to users.',
       },
-      tech: ['Kotlin', 'Spring Boot', 'DGS Framework(GraphQL)', 'AWS Athena'],
+      tech: ['Kotlin', 'Spring Boot', 'AWS Athena'],
       diagrams: [
         {
           title: {
@@ -1956,7 +2410,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       engineeringViews: [
         {
           ko: 'AI는 완성본을 대신 쓰게 하기보다, 처음 루트를 잡아주는 초안 생성기로 두고 최종 계획의 진실은 Markdown 데이터에 남기도록 설계했습니다.',
-          en: 'Treated AI not as the final planner but as a draft generator for the first route pass, while keeping the source of truth in Markdown data.',
+          en: 'Treated AI not as the final planner but as a draft generator for the first route pass, while keeping the final plan data in Markdown.',
         },
         {
           ko: '여행 콘텐츠는 글만 있는 블로그보다 지도, 타임라인, 장소 데이터가 함께 보여야 공유 가치가 높다고 보고, 시각화와 데이터 구조를 한 흐름으로 묶었습니다.',

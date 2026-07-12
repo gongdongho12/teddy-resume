@@ -42,15 +42,15 @@ const multiVendorContractDiagram = localized(`flowchart TD
 const kakaoTLinkAndCardDiagram = localized(
   `flowchart TD
   User["VoltUp member<br/>encrypted CI"] --> OAuth["KakaoT OAuth<br/>external account + encrypted CI"]
-  OAuth --> Link["user-service<br/>AuthMethod(KAKAO_T) link"]
-  Link --> Session["FEAPP link session<br/>ACCOUNT + PAYMENT"]
-  Session --> Ready["billing init<br/>READY 상태 전환"]
+  OAuth --> Link["identity-service<br/>linked auth method"]
+  Link --> Session["mobile-gateway link session<br/>ACCOUNT + PAYMENT"]
+  Session --> Ready["payment-service init<br/>READY 상태 전환"]
   Ready --> Active["confirm success<br/>ACTIVE 상태 전환"]`,
   `flowchart TD
   User["VoltUp member<br/>encrypted CI"] --> OAuth["KakaoT OAuth<br/>external account + encrypted CI"]
-  OAuth --> Link["user-service<br/>AuthMethod(KAKAO_T) link"]
-  Link --> Session["FEAPP link session<br/>ACCOUNT + PAYMENT"]
-  Session --> Ready["billing init<br/>READY transition"]
+  OAuth --> Link["identity-service<br/>linked auth method"]
+  Link --> Session["mobile-gateway link session<br/>ACCOUNT + PAYMENT"]
+  Session --> Ready["payment-service init<br/>READY transition"]
   Ready --> Active["confirm success<br/>ACTIVE transition"]`,
 );
 
@@ -374,7 +374,7 @@ const voltbotLogDiagnosisDiagram = localized(
 const roamingReliabilityDiagram = localized(
   `flowchart TD
   Source["환경부 로밍 API<br/>회원카드 / 충전기 상태"] --> Online["온라인 이벤트 처리<br/>card state update"]
-  Online --> Arrears["billing 미수 이벤트 기준<br/>필요 건만 상태 갱신"]
+  Online --> Arrears["결제 미수 이벤트 기준<br/>필요 건만 상태 갱신"]
   Source --> Retry["공공 API 오류 재처리<br/>중요도별 우선순위"]
   Retry --> Member["회원카드 우선 재처리<br/>기준 데이터 회복"]
   Retry --> Charger["충전기 상태 후순위<br/>누락 허용 항목 분리"]
@@ -390,8 +390,8 @@ const roamingReliabilityDiagram = localized(
   class Online,Arrears,Retry,Member,Charger,Monthly process;
   class Baseline,Stable result;`,
   `flowchart TD
-  Source["MCEE roaming API<br/>member cards / charger status"] --> Online["online event handling<br/>card state update"]
-  Online --> Arrears["billing-arrears events<br/>update only required cases"]
+  Source["public roaming API<br/>member cards / charger status"] --> Online["online event handling<br/>card state update"]
+  Online --> Arrears["payment-arrears events<br/>update only required cases"]
   Source --> Retry["public API error retry<br/>priority by importance"]
   Retry --> Member["member-card retry first<br/>recover baseline data"]
   Retry --> Charger["charger status later<br/>separate tolerable loss"]
@@ -444,7 +444,7 @@ const voltupPointWalletDiagram = localized(
 const voltupCouponServiceDiagram = localized(`flowchart TD
   Pack["couponPack 71<br/>register 10/01~10/31<br/>usable 10/01~11/30"] --> Code["batchIssue(size=1000)<br/>Snowflake -> SHA-256/base36<br/>code=37PRPT85WA"]
   Pack --> Direct["mapping(code=null) / batchMapping<br/>user=421 or [421,422]"]
-  Pack --> VendorPolicy["allowedPaymentVendors<br/>KAKAO_T / CARD / KAKAO_PAY"]
+  Pack --> VendorPolicy["allowed payment methods<br/>partner / card / wallet"]
   Code --> Claim["mapping(user=421, code=37PRPT85WA)<br/>lock coupon-mapping:37PRPT85WA"]
   Claim --> Guard["DB unique guard<br/>code / (userId,couponPackId)"]
   Direct --> Guard
@@ -452,24 +452,24 @@ const voltupCouponServiceDiagram = localized(`flowchart TD
   Ready --> Process["process(price=32000, user=421)<br/>lock coupon-process:421<br/>READY -> PROCESSING"]
   VendorPolicy --> Process
   Process --> Finish["complete -> COMPLETE<br/>rollback -> READY"]
-  Pack --> Expire["couponExpiryReminderJob<br/>usableEndAt D+3 window"]
+  Pack --> Expire["expiry reminder batch<br/>usableEndAt D+3 window"]
   Expire --> Scan["getAllByCouponPackId<br/>completeAt is null"]
-  Scan --> Event["publish coupon.event<br/>eventType=EXPIRED"]`);
+  Scan --> Event["publish promotion event<br/>eventType=EXPIRED"]`);
 
 const uplusVipCouponOpsDiagram = localized(
   `flowchart TD
-  Pack["Admin 쿠폰팩 사전 등록<br/>type=UPLUS_VIP<br/>혜택 월 + 사용 기간"] --> Policy["coupon-service 정책<br/>결제수단 제한<br/>동일 월 활성 기간 중복 차단"]
+  Pack["Admin 쿠폰팩 사전 등록<br/>U+ VIP 혜택 월 + 사용 기간"] --> Policy["promotion-service 정책<br/>결제수단 제한<br/>동일 월 활성 기간 중복 차단"]
   Policy --> UserFlow["고객 발급 플로우<br/>휴대폰번호 + 생년월일<br/>카드 조회"]
-  Policy --> AdminFlow["Admin VoC 대행<br/>회원 상세 패널<br/>휴대폰번호 카드조회"]
+  Policy --> AdminFlow["Admin 보조 발급<br/>회원 상세 패널<br/>휴대폰번호 카드조회"]
   UserFlow --> Guard["사전 검증<br/>회원 생일 일치<br/>유저 월 1회<br/>카드 월 1회"]
   AdminFlow --> Guard
-  Guard --> Approve["LGU+ Membership G/W<br/>승인 요청"]
-  Approve --> Issue["coupon-service 발급<br/>UPLUS_VIP coupon"]
+  Guard --> Approve["외부 멤버십 게이트웨이<br/>승인 요청"]
+  Approve --> Issue["promotion-service 발급<br/>U+ VIP coupon"]
   Issue --> History["발급/쿠폰 매핑 이력<br/>Admin 목록 조회"]
   Issue --> Fail{"쿠폰 발급 실패?"}
   Fail -->|yes| Cancel["LGU+ 승인 취소 보상<br/>응답코드 진단 로그"]
   Fail -->|no| Complete["고객 혜택 지급 완료"]
-  History --> Ops["운영팀 VoC 대응<br/>개발자 수동 조회 의존 감소"]
+  History --> Ops["고객 문의 확인<br/>개발자 수동 조회 의존 감소"]
   classDef policy fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef flow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
@@ -477,18 +477,18 @@ const uplusVipCouponOpsDiagram = localized(
   class UserFlow,AdminFlow,Guard,Approve,Issue,History flow;
   class Cancel,Complete,Ops result;`,
   `flowchart TD
-  Pack["Admin pre-registers coupon pack<br/>type=UPLUS_VIP<br/>benefit month + usable window"] --> Policy["coupon-service policy<br/>payment-vendor restriction<br/>no overlapping active pack in same month"]
+  Pack["Admin pre-registers coupon pack<br/>U+ VIP benefit month + usable window"] --> Policy["promotion-service policy<br/>payment-method restriction<br/>no overlapping active pack in same month"]
   Policy --> UserFlow["Customer issue flow<br/>phone + birthday<br/>card lookup"]
-  Policy --> AdminFlow["Admin VoC proxy<br/>member detail panel<br/>phone-based card lookup"]
+  Policy --> AdminFlow["Admin assisted issue<br/>member detail panel<br/>phone-based card lookup"]
   UserFlow --> Guard["Pre-checks<br/>member birthday match<br/>once per user per month<br/>once per card per month"]
   AdminFlow --> Guard
-  Guard --> Approve["LGU+ Membership G/W<br/>approval request"]
-  Approve --> Issue["coupon-service issue<br/>UPLUS_VIP coupon"]
+  Guard --> Approve["external membership gateway<br/>approval request"]
+  Approve --> Issue["promotion-service issue<br/>U+ VIP coupon"]
   Issue --> History["Issue/coupon mapping history<br/>Admin list search"]
   Issue --> Fail{"Coupon issue failed?"}
   Fail -->|yes| Cancel["Compensating LGU+ cancel<br/>response-code diagnostics"]
   Fail -->|no| Complete["Customer benefit granted"]
-  History --> Ops["Operations VoC response<br/>less developer manual lookup"]
+  History --> Ops["Customer inquiry check<br/>less developer manual lookup"]
   classDef policy fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef flow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
@@ -589,17 +589,17 @@ const pricingPlatformDiagram = localized(
 
 const devopsAutomationDiagram = localized(
   `flowchart TD
-  Pain["반복 운영 작업<br/>PR 리뷰 / 로컬 ENV / 배포 / 내부 API"] --> Review["voltup-workflow<br/>/gemini-review<br/>조직 공통 AI 리뷰"]
+  Pain["반복 운영 작업<br/>PR 리뷰 / PR 본문 / 로컬 ENV / 배포"] --> Review["voltup-workflow<br/>/voltup-review + /voltup-pr<br/>조직 공통 PR 자동화"]
   Review --> Context["project-context + prompts + skills<br/>repo별 운영 문맥 주입"]
-  Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
-  Local --> Vault["Vault CLI login<br/>project path + SHARED path<br/>secret commit 없음"]
-  Local --> IAM["gcloud account -><br/>IAM_DB_USER_NAME"]
-  Pain --> Internal["admin-internal-* client<br/>X-Internal-Caller"]
+  Pain --> Local["Gradle local-config task<br/>local config yaml"]
+  Local --> Vault["Vault CLI login<br/>service path + shared path<br/>secret commit 없음"]
+  Local --> IAM["cloud account -><br/>DB 사용자명 자동 치환"]
+  Pain --> Internal["internal API client<br/>호출 주체 식별 규약"]
   Pain --> Deploy["Jenkins shared library<br/>job name -> target 분기"]
   Deploy --> Build["docker/app build<br/>cache / track / notifications"]
   Deploy --> Android["Android release<br/>키 관리 부담 축소"]
   Deploy --> IOS["iOS release<br/>불필요한 실패 방지"]
-  Build --> Argo["deployArgoCD"]
+  Build --> Argo["ArgoCD deploy"]
   Android --> Argo
   IOS --> Argo
   classDef ai fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
@@ -609,17 +609,17 @@ const devopsAutomationDiagram = localized(
   class Local,Vault,IAM,Internal sec;
   class Deploy,Build,Android,IOS,Argo ops;`,
   `flowchart TD
-  Pain["Repeated operational work<br/>PR review / local env / deploy / internal APIs"] --> Review["voltup-workflow<br/>/gemini-review<br/>org-wide AI review"]
+  Pain["Repeated operational work<br/>PR review / PR docs / local env / deploy"] --> Review["voltup-workflow<br/>/voltup-review + /voltup-pr<br/>org-wide PR automation"]
   Review --> Context["project-context + prompts + skills<br/>repo-specific ops context injected"]
-  Pain --> Local["Gradle generateYamlAction<br/>application-local.yaml"]
-  Local --> Vault["Vault CLI login<br/>project path + SHARED path<br/>no secret commits"]
-  Local --> IAM["gcloud account -><br/>IAM_DB_USER_NAME"]
-  Pain --> Internal["admin-internal-* client<br/>X-Internal-Caller"]
+  Pain --> Local["Gradle local-config task<br/>local config yaml"]
+  Local --> Vault["Vault CLI login<br/>service path + shared path<br/>no secret commits"]
+  Local --> IAM["cloud account -><br/>DB user auto-fill"]
+  Pain --> Internal["internal API client<br/>caller identity convention"]
   Pain --> Deploy["Jenkins shared library<br/>job name -> target routing"]
   Deploy --> Build["docker/app build<br/>cache / track / notifications"]
   Deploy --> Android["Android release<br/>less key burden"]
   Deploy --> IOS["iOS release<br/>fewer avoidable failures"]
-  Build --> Argo["deployArgoCD"]
+  Build --> Argo["ArgoCD deploy"]
   Android --> Argo
   IOS --> Argo
   classDef ai fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
@@ -632,45 +632,65 @@ const devopsAutomationDiagram = localized(
 
 const voltupWorkflowReviewLoopDiagram = localized(
   `flowchart TD
-  Comment["PR 댓글<br/>/gemini-review"] --> Workflow["voltup-workflow<br/>GitHub Actions reusable workflow"]
-  Workflow --> Secret["Organization Secret<br/>GEMINI_API_KEY"]
-  Workflow --> RepoCtx["저장소별 context<br/>project-context / review-template / docs"]
-  Workflow --> Diff["PR diff + 변경 파일"]
-  Secret --> Gemini["run-gemini-cli<br/>1차 리뷰 실행"]
-  RepoCtx --> Gemini
-  Diff --> Gemini
-  Gemini --> CommentBack["PR 리뷰 댓글<br/>위험 / 누락 / 개선 제안"]
-  CommentBack --> Human["개발자 검토<br/>최종 판단은 사람"]
+  ReviewComment["PR 댓글<br/>/voltup-review"] --> ReviewWorkflow["AI 코드/보안 리뷰<br/>voltup-review workflow"]
+  PrComment["PR 댓글<br/>/voltup-pr"] --> PrWorkflow["PR 본문 자동 생성/갱신<br/>voltup-pr.yml"]
+  AutoDetect["PR open/push<br/>pr-changes-detector"] --> Summary["변경사항 요약 댓글<br/>Flyway / controller / entity / auth"]
+  ReviewWorkflow --> LLM["LLM 연계 리뷰 엔진<br/>코드/보안 리뷰 자동화"]
+  ReviewWorkflow --> RepoCtx["저장소별 context<br/>project-context / review-template / docs"]
+  PrWorkflow --> RepoCtx
+  ReviewWorkflow --> Diff["PR diff + 변경 파일"]
+  PrWorkflow --> Diff
+  PrWorkflow --> Marker["voltup-pr marker block<br/>수기 본문 보존"]
+  LLM --> ReviewEngine["변경 클러스터 기반 분석<br/>위험 / 누락 / 개선 후보 추출"]
+  RepoCtx --> ReviewEngine
+  Diff --> ReviewEngine
+  ReviewEngine --> ReviewBack["인라인 리뷰 + 전체 요약<br/>위험 / 누락 / 개선 제안"]
+  Diff --> PrDoc["PR 설명 문서<br/>요약 / 변경 내용 / 검증 / 리뷰 포인트"]
+  Marker --> PrDoc
+  ReviewBack --> Human["개발자 검토<br/>최종 판단은 사람"]
+  PrDoc --> Human
+  Summary --> Human
   Human --> Update["수정 커밋 또는 논의"]
-  Update --> Comment
+  Update --> ReviewComment
+  Update --> PrComment
   classDef trigger fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef workflow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef context fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
-  class Comment trigger;
-  class Workflow,Gemini workflow;
-  class Secret,RepoCtx,Diff context;
-  class CommentBack,Human,Update result;`,
+  class ReviewComment,PrComment,AutoDetect trigger;
+  class ReviewWorkflow,PrWorkflow,LLM,ReviewEngine workflow;
+  class RepoCtx,Diff,Marker context;
+  class ReviewBack,PrDoc,Summary,Human,Update result;`,
   `flowchart TD
-  Comment["PR comment<br/>/gemini-review"] --> Workflow["voltup-workflow<br/>GitHub Actions reusable workflow"]
-  Workflow --> Secret["Organization Secret<br/>GEMINI_API_KEY"]
-  Workflow --> RepoCtx["repo-local context<br/>project-context / review-template / docs"]
-  Workflow --> Diff["PR diff + changed files"]
-  Secret --> Gemini["run-gemini-cli<br/>first-pass review"]
-  RepoCtx --> Gemini
-  Diff --> Gemini
-  Gemini --> CommentBack["PR review comment<br/>risks / gaps / suggestions"]
-  CommentBack --> Human["developer review<br/>human owns final judgment"]
+  ReviewComment["PR comment<br/>/voltup-review"] --> ReviewWorkflow["AI code/security review<br/>voltup-review workflow"]
+  PrComment["PR comment<br/>/voltup-pr"] --> PrWorkflow["PR body generation/update<br/>voltup-pr.yml"]
+  AutoDetect["PR open/push<br/>pr-changes-detector"] --> Summary["change summary comment<br/>Flyway / controller / entity / auth"]
+  ReviewWorkflow --> LLM["LLM-backed review engine<br/>automated code/security review"]
+  ReviewWorkflow --> RepoCtx["repo-local context<br/>project-context / review-template / docs"]
+  PrWorkflow --> RepoCtx
+  ReviewWorkflow --> Diff["PR diff + changed files"]
+  PrWorkflow --> Diff
+  PrWorkflow --> Marker["voltup-pr marker block<br/>manual body preserved"]
+  LLM --> ReviewEngine["change-cluster analysis<br/>risk / gap / improvement candidates"]
+  RepoCtx --> ReviewEngine
+  Diff --> ReviewEngine
+  ReviewEngine --> ReviewBack["inline review + summary<br/>risks / gaps / suggestions"]
+  Diff --> PrDoc["PR description<br/>summary / changes / validation / review points"]
+  Marker --> PrDoc
+  ReviewBack --> Human["developer review<br/>human owns final judgment"]
+  PrDoc --> Human
+  Summary --> Human
   Human --> Update["follow-up commit or discussion"]
-  Update --> Comment
+  Update --> ReviewComment
+  Update --> PrComment
   classDef trigger fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef workflow fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef context fill:#eef7fb,stroke:#3b556b,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
-  class Comment trigger;
-  class Workflow,Gemini workflow;
-  class Secret,RepoCtx,Diff context;
-  class CommentBack,Human,Update result;`,
+  class ReviewComment,PrComment,AutoDetect trigger;
+  class ReviewWorkflow,PrWorkflow,LLM,ReviewEngine workflow;
+  class RepoCtx,Diff,Marker context;
+  class ReviewBack,PrDoc,Summary,Human,Update result;`,
 );
 
 const voltbotCrewDiagram = localized(
@@ -714,21 +734,21 @@ const voltbotCrewDiagram = localized(
 
 const membershipBatchPartitionDiagram = localized(
   `flowchart TD
-  Source["Athena source<br/>vip_confirmed_paid_partitioned<br/>stamp_date=2023-10-08"] --> Reader["reader paging<br/>queryExecutionId + nextToken"]
-  Reader --> Paid["UserConfirmedPaid<br/>user=421 confirmed=330000<br/>predicted=350000"]
+  Source["Athena source<br/>monthly paid partition<br/>target date=2023-10-08"] --> Reader["paged query<br/>continuation token"]
+  Reader --> Paid["monthly payment snapshot<br/>user=421 confirmed=330000<br/>predicted=350000"]
   Paid --> Calc["level calc<br/>최근 6개월 누적합 기준"]
   Calc --> Upsert["membership upsert<br/>dateAppliedYm=202310"]
-  Upsert --> Current["memberships<br/>batch insert / update"]
-  Upsert --> Archive["membership_logs<br/>RANGE(date_applied_ym)"]
+  Upsert --> Current["current membership data<br/>batch insert / update"]
+  Upsert --> Archive["monthly history partition<br/>RANGE(applied month)"]
   Current --> Query["recent Ym lookup<br/>202310, 202309, 202308"]
   Archive --> Query`,
   `flowchart TD
-  Source["Athena source<br/>vip_confirmed_paid_partitioned<br/>stamp_date=2023-10-08"] --> Reader["reader paging<br/>queryExecutionId + nextToken"]
-  Reader --> Paid["UserConfirmedPaid<br/>user=421 confirmed=330000<br/>predicted=350000"]
+  Source["Athena source<br/>monthly paid partition<br/>target date=2023-10-08"] --> Reader["paged query<br/>continuation token"]
+  Reader --> Paid["monthly payment snapshot<br/>user=421 confirmed=330000<br/>predicted=350000"]
   Paid --> Calc["level calc<br/>latest 6-month cumulative sum"]
   Calc --> Upsert["membership upsert<br/>dateAppliedYm=202310"]
-  Upsert --> Current["memberships<br/>batch insert / update"]
-  Upsert --> Archive["membership_logs<br/>RANGE(date_applied_ym)"]
+  Upsert --> Current["current membership data<br/>batch insert / update"]
+  Upsert --> Archive["monthly history partition<br/>RANGE(applied month)"]
   Current --> Query["recent Ym lookup<br/>202310, 202309, 202308"]
   Archive --> Query`,
 );
@@ -782,7 +802,7 @@ export interface PortfolioProject {
   indexLabel?: Localized;
   referenceLayout?: 'stacked' | 'split-with-context';
   fullWidthImplementationAfterContext?: boolean;
-  visual?: 'voltbot-agent-platform';
+  visual?: 'voltbot-agent-platform' | 'voltup-workflow-preview';
   period: Localized;
   company: Localized;
   roleLabel: Localized;
@@ -837,8 +857,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       en: 'Experience integrating MSAs with OAuth2, PGs, gateways, and external certificate services',
     },
     {
-      ko: '제휴 쿠폰 정책, 외부 멤버십 G/W, 운영 어드민을 연결한 VoC 대응 흐름 설계 경험',
-      en: 'Experience designing VoC response flows across partner-coupon policy, external membership gateways, and Admin tooling',
+      ko: 'U+ VIP콕 제휴 쿠폰, 외부 멤버십 G/W, 운영 어드민 연동 경험',
+      en: 'Experience connecting U+ VIP partnership coupons, external membership gateways, and Admin tooling',
     },
     {
       ko: 'Flutter/WebView 기반 하이브리드 앱과 앱 검증 도구 개발 경험',
@@ -861,8 +881,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       en: 'Chat-based AI agents, LLM routing, tool calling, WebSocket streaming, and production-log diagnosis automation',
     },
     {
-      ko: 'run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
-      en: 'DX improvements using run-gemini-cli, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
+      ko: 'LLM 리뷰 workflow, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
+      en: 'DX improvements using LLM review workflows, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
     },
   ],
   projects: [
@@ -1004,9 +1024,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       summary: {
         ko:
-          'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, FEAPP 한 스텝 API에서 결제수단 등록 세션 생성부터 billing의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다. 이후 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리해 검색, 해지 검증, 앱 콜백 activate 흐름을 안정화했습니다.',
+          'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, mobile-gateway의 한 스텝 API에서 결제수단 등록 세션 생성부터 payment-service의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다. 이후 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리해 검색, 해지 검증, 앱 콜백 activate 흐름을 안정화했습니다.',
         en:
-          'Designed the flow that links KakaoT external accounts to existing VoltUp members through encrypted CI and carries payment-method registration from the FEAPP one-step API through billing READY-state and ACTIVE-state transitions. Later promoted the partner customer token as the key between external payment methods and internal user context, stabilizing lookup, unlink validation, and app-callback activate flows.',
+          'Designed the flow that links KakaoT external accounts to existing VoltUp members through encrypted CI and carries payment-method registration from the mobile-gateway one-step API through payment-service READY-state and ACTIVE-state transitions. Later promoted the partner customer token as the key between external payment methods and internal user context, stabilizing lookup, unlink validation, and app-callback activate flows.',
       },
       challenge: {
         ko:
@@ -1029,20 +1049,20 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       actions: [
         {
-          ko: 'KakaoT OAuth 결과의 `externalId`, `ci`를 기준으로 기존 VoltUp 회원을 찾고 `AuthMethod(KAKAO_T)`를 추가하는 연결 흐름을 설계했습니다.',
-          en: 'Designed the linking flow that resolves the existing VoltUp member from KakaoT OAuth account data and encrypted CI, then adds `AuthMethod(KAKAO_T)`.',
+          ko: 'KakaoT OAuth 결과의 `externalId`, `ci`를 기준으로 기존 VoltUp 회원을 찾고 연결된 인증 수단을 추가하는 흐름을 설계했습니다.',
+          en: 'Designed the linking flow that resolves the existing VoltUp member from KakaoT OAuth account data and encrypted CI, then adds the linked auth method.',
         },
         {
-          ko: 'FEAPP에서 현재 사용자의 암호화된 CI를 기준으로 카카오T 결제수단 연동 세션을 생성하는 한 스텝 API 흐름을 정리했습니다.',
-          en: 'Built the one-step FEAPP flow that uses the current user encrypted CI to create the KakaoT payment-link session.',
+          ko: 'mobile-gateway에서 현재 사용자의 암호화된 CI를 기준으로 카카오T 결제수단 연동 세션을 생성하는 한 스텝 API 흐름을 정리했습니다.',
+          en: 'Built the one-step mobile-gateway flow that uses the current user encrypted CI to create the KakaoT payment-link session.',
         },
         {
-          ko: 'billing에서는 `pg_payloads`에 `session_key`를 저장하고, confirm 시 `pgPayKey`와 제휴사 고객 토큰을 확정하는 상태 전이를 구현했습니다.',
-          en: 'In billing, implemented the state transition that stores the `session_key` in `pg_payloads` and finalizes `pgPayKey` plus the partner customer token during confirm.',
+          ko: 'payment-service에서는 payment payload에 `session_key`를 저장하고, confirm 시 `pgPayKey`와 제휴사 고객 토큰을 확정하는 상태 전이를 구현했습니다.',
+          en: 'In payment-service, implemented the state transition that stores the `session_key` in the payment payload and finalizes `pgPayKey` plus the partner customer token during confirm.',
         },
         {
-          ko: '제휴사 고객 토큰 검색 필터와 복합 인덱스를 추가하고, 카카오T 해지 시 현재 사용자의 T_PAYMENTS인지 검증하는 경로를 보강했습니다.',
-          en: 'Added partner-customer-token lookup filters plus a composite index, and hardened unlink validation so KakaoT teardown checks whether the T_PAYMENTS record belongs to the current user.',
+          ko: '제휴사 고객 토큰 검색 필터와 복합 인덱스를 추가하고, 카카오T 해지 시 현재 사용자의 결제수단인지 검증하는 경로를 보강했습니다.',
+          en: 'Added partner-customer-token lookup filters plus a composite index, and hardened unlink validation so KakaoT teardown checks whether the payment-method record belongs to the current user.',
         },
         {
           ko: '앱 콜백 전용 activate API를 분리하고 DTO alias, `@JsonProperty`, 검색 로그를 보강해 외부 스키마 차이와 운영 추적성을 흡수했습니다.',
@@ -1051,8 +1071,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       engineeringViews: [
         {
-          ko: 'auth는 외부 계정 정보 수집, user-service는 동일인 판단과 AuthMethod 소유권, billing은 결제수단 상태를 맡도록 경계를 분리했습니다.',
-          en: 'Split responsibilities so auth owns external account acquisition, user-service owns identity resolution and AuthMethod ownership, and billing owns payment-method state.',
+          ko: 'auth-domain은 외부 계정 정보 수집, identity-service는 동일인 판단과 AuthMethod 소유권, payment-service는 결제수단 상태를 맡도록 경계를 분리했습니다.',
+          en: 'Split responsibilities so auth-domain owns external account acquisition, identity-service owns identity resolution and AuthMethod ownership, and payment-service owns payment-method state.',
         },
         {
           ko: '회원 연결이 끝나기 전에는 카드 등록을 진행하지 않고, 연결 완료 후에만 session 생성과 activate를 진행해 사용자 식별 불일치를 막았습니다.',
@@ -1278,14 +1298,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: 'coupon-service 정책 확장, 결제수단 제한, 포인트 지갑 구조 설계',
-        en: 'Extended coupon-service policy, payment-vendor restrictions, and point-wallet structure',
+        ko: 'promotion-service 정책 확장, 결제수단 제한, 포인트 지갑 구조 설계',
+        en: 'Extended promotion-service policy, payment-vendor restrictions, and point-wallet structure',
       },
       summary: {
         ko:
-          'VoltUp `coupon-service`에서는 쿠폰팩의 등록 기간과 사용 기간을 기준으로 코드 발급, 코드 등록, 코드 없이 유저 직접 할당, 만료 알림 배치를 처리했고, 제휴 쿠폰별 허용 결제수단 정책까지 발급/조회/사용/Admin 생성 흐름에 반영했습니다. 별도로 포인트는 accrual 단위 만료를 다루기 위해 지갑 구조와 차감 순서를 설계했습니다.',
+          'VoltUp `promotion-service`에서는 쿠폰팩의 등록 기간과 사용 기간을 기준으로 코드 발급, 코드 등록, 코드 없이 유저 직접 할당, 만료 알림 배치를 처리했고, 제휴 쿠폰별 허용 결제수단 정책까지 발급/조회/사용/Admin 생성 흐름에 반영했습니다. 별도로 포인트는 accrual 단위 만료를 다루기 위해 지갑 구조와 차감 순서를 설계했습니다.',
         en:
-          'In VoltUp `coupon-service`, handled code issuance, code registration, direct user assignment without codes, and expiry reminder batches based on coupon-pack registration and usage windows, while applying partner-coupon payment-vendor restrictions across issuance, lookup, usage, and Admin creation flows. Separately designed point wallets and redemption order for per-accrual expiration.',
+          'In VoltUp `promotion-service`, handled code issuance, code registration, direct user assignment without codes, and expiry reminder batches based on coupon-pack registration and usage windows, while applying partner-coupon payment-vendor restrictions across issuance, lookup, usage, and Admin creation flows. Separately designed point wallets and redemption order for per-accrual expiration.',
       },
       challenge: {
         ko:
@@ -1307,8 +1327,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'For direct assignment without coupon codes, created coupon rows through `mapping(code=null)` or `batchMapping(userIds)`, while code registration linked the user inside a `coupon-mapping:{code}` lock.',
         },
         {
-          ko: '`allowedPaymentVendors`를 쿠폰팩 정책으로 추가하고, 빈 값은 전체 허용으로 해석해 기존 쿠폰과의 호환성을 유지하면서 발급/조회/사용 단계에 같은 제한을 적용했습니다.',
-          en: 'Added `allowedPaymentVendors` as a coupon-pack policy, treating empty values as allowing all vendors to preserve compatibility while applying the same restriction across issuance, lookup, and usage.',
+          ko: '허용 결제수단을 쿠폰팩 정책으로 추가하고, 빈 값은 전체 허용으로 해석해 기존 쿠폰과의 호환성을 유지하면서 발급/조회/사용 단계에 같은 제한을 적용했습니다.',
+          en: 'Added allowed payment methods as a coupon-pack policy, treating an empty value as allowing all methods to preserve compatibility while applying the same restriction across issuance, lookup, and usage.',
         },
         {
           ko: 'Admin 쿠폰팩 생성 폼에는 허용 결제수단 멀티셀렉과 Encoded ID 노출을 추가해 운영자가 정책을 생성 시점부터 확인할 수 있게 했습니다.',
@@ -1323,8 +1343,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'When points are used, paged through active wallets and sorted them by `FREE -> earliest expiredAt`, holding across multiple wallets sequentially and restoring only the wallets that participated in the hold on failure.',
         },
         {
-          ko: '쿠폰 만료는 `couponExpiryReminderJob`에서 `usableEndAt` 기준 윈도우를 읽어 `coupon.event`의 `EXPIRED` 이벤트를 발행하도록 했고, 포인트는 당월 만료분을 다음 달 히스토리 배치에 반영했습니다.',
-          en: 'Handled coupon expiry through `couponExpiryReminderJob`, which reads a `usableEndAt` window and publishes `EXPIRED` events to `coupon.event`, while point expiration is reflected by the next-month history batch.',
+          ko: '쿠폰 만료는 만료 알림 배치에서 `usableEndAt` 기준 윈도우를 읽어 `EXPIRED` 이벤트를 발행하도록 했고, 포인트는 당월 만료분을 다음 달 히스토리 배치에 반영했습니다.',
+          en: 'Handled coupon expiry through an expiry reminder batch that reads a `usableEndAt` window and publishes `EXPIRED` events, while point expiration is reflected by the next-month history batch.',
         },
       ],
       engineeringViews: [
@@ -1355,8 +1375,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       outcomes: [
         {
-          ko: '코드형 쿠폰 발급, 코드 등록, 무코드 직접 할당, 만료 알림 배치를 `coupon-service` 안에서 같은 모델로 운영할 수 있게 정리했습니다.',
-          en: 'Organized code issuance, code registration, direct assignment without codes, and expiry reminder batches under the same `coupon-service` model.',
+          ko: '코드형 쿠폰 발급, 코드 등록, 무코드 직접 할당, 만료 알림 배치를 `promotion-service` 안에서 같은 모델로 운영할 수 있게 정리했습니다.',
+          en: 'Organized code issuance, code registration, direct assignment without codes, and expiry reminder batches under the same `promotion-service` model.',
         },
         {
           ko: '제휴 프로모션의 결제수단 제한 요구를 쿠폰팩 정책으로 흡수해 할인 정책과 실제 결제/정산 조건이 어긋날 가능성을 줄였습니다.',
@@ -1369,20 +1389,20 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       note: {
         ko: '쿠폰 서비스의 코드 발급/무코드 할당/만료 알림과 포인트 지갑 차감 구조를 함께 설명하기 좋은 프로젝트입니다.',
-        en: 'A good project for explaining coupon-service issuance, direct assignment, expiry reminders, and point-wallet redemption structure together.',
+        en: 'A good project for explaining promotion-service issuance, direct assignment, expiry reminders, and point-wallet redemption structure together.',
       },
       tech: ['Kotlin', 'Spring Boot', 'Spring Batch', 'MySQL', 'JPA', 'QueryDSL', 'JDBC', 'Distributed Lock'],
       diagrams: [
         {
           title: {
-            ko: 'coupon-service: 코드 발급, 무코드 할당, 만료 알림',
-            en: 'coupon-service: code issuance, direct assignment, and expiry reminders',
+            ko: 'promotion-service: 코드 발급, 무코드 할당, 만료 알림',
+            en: 'promotion-service: code issuance, direct assignment, and expiry reminders',
           },
           description: {
             ko:
-              '쿠폰팩 기준으로 코드 발급, 유저 코드 등록, 코드 없이 직접 할당, `usableEndAt` 기반 만료 알림 배치까지 실제 `coupon-service` 흐름을 한 장으로 정리했습니다.',
+              '쿠폰팩 기준으로 코드 발급, 유저 코드 등록, 코드 없이 직접 할당, `usableEndAt` 기반 만료 알림 배치까지 실제 `promotion-service` 흐름을 한 장으로 정리했습니다.',
             en:
-              'Shows the actual `coupon-service` flow from coupon-pack based code issuance and code registration to direct assignment without codes and `usableEndAt`-based expiry reminder batches.',
+              'Shows the actual `promotion-service` flow from coupon-pack based code issuance and code registration to direct assignment without codes and `usableEndAt`-based expiry reminder batches.',
           },
           code: voltupCouponServiceDiagram,
         },
@@ -1404,8 +1424,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       slug: 'uplus-vip-coupon-ops',
       title: {
-        ko: 'U+ VIP콕 제휴 쿠폰 및 VoC 운영 대행 시스템',
-        en: 'U+ VIP Partnership Coupons and VoC Operations Support',
+        ko: 'U+ VIP콕 제휴 쿠폰',
+        en: 'U+ VIP Partnership Coupon',
       },
       period: {
         ko: '2026.06 - 현재',
@@ -1416,41 +1436,41 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: 'feapp, coupon-service, Admin을 관통한 제휴 쿠폰 발급/운영 대응 흐름 설계',
-        en: 'Designed partner-coupon issuing and operations flows across feapp, coupon-service, and Admin',
+        ko: 'U+ VIP콕 쿠폰팩 정책, 외부 멤버십 승인, 발급/보상 흐름 설계',
+        en: 'Designed U+ VIP coupon-pack policy, external membership approval, and issue/compensation flows',
       },
       summary: {
         ko:
-          'LGU+ 멤버십 VIP/VVIP 고객에게 월 1회 U+ VIP콕 쿠폰을 지급하기 위해 `UPLUS_VIP` 쿠폰팩 정책, LGU+ Membership G/W 연동, 발급/취소 보상, Admin VoC 대행 화면과 이력 조회까지 연결했습니다. 운영팀이 고객 문의 때 개발자에게 로그/정책 확인을 요청하던 흐름을 Admin에서 직접 조회하고 판단할 수 있는 구조로 옮기는 데 초점을 뒀습니다.',
+          'LGU+ 멤버십 VIP/VVIP 고객에게 월 1회 U+ VIP콕 쿠폰을 지급하기 위해 월별 쿠폰팩 정책, 외부 멤버십 승인 연동, 발급/취소 보상, 발급 이력 조회까지 end-to-end로 연결했습니다. 고객 문의 대응을 위한 Admin 보조 발급과 상태 확인 화면은 이 쿠폰 발급 흐름을 운영에서 안전하게 다루기 위한 부가 기능으로 정리했습니다.',
         en:
-          'Connected `UPLUS_VIP` coupon-pack policy, LGU+ Membership G/W integration, issue/cancel compensation, Admin VoC proxy screens, and issue-history search so LGU+ VIP/VVIP customers can receive a monthly U+ VIP benefit coupon. The core goal was to move developer-dependent log and policy checks into Admin surfaces that operations can use directly during customer inquiries.',
+          'Connected monthly coupon-pack policy, external membership approval, issue/cancel compensation, and issue-history search end to end so LGU+ VIP/VVIP customers can receive a monthly U+ VIP benefit coupon. Admin assisted issue and status-check screens were positioned as supporting features for safely operating that coupon flow.',
       },
       challenge: {
         ko:
-          '외부 멤버십 승인과 내부 쿠폰 발급이 하나의 사용자 경험으로 보여야 했지만, 혜택 월 기준 쿠폰팩 사전 등록, 사용자/카드 단위 월 1회 제한, 생년월일 본인확인, 쿠폰 발급 실패 시 외부 승인 취소 보상, Admin 대행 발급의 권한/검증 기준을 동시에 맞춰야 했습니다. 여기에 결제수단 제한 쿠폰 정책과 고객 메시지 예약 발송처럼 운영팀의 반복 요청을 줄이는 어드민 도구도 함께 정리해야 했습니다.',
+          '외부 멤버십 승인과 내부 쿠폰 발급이 하나의 사용자 경험으로 보여야 했지만, 혜택 월 기준 쿠폰팩 사전 등록, 사용자/카드 단위 월 1회 제한, 생년월일 본인확인, 쿠폰 발급 실패 시 외부 승인 취소 보상 기준을 동시에 맞춰야 했습니다. 여기에 결제수단 제한 쿠폰 정책, Admin 보조 발급, 고객 메시지 예약 발송처럼 운영 안정성을 높이는 도구도 함께 정리해야 했습니다.',
         en:
-          'External membership approval and internal coupon issuance had to feel like one user flow while satisfying pre-registered benefit-month coupon packs, once-per-user and once-per-card monthly limits, birthday verification, compensating approval cancellation on coupon failure, and Admin proxy-issue validation rules. The work also included Admin tooling for payment-vendor-restricted coupons and scheduled customer messages to reduce repeated operations requests.',
+          'External membership approval and internal coupon issuance had to feel like one user flow while satisfying pre-registered benefit-month coupon packs, once-per-user and once-per-card monthly limits, birthday verification, and compensating approval cancellation on coupon failure. The work also included supporting Admin tools for payment-vendor-restricted coupons, assisted issue, and scheduled customer messages.',
       },
       actions: [
         {
-          ko: '`coupon-service`에 `UPLUS_VIP` 쿠폰팩 타입과 혜택 월 기준 활성 기간 중복 제한을 추가하고, `allowedPaymentVendors` 정책이 미리보기/조회/사용/Admin 생성까지 같은 의미로 흐르도록 정리했습니다.',
-          en: 'Added the `UPLUS_VIP` coupon-pack type to `coupon-service`, blocked overlapping active packs within the same benefit month, and made `allowedPaymentVendors` carry the same meaning through preview, search, use, and Admin creation.',
+          ko: '`promotion-service`에 U+ VIP 쿠폰팩 정책과 혜택 월 기준 활성 기간 중복 제한을 추가하고, 허용 결제수단 정책이 미리보기/조회/사용/Admin 생성까지 같은 의미로 흐르도록 정리했습니다.',
+          en: 'Added the U+ VIP coupon-pack policy to `promotion-service`, blocked overlapping active packs within the same benefit month, and kept allowed-payment-method rules consistent through preview, search, use, and Admin creation.',
         },
         {
-          ko: '`feapp`의 핵심 발급 로직을 `UplusMembershipIssueService`로 분리해 휴대폰번호 카드조회, 회원 생일 검증, 사용자/카드 월 1회 제한, LGU+ 승인, 쿠폰 발급, 실패 시 승인 취소 보상을 한 흐름으로 묶었습니다.',
-          en: 'Extracted core issuing logic into `UplusMembershipIssueService`, tying phone-based card lookup, member birthday verification, once-per-user/card monthly limits, LGU+ approval, coupon issue, and compensating approval cancellation into one flow.',
+          ko: '사용자 발급 API의 핵심 발급 로직을 U+ VIP 발급 서비스로 분리해 휴대폰번호 카드조회, 회원 생일 검증, 사용자/카드 월 1회 제한, LGU+ 승인, 쿠폰 발급, 실패 시 승인 취소 보상을 한 흐름으로 묶었습니다.',
+          en: 'Extracted core issuing logic into a U+ VIP issue service, tying phone-based card lookup, member birthday verification, once-per-user/card monthly limits, LGU+ approval, coupon issue, and compensating approval cancellation into one flow.',
         },
         {
           ko: 'LGU+ 응답코드별 진단 로그와 한도 초과 분기를 보강하고, 카드번호/키는 마스킹과 암호화 경계를 지켜 운영 로그에 민감값이 남지 않도록 했습니다.',
           en: 'Added diagnostics for LGU+ response codes and limit-exceeded branches while keeping card numbers and keys behind masking and encryption boundaries so sensitive values do not leak into operational logs.',
         },
         {
-          ko: 'Admin API에는 회원 상세에서 휴대폰번호로 카드조회 후 혜택 발급을 대행하는 경로, 본인확인 불일치 사전 점검, 발급/쿠폰 매핑 이력 조회를 추가했습니다.',
-          en: 'Added Admin APIs for phone-based card lookup and benefit proxy issue from member detail, pre-checks for identity mismatches, and searchable issue/coupon mapping history.',
+          ko: 'Admin API에는 회원 상세에서 휴대폰번호로 카드조회 후 혜택 발급을 보조하는 경로, 본인확인 불일치 사전 점검, 발급/쿠폰 매핑 이력 조회를 추가했습니다.',
+          en: 'Added Admin APIs for phone-based card lookup and assisted benefit issue from member detail, pre-checks for identity mismatches, and searchable issue/coupon mapping history.',
         },
         {
-          ko: '`voltup-admin-fe`에는 회원 상세 U+ VIP콕 대행 패널, 발급/쿠폰 매핑 이력 페이지, `UPLUS_VIP` 쿠폰팩 생성 옵션, 혜택 월 자동 입력, 정액 할인 최소사용금액 보정, 허용 결제수단 멀티셀렉을 구현했습니다.',
-          en: 'Implemented the member-detail U+ VIP proxy panel, issue/coupon mapping history page, `UPLUS_VIP` coupon-pack option, benefit-month autofill, fixed-discount minimum-amount correction, and allowed-payment-vendor multiselect in `voltup-admin-fe`.',
+          ko: 'Admin UI에는 회원 상세 U+ VIP콕 보조 발급 패널, 발급/쿠폰 매핑 이력 페이지, U+ VIP 쿠폰팩 생성 옵션, 혜택 월 자동 입력, 정액 할인 최소사용금액 보정, 허용 결제수단 멀티셀렉을 구현했습니다.',
+          en: 'Implemented the member-detail U+ VIP assisted-issue panel, issue/coupon mapping history page, U+ VIP coupon-pack option, benefit-month autofill, fixed-discount minimum-amount correction, and allowed-payment-method multiselect in Admin UI.',
         },
         {
           ko: '고객 대상 문자/푸시/알림톡 1회 발송 어드민을 만들고, 즉시/예약 발송이 같은 발송 기록을 기준으로 처리되도록 예약 디스패치 배치와 발송 이력 조회를 구성했습니다.',
@@ -1463,12 +1483,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'U+ VIP benefits were not just another coupon type; they were a state-alignment problem between external approval and internal coupon issuance. I called LGU+ approval only after local pre-checks and attached compensating cancellation when internal coupon issuance failed.',
         },
         {
-          ko: 'Admin 대행 발급은 규칙 우회가 아니라 운영자가 같은 검증 기준을 더 빠르게 실행하는 화면으로 봤습니다. 회원 상세 패널과 이력 조회를 붙여 고객 문의의 현재 상태, 실패 원인, 재시도 가능성을 한 자리에서 확인하게 했습니다.',
-          en: 'I treated Admin proxy issue as a faster execution path for the same rules, not as a bypass. The member-detail panel and history search let operations see current status, failure causes, and retry feasibility in one place.',
+          ko: 'Admin 보조 발급은 규칙 우회가 아니라 운영자가 같은 검증 기준을 더 빠르게 실행하는 화면으로 봤습니다. 회원 상세 패널과 이력 조회를 붙여 고객 문의의 현재 상태, 실패 원인, 재시도 가능성을 한 자리에서 확인하게 했습니다.',
+          en: 'I treated Admin assisted issue as a faster execution path for the same rules, not as a bypass. The member-detail panel and history search let operations see current status, failure causes, and retry feasibility in one place.',
         },
         {
-          ko: '쿠폰팩 생성 정책은 FE 조건으로 흩어두지 않고 coupon-service 도메인 정책으로 유지했습니다. Admin은 그 정책을 입력하고 확인하는 표면이고, 사용자 발급/조회/사용은 같은 정책 값을 읽는 구조로 맞췄습니다.',
-          en: 'Coupon-pack creation rules stayed as coupon-service domain policy instead of scattered frontend conditions. Admin became the surface for entering and reviewing policy, while user issue/search/use flows read the same policy values.',
+          ko: '쿠폰팩 생성 정책은 화면 조건으로 흩어두지 않고 promotion-service 도메인 정책으로 유지했습니다. Admin은 그 정책을 입력하고 확인하는 표면이고, 사용자 발급/조회/사용은 같은 정책 값을 읽는 구조로 맞췄습니다.',
+          en: 'Coupon-pack creation rules stayed as promotion-service domain policy instead of scattered frontend conditions. Admin became the surface for entering and reviewing policy, while user issue/search/use flows read the same policy values.',
         },
         {
           ko: '고객 메시지 발송은 캠페인 요청마다 별도 코드를 만드는 방식 대신 발송 요청 자체를 데이터로 남기고, 즉시 발송과 예약 디스패치가 같은 발송 원장을 공유하도록 설계했습니다.',
@@ -1477,16 +1497,16 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       outcomes: [
         {
-          ko: 'U+ VIP/VVIP 혜택 쿠폰 발급을 고객 화면, 쿠폰 정책, 외부 LGU+ 승인, Admin 대행, 발급 이력까지 end-to-end로 운영 가능한 상태로 연결했습니다.',
-          en: 'Connected U+ VIP/VVIP benefit issuing end-to-end across customer flow, coupon policy, external LGU+ approval, Admin proxy issue, and issue history.',
+          ko: 'U+ VIP/VVIP 혜택 쿠폰 발급을 고객 화면, 쿠폰 정책, 외부 LGU+ 승인, 실패 보상, 발급 이력까지 end-to-end로 운영 가능한 상태로 연결했습니다.',
+          en: 'Connected U+ VIP/VVIP benefit issuing end-to-end across customer flow, coupon policy, external LGU+ approval, failure compensation, and issue history.',
         },
         {
-          ko: '운영팀이 고객 VoC 대응 중 개발자에게 수동 로그/정책 확인을 요청하던 지점을 Admin 조회와 사전 점검 화면으로 옮겨 응답 속도를 높일 수 있는 기반을 만들었습니다.',
-          en: 'Moved developer-dependent manual log and policy checks into Admin search and pre-check surfaces, creating a foundation for faster operations responses to customer VoC.',
+          ko: '고객 문의 중 개발자에게 수동 로그/정책 확인을 요청하던 지점을 Admin 조회와 사전 점검 화면으로 옮겨 운영 확인을 빠르게 할 수 있는 기반을 만들었습니다.',
+          en: 'Moved developer-dependent manual log and policy checks into Admin search and pre-check surfaces, creating a foundation for faster customer-inquiry checks.',
         },
         {
-          ko: '결제수단 제한, 쿠폰 미리보기, U+ VIP콕 쿠폰팩 생성, 소프트삭제 후 재발급 제약 같은 프로모션 정책 정합성을 coupon-service와 Admin 양쪽에서 맞췄습니다.',
-          en: 'Aligned promotion-policy consistency across coupon-service and Admin for payment-vendor restrictions, coupon preview, U+ VIP coupon-pack creation, and reissue after soft deletion.',
+          ko: '결제수단 제한, 쿠폰 미리보기, U+ VIP콕 쿠폰팩 생성, 소프트삭제 후 재발급 제약 같은 프로모션 정책 정합성을 promotion-service와 Admin 양쪽에서 맞췄습니다.',
+          en: 'Aligned promotion-policy consistency across promotion-service and Admin for payment-vendor restrictions, coupon preview, U+ VIP coupon-pack creation, and reissue after soft deletion.',
         },
         {
           ko: '고객 메시지 발송 어드민과 예약 발송 배치를 통해 반복 캠페인/공지성 발송을 개발자 작업 없이 운영팀이 처리할 수 있는 방향으로 확장했습니다.',
@@ -1494,8 +1514,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
       ],
       note: {
-        ko: '제휴 API 연동, 쿠폰 도메인 정책, Admin 운영 도구, VoC 대응 속도 개선을 하나의 운영 흐름으로 설명하기 좋은 프로젝트입니다.',
-        en: 'A strong project for explaining partner API integration, coupon-domain policy, Admin operations tooling, and faster VoC response as one operational flow.',
+        ko: 'U+ VIP콕 제휴 쿠폰을 중심으로, 외부 멤버십 승인과 내부 쿠폰 발급/보상, Admin 운영 보조 기능까지 한 흐름으로 설명하기 좋은 프로젝트입니다.',
+        en: 'A strong project for explaining U+ VIP partnership coupons through external membership approval, internal coupon issue/compensation, and supporting Admin operations tooling.',
       },
       tech: ['Kotlin', 'Spring Boot', 'Spring Batch', 'React', 'TypeScript', 'MySQL', 'JPA', 'QueryDSL', 'Feign', 'Flyway'],
       diagrams: [
@@ -1506,9 +1526,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           },
           description: {
             ko:
-              'Admin 쿠폰팩 사전 등록부터 휴대폰번호 카드조회, 본인확인, LGU+ 승인, coupon-service 발급, 실패 보상, 발급 이력 조회까지 고객/운영 흐름을 한 장으로 정리했습니다.',
+              'Admin 쿠폰팩 사전 등록부터 휴대폰번호 카드조회, 본인확인, LGU+ 승인, promotion-service 발급, 실패 보상, 발급 이력 조회까지 U+ VIP콕 쿠폰 흐름을 한 장으로 정리했습니다.',
             en:
-              'Shows the customer and operations flow from Admin coupon-pack pre-registration through phone-based card lookup, identity check, LGU+ approval, coupon-service issue, failure compensation, and issue-history search.',
+              'Shows the U+ VIP coupon flow from Admin coupon-pack pre-registration through phone-based card lookup, identity check, LGU+ approval, promotion-service issue, failure compensation, and issue-history search.',
           },
           code: uplusVipCouponOpsDiagram,
         },
@@ -1625,7 +1645,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
     },
     {
-      slug: 'voltup-app-extension',
+      slug: 'mobile-app-extension',
       title: {
         ko: '볼트업 앱 검증/운영 보정 익스텐션',
         en: 'VoltUp App Validation and Ops Correction Extension',
@@ -1644,9 +1664,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       summary: {
         ko:
-          '앱 개발 중 매번 `voltup-app`을 연결해야 검증할 수 있던 새창, QR 스캔, 카메라 권한, 강제 업데이트 버전 분기 등을 브라우저 익스텐션에서 재현해 검증 시간을 줄였습니다. 이후 같은 capture/replay 구조를 충전존 생성 오류 대응처럼 Admin 화면에서 직접 지원하지 않는 단일 API 보정 작업까지 확장했습니다.',
+          '앱 개발 중 매번 실제 앱 빌드를 연결해야 검증할 수 있던 새창, QR 스캔, 카메라 권한, 강제 업데이트 버전 분기 등을 브라우저 익스텐션에서 재현해 검증 시간을 줄였습니다. 이후 같은 capture/replay 구조를 충전존 생성 오류 대응처럼 Admin 화면에서 직접 지원하지 않는 단일 API 보정 작업까지 확장했습니다.',
         en:
-          'Reduced validation time by recreating app-dependent flows such as new-window handling, QR scanning, camera permission, and forced-update version branches inside a browser extension instead of requiring `voltup-app` attachment every time. The same capture/replay structure was then extended to single-API operational corrections not directly supported by the Admin UI.',
+          'Reduced validation time by recreating app-dependent flows such as new-window handling, QR scanning, camera permission, and forced-update version branches inside a browser extension instead of requiring a real app build every time. The same capture/replay structure was then extended to single-API operational corrections not directly supported by the Admin UI.',
       },
       challenge: {
         ko:
@@ -1783,7 +1803,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'The context-sharing idea from the multi-agent session prototype was turned into a simpler automatic-routing product shape. Instead of exposing a complex session model to users, the system first decides what kind of help is needed.',
         },
         {
-          ko: '운영팀 VoC 대응 확장은 코드 정책 조회와 로그 조회를 같은 컨텍스트 안에서 이어 붙이는 방향으로 봤습니다. 정책상 정상 차단인지, 외부 API/PG 오류인지, 내부 상태 불일치인지 빠르게 나누는 것이 목표입니다.',
+          ko: '고객 문의 확인 확장은 코드 정책 조회와 로그 조회를 같은 컨텍스트 안에서 이어 붙이는 방향으로 봤습니다. 정책상 정상 차단인지, 외부 API/PG 오류인지, 내부 상태 불일치인지 빠르게 나누는 것이 목표입니다.',
           en: 'The ops VoC extension connects code-policy lookup and log lookup inside one shared context, aiming to quickly distinguish expected policy blocks, external API/PG failures, and internal state mismatches.',
         },
       ],
@@ -1805,7 +1825,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko: 'AI 에이전트를 단순 기능으로 붙인 것이 아니라, 운영팀과 개발자 사이의 반복 확인 병목을 줄이기 위한 업무 흐름 개선으로 제안하고 구현한 프로젝트입니다.',
         en: 'A project that applies AI agents not as a standalone feature, but as workflow improvement for reducing repeated confirmation loops between operations and developers.',
       },
-      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'Gemini API', 'LLM Routing', 'Multi-Agent', 'Context Summarization'],
+      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'LLM', 'Multi-Agent', 'Context Summarization'],
       diagrams: [
         {
           title: {
@@ -1838,13 +1858,13 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       roleLabel: {
         ko: '환경부 로밍 카드 상태 재설계, 공공 API 재처리, 월간 전체 재동기화',
-        en: 'MCEE roaming card-state redesign, public API retries, and monthly full resync',
+        en: 'Public roaming card-state redesign, API retries, and monthly full resync',
       },
       summary: {
         ko:
-          '기후에너지환경부 공공 로밍 연계에서 회원카드 상태가 외부 시스템과 장기적으로 어긋나지 않도록 카드 상태 갱신 기준을 결제 응답에서 빌링 미수 이벤트 중심으로 재설계했습니다. 공공 API 오류 재처리와 월 1회 전체 재동기화 스케줄러를 더해 이벤트 누락이나 일시 장애 이후에도 기준 데이터를 회복할 수 있게 했습니다.',
+          '기후에너지환경부 공공 로밍 연계에서 회원카드 상태가 외부 시스템과 장기적으로 어긋나지 않도록 카드 상태 갱신 기준을 결제 응답에서 결제 미수 이벤트 중심으로 재설계했습니다. 공공 API 오류 재처리와 월 1회 전체 재동기화 스케줄러를 더해 이벤트 누락이나 일시 장애 이후에도 기준 데이터를 회복할 수 있게 했습니다.',
         en:
-          'Redesigned the Ministry of Climate, Energy and Environment public roaming integration so member-card state does not drift long-term from the external system, moving card-state updates from payment responses to billing-arrears events. Added public API retry handling and a monthly full-resync scheduler so baseline data can recover after missed events or transient failures.',
+          'Redesigned the Ministry of Climate, Energy and Environment public roaming integration so member-card state does not drift long-term from the external system, moving card-state updates from payment responses to payment-arrears events. Added public API retry handling and a monthly full-resync scheduler so baseline data can recover after missed events or transient failures.',
       },
       challenge: {
         ko:
@@ -1854,12 +1874,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       actions: [
         {
-          ko: '카드 상태 업데이트 기준을 결제 응답 중심에서 빌링 미수 이벤트 중심으로 바꾸고, 미수 발생 건에 대해서만 선별적으로 상태를 갱신하도록 정리했습니다.',
-          en: 'Moved card-state updates from payment-response-driven logic to billing-arrears-event-driven logic, updating state selectively only for arrears cases.',
+          ko: '카드 상태 업데이트 기준을 결제 응답 중심에서 결제 미수 이벤트 중심으로 바꾸고, 미수 발생 건에 대해서만 선별적으로 상태를 갱신하도록 정리했습니다.',
+          en: 'Moved card-state updates from payment-response-driven logic to payment-arrears-event-driven logic, updating state selectively only for arrears cases.',
         },
         {
-          ko: '로밍 카드 상태 처리 경로를 단순화하고 빌링 조회를 통합해 변환/조회 오버헤드를 줄였습니다.',
-          en: 'Simplified the roaming card-state processing path and consolidated billing lookups to reduce transformation and lookup overhead.',
+          ko: '로밍 카드 상태 처리 경로를 단순화하고 결제 상태 조회를 통합해 변환/조회 오버헤드를 줄였습니다.',
+          en: 'Simplified the roaming card-state processing path and consolidated payment-state lookups to reduce transformation and lookup overhead.',
         },
         {
           ko: '공공 API 오류 재처리는 회원카드처럼 기준 데이터 성격이 강한 항목을 우선 처리하고, 충전기 상태처럼 누락 허용 가능한 항목은 후순위로 분리했습니다.',
@@ -1867,7 +1887,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: '환경부 회원카드 월 1회 전체 재동기화 스케줄러와 task seed를 추가해 온라인 이벤트가 놓친 차이를 주기적으로 복구할 수 있게 했습니다.',
-          en: 'Added a monthly full-resync scheduler and task seed for MCEE member cards so differences missed by online events can be periodically restored.',
+          en: 'Added a monthly full-resync scheduler and task seed for public roaming member cards so differences missed by online events can be periodically restored.',
         },
       ],
       engineeringViews: [
@@ -1911,9 +1931,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           },
           description: {
             ko:
-              '빌링 미수 이벤트 기준 상태 갱신, 중요도별 공공 API 재처리, 월간 전체 재동기화를 함께 두어 외부 시스템과의 장기 drift를 줄이는 구조입니다.',
+              '결제 미수 이벤트 기준 상태 갱신, 중요도별 공공 API 재처리, 월간 전체 재동기화를 함께 두어 외부 시스템과의 장기 drift를 줄이는 구조입니다.',
             en:
-              'Shows how billing-arrears-based updates, priority-based public API retries, and monthly full resync work together to reduce long-term drift from the external system.',
+              'Shows how payment-arrears-based updates, priority-based public API retries, and monthly full resync work together to reduce long-term drift from the external system.',
           },
           code: roamingReliabilityDiagram,
         },
@@ -1994,8 +2014,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'The important part was not just a chatbot that answers well, but an agent that calls work tools and leaves evidence. Tool trails, evidence logs, and guide/code basis therefore remain visible before the final answer is trusted.',
         },
         {
-          ko: '로그 분석은 한 키로 전체 흐름을 잇기 어렵기 때문에 traceId에만 의존하지 않고 user_id와 order_number 관점을 병행했습니다. 서비스 경계나 Pub/Sub consumer에서 trace가 끊겨도 다른 상관키로 인과 사슬을 이어갈 수 있게 한 점이 핵심입니다.',
-          en: 'Log diagnosis cannot rely on a single key across the whole system, so I paired traceId with user_id and order_number views. The key point is keeping the causal chain traceable even when traces break across service or Pub/Sub consumer boundaries.',
+          ko: '로그 분석은 한 키로 전체 흐름을 잇기 어렵기 때문에 traceId에만 의존하지 않고 user_id와 order_number 관점을 병행했습니다. `payment-service`, `order-service`, `mobile-gateway`처럼 여러 서비스 경계나 비동기 worker에서 trace가 끊겨도 다른 상관키로 인과 사슬을 이어갈 수 있게 한 점이 핵심입니다.',
+          en: 'Log diagnosis cannot rely on a single key across the whole system, so I paired traceId with user_id and order_number views. The key point is keeping the causal chain traceable across generic services such as `payment-service`, `order-service`, and `mobile-gateway`, even when traces break at async worker boundaries.',
         },
         {
           ko: '여러 에이전트를 같은 채팅 표면에 올릴 때 권한, 개발 중 상태, 승인 대기, 사용량 같은 운영 상태를 제품 UI에 드러내야 한다고 봤습니다.',
@@ -2024,7 +2044,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko: '사내 반복 업무를 AI로 대체했다기보다, Intent-based Agent Router와 Tool 실행 레이어를 통해 기존 개발자 의존 트리아지 흐름을 권한·근거·가이드·코드 탐색이 있는 제품형 업무 도구로 바꾼 사례입니다.',
         en: 'This is less about replacing internal work with AI and more about using an intent-based Agent Router plus a tool-execution layer to turn developer-dependent triage into a productized work tool with permissions, evidence, guides, and code exploration.',
       },
-      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'GCP Cloud Logging', 'LLM Tool Calling', 'GitHub API', 'Google OAuth', 'MySQL'],
+      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'GCP Cloud Logging', 'LLM', 'GitHub API', 'Google OAuth', 'MySQL'],
       diagrams: [
         {
           title: {
@@ -2069,6 +2089,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     },
     {
       slug: 'devops-automation',
+      visual: 'voltup-workflow-preview',
       title: {
         ko: 'Voltup Workflow: AI 운영 자동화와 DevOps 표준화',
         en: 'Voltup Workflow: AI Operations Automation and DevOps Standardization',
@@ -2086,14 +2107,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: '조직 공통 AI 리뷰 workflow, repo-local 운영 문맥, Vault-local sync, CI/CD 표준화',
-        en: 'Org-wide AI review workflow, repo-local operational context, Vault-local sync, and CI/CD standardization',
+        ko: '조직 공통 PR 자동화 workflow, repo-local 운영 문맥, Vault-local sync, CI/CD 표준화',
+        en: 'Org-wide PR automation workflow, repo-local operational context, Vault-local sync, and CI/CD standardization',
       },
       summary: {
         ko:
-          'Voltup Workflow는 개발과 운영 사이에서 반복되던 PR 리뷰, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 재사용 가능한 workflow와 자동화 도구로 묶은 프로젝트입니다. `/gemini-review` 댓글 기반 AI 리뷰는 저장소별 `project-context`, `review-template`, `docs`를 읽어 repo-local 운영 문맥을 반영하고, Vault-local sync와 Jenkins/ArgoCD 표준화를 함께 구성해 운영 효율과 릴리즈 안정성을 높이는 방향으로 정리했습니다.',
+          'Voltup Workflow는 개발과 운영 사이에서 반복되던 PR 리뷰, PR 본문 작성, 변경사항 요약, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 재사용 가능한 workflow와 자동화 도구로 묶은 프로젝트입니다. `/voltup-review` 코드/보안 리뷰와 `/voltup-pr` PR 본문 자동 생성은 저장소별 `project-context`, `review-template`, `docs`를 읽어 repo-local 운영 문맥을 반영하고, `pr-changes-detector`, Vault-local sync, Jenkins/ArgoCD 표준화와 함께 운영 효율과 릴리즈 안정성을 높이는 방향으로 정리했습니다.',
         en:
-          'Voltup Workflow turns repeated work between development and operations, including PR review, local environment setup, internal API integration, and service/app delivery, into reusable workflows and automation tools. The `/gemini-review` AI review flow reads repo-local `project-context`, `review-template`, and docs, while Vault-local sync and Jenkins/ArgoCD standardization improve operational efficiency and release reliability.',
+          'Voltup Workflow turns repeated work between development and operations, including PR review, PR description writing, change summaries, local environment setup, internal API integration, and service/app delivery, into reusable workflows and automation tools. The `/voltup-review` code/security review and `/voltup-pr` PR body generation flows read repo-local `project-context`, `review-template`, and docs, while `pr-changes-detector`, Vault-local sync, and Jenkins/ArgoCD standardization improve operational efficiency and release reliability.',
       },
       challenge: {
         ko:
@@ -2103,28 +2124,36 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       actions: [
         {
-          ko: '`voltup-workflow`에 `/gemini-review` 댓글 트리거형 GitHub Actions reusable workflow를 만들고, Organization Secret의 `GEMINI_API_KEY`와 저장소별 `project-context`, `review-template`, `docs`를 조합해 PR diff를 repo 문맥에 맞춰 검토하는 1차 AI 리뷰 체계를 구성했습니다.',
-          en: 'Built a reusable GitHub Actions workflow in `voltup-workflow` triggered by `/gemini-review`, combining the organization-level `GEMINI_API_KEY` with per-repo `project-context`, `review-template`, and docs so PR diffs are reviewed against repository-specific context.',
+          ko: '조직 공통 workflow 허브에 `/voltup-review` 댓글 트리거형 GitHub Actions reusable workflow를 만들고, LLM과 저장소별 `project-context`, `review-template`, `docs`를 연계해 PR diff를 repo 문맥에 맞춰 자동 코드/보안 리뷰하도록 구성했습니다.',
+          en: 'Built a reusable GitHub Actions workflow in a shared workflow hub triggered by `/voltup-review`, connecting an LLM with per-repo `project-context`, `review-template`, and docs so PR diffs are automatically reviewed against repository-specific context.',
+        },
+        {
+          ko: '`/voltup-review -t security`는 Find, 컨텍스트 확장, Refute 흐름의 보안 에이전트 루프로 구성해 diff 밖 인증/호출/설정 문맥까지 확인하고 오탐을 줄이도록 설계했습니다.',
+          en: 'Designed `/voltup-review -t security` as a security-agent loop with Find, context expansion, and Refute stages, so it can inspect authentication, caller, and configuration context outside the diff and reduce false positives.',
+        },
+        {
+          ko: '`/voltup-pr`은 커밋 로그, 변경 파일, diff를 근거로 PR 본문을 자동 생성/갱신하고, `voltup-pr` 마커 블록만 교체해 수기 본문을 보존하도록 만들었습니다. `pr-changes-detector`는 PR open/push 시 Flyway, 컨트롤러, 엔티티, 권한 변경을 요약 댓글로 upsert하도록 정리했습니다.',
+          en: 'Built `/voltup-pr` to generate and update PR descriptions from commit logs, changed files, and diffs while replacing only the `voltup-pr` marker block to preserve manual content. `pr-changes-detector` upserts PR change summaries for Flyway, controller, entity, and authorization changes on PR open/push.',
         },
         {
           ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 배치해 각 서비스의 작업 컨벤션, API 우선 개발 흐름, 보안 규칙, 반복 운영 작업 형상을 여러 생성형 LLM 도구에서 공유 가능한 repo-local context로 만들었습니다.',
           en: 'Added `.agent/workflows`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` to MSA repositories, turning service conventions, API-first development flow, security rules, and recurring operational task shapes into reusable repo-local context for generative LLM tools.',
         },
         {
-          ko: '루트 `build.gradle.kts`에는 base yaml의 placeholder를 Vault에서 치환해 `application-local.yaml`을 생성하는 로직을 넣고, 프로젝트 경로와 `secret/SHARED/voltup/dev`를 순차 조회하도록 만들었습니다. Vault CLI 로그인 확인, 비대화형 환경 대응, `gcloud` 계정 기반 `IAM_DB_USER_NAME` 치환까지 포함해 새 키가 추가돼도 개발자별 local 환경이 자동으로 같은 기준을 유지하도록 했습니다.',
-          en: 'Added root `build.gradle.kts` logic that replaces base-yaml placeholders from Vault and generates `application-local.yaml`, checking both project-specific paths and `secret/SHARED/voltup/dev`. It also verifies Vault CLI login, handles non-interactive environments, and fills `IAM_DB_USER_NAME` from the current `gcloud` account so local environments stay automatically aligned across developers even when new keys are added.',
+          ko: '루트 `build.gradle.kts`에는 base yaml의 placeholder를 Vault에서 치환해 local config yaml을 생성하는 로직을 넣고, 서비스별 Vault path와 shared dev path를 순차 조회하도록 만들었습니다. Vault CLI 로그인 확인, 비대화형 환경 대응, `gcloud` 계정 기반 DB 사용자명 치환까지 포함해 새 키가 추가돼도 개발자별 local 환경이 자동으로 같은 기준을 유지하도록 했습니다.',
+          en: 'Added root `build.gradle.kts` logic that replaces base-yaml placeholders from Vault and generates a local config yaml, checking both service-specific Vault paths and shared dev paths. It also verifies Vault CLI login, handles non-interactive environments, and fills the DB user from the current `gcloud` account so local environments stay automatically aligned across developers even when new keys are added.',
         },
         {
-          ko: '`feapp-domain-service`에는 인증서와 `conf.json`을 Base64 인코딩해 Vault에 반영하는 민감 인증서 갱신 태스크를 만들어, 민감 파일을 저장소나 메신저로 공유하지 않고도 필요한 개발자가 스스로 갱신할 수 있게 했습니다.',
-          en: 'Added a sensitive-certificate refresh task in `feapp-domain-service` that Base64-encodes certificates and `conf.json` fields into Vault, so developers can refresh sensitive assets themselves without sharing files through the repo or chat.',
+          ko: '앱 도메인 저장소에는 인증서와 앱 설정 필드를 Base64 인코딩해 Vault에 반영하는 민감 인증서 갱신 태스크를 만들어, 민감 파일을 저장소나 메신저로 공유하지 않고도 필요한 개발자가 스스로 갱신할 수 있게 했습니다.',
+          en: 'Added a sensitive-certificate refresh task in an app-domain repository that Base64-encodes certificates and app-config fields into Vault, so developers can refresh sensitive assets themselves without sharing files through the repo or chat.',
         },
         {
-          ko: 'Admin 내부 연동 API가 늘어나는 상황에서 `admin-internal-*` 클라이언트 패턴과 `X-Internal-Caller` 헤더 규약을 문서화하고 적용해 호출 주체와 신뢰 경계를 일관되게 관리했습니다.',
-          en: 'Documented and applied an `admin-internal-*` client pattern plus `X-Internal-Caller` header convention so growing Admin internal API integrations keep a consistent caller identity and trust boundary.',
+          ko: '운영자 도구 내부 연동 API가 늘어나는 상황에서 공통 내부 API 클라이언트 패턴과 호출 주체 식별 헤더 규약을 문서화하고 적용해 신뢰 경계를 일관되게 관리했습니다.',
+          en: 'Documented and applied a shared internal API client pattern plus a caller-identity header convention so growing operator-tool integrations keep a consistent trust boundary.',
         },
         {
-          ko: '배포는 `devops-cicd` Jenkins shared library 위에서 서비스별 `Jenkinsfile`이 job name으로 API/BATCH/CONSUMER/APP target을 분기하고, Docker build/push 후 ArgoCD 배포로 이어지도록 통일했습니다. Android 앱은 cache, track 선택, 알림까지 같은 패턴으로 자동화했습니다.',
-          en: 'Standardized delivery on top of the `devops-cicd` Jenkins shared library so each service `Jenkinsfile` routes API/BATCH/CONSUMER/APP targets by job name and continues into Docker build/push plus ArgoCD deploy. The Android app pipeline follows the same pattern with cache restore/save, release track selection, and notifications.',
+          ko: '배포는 공통 Jenkins shared library 위에서 서비스별 `Jenkinsfile`이 job name으로 API/BATCH/CONSUMER/APP target을 분기하고, Docker build/push 후 ArgoCD 배포로 이어지도록 통일했습니다. Android 앱은 cache, track 선택, 알림까지 같은 패턴으로 자동화했습니다.',
+          en: 'Standardized delivery on top of a shared Jenkins library so each service `Jenkinsfile` routes API/BATCH/CONSUMER/APP targets by job name and continues into Docker build/push plus ArgoCD deploy. The Android app pipeline follows the same pattern with cache restore/save, release track selection, and notifications.',
         },
         {
           ko: 'Android 앱 배포에서 오래 보관되는 인증 키 의존을 줄이고, 배포 로그·Slack 알림·토큰 노출 방지를 보강해 릴리즈 흐름을 안정화했습니다.',
@@ -2137,8 +2166,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       engineeringViews: [
         {
-          ko: 'AI 도입을 “모델 하나 붙이기”가 아니라 운영 체계 설계 문제로 봤습니다. 같은 `/gemini-review` 명령이라도 저장소별 context와 review template을 읽도록 만들어, 공통 workflow는 유지하면서 서비스별 운영 문맥은 잃지 않게 했습니다.',
-          en: 'Treated AI adoption as an operating-system design problem rather than just attaching a model. The same `/gemini-review` command reads each repository context and review template, keeping the workflow shared while preserving service-specific operational context.',
+          ko: 'AI 도입을 “모델 하나 붙이기”가 아니라 운영 체계 설계 문제로 봤습니다. `/voltup-review`, `/voltup-pr`, `pr-changes-detector`가 각자 다른 PR 운영 문제를 맡되 저장소별 context와 template을 읽도록 만들어, 공통 workflow는 유지하면서 서비스별 운영 문맥은 잃지 않게 했습니다.',
+          en: 'Treated AI adoption as an operating-system design problem rather than just attaching a model. `/voltup-review`, `/voltup-pr`, and `pr-changes-detector` each handle a different PR operations problem while reading per-repo context and templates, keeping the workflow shared without losing service-specific operational context.',
         },
         {
           ko: '로컬 환경 셋업은 “누가 비밀값을 전달하느냐”보다 “Vault와 local 환경을 직접 동기화해 인증된 개발자가 같은 기준의 설정을 자동으로 받게 하자”는 방향으로 풀었습니다. 공개 저장이나 수동 배포 대신 Vault CLI 인증을 전제로 yaml 생성과 인증서 갱신을 자동화해, 키가 늘어나도 개발자 간 동기화가 흐트러지지 않도록 만들었습니다.',
@@ -2159,8 +2188,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
       outcomes: [
         {
-          ko: '조직 공통 `voltup-workflow`와 마이크로서비스별 repo-local context 체계를 만들어, 신규 저장소나 신규 작업도 같은 AI 리뷰 기준과 운영 컨벤션으로 빠르게 온보딩할 수 있게 했습니다.',
-          en: 'Established the org-wide `voltup-workflow` plus repo-local context patterns, allowing new repositories and workstreams to onboard under the same AI review standards and operational conventions.',
+          ko: '조직 공통 `voltup-workflow`와 마이크로서비스별 repo-local context 체계를 만들어, 신규 저장소나 신규 작업도 같은 PR 리뷰, PR 본문, 변경사항 요약 기준과 운영 컨벤션으로 빠르게 온보딩할 수 있게 했습니다.',
+          en: 'Established the org-wide `voltup-workflow` plus repo-local context patterns, allowing new repositories and workstreams to onboard under the same PR review, PR description, change-summary, and operational conventions.',
         },
         {
           ko: '민감한 환경값을 저장소에 두지 않으면서도 Vault와 local 환경을 바로 동기화해, 키가 추가될 때도 개발자 간 설정 sync가 자동으로 유지되도록 만들었습니다.',
@@ -2179,18 +2208,18 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko: '개발/운영 사이에서 반복되는 리뷰, 환경 drift, 배포 실패, 내부 도구 호출 경계를 workflow와 자동화로 줄여 운영 효율과 릴리즈 안정성을 높인 프로젝트입니다.',
         en: 'A workflow automation project that improves operational efficiency and release reliability by reducing repeated review work, environment drift, delivery failures, and ambiguity at internal-tool boundaries.',
       },
-      tech: ['Vault CLI', 'Gradle Kotlin DSL', 'GitHub Actions', 'Jenkins', 'ArgoCD', 'Workload Identity', 'Firebase CLI', 'Gemini API', 'GitHub Copilot', 'Claude Code', 'gcloud CLI'],
+      tech: ['Vault CLI', 'Gradle Kotlin DSL', 'GitHub Actions', 'Jenkins', 'ArgoCD', 'Workload Identity', 'Firebase CLI', 'LLM', 'GitHub Copilot', 'Claude Code', 'gcloud CLI'],
       diagrams: [
         {
           title: {
-            ko: 'Voltup Workflow: /gemini-review AI 리뷰 루프',
-            en: 'Voltup Workflow: /gemini-review AI review loop',
+            ko: 'Voltup Workflow: /voltup-review, /voltup-pr PR 자동화 루프',
+            en: 'Voltup Workflow: /voltup-review and /voltup-pr PR automation loop',
           },
           description: {
             ko:
-              'PR 댓글에서 시작된 `/gemini-review`가 조직 공통 workflow를 호출하고, 저장소별 context와 변경 diff를 함께 읽어 PR에 1차 리뷰 코멘트를 남기는 구조입니다.',
+              'PR 댓글에서 시작된 `/voltup-review`와 `/voltup-pr`가 조직 공통 workflow를 호출하고, 저장소별 context와 변경 diff를 함께 읽어 인라인 리뷰, PR 본문, 변경사항 요약을 갱신하는 구조입니다.',
             en:
-              'Shows how `/gemini-review` starts from a PR comment, invokes the org-wide workflow, reads repo-local context plus the PR diff, and posts first-pass review comments back to the PR.',
+              'Shows how `/voltup-review` and `/voltup-pr` start from PR comments, invoke org-wide workflows, read repo-local context plus the PR diff, and update inline reviews, PR descriptions, and change summaries.',
           },
           code: voltupWorkflowReviewLoopDiagram,
         },
@@ -2480,15 +2509,15 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       summary: {
         ko:
-          '리텐션 강화를 위해 멤버십 등급 체계를 재설계하고, 레거시 멤버십 서비스(cormo.js 기반)를 Spring Boot로 1:1 DB 마이그레이션 및 무중단 이관했습니다. 특히 기존 멤버십 API에서 실제 request·response 셋을 수집해 테스트케이스를 만들고, 이를 Spring 로직에 직접 재주입해 응답 차이를 비교한 뒤 게이트웨이를 점진 전환하는 방식으로 오픈했으며, 월간 등급 산정도 Athena partition source 기반으로 다시 정리했습니다.',
+          '리텐션 강화를 위해 멤버십 등급 체계를 재설계하고, 레거시 Node.js 기반 멤버십 서비스를 Spring Boot로 1:1 DB 마이그레이션 및 무중단 이관했습니다. 특히 기존 멤버십 API에서 실제 request·response 셋을 수집해 테스트케이스를 만들고, 이를 Spring 로직에 직접 재주입해 응답 차이를 비교한 뒤 게이트웨이를 점진 전환하는 방식으로 오픈했으며, 월간 등급 산정도 Athena partition source 기반으로 다시 정리했습니다.',
         en:
-          'Redesigned membership tiers for retention, migrated the legacy membership service (cormo.js-based) to Spring Boot through a 1:1 DB migration with zero downtime, and did the cutover by collecting real request/response sets from the legacy membership API, turning them into test cases, replaying them through the Spring implementation, and comparing output before gradually switching the gateway. The monthly tier calculation was also rebuilt around a partitioned Athena source.',
+          'Redesigned membership tiers for retention, migrated the legacy Node.js-based membership service to Spring Boot through a 1:1 DB migration with zero downtime, and did the cutover by collecting real request/response sets from the legacy membership API, turning them into test cases, replaying them through the Spring implementation, and comparing output before gradually switching the gateway. The monthly tier calculation was also rebuilt around a partitioned Athena source.',
       },
       challenge: {
         ko:
-          '기존 cormo.js 기반 서비스를 1:1 DB 마이그레이션으로 옮기면서도 실제 사용자 응답이 달라지지 않게 유지해야 했고, 월간 등급 산정 배치가 사용자 수와 월 수가 늘어날수록 더 넓은 범위를 재조회하는 구조가 되지 않도록 막아야 했습니다.',
+          '기존 Node.js 기반 서비스를 1:1 DB 마이그레이션으로 옮기면서도 실제 사용자 응답이 달라지지 않게 유지해야 했고, 월간 등급 산정 배치가 사용자 수와 월 수가 늘어날수록 더 넓은 범위를 재조회하는 구조가 되지 않도록 막아야 했습니다.',
         en:
-          'The project required a 1:1 DB migration from the cormo.js legacy service while keeping real user-facing responses unchanged, while also preventing monthly tier batches from widening their scan scope as both users and months accumulated.',
+          'The project required a 1:1 DB migration from the Node.js legacy service while keeping real user-facing responses unchanged, while also preventing monthly tier batches from widening their scan scope as both users and months accumulated.',
       },
       actions: [
         {
@@ -2504,12 +2533,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'After passing response-parity verification, gradually switched the gateway so the Spring Boot service could be opened without breaking user responses.',
         },
         {
-          ko: 'Athena `vip_confirmed_paid_partitioned`를 `stamp_date` 기준으로 조회하고, `queryExecutionId + nextToken`으로 페이지 처리한 뒤 `UserConfirmedPaid(cashAmountConfirmed, cashAmountPredicted)`로 변환해 월간 배치 입력으로 사용했습니다.',
-          en: 'Queried Athena `vip_confirmed_paid_partitioned` by `stamp_date`, paged results with `queryExecutionId + nextToken`, and converted them into `UserConfirmedPaid(cashAmountConfirmed, cashAmountPredicted)` as the monthly batch input.',
+          ko: 'Athena의 월별 결제 파티션을 기준일로 조회하고, continuation token으로 페이지 처리한 뒤 월간 결제 스냅샷으로 변환해 배치 입력으로 사용했습니다.',
+          en: 'Queried a monthly payment partition in Athena by target date, paged results with a continuation token, and converted them into monthly payment snapshots as batch input.',
         },
         {
-          ko: '`cashAmountConfirmed`를 최근 6개월 누적 확정금액으로 사용해 등급을 계산하고, 결과는 `saveMembershipBatchInsert` / `updateMembershipBatchUpdate`로 batch upsert했으며, 조회는 `getConfirmedAmountUpdateDateMonthYmSet(3/2)`와 `membership_logs`의 `date_applied_ym` RANGE PARTITION으로 최근 월 범위만 다루도록 정리했습니다.',
-          en: 'Used `cashAmountConfirmed` as the six-month confirmed cumulative amount for level calculation, batch-upserted the result through `saveMembershipBatchInsert` / `updateMembershipBatchUpdate`, and bounded reads to recent months with `getConfirmedAmountUpdateDateMonthYmSet(3/2)` plus `date_applied_ym` range partitioning on `membership_logs`.',
+          ko: '최근 6개월 누적 확정금액으로 등급을 계산하고 결과를 batch upsert했으며, 조회는 최근 월 집합과 월별 RANGE PARTITION으로 필요한 범위만 다루도록 정리했습니다.',
+          en: 'Calculated tiers from the six-month confirmed cumulative amount, batch-upserted the result, and bounded reads to the needed period with a recent-month set plus monthly range partitioning.',
         },
       ],
       engineeringViews: [
@@ -2522,12 +2551,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Built the monthly batch to read only the required `stamp_date` from a partitioned Athena source and page through results with `queryExecutionId + nextToken`, avoiding a full in-memory load for large target sets.',
         },
         {
-          ko: '`UserConfirmedPaid`에 최근 6개월 확정금액과 이번 달 포함 누적값을 분리해 담고, 이를 `confirmedAmount`, `confirmedAmountNow`, `confirmed5MonthAmount`로 저장해 등급 산정과 이후 조회 기준이 데이터 모델에 직접 남도록 했습니다.',
-          en: 'Stored both six-month confirmed totals and current-month-inclusive totals in `UserConfirmedPaid`, then persisted them as `confirmedAmount`, `confirmedAmountNow`, and `confirmed5MonthAmount` so tier logic and later reads could rely on the model directly.',
+          ko: '월간 결제 스냅샷에 최근 6개월 확정금액과 이번 달 포함 누적값을 분리해 담고, 이를 등급 산정용 누적 컬럼으로 저장해 이후 조회 기준이 데이터 모델에 직접 남도록 했습니다.',
+          en: 'Stored both six-month confirmed totals and current-month-inclusive totals in a monthly payment snapshot, then persisted them as cumulative fields for tier calculation so later reads could rely on the model directly.',
         },
         {
-          ko: '배치 쓰기는 JDBC batch insert/update로 묶고, 조회 쪽은 `getConfirmedAmountUpdateDateMonthYmSet`으로 최근 월 집합만 보게 하며 `membership_logs`는 `date_applied_ym` RANGE PARTITION으로 관리해 데이터가 쌓여도 필요한 월만 다루게 했습니다.',
-          en: 'Grouped writes into JDBC batch insert/update, limited reads to recent month sets with `getConfirmedAmountUpdateDateMonthYmSet`, and managed `membership_logs` with `date_applied_ym` range partitions so only the needed months are touched as data grows.',
+          ko: '배치 쓰기는 JDBC batch insert/update로 묶고, 조회 쪽은 최근 월 집합만 보게 하며 이력 데이터는 월별 RANGE PARTITION으로 관리해 데이터가 쌓여도 필요한 월만 다루게 했습니다.',
+          en: 'Grouped writes into JDBC batch insert/update, limited reads to recent month sets, and managed history data with monthly range partitions so only the needed months are touched as data grows.',
         },
       ],
       outcomes: [
@@ -2588,9 +2617,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           },
           description: {
             ko:
-              'Athena의 `vip_confirmed_paid_partitioned`를 `stamp_date` 기준으로 읽고, `UserConfirmedPaid`를 거쳐 멤버십을 batch upsert한 뒤, 최근 월 집합 조회와 `membership_logs` 파티셔닝으로 범위를 제한하는 흐름을 보여줍니다.',
+              'Athena의 월별 결제 파티션을 기준일로 읽고, 월간 결제 스냅샷을 거쳐 멤버십을 batch upsert한 뒤 최근 월 집합 조회와 월별 이력 파티셔닝으로 범위를 제한하는 흐름을 보여줍니다.',
             en:
-              'Shows the flow from Athena `vip_confirmed_paid_partitioned` by `stamp_date`, through `UserConfirmedPaid` and membership batch upserts, into recent-month-scoped lookups and `membership_logs` partitioning.',
+              'Shows the flow from an Athena monthly payment partition by target date, through monthly payment snapshots and membership batch upserts, into recent-month-scoped lookups and monthly history partitioning.',
           },
           code: membershipBatchPartitionDiagram,
         },

@@ -27,7 +27,7 @@ const labels = isKo
         '카드사/은행 시스템 점검 시간대에 외부 PG가 결제를 반려한 일시적 실패로 판단했습니다.',
       evidenceTitle: '근거 로그',
       evidence: [
-        'svc=billing-service-consumer | code=4902',
+        'svc=payment-service-worker | code=4902',
         'order_number=260706170149MSGD',
         'traceId -> user_id -> order_number 순서로 재조회',
       ],
@@ -53,7 +53,7 @@ const labels = isKo
         'The failure is likely a temporary rejection from an external PG during card or bank maintenance.',
       evidenceTitle: 'Evidence Logs',
       evidence: [
-        'svc=billing-service-consumer | code=4902',
+        'svc=payment-service-worker | code=4902',
         'order_number=260706170149MSGD',
         'Re-query by traceId, user_id, then order_number',
       ],

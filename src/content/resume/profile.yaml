@@ -597,59 +597,23 @@ projectSections:
             - Turned one-off JS fetch operational corrections into a reusable internal tool flow
 
       - title:
-          ko: Voltbot Crew — 업무 맥락 기반 AI 에이전트 라우팅
-          en: Voltbot Crew — Context-Aware AI Agent Routing
-        portfolioSlug: voltbot-crew
+          ko: Voltbot — 사내 업무 에이전트 플랫폼, 개별 에이전트 자동 라우팅 및 로그 진단 자동화
+          en: Voltbot — Internal Work-Agent Platform, Automatic Specialist-Agent Routing & Log Diagnosis Automation
+        portfolioSlug: voltbot-agent-platform
         period:
           ko: "2026.05 ~ 현재"
           en: "May 2026 — Present"
         summary:
           ko: |
-            운영팀의 고객 VoC 대응 지연을 줄이기 위해, 코드 정책 조회 결과를 로그 에이전트가 같은 컨텍스트에서 이어받아 실제 실행 로그를 구체적으로 조회하는 Voltbot Crew 기반 운영 진단 및 자동 라우팅 흐름을 설계·구현했습니다.
+            Voltbot은 사내 구성원이 코드 정책, BigQuery 데이터 조회, 법률 지원, 운영, 로그 진단 같은 전문 에이전트를 채팅으로 사용하는 업무 플랫폼입니다.
+            이 안에서 사용자가 에이전트를 직접 고르지 않아도 질문 의도와 권한을 기준으로 필요한 전문 에이전트를 선택하는 개별 에이전트 자동 라우팅(Voltbot Crew/AgentRouter)을 설계·구현했고,
+            운영/CS가 “고객 결제 실패 원인을 확인해달라”처럼 업무 언어로 질문하면 로그 조회, BigQuery 조회, 코드 정책 확인 결과가 같은 대화 컨텍스트에 쌓이고 다음 에이전트가 그 컨텍스트를 이어받아 진단·근거·권장 조치로 답변하는 흐름을 구축했습니다.
+            특히 결제 실패처럼 payment-service, worker, mobile-gateway, 외부 PG가 얽힌 이슈에서 traceId가 끊겨도 user_id/order_number로 재조회해 원인 흐름을 이어가도록 설계했습니다.
           en: |
-            Designed and implemented Voltbot Crew, an automatic routing and operations-diagnosis flow where the log agent continues from code-policy context to investigate runtime logs for customer VoCs.
-        tech:
-          - Kotlin
-          - Spring Boot
-          - React
-          - TypeScript
-          - WebSocket
-          - Gemini API
-        highlights:
-          ko:
-            - 하나의 대화 세션에서 2개 에이전트가 컨텍스트를 공유하는 팀 에이전트 구조를 프로토타입으로 구현
-            - 세션-에이전트 매핑, 메시지별 담당 에이전트 기록, WebSocket 요청 확장, 프론트엔드 에이전트 선택 UX까지 end-to-end 구성
-            - 최종적으로 사용자의 권한 있는 전문 에이전트 후보 중 요청 맥락에 맞는 에이전트를 LLM이 자동 배정하는 AUTO_ROUTING 구조로 전환
-            - 코드 정책의 정상 조건·상태 전이·에러 코드를 공통 컨텍스트로 전달하고 로그 에이전트가 서비스·시간 범위·상관키를 좁혀 실제 로그를 조회하는 통합 진단 흐름 구현
-          en:
-            - Prototyped a team-agent structure where two agents share context inside one conversation session
-            - Built the end-to-end path across session-agent mapping, per-message agent attribution, WebSocket request expansion, and frontend agent selection UX
-            - Evolved the design into AUTO_ROUTING, where an LLM chooses the most relevant specialist among agents the user is authorized to use
-            - Implemented integrated diagnosis where policy conditions, state transitions, and error codes enter shared context so the log agent can narrow services, time ranges, and correlation keys for runtime investigation
-        results:
-          ko:
-            - 사용자가 에이전트 종류를 직접 판단하지 않아도 요청 맥락에 맞는 전문 에이전트로 연결할 수 있는 기반 마련
-            - 코드 정책과 실제 실행 로그를 같은 컨텍스트에서 비교해 운영팀이 고객 오류의 1차 원인과 답변 방향을 판단할 수 있는 흐름 구현
-          en:
-            - Created the foundation for routing users to the right specialist without requiring them to classify the request first
-            - Implemented a shared-context diagnosis flow that helps operations compare code policy with runtime logs and determine a first-pass cause and response direction
-
-      - title:
-          ko: Voltbot — 사내 업무 에이전트 플랫폼 및 로그 진단 자동화
-          en: Voltbot — Internal Work-Agent Platform & Log Diagnosis Automation
-        portfolioSlug: voltbot-agent-platform
-        period:
-          ko: "2026.06 ~ 현재"
-          en: "Jun 2026 — Present"
-        summary:
-          ko: |
-            운영/CS가 “고객 결제 실패 원인을 확인해달라”처럼 업무 언어로 질문하면 Agent Router가 로그 분석 에이전트로 연결하고,
-            에이전트가 GCP 운영 로그, 사내 진단 가이드, GitHub 코드 근거를 순차 조회해 진단·근거·권장 조치로 답변하는 흐름을 구축했습니다.
-            특히 결제 실패처럼 billing-service, consumer, feapp, 외부 PG가 얽힌 이슈에서 traceId가 끊겨도 user_id/order_number로 재조회해 원인 흐름을 이어가도록 설계했습니다.
-          en: |
-            Built a flow where operations and CS can ask in work language, such as “why did this customer's payment fail?”, and the Agent Router sends the request to the log-diagnosis agent.
-            The agent queries GCP production logs, internal diagnosis guides, and GitHub code evidence, then returns a diagnosis, supporting evidence, and recommended action.
-            For payment failures spanning billing-service, consumers, feapp, and external PGs, the flow can continue investigation with user_id/order_number even when traceId continuity breaks.
+            Voltbot is an internal work platform where employees use specialized agents for code policy, BigQuery data lookup, legal support, operations, and log diagnosis through chat.
+            I designed and implemented automatic specialist-agent routing (Voltbot Crew/AgentRouter) so users can be routed to the needed specialist based on question intent and permissions without manually choosing an agent.
+            I also built a shared-context diagnosis flow where operations and CS can ask in work language, such as “why did this customer's payment fail?”, and log lookup, BigQuery lookup, and code-policy findings accumulate in the same conversation context so the next agent can continue from that evidence.
+            For payment failures spanning payment-service, workers, mobile-gateway, and external PGs, the flow can continue investigation with user_id/order_number even when traceId continuity breaks.
         tech:
           - Kotlin
           - Spring Boot
@@ -657,32 +621,39 @@ projectSections:
           - TypeScript
           - WebSocket
           - GCP Cloud Logging
-          - LLM Tool Calling
-          - Gemini API
+          - LLM
           - GitHub API
         highlights:
           ko:
-            - 사용자의 자연어 요청을 의도·권한·에이전트 상태 기준으로 분류해 로그 분석, 데이터 분석, 법률 지원, 코드 정책 등 전문 에이전트로 연결하는 AgentRouter 구현
+            - 사용자의 자연어 요청을 의도·권한·에이전트 상태 기준으로 분류해 로그 분석, BigQuery 조회, 법률 지원, 코드 정책 등 필요한 전문 에이전트로 연결하는 AgentRouter 구현
             - 공통 Agent/Tool 계약 위에 AgentRunner, ToolHandler, WebSocket 스트리밍을 연결해 Tool 실행 내역, 권한, 쿼터, 중단 요청, 최종 답변이 같은 대화 흐름에 남도록 구성
+            - 하나의 대화 세션에서 2개 에이전트가 컨텍스트를 공유하는 TEAM 구조를 프로토타입으로 검증한 뒤, 사용자의 권한 있는 전문 에이전트 후보 중 요청 맥락에 맞는 에이전트를 LLM이 자동 배정하는 AUTO_ROUTING 구조로 전환
             - LogDiagnosisAgent에 고객 모드와 운영 모드를 나누고, `services`, `severity`, `range/from/to`, `pageToken`, raw LQL 조건으로 GCP 운영 로그를 반복 조회하는 `searchUserLogs` 도구 흐름 설계
             - 결제 실패 분석에서 traceId, user_id, order_number를 상황에 맞게 갈아타는 상관키 pivot 규칙을 두어 서비스 경계나 Pub/Sub consumer에서 trace가 끊겨도 인과 흐름을 추적
-            - 로그 분석 가이드 조회 도구와 GitHub 코드 근거 검색을 결합해 에러 코드, 정책상 정상 차단, 외부 PG/카드사 점검, 내부 상태 불일치를 구분하는 답변 기준 정리
+            - 코드 정책의 정상 조건·상태 전이·에러 코드, BigQuery의 집계·이력·패턴 정보, 로그 조회 결과를 공통 컨텍스트에 남기고 다음 에이전트가 이를 이어받는 통합 진단 흐름 구현
+            - 로그 분석 가이드, 코드 정책 컨텍스트, 데이터 조회 결과를 결합해 에러 코드, 정책상 정상 차단, 외부 PG/카드사 점검, 내부 상태 불일치를 구분하는 답변 기준 정리
             - 최종 답변을 진단, 근거 로그, 연계 플로우, 운영/고객 안내 조치로 구조화하고 자연인 식별 정보는 마스킹하되 user_id/order_number 같은 시스템 식별자는 추적 가능하게 유지
           en:
-            - Implemented AgentRouter to classify natural-language requests by intent, permission, and agent availability, then route to specialist agents such as log diagnosis, data analysis, legal support, and code policy
+            - Implemented AgentRouter to classify natural-language requests by intent, permission, and agent availability, then route to needed specialist agents such as log diagnosis, BigQuery lookup, legal support, and code policy
             - Connected AgentRunner, ToolHandler, and WebSocket streaming on a shared Agent/Tool contract so tool trails, permissions, quotas, interruptions, and final answers remain visible in the same conversation flow
+            - Validated a TEAM prototype where two agents share context inside one conversation, then evolved it into AUTO_ROUTING where an LLM selects the most relevant specialist among authorized agents
             - Split LogDiagnosisAgent into customer and operations modes, designing a `searchUserLogs` tool flow that repeatedly queries GCP production logs with `services`, `severity`, `range/from/to`, `pageToken`, and raw LQL conditions
             - Added correlation-key pivot rules across traceId, user_id, and order_number so payment-failure investigations can remain traceable even when traces break across service boundaries or Pub/Sub consumers
-            - Combined log-diagnosis guide tools with GitHub code evidence to distinguish error codes, expected policy blocks, external PG/card-company maintenance, and internal state mismatches
+            - Implemented integrated diagnosis where policy conditions, state transitions, error codes, BigQuery aggregate/history/pattern findings, and log results enter shared context so the next agent can continue from prior evidence
+            - Combined log-diagnosis guides, code-policy context, and data lookup results to distinguish error codes, expected policy blocks, external PG/card-company maintenance, and internal state mismatches
             - Structured final answers into diagnosis, evidence logs, linked flow, and operations/customer guidance, while masking natural-person identifiers and keeping system identifiers such as user_id/order_number traceable
         results:
           ko:
+            - 사용자가 에이전트 종류를 직접 판단하지 않아도 요청 맥락에 맞는 전문 에이전트로 연결할 수 있는 기반 마련
             - 운영/CS가 개발자에게 “로그 확인”을 요청하기 전, 고객 결제 실패·서비스 에러·특정 기간 장애 패턴을 채팅에서 1차 진단하고 안내 방향을 잡을 수 있는 업무 흐름 마련
             - Cloud Logging, 사내 가이드, GitHub 코드 검색을 오가던 개발자 의존 반복 진단 절차를 재사용 가능한 에이전트 Tool 흐름으로 표준화
+            - 코드 정책, 데이터 조회 결과, 실제 실행 로그를 같은 컨텍스트에서 비교해 운영팀이 고객 오류의 1차 원인과 답변 방향을 판단할 수 있는 흐름 구현
             - 결제 실패 원인이 사용자 결제수단 문제인지, 외부 PG/카드사 점검인지, 내부 서비스 상태 불일치인지 근거 중심으로 나눠 운영 답변 품질을 높일 수 있는 기반 구축
           en:
+            - Created the foundation for routing users to the right specialist without requiring them to classify the request first
             - Created a workflow where operations and CS can perform first-pass diagnosis for customer payment failures, service errors, and incident patterns before asking engineers to “check the logs”
             - Standardized repeated developer-dependent diagnosis across Cloud Logging, internal guides, and GitHub code search into a reusable agent tool flow
+            - Implemented a shared-context diagnosis flow that helps operations compare code policy, data lookup results, and runtime logs to determine a first-pass cause and response direction
             - Built a foundation for evidence-based operations responses by separating user payment-method issues, external PG/card-company maintenance, and internal service-state mismatches
 
       - title:

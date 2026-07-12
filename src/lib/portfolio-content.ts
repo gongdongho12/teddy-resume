@@ -695,12 +695,18 @@ const voltupWorkflowReviewLoopDiagram = localized(
 
 const voltbotCrewDiagram = localized(
   `flowchart TD
-  Voc["운영팀 VoC<br/>고객 상황 / 시간대 / 식별값"] --> Crew["Voltbot Crew<br/>자동 에이전트 라우팅"]
+  Voc["운영팀 VoC<br/>고객 상황 / 시간대 / 식별값"] --> Crew["개별 에이전트 자동 라우팅<br/>요청 의도 기반 연결"]
   Crew --> Auth["권한 있는 에이전트만 후보화"]
-  Auth --> Policy["코드 정책 조회 에이전트<br/>정상 동작 조건 / 예외 규칙"]
-  Auth --> Log["로그 조회 에이전트<br/>trace / order / user 기준 검색"]
-  Policy --> Shared["공유 컨텍스트<br/>정책 + 실제 실행 로그"]
+  Auth --> Policy["코드 정책 에이전트<br/>정상 조건 / 예외 규칙"]
+  Auth --> Log["로그 조회 에이전트<br/>trace / order / user 검색"]
+  Auth --> Data["BigQuery 조회 에이전트<br/>집계 / 이력 / 패턴 확인"]
+  Policy --> Shared["공유 컨텍스트<br/>정책 / 로그 / 데이터 조회 결과"]
   Log --> Shared
+  Data --> Shared
+  Shared --> Next["다음 필요 에이전트 판단<br/>컨텍스트 이어받기"]
+  Next --> Policy
+  Next --> Log
+  Next --> Data
   Shared --> Triage{"1차 원인 분류"}
   Triage --> Expected["정상 정책에 의한 차단"]
   Triage --> External["외부 API / PG 오류"]
@@ -710,15 +716,21 @@ const voltbotCrewDiagram = localized(
   classDef ai fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
   class Voc,Crew,Auth ops;
-  class Policy,Log,Shared ai;
+  class Policy,Log,Data,Shared,Next ai;
   class Triage,Expected,External,Internal,Reply result;`,
   `flowchart TD
-  Voc["Ops VoC<br/>customer context / time range / identifiers"] --> Crew["Voltbot Crew<br/>automatic agent routing"]
+  Voc["Ops VoC<br/>customer context / time range / identifiers"] --> Crew["automatic specialist-agent routing<br/>intent-based handoff"]
   Crew --> Auth["candidate agents<br/>limited by user permission"]
   Auth --> Policy["Code-policy agent<br/>expected behavior / exception rules"]
   Auth --> Log["Log agent<br/>trace / order / user search"]
-  Policy --> Shared["shared context<br/>policy + runtime logs"]
+  Auth --> Data["BigQuery agent<br/>aggregation / history / pattern checks"]
+  Policy --> Shared["shared context<br/>policy / logs / data results"]
   Log --> Shared
+  Data --> Shared
+  Shared --> Next["decide next needed agent<br/>carry context forward"]
+  Next --> Policy
+  Next --> Log
+  Next --> Data
   Shared --> Triage{"first-pass triage"}
   Triage --> Expected["expected policy block"]
   Triage --> External["external API / PG failure"]
@@ -728,7 +740,7 @@ const voltbotCrewDiagram = localized(
   classDef ai fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
   class Voc,Crew,Auth ops;
-  class Policy,Log,Shared ai;
+  class Policy,Log,Data,Shared,Next ai;
   class Triage,Expected,External,Internal,Reply result;`,
 );
 
@@ -1738,111 +1750,6 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
     },
     {
-      slug: 'voltbot-crew',
-      title: {
-        ko: 'Voltbot Crew: 업무 맥락 기반 AI 에이전트 라우팅',
-        en: 'Voltbot Crew: Context-Aware AI Agent Routing',
-      },
-      period: {
-        ko: '2026.05 - 현재',
-        en: 'May 2026 - Present',
-      },
-      company: {
-        ko: 'LG유플러스 볼트업',
-        en: 'LG Uplus VoltUp',
-      },
-      roleLabel: {
-        ko: '다중 에이전트 세션, 자동 라우팅, 코드 정책·로그 기반 운영 VoC 진단 구현',
-        en: 'Multi-agent sessions, automatic routing, and code-policy plus log-based ops VoC diagnosis',
-      },
-      summary: {
-        ko:
-          '사내 AI 에이전트 플랫폼 Voltbot에서 사용자의 요청 의도를 분석해 적절한 전문 에이전트로 연결하는 `Voltbot Crew`를 설계·구현했습니다. 운영팀이 고객 VoC를 개발자에게 전달하고 코드 정책과 로그를 따로 확인하던 반복 지연을 줄이기 위해, 정책 에이전트의 결과를 공통 컨텍스트로 전달하고 로그 에이전트가 이를 바탕으로 조회 범위를 구체화하는 자동 라우팅·통합 진단 흐름을 구성했습니다.',
-        en:
-          'Designed and implemented `Voltbot Crew` for Voltbot, an internal AI agent platform, to route requests to the right specialist. To reduce repeated developer handoffs for customer VoCs, I built an automatic routing and integrated diagnosis flow where policy-agent findings enter shared context and the log agent uses them to narrow its investigation.',
-      },
-      challenge: {
-        ko:
-          '고객 문의가 들어오면 운영팀은 “어떤 정책 때문에 막혔는지”, “실제 로그에서는 어떤 오류가 났는지”를 개발자에게 반복 확인해야 했습니다. 사용자가 코드 정책 조회, 데이터 분석, 운영 조회 등 목적에 맞는 에이전트를 직접 고르는 방식도 복합 문의에서는 판단 비용을 만들었습니다.',
-        en:
-          'For customer issues, operators repeatedly had to ask developers whether a case was blocked by expected policy or caused by an actual runtime error. Requiring users to manually choose between code-policy, data-analysis, or operations agents also added decision cost for mixed requests.',
-      },
-      actions: [
-        {
-          ko: '초기에는 하나의 대화 세션에서 2개의 에이전트를 조합하고 같은 대화 컨텍스트를 공유하는 `TEAM` 에이전트 구조를 프로토타입으로 구현했습니다.',
-          en: 'First prototyped a `TEAM` agent structure where two agents could be combined inside one conversation session and share the same dialogue context.',
-        },
-        {
-          ko: '세션-에이전트 매핑 테이블, 메시지별 담당 에이전트 기록, WebSocket 요청 확장, 프론트엔드 2개 에이전트 선택 UX까지 end-to-end 흐름을 구성했습니다.',
-          en: 'Built the end-to-end path across session-agent mapping, per-message agent attribution, WebSocket request expansion, and a two-agent selection UX on the frontend.',
-        },
-        {
-          ko: 'PR 리뷰와 제품 방향 조정을 거치며, 사용자가 `Voltbot Crew`를 선택하면 권한 있는 전문 에이전트 후보 중 가장 적절한 에이전트를 LLM이 자동 배정하는 `AUTO_ROUTING` 구조로 전환했습니다.',
-          en: 'After PR review and product-direction alignment, evolved the design into `AUTO_ROUTING`: when a user selects `Voltbot Crew`, the LLM chooses the most suitable specialist from agents the user is allowed to use.',
-        },
-        {
-          ko: '`AgentRouter`에서 에이전트 이름과 설명, 현재 대화 맥락을 LLM에 전달해 라우팅하고, 매칭 실패 시 fallback을 두어 대화가 중단되지 않도록 설계했습니다.',
-          en: 'Implemented `AgentRouter` so the LLM receives candidate agent names, descriptions, and current context, with fallback behavior to avoid breaking the conversation when matching fails.',
-        },
-        {
-          ko: '코드 정책 에이전트가 정상 조건·상태 전이·에러 코드를 공통 컨텍스트에 남기고, 로그 에이전트가 이를 바탕으로 서비스·시간 범위·상관키를 좁혀 실제 실행 로그를 조회한 뒤 1차 원인을 분류하도록 구현했습니다.',
-          en: 'Implemented a flow where the code-policy agent records expected conditions, state transitions, and error codes in shared context, then the log agent narrows services, time ranges, and correlation keys to inspect runtime logs and classify the first-pass cause.',
-        },
-      ],
-      engineeringViews: [
-        {
-          ko: '`Voltbot Crew`는 직접 답변하는 에이전트가 아니라 라우터 역할을 맡도록 분리했습니다. 실제 답변은 선택된 전문 에이전트가 담당하므로, 기존 도구 권한과 시스템 프롬프트 경계를 유지하면서 진입점만 단순화할 수 있었습니다.',
-          en: '`Voltbot Crew` was separated as a router rather than a direct answering agent. The selected specialist still owns the actual response, keeping existing tool permissions and system-prompt boundaries intact while simplifying the entry point.',
-        },
-        {
-          ko: '라우팅 후보는 사용자가 이미 권한을 가진 에이전트로 제한했습니다. 운영 편의성을 높이더라도 권한이 없는 도구나 민감 데이터 접근 경로가 우회되지 않도록 한 설계입니다.',
-          en: 'Candidate agents are limited to those the user is already authorized to use, so operational convenience does not bypass tool permission or sensitive-data boundaries.',
-        },
-        {
-          ko: '다중 에이전트 세션 프로토타입에서 얻은 컨텍스트 공유 아이디어를, 제품 적용이 더 단순한 자동 라우팅 구조로 바꾸었습니다. 복잡한 세션 모델을 최종 사용자에게 노출하기보다, “무엇을 도와야 하는지”를 시스템이 먼저 판단하게 한 것입니다.',
-          en: 'The context-sharing idea from the multi-agent session prototype was turned into a simpler automatic-routing product shape. Instead of exposing a complex session model to users, the system first decides what kind of help is needed.',
-        },
-        {
-          ko: '운영 VoC 진단에서는 코드 정책 조회 결과와 로그 조회 결과를 같은 컨텍스트에서 비교해, 정책상 정상 차단인지 외부 API/PG 오류인지 내부 상태 불일치인지 구분하도록 구성했습니다.',
-          en: 'For ops VoC diagnosis, code-policy findings and log results are compared in the same context to distinguish expected policy blocks, external API or PG failures, and internal state mismatches.',
-        },
-      ],
-      outcomes: [
-        {
-          ko: '사용자가 에이전트 종류를 먼저 판단하지 않아도 요청 맥락에 맞는 전문 에이전트로 연결할 수 있는 기반을 마련했습니다.',
-          en: 'Created the foundation for routing users to the right specialist agent without requiring them to classify the request first.',
-        },
-        {
-          ko: '팀 에이전트 프로토타입에서 최종 `AUTO_ROUTING` 구조까지 검증하며, 다중 에이전트 협업 경험을 제품에 맞는 형태로 좁혀갈 수 있었습니다.',
-          en: 'Validated the path from a team-agent prototype to the final `AUTO_ROUTING` structure, narrowing multi-agent collaboration into a product-fit experience.',
-        },
-        {
-          ko: '코드 정책과 실제 실행 로그를 같은 컨텍스트에서 확인해 운영팀이 고객 오류의 1차 원인과 답변 방향을 판단할 수 있는 통합 진단 흐름을 구현했습니다.',
-          en: 'Implemented an integrated diagnosis flow that combines code policy with runtime logs so operations can identify a first-pass cause and response direction for customer issues.',
-        },
-      ],
-      note: {
-        ko: 'AI 에이전트를 단순 기능으로 붙인 것이 아니라, 운영팀과 개발자 사이의 반복 확인 병목을 줄이는 업무 흐름으로 설계·구현한 프로젝트입니다.',
-        en: 'A project that applies AI agents not as a standalone feature, but as workflow improvement for reducing repeated confirmation loops between operations and developers.',
-      },
-      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'LLM', 'Multi-Agent', 'Context Summarization'],
-      diagrams: [
-        {
-          title: {
-            ko: '운영 VoC 대응을 위한 코드 정책 + 로그 조회 통합 흐름',
-            en: 'Integrated code-policy and log lookup for ops VoC response',
-          },
-          description: {
-            ko:
-              '`Voltbot Crew`가 운영팀의 고객 상황을 받아 권한 있는 에이전트를 고르고, 코드 정책 결과를 로그 조회 컨텍스트로 전달해 1차 원인 분류와 답변 초안까지 이어가는 구현 흐름입니다.',
-            en:
-              'Shows the implemented flow where `Voltbot Crew` receives customer context, routes to authorized agents, carries code-policy findings into log investigation, and continues through first-pass triage and response drafting.',
-          },
-          code: voltbotCrewDiagram,
-        },
-      ],
-    },
-    {
       slug: 'roaming-reliability',
       title: {
         ko: '로밍 서비스 안정성: 공공 연계 상태 재동기화와 재처리',
@@ -1959,29 +1866,33 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: '채팅 기반 멀티 에이전트 업무 도구, 의도 기반 Agent Router, 로그 진단 에이전트 설계',
-        en: 'Designed chat-based multi-agent tooling, an intent-based Agent Router, and log-diagnosis agents',
+        ko: '채팅 기반 업무 에이전트 플랫폼, 개별 에이전트 자동 라우팅, 로그 진단 에이전트 설계·구현',
+        en: 'Designed and implemented the chat-based work-agent platform, automatic specialist-agent routing, and log-diagnosis agent',
       },
       summary: {
         ko:
-          'Voltbot은 사내 구성원이 Google 계정으로 로그인해 코드 정책, 데이터 분석, 법률 지원, 운영, 로그 분석 같은 전문 에이전트를 채팅으로 사용하는 업무 도구입니다. 사용자가 에이전트를 매번 고르지 않아도 요청 의도와 권한을 기준으로 적절한 전문 에이전트에 연결되도록 Intent-based Agent Router를 설계·구현했습니다. 운영/CS가 개발자에게 요청하던 로그 조회와 원인 분석 병목을 줄이기 위해, GCP 운영 로그, 사내 로그 분석 가이드, GitHub 코드 근거를 교차 조회하는 로그 분석 에이전트도 구성했습니다.',
+          'Voltbot은 사내 구성원이 코드 정책, BigQuery 데이터 조회, 법률 지원, 운영, 로그 진단 같은 전문 에이전트를 채팅으로 사용하는 업무 플랫폼입니다. 이 안에서 제가 만든 핵심 축은 두 가지였습니다. 첫째, 사용자가 에이전트를 직접 고르지 않아도 질문 의도와 권한을 기준으로 필요한 전문 에이전트를 자동 선택하는 개별 에이전트 자동 라우팅(`Voltbot Crew`/`AgentRouter`)을 설계·구현했습니다. 둘째, 운영/CS가 개발자에게 요청하던 원인 분석 병목을 줄이기 위해 로그 조회, BigQuery 조회, 코드 정책 확인 결과가 같은 대화 컨텍스트에 쌓이고 다음 에이전트가 그 컨텍스트를 이어받아 판단하는 흐름을 구성했습니다.',
         en:
-          'Voltbot is an internal work tool where employees sign in with Google accounts and use specialized agents for code policy, data analysis, legal support, operations, and log diagnosis through chat. I designed and implemented an intent-based Agent Router so users can be routed to the right specialized agent based on request intent and permissions without manually choosing every time. I also reduced the developer-dependent bottleneck around operations and CS log triage by building a log-diagnosis agent that cross-checks GCP production logs, internal diagnosis guides, and GitHub code evidence.',
+          'Voltbot is an internal work platform where employees use specialized agents for code policy, BigQuery data lookup, legal support, operations, and log diagnosis through chat. My core contributions were two connected parts inside that service: first, automatic specialist-agent routing (`Voltbot Crew`/`AgentRouter`), which selects the needed specialist based on question intent and permissions without requiring manual agent selection; second, a shared-context workflow where log lookup, BigQuery lookup, and code-policy findings accumulate in the same conversation context so the next agent can continue from that evidence.',
       },
       challenge: {
         ko:
-          '고객 결제 실패나 충전 오류 문의가 들어오면 운영자가 Cloud Logging, 에러 코드, 서비스 간 상관키, 코드 근거를 직접 찾기 어려워 개발자에게 수동 분석을 요청해야 했습니다. 동시에 사내 AI 도구는 여러 에이전트를 같은 채팅 표면에서 권한별로 안전하게 제공하고, 어떤 도구를 실행했는지와 답변 근거를 사용자가 확인할 수 있어야 했습니다.',
+          '고객 결제 실패나 충전 오류 문의가 들어오면 운영자가 에러 코드, 서비스 간 상관키, 정책상 정상 차단 여부를 직접 찾기 어려워 개발자에게 수동 분석을 요청해야 했습니다. 동시에 사내 AI 도구는 여러 에이전트를 같은 채팅 표면에서 권한별로 안전하게 제공해야 했고, 사용자가 코드 정책 조회, 로그 진단, 데이터 분석 중 무엇을 골라야 하는지 판단하는 비용도 줄여야 했습니다.',
         en:
-          'When customer payment or charging failures arrived, operators could not easily inspect Cloud Logging, error codes, cross-service correlation keys, and code evidence without asking engineers for manual triage. The internal AI tool also needed to expose multiple agents through one chat surface, enforce permissions, and keep tool execution plus evidence visible to users.',
+          'When customer payment or charging failures arrived, operators could not easily inspect error codes, cross-service correlation keys, or whether a case was expected policy behavior without asking engineers for manual triage. The internal AI tool also needed to expose multiple agents safely through one chat surface and reduce the decision cost of choosing between code policy, log diagnosis, and data analysis.',
       },
       actions: [
         {
-          ko: '`AgentRouter`를 구현해 사용자의 자연어 요청을 의도별로 분류하고, 권한과 에이전트 상태를 고려해 로그 분석·데이터 분석·법률 지원·코드 정책 같은 전문 에이전트로 자동 연결되도록 했습니다.',
-          en: 'Implemented `AgentRouter` to classify natural-language requests by intent and route users to specialized agents such as log diagnosis, data analysis, legal support, and code policy based on permissions and agent availability.',
+          ko: '`Voltbot Crew`를 사용자가 선택할 수 있는 하나의 진입점으로 두고, 내부에서는 `AgentRouter`가 자연어 요청, 대화 맥락, 에이전트 설명, 사용자 권한을 기준으로 로그 분석·데이터 분석·법률 지원·코드 정책 같은 전문 에이전트를 자동 배정하도록 설계·구현했습니다.',
+          en: 'Designed and implemented `Voltbot Crew` as a single user-facing entry point, where `AgentRouter` automatically assigns a specialist such as log diagnosis, data analysis, legal support, or code policy based on the request, conversation context, agent descriptions, and user permissions.',
         },
         {
           ko: '공통 `Agent`/`Tool` 계약 위에서 `AgentRunner`, `AgentRouter`, `ToolHandler` 흐름을 연결해 세션, 컨텍스트, 권한, 쿼터, 중단 요청, Tool 호출/결과가 WebSocket으로 이어지도록 구성했습니다.',
           en: 'Connected `AgentRunner`, `AgentRouter`, and `ToolHandler` on top of the shared `Agent`/`Tool` contract so sessions, context, permissions, quotas, interruptions, tool calls, and tool results flow through WebSocket responses.',
+        },
+        {
+          ko: '초기에는 하나의 대화 세션에서 2개 에이전트를 조합하고 같은 컨텍스트를 공유하는 `TEAM` 구조를 프로토타입으로 검증했고, 이후 제품 적용이 더 단순한 `AUTO_ROUTING` 구조로 전환해 복잡한 세션 모델을 사용자에게 노출하지 않도록 정리했습니다.',
+          en: 'First validated a `TEAM` prototype where two agents could share context inside one conversation, then evolved it into a simpler `AUTO_ROUTING` model so users would not need to understand a complex session structure.',
         },
         {
           ko: '`LogDiagnosisAgent`에는 고객 모드와 운영 모드를 나누고, userId가 없어도 기간·증상·서비스 패턴만으로 조사할 수 있도록 검색 전략을 설계했습니다.',
@@ -1994,6 +1905,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '로그 분석 가이드 업로드/조회/수정 화면과 `listLogDiagnosisGuides`, `readLogDiagnosisGuide` 도구를 연결해 운영 지식이 에이전트 런타임에 직접 참조되도록 했습니다.',
           en: 'Connected guide upload/search/edit screens with `listLogDiagnosisGuides` and `readLogDiagnosisGuide`, so operational knowledge can be consulted directly at runtime.',
+        },
+        {
+          ko: '코드 정책 에이전트가 정상 조건·상태 전이·에러 코드를, BigQuery 조회 에이전트가 집계·이력·패턴 정보를, 로그 진단 에이전트가 실제 실행 로그를 같은 컨텍스트에 남기도록 구성했습니다. 이후 다음 에이전트는 앞선 결과를 이어받아 서비스·시간 범위·상관키를 좁히고 1차 원인을 분류할 수 있게 했습니다.',
+          en: 'Designed the code-policy agent to add expected conditions, state transitions, and error codes; the BigQuery agent to add aggregate, history, and pattern evidence; and the log-diagnosis agent to add runtime logs into the same context. The next agent can then continue from prior evidence to narrow services, time ranges, and correlation keys before classifying a first-pass cause.',
         },
         {
           ko: 'traceId, user_id, order_number를 상황에 맞게 갈아타는 상관키 pivot 규칙과, 2개 이상 서비스가 얽히면 Mermaid sequenceDiagram으로 연계 플로우를 표현하는 답변 기준을 추가했습니다.',
@@ -2010,6 +1925,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'The Agent Router was designed as more than a menu shortcut: it lets internal users describe the problem they want to solve instead of knowing which agent to choose. Clear intent is routed automatically, while ambiguous cases still allow explicit agent selection.',
         },
         {
+          ko: '`Voltbot Crew`는 직접 답변하는 에이전트가 아니라 라우터 역할을 맡도록 분리했습니다. 실제 답변은 선택된 전문 에이전트가 담당하므로, 기존 도구 권한과 시스템 프롬프트 경계를 유지하면서 진입점만 단순화할 수 있었습니다.',
+          en: '`Voltbot Crew` acts as a router rather than a direct answering agent. The selected specialist still owns the actual response, keeping existing tool permissions and system-prompt boundaries intact while simplifying the entry point.',
+        },
+        {
           ko: '이 프로젝트는 “답변을 잘하는 챗봇”보다 “업무 도구를 호출해 근거를 남기는 에이전트”가 중요했습니다. 그래서 최종 답변보다 먼저 Tool 실행 내역, 근거 로그, 가이드/코드 근거가 확인 가능한 형태로 남도록 설계했습니다.',
           en: 'The important part was not just a chatbot that answers well, but an agent that calls work tools and leaves evidence. Tool trails, evidence logs, and guide/code basis therefore remain visible before the final answer is trusted.',
         },
@@ -2020,6 +1939,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '여러 에이전트를 같은 채팅 표면에 올릴 때 권한, 개발 중 상태, 승인 대기, 사용량 같은 운영 상태를 제품 UI에 드러내야 한다고 봤습니다.',
           en: 'When multiple agents share one chat surface, operational states such as permissions, developing status, pending approval, and usage need to be part of the product UI.',
+        },
+        {
+          ko: '운영 VoC 진단에서는 질문에 따라 코드 정책, 로그, BigQuery 조회 중 필요한 에이전트를 고르고, 각 에이전트의 결과를 같은 컨텍스트에서 비교해 정책상 정상 차단인지 외부 API/PG 오류인지 내부 상태 불일치인지 구분하도록 구성했습니다.',
+          en: 'For ops VoC diagnosis, the system chooses the needed agents among code policy, logs, and BigQuery based on the question, then compares each agent result in the same context to distinguish expected policy blocks, external API or PG failures, and internal state mismatches.',
         },
       ],
       outcomes: [
@@ -2039,13 +1962,30 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: '코드 정책, 데이터 분석, 법률, 운영, 로그 분석처럼 성격이 다른 사내 에이전트를 권한에 따라 같은 채팅 UI에서 사용할 수 있는 멀티 에이전트 플랫폼 형태로 정리했습니다.',
           en: 'Organized specialized agents such as code policy, data analysis, legal, operations, and log diagnosis into a permission-aware multi-agent platform.',
         },
+        {
+          ko: '팀 에이전트 프로토타입에서 최종 `AUTO_ROUTING` 구조까지 검증하며, 다중 에이전트 협업 경험을 Voltbot이라는 하나의 업무 플랫폼 안에 맞는 형태로 정리했습니다.',
+          en: 'Validated the path from a team-agent prototype to the final `AUTO_ROUTING` model and shaped multi-agent collaboration into a product fit for the single Voltbot work platform.',
+        },
       ],
       note: {
-        ko: '사내 반복 업무를 AI로 대체했다기보다, Intent-based Agent Router와 Tool 실행 레이어를 통해 기존 개발자 의존 트리아지 흐름을 권한·근거·가이드·코드 탐색이 있는 제품형 업무 도구로 바꾼 사례입니다.',
-        en: 'This is less about replacing internal work with AI and more about using an intent-based Agent Router plus a tool-execution layer to turn developer-dependent triage into a productized work tool with permissions, evidence, guides, and code exploration.',
+        ko: '하나의 Voltbot 서비스 안에서 제가 맡은 기여를 개별 에이전트 자동 라우팅과 컨텍스트 공유 기반 운영 진단 흐름으로 묶어 보여주는 프로젝트입니다. 사내 반복 업무를 AI로 대체했다기보다, 개발자 의존 트리아지 흐름을 권한·근거·가이드·코드/데이터 탐색이 있는 제품형 업무 도구로 바꾼 사례입니다.',
+        en: 'This project groups my contributions inside the single Voltbot service: automatic specialist-agent routing and shared-context operations diagnosis. It is less about replacing internal work with AI and more about turning developer-dependent triage into a productized work tool with permissions, evidence, guides, and code/data exploration.',
       },
-      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'GCP Cloud Logging', 'LLM', 'GitHub API', 'Google OAuth', 'MySQL'],
+      tech: ['Kotlin', 'Spring Boot', 'React', 'TypeScript', 'WebSocket', 'GCP Cloud Logging', 'LLM', 'GitHub API', 'Google OAuth', 'MySQL', 'Multi-Agent'],
       diagrams: [
+        {
+          title: {
+            ko: '개별 에이전트 자동 라우팅: 질문별 에이전트 선택과 컨텍스트 공유',
+            en: 'Automatic specialist-agent routing: question-based selection and shared context',
+          },
+          description: {
+            ko:
+              '`Voltbot Crew`가 운영팀의 고객 상황을 받아 권한 있는 에이전트 중 필요한 작업을 고르고, 코드 정책·로그 조회·BigQuery 조회 결과를 같은 컨텍스트에 쌓아 다음 에이전트 판단과 1차 원인 분류까지 이어가는 구현 흐름입니다.',
+            en:
+              'Shows how `Voltbot Crew` receives customer context, selects the needed work among authorized agents, accumulates code-policy, log, and BigQuery findings into shared context, and continues through next-agent decisions and first-pass triage.',
+          },
+          code: voltbotCrewDiagram,
+        },
         {
           title: {
             ko: '멀티 에이전트를 채팅으로 사용하는 Voltbot 플랫폼 구조',
@@ -2091,12 +2031,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       slug: 'devops-automation',
       visual: 'voltup-workflow-preview',
       title: {
-        ko: 'Voltup Workflow: AI 운영 자동화와 DevOps 표준화',
-        en: 'Voltup Workflow: AI Operations Automation and DevOps Standardization',
+        ko: 'Voltup Workflow: CI 자동화와 DevOps 표준화',
+        en: 'Voltup Workflow: CI Automation and DevOps Standardization',
       },
       indexLabel: {
-        ko: 'Voltup Workflow (AI 운영 자동화)',
-        en: 'Voltup Workflow (AI Ops Automation)',
+        ko: 'Voltup Workflow (CI 자동화)',
+        en: 'Voltup Workflow (CI Automation)',
       },
       period: {
         ko: '2024.10 - 현재',
@@ -2112,9 +2052,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       summary: {
         ko:
-          'Voltup Workflow는 개발과 운영 사이에서 반복되던 PR 리뷰, PR 본문 작성, 변경사항 요약, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 재사용 가능한 workflow와 자동화 도구로 묶은 프로젝트입니다. `/voltup-review` 코드/보안 리뷰와 `/voltup-pr` PR 본문 자동 생성은 저장소별 `project-context`, `review-template`, `docs`를 읽어 repo-local 운영 문맥을 반영하고, `pr-changes-detector`, Vault-local sync, Jenkins/ArgoCD 표준화와 함께 운영 효율과 릴리즈 안정성을 높이는 방향으로 정리했습니다.',
+          'Voltup Workflow는 개발과 운영 사이에서 반복되던 PR 리뷰, PR 본문 작성, 변경사항 요약, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 재사용 가능한 workflow와 CI 자동화 도구로 묶은 프로젝트입니다. `/voltup-review` 코드/보안 리뷰와 `/voltup-pr` PR 본문 자동 생성은 저장소별 `project-context`, `review-template`, `docs`를 읽어 repo-local 개발 문맥을 반영하고, `pr-changes-detector`, Vault-local sync, Jenkins/ArgoCD 표준화와 함께 리뷰 품질과 릴리즈 안정성을 높이는 방향으로 정리했습니다.',
         en:
-          'Voltup Workflow turns repeated work between development and operations, including PR review, PR description writing, change summaries, local environment setup, internal API integration, and service/app delivery, into reusable workflows and automation tools. The `/voltup-review` code/security review and `/voltup-pr` PR body generation flows read repo-local `project-context`, `review-template`, and docs, while `pr-changes-detector`, Vault-local sync, and Jenkins/ArgoCD standardization improve operational efficiency and release reliability.',
+          'Voltup Workflow turns repeated work between development and operations, including PR review, PR description writing, change summaries, local environment setup, internal API integration, and service/app delivery, into reusable workflows and CI automation tools. The `/voltup-review` code/security review and `/voltup-pr` PR body generation flows read repo-local `project-context`, `review-template`, and docs, while `pr-changes-detector`, Vault-local sync, and Jenkins/ArgoCD standardization improve review quality and release reliability.',
       },
       challenge: {
         ko:

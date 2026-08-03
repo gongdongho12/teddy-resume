@@ -288,81 +288,142 @@ const m = messages(lang);
                 >
                   {t(section.heading, lang)}
                 </h2>
-                {section.projects.map((proj) => (
-                  <div class="break-inside-avoid border border-gray-100 bg-white p-5 rounded shadow-sm print:shadow-none print:border-gray-200 mb-4 last:mb-0 print:mb-6 print:pb-8">
-                    <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2 border-b border-gray-100 pb-2.5">
-                      <h3 class="text-[16px] font-bold text-black flex items-center gap-2">
-                        <PortfolioProjectTitleLink
-                          href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
-                          label={t(proj.title, lang)}
-                          className="text-black hover:text-[#0f3460] print:text-black print:no-underline"
-                          externalHref={proj.externalUrl}
-                          externalVisibility={proj.externalLinkVisibility}
-                          externalClassName="text-gray-500 hover:text-[#0f3460]"
-                          githubHref={proj.githubUrl}
-                          githubClassName="text-gray-500 hover:text-[#0f3460]"
-                          googlePlayHref={proj.googlePlayUrl}
-                          googlePlayClassName="text-gray-500 hover:text-[#0f3460]"
-                          appStoreHref={proj.appStoreUrl}
-                          appStoreClassName="text-gray-500 hover:text-[#0f3460]"
-                        />
-                        {proj.badge && (
-                          <span class="rounded bg-[#0f3460] px-2 py-0.5 text-[11px] font-bold tracking-widest text-white uppercase">
-                            {t(proj.badge, lang)}
+                {t(section.heading, 'en')?.includes('Side Projects') || t(section.heading, 'ko')?.includes('사이드 프로젝트') ? (
+                  <div class="space-y-3 print:space-y-2.5 mb-6 print:mb-4">
+                    {section.projects.map((proj) => (
+                      <div class="break-inside-avoid border border-gray-200 bg-white p-3.5 print:p-3 rounded-md shadow-sm print:shadow-none">
+                        <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-1.5 border-b border-gray-100 pb-1.5">
+                          <h3 class="text-[15px] print:text-[14px] font-bold text-black flex items-center gap-2">
+                            <PortfolioProjectTitleLink
+                              href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
+                              label={t(proj.title, lang)}
+                              className="text-black hover:text-[#0f3460] print:text-black print:no-underline"
+                              externalHref={proj.externalUrl}
+                              externalVisibility={proj.externalLinkVisibility}
+                              externalClassName="text-gray-500 hover:text-[#0f3460]"
+                              githubHref={proj.githubUrl}
+                              githubClassName="text-gray-500 hover:text-[#0f3460]"
+                            />
+                            {proj.badge && (
+                              <span class="rounded bg-[#0f3460] px-1.5 py-0.5 text-[10.5px] print:text-[10px] font-bold tracking-wider text-white uppercase">
+                                {t(proj.badge, lang)}
+                              </span>
+                            )}
+                          </h3>
+                          <span class="whitespace-nowrap text-[13px] print:text-[12px] font-bold text-gray-500 mt-1 md:mt-0">
+                            {t(proj.period, lang)}
                           </span>
-                        )}
-                      </h3>
-                      <span class="whitespace-nowrap text-[14px] font-bold text-gray-600 mt-2 md:mt-0">
-                        {t(proj.period, lang)}
-                      </span>
-                    </div>
-                    
-                    {proj.summary && (
-                      <p class="mb-4 whitespace-pre-line text-[14px] text-gray-800 leading-[1.6] font-medium bg-gray-50 px-4 py-3 rounded-sm border-l-4 border-gray-200">
-                        {t(proj.summary, lang)}
-                      </p>
-                    )}
+                        </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
-                      <!-- LEFT: HIGHLIGHTS -->
-                      <div class="space-y-4">
-                        <ul class="grid grid-cols-1 gap-y-1.5 list-disc pl-5 marker:text-[#0f3460]">
-                          {bullets(proj.highlights, lang).map((line) => (
-                            <li class="pl-1 text-[13.5px] text-gray-800 leading-[1.6]">{line}</li>
-                          ))}
-                        </ul>
-                        
-                        {proj.results && bullets(proj.results, lang).length > 0 && (
-                          <div class="mt-3 pt-3 border-t border-dashed border-gray-100">
-                            <p class="mb-2.5 text-[12px] font-bold uppercase tracking-wider text-[#0f3460]">{m.results}</p>
-                            <ul class="grid grid-cols-1 gap-y-2.5 list-none pl-0">
-                              {bullets(proj.results, lang).map((line) => (
-                                <li class="relative pl-5 text-[14px] font-bold text-gray-900 leading-[1.6] before:absolute before:left-0 before:top-[8px] before:w-1.5 before:h-1.5 before:bg-[#0f3460] before:rotate-45">
-                                  {line}
-                                </li>
+                        {proj.summary && (
+                          <p class="mb-2 px-3 py-2 text-[13px] print:text-[12px] text-gray-800 leading-snug font-medium bg-gray-50 rounded-sm border-l-2 border-gray-300 whitespace-pre-line">
+                            {t(proj.summary, lang)}
+                          </p>
+                        )}
+
+                        <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4">
+                          <div class="space-y-2">
+                            <ul class="grid grid-cols-1 gap-y-1 list-disc pl-5 marker:text-[#0f3460]">
+                              {bullets(proj.highlights, lang).map((line) => (
+                                <li class="pl-0.5 text-[13px] print:text-[12px] text-gray-800 leading-snug">{line}</li>
                               ))}
                             </ul>
                           </div>
+
+                          {proj.tech?.length > 0 && (
+                            <aside class="flex flex-col justify-center">
+                              <div class="bg-slate-50/60 rounded-sm border-l-2 border-gray-100 p-2">
+                                <div class="flex flex-row flex-wrap md:flex-col md:items-end gap-1 md:text-right font-semibold text-gray-600 text-[11px] print:text-[10px] font-sans tracking-tight">
+                                  {proj.tech.map((item) => (
+                                    <span class="break-words px-1.5 py-0.5 md:px-0 md:py-0 bg-gray-100 md:bg-transparent rounded md:rounded-none">
+                                      {item}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </aside>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  section.projects.map((proj) => (
+                    <div class="break-inside-avoid border border-gray-100 bg-white p-5 rounded shadow-sm print:shadow-none print:border-gray-200 mb-4 last:mb-0 print:mb-4 print:pb-4">
+                      <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2 border-b border-gray-100 pb-2.5">
+                        <h3 class="text-[16px] font-bold text-black flex items-center gap-2">
+                          <PortfolioProjectTitleLink
+                            href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
+                            label={t(proj.title, lang)}
+                            className="text-black hover:text-[#0f3460] print:text-black print:no-underline"
+                            externalHref={proj.externalUrl}
+                            externalVisibility={proj.externalLinkVisibility}
+                            externalClassName="text-gray-500 hover:text-[#0f3460]"
+                            githubHref={proj.githubUrl}
+                            githubClassName="text-gray-500 hover:text-[#0f3460]"
+                            googlePlayHref={proj.googlePlayUrl}
+                            googlePlayClassName="text-gray-500 hover:text-[#0f3460]"
+                            appStoreHref={proj.appStoreUrl}
+                            appStoreClassName="text-gray-500 hover:text-[#0f3460]"
+                          />
+                          {proj.badge && (
+                            <span class="rounded bg-[#0f3460] px-2 py-0.5 text-[11px] font-bold tracking-widest text-white uppercase">
+                              {t(proj.badge, lang)}
+                            </span>
+                          )}
+                        </h3>
+                        <span class="whitespace-nowrap text-[14px] font-bold text-gray-600 mt-2 md:mt-0">
+                          {t(proj.period, lang)}
+                        </span>
+                      </div>
+                      
+                      {proj.summary && (
+                        <p class="mb-4 whitespace-pre-line text-[14px] text-gray-800 leading-[1.6] font-medium bg-gray-50 px-4 py-3 rounded-sm border-l-4 border-gray-200">
+                          {t(proj.summary, lang)}
+                        </p>
+                      )}
+
+                      <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
+                        <!-- LEFT: HIGHLIGHTS -->
+                        <div class="space-y-4">
+                          <ul class="grid grid-cols-1 gap-y-1.5 list-disc pl-5 marker:text-[#0f3460]">
+                            {bullets(proj.highlights, lang).map((line) => (
+                              <li class="pl-1 text-[13.5px] text-gray-800 leading-[1.6]">{line}</li>
+                            ))}
+                          </ul>
+                          
+                          {proj.results && bullets(proj.results, lang).length > 0 && (
+                            <div class="mt-3 pt-3 border-t border-dashed border-gray-100">
+                              <p class="mb-2.5 text-[12px] font-bold uppercase tracking-wider text-[#0f3460]">{m.results}</p>
+                              <ul class="grid grid-cols-1 gap-y-2.5 list-none pl-0">
+                                {bullets(proj.results, lang).map((line) => (
+                                  <li class="relative pl-5 text-[14px] font-bold text-gray-900 leading-[1.6] before:absolute before:left-0 before:top-[8px] before:w-1.5 before:h-1.5 before:bg-[#0f3460] before:rotate-45">
+                                    {line}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+
+                        <!-- RIGHT: TECH STACK SIDEBAR -->
+                        {proj.tech?.length > 0 && (
+                          <aside class="flex flex-col">
+                            <div class="h-full bg-slate-50/50 rounded-sm border-l-2 border-gray-100 p-2 md:p-3.5">
+                              <div class="flex flex-row flex-wrap md:flex-col md:items-end gap-1.5 md:gap-1 md:text-right font-bold text-gray-600 text-[11.5px] font-sans tracking-tight">
+                                {proj.tech.map((item) => (
+                                  <span class="break-words px-2 py-0.5 md:px-0 md:py-0 bg-gray-100 md:bg-transparent rounded-full md:rounded-none">
+                                    {item}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </aside>
                         )}
                       </div>
-
-                      <!-- RIGHT: TECH STACK SIDEBAR -->
-                      {proj.tech?.length > 0 && (
-                        <aside class="flex flex-col">
-                          <div class="h-full bg-slate-50/50 rounded-sm border-l-2 border-gray-100 p-2 md:p-3.5">
-                            <div class="flex flex-row flex-wrap md:flex-col md:items-end gap-1.5 md:gap-1 md:text-right font-bold text-gray-600 text-[11.5px] font-sans tracking-tight">
-                              {proj.tech.map((item) => (
-                                <span class="break-words px-2 py-0.5 md:px-0 md:py-0 bg-gray-100 md:bg-transparent rounded-full md:rounded-none">
-                                  {item}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        </aside>
-                      )}
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </>
             ))
           }
@@ -370,22 +431,22 @@ const m = messages(lang);
           {/* ACTIVITIES SECTION */}
           <>
             <h2
-              class="mb-6 border-b-2 border-[#0f3460] pb-2 text-[14px] font-bold uppercase tracking-[0.2em] text-[#0f3460] mt-0 print:mt-0 print:break-before-page"
+              class="mb-6 border-b-2 border-[#0f3460] pb-2 text-[15px] font-bold uppercase tracking-[0.2em] text-[#0f3460] mt-0 print:mt-0 print:break-before-page"
             >
               {m.activities}
             </h2>
             {
               Array.from({ length: Math.ceil(profile.activities.length / 2) }).map((_, i) => (
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 mb-8 last:mb-0">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6 mb-6 last:mb-0 print:gap-y-5 print:mb-5">
                   {profile.activities.slice(i * 2, i * 2 + 2).map((a) => (
-                    <div class="break-inside-avoid flex flex-col border-l-4 border-gray-100 pl-4 py-1">
-                      <div class="flex flex-col mb-1.5">
-                        <span class="text-[15px] font-bold text-black leading-snug">{t(a.title, lang)}</span>
-                        <span class="text-[12px] text-gray-500 font-bold uppercase tracking-widest">{t(a.period, lang)}</span>
+                    <div class="break-inside-avoid flex flex-col border-l-4 border-gray-200 pl-4 py-1.5">
+                      <div class="flex flex-col mb-1">
+                        <span class="text-[15.5px] print:text-[14.5px] font-bold text-black leading-snug">{t(a.title, lang)}</span>
+                        <span class="text-[12.5px] print:text-[11.5px] text-gray-500 font-bold uppercase tracking-wider">{t(a.period, lang)}</span>
                       </div>
                       {a.description && (
-                        <div class="space-y-2">
-                          <p class="text-[13.5px] text-gray-700 leading-relaxed whitespace-pre-line">
+                        <div class="space-y-1.5">
+                          <p class="text-[12.5px] print:text-[11.5px] text-gray-700 leading-relaxed whitespace-pre-line">
                             {t(a.description, lang)}
                           </p>
                           {a.externalUrl && a.externalLabel && (
@@ -393,7 +454,7 @@ const m = messages(lang);
                               href={a.externalUrl}
                               target="_blank"
                               rel="noreferrer"
-                              class="inline-flex items-center text-[12.5px] font-semibold text-[#0f3460] hover:underline"
+                              class="inline-flex items-center text-[13px] print:text-[12px] font-semibold text-[#0f3460] hover:underline"
                             >
                               [{t(a.externalLabel, lang)}]
                             </a>

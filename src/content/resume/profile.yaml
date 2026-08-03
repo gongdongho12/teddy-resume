@@ -46,11 +46,11 @@ experience:
         사내 AI 도구 - 에이전트 라우팅, 로그 진단 자동화, DX 워크플로우 구축
         DX 인프라 - CI/CD 통합, 문서 자동 생성 적용
       en: |
-        Billing - Improved payment and arrears-handling reliability with DLQ and multi-stage unpaid batches
-        Promotions (coupon/points) - Improved customer retention
-        User-side - Owned vehicle information lookup, PnC (Plug & Charge) authorization, user-side backend, and the mobile app
-        Internal AI tooling - Built agent routing, log-diagnosis automation, and DX workflows
-        DX infrastructure - Applied CI/CD integration and automated documentation
+        Billing — Payment & arrears reliability (DLQ, recovery batches)
+        Promotions — Coupon & point platform for user retention
+        User-Side — Vehicle lookup, PnC auth, backend & Flutter app
+        Internal AI — Agent routing & automated log diagnosis
+        DX Infra — CI/CD integration & auto-doc tooling
 
   - company:
       ko: 카카오스타일
@@ -202,7 +202,7 @@ education:
       en: Kookmin University
     degree:
       ko: 소프트웨어전공 공학사
-      en: B.S., Software Engineering
+      en: B.S., Computer Science
     period:
       ko: 2016.03 ~ 2023.02
       en: Mar 2016 — Feb 2023
@@ -223,11 +223,11 @@ activities:
       ko: 국민대학교 SW중심대학 멘토
       en: Kookmin SW-Centered University Mentor
     period:
-      ko: 2024.03.14 ~ 현재
+      ko: 2024.03 ~ 현재
       en: Mar 2024 — Present
     description:
-      ko: SW 아키텍처, 문제 해결 전략 수립, 유저 사이드 플로우 최적화 관점의 멘토링을 진행했습니다.
-      en: Mentored students with a focus on SW architecture, problem-solving strategy, and user-side flow optimization.
+      ko: SW 아키텍처, 문제 해결 전략 수립, 유저 사이드 플로우 최적화 관점 멘토링
+      en: Mentored students on SW architecture, problem-solving, and user flow optimization
     externalUrl: https://mentor.cs.kookmin.ac.kr/%EB%A9%98%ED%86%A0%EC%86%8C%EA%B0%9C#h.dlkra2kupnvf
     externalLabel:
       ko: 멘토 소개
@@ -239,8 +239,8 @@ activities:
       ko: 2025.09 / 2025.12 (2회)
       en: Sep, Dec 2025
     description:
-      ko: 백엔드 개발 직무 취업을 희망하는 과정 수료생들을 대상으로 기술 및 모의면접 멘토링을 진행했습니다.
-      en: Conducted technical and mock interview mentoring for backend developer bootcamp graduates.
+      ko: 백엔드 과정 수료생 대상 기술 및 모의면접 멘토링 진행
+      en: Technical and mock interview mentoring for backend bootcamp graduates
   - title:
       ko: 커널360 1~5기 백엔드 멘토
       en: Kernel360 Backend Mentor (1st ~ 5th cohorts)
@@ -248,17 +248,17 @@ activities:
       ko: 2023.12 ~ 2025.08
       en: Dec 2023 — Aug 2025
     description:
-      ko: 5개 기수(1~5기)에 걸쳐 프론트/백엔드 협업 기반 기업 문제 해결 프로젝트의 멘토로 참여했습니다.
-      en: Participated as a mentor across the 1st through 5th cohorts, guiding collaboration-based projects that solved real company problems.
+      ko: 5개 기수에 걸쳐 프론트/백엔드 협업 기반 기업 문제 해결 프로젝트 멘토링
+      en: Guided collaboration-based enterprise problem-solving projects across 5 cohorts
   - title:
       ko: 카카오테크 캠퍼스 2기 백엔드 멘토
       en: Kakao Tech Campus Backend Mentor (2nd)
     period:
-      ko: 2024.06.26 ~ 2024.08.06
+      ko: 2024.06 ~ 2024.08
       en: Jun 2024 — Aug 2024
     description:
-      ko: 카카오테크캠퍼스 2기 백엔드 멘토로 참여
-      en: Participated as a mentor for the 2nd cohort of Kakao Tech Campus backend track.
+      ko: 카카오테크캠퍼스 2기 백엔드 트랙 프로젝트 멘토링
+      en: Mentored backend track project teams for 2nd Kakao Tech Campus
   - title:
       ko: 한양대 ERICA SW창업특강 (Effective Backend)
       en: Hanyang ERICA SW Startup Lecture
@@ -266,17 +266,17 @@ activities:
       ko: 2024.02.02
       en: Feb 2024
     description:
-      ko: Effective Backend 강연을 진행했습니다
-      en: Gave a talk on "Effective Backend" for the SW startup lecture series.
+      ko: Effective Backend 주제로 SW 창업 특강 발표
+      en: Gave a lecture on "Effective Backend" for SW startup series
   - title:
       ko: 부스트캠프 웹·모바일 8기 백엔드 멘토
       en: Boostcamp 8th Backend Mentor
     period:
-      ko: 2023.11.06 ~ 2023.12.15
+      ko: 2023.11 ~ 2023.12
       en: Nov 2023 — Dec 2023
     description:
-      ko: 부스트캠프 iOS 서비스 프로젝트 두 팀을 맡아 멘토링을 진행했습니다
-      en: Mentored two iOS service project teams for Boostcamp.
+      ko: 부스트캠프 iOS 서비스 프로젝트 2개 팀 기술 멘토링
+      en: Mentored two iOS service project teams for Boostcamp
   - title:
       ko: 한빛N MSA — Monitoring 세션 발표
       en: Hanbit N MSA — Monitoring session
@@ -284,17 +284,17 @@ activities:
       ko: 2023.12.07
       en: Dec 2023
     description:
-      ko: 한빛미디어에서 준비한 세미나 시리즈로 9회차 모니터링 세션을 진행했습니다
-      en: Led the 9th session on Monitoring for Hanbit Media's seminar series.
+      ko: 한빛미디어 MSA 세미나 9회차 모니터링 구축 세션 발표
+      en: Led the 9th session on MSA Monitoring for Hanbit Media seminar
   - title:
       ko: 부스트캠프 웹·모바일 7~8기 백엔드 리뷰어
       en: Boostcamp 7th~8th Backend Reviewer
     period:
-      ko: 2022.09 ~ 10 / 2023.09 ~ 10
-      en: Sep-Oct 2022 / Sep-Oct 2023
+      ko: 2022.09 ~ 2023.10
+      en: Sep 2022 — Oct 2023
     description:
-      ko: 부스트캠프 웹 백엔드 캠퍼미팅 및 코드리뷰를 진행했습니다 (7기, 8기 연속 참여)
-      en: Conducted campus meetings and code reviews for web backend campers (7th and 8th cohorts).
+      ko: 웹 백엔드 캠퍼 미팅 및 연속 코드 리뷰 진행
+      en: Conducted campus meetings and code reviews for backend campers
   - title:
       ko: UbuCon Korea 2023 Speaker
       en: UbuCon Korea 2023 Speaker
@@ -302,8 +302,8 @@ activities:
       ko: 2023.09.09
       en: Sep 2023
     description:
-      ko: “WSL을 이용해 개발용 NAS 구축하기” 라는 주제로 발표를 진행했습니다
-      en: Presented on "Building a Development NAS using WSL".
+      ko: WSL을 이용해 개발용 NAS 구축하기 발표 진행
+      en: Presented on "Building a Development NAS using WSL"
   - title:
       ko: SW중심대학 공동해커톤 2023 멘토
       en: SW University Joint Hackathon 2023 Mentor
@@ -311,49 +311,48 @@ activities:
       ko: 2023.06.28 ~ 2023.06.30
       en: Jun 2023
     description:
-      ko: 해커톤 멘토로 참여하여 FE/BE 멘토링 및 커리어 상담을 진행했습니다
-      en: Provided FE/BE mentoring and career counseling as a hackathon mentor.
+      ko: 해커톤 멘토로 참여하여 FE/BE 멘토링 및 커리어 상담 진행
+      en: Provided FE/BE technical mentoring and career counseling
+    externalUrl: https://mentor.cs.kookmin.ac.kr/%EB%A9%98%ED%86%A0%EC%86%8C%EA%B0%9C#h.dlkra2kupnvf
+    externalLabel:
+      ko: 멘토 소개
+      en: Mentor Profile
   - title:
       ko: 프로그래머스 스쿨 내일배움코스 11기 JAVA 멘토
       en: Programmers School JAVA Mentor (11th)
     period:
-      ko: 2023.03.08 ~ 2023.04.04
+      ko: 2023.03 ~ 2023.04
       en: Mar 2023 — Apr 2023
     description:
-      ko: 질의응답 및 코드리뷰 및 화상 멘토링을 진행했습니다
-      en: Provided Q&A, code reviews, and video mentoring.
-
+      ko: 질의응답, 코드 리뷰 및 화상 멘토링 진행
+      en: Provided Q&A, code reviews, and video mentoring
   - title:
       ko: 경북소프트웨어고등학교 리액트 특강
       en: Gyeongbuk SW High School React Lecture
     period:
-      ko: 2022.09.09 ~ 2022.10.28
+      ko: 2022.09 ~ 2022.10
       en: Sep 2022 — Oct 2022
     description:
-      ko: 마이스터고 고등학생 대상으로 설명 > 클론코딩 > 프로젝트 순으로 리액트 특강을 진행했습니다
-      en: Conducted a React lecture series (Explanation > Clone Coding > Project) for vocational high school students.
+      ko: 마이스터고 학생 대상 클론코딩 및 프로젝트 리액트 특강
+      en: Conducted React lectures and project guidance for high school students
   - title:
       ko: 우분투 한국 커뮤니티 Infra Manager
       en: Ubuntu Korea Community Infra Manager
     period:
-      ko: 2018.03.31 ~ 2021.05.31
+      ko: 2018.03 ~ 2021.05
       en: Mar 2018 — May 2021
     description:
-      ko: 리눅스 관련 커뮤니티의 운영진으로 Infra를 담당하여 Forum과 Wiki 그리고 ASK 등의 서비스 및 메일서버의 구축 및 유지보수를 진행했습니다
-      en: Managed infrastructure (Forum, Wiki, ASK, Mail server) for the Linux community.
+      ko: 리눅스 커뮤니티 인프라(포럼, 위키, 메일서버) 구축 및 유지보수
+      en: Managed community infrastructure including Forum, Wiki, and mail servers
   - title:
-      ko: AngelHack 2020
-      en: AngelHack 2020
+      ko: AngelHack 2020 해커톤 수상 (Common Computer Prize)
+      en: AngelHack 2020 Winner (Common Computer Prize)
     period:
       ko: "2020"
       en: "2020"
     description:
-      ko: |
-        우리 동네 소상공인을 위한 공동구매/재고할인 서비스 - LiBi
-        Common Computer Prize 수상 (상금 240만원)
-      en: |
-        LiBi, a group-buying and inventory-discount service for local small businesses
-        Winner of the Common Computer Prize (KRW 2.4M)
+      ko: 소상공인을 위한 재고 할인/공동구매 서비스 LiBi 개발 및 수상
+      en: Developed local group-buying platform LiBi; awarded Common Computer Prize
     externalUrl: https://medium.com/@seoulangelhack/%EC%97%94%EC%A0%A4%ED%95%B5-%EC%84%9C%EC%9A%B8-2020-%EC%98%A8%EB%9D%BC%EC%9D%B8-%EC%9C%84%EA%B8%B0-%EC%86%8D%EC%9D%98-%EC%B0%BD%EC%9D%98%EC%84%B1-%EC%9A%B0%EC%8A%B9%ED%8C%80-%EB%B0%9C%ED%91%9C-ac97c2ddf520
     externalLabel:
       ko: 관련자료
@@ -366,18 +365,16 @@ projectSections:
     projects:
       - title:
           ko: 멀티 벤더 결제 시스템 및 미수 복구 안정화
-          en: Multi-vendor payment system & arrears recovery
+          en: Multi-Vendor Payment & Arrears Recovery
         portfolioSlug: multi-pg-payment
         period:
           ko: 2024.10 ~ 현재
           en: Oct 2024 — Present
         summary:
           ko: |
-            결제 서비스를 초기 설계부터 주도하여 단일 결제에서 멀티 벤더사를 수용하는 모듈로 확장하고,
-            다층 미수 관리 시스템을 구축하여 결제 상태 정합성과 실패/미수 결제의 복구 가능성을 높였습니다.
+            결제 서비스를 초기 설계부터 주도하여 단일 결제에서 멀티 벤더사를 수용하는 모듈로 확장하고, 다층 미수 관리 시스템을 구축하여 결제 상태 정합성과 실패/미수 결제의 복구 가능성을 높였습니다.
           en: |
-            Led payment design from the start; expanded from a single payment flow into a modular structure that supports multiple payment vendors,
-            and improved payment-state consistency and failed/unpaid payment recovery through a layered arrears-management system.
+            Led payment architecture from scratch, expanding into a modular multi-vendor PG structure and a multi-tiered arrears recovery system for state consistency and automated failover.
         tech:
           - Kotlin
           - Spring Boot
@@ -386,33 +383,31 @@ projectSections:
           - Cloud SQL
         highlights:
           ko:
-            - 결제 서비스를 프로젝트 초기 설계부터 구현까지 전담하며 핵심 개발자로 주도
-            - 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이·토스페이먼츠·카카오T를 수용하는 멀티 벤더 결제 아키텍처 구축
-            - GCP Pub/Sub 기반 DLQ(Dead-Letter Queue) 패턴을 구현해 실패 이벤트를 별도 큐로 격리하고 미수 처리 대상 추적이 가능하도록 구성
-            - DLQ 미수 처리 및 영구 미수 대상 처리 시스템을 구축하고 재시도, NACK, 보완 배치 기반 복구 흐름으로 미수 처리 누락 방지
-            - DLQ 재시도 정체를 막기 위해 failover 상태 전이와 latestRetriedAt 기록을 보강하고, PG not-found 응답에서도 미수 재결제 플로우가 끊기지 않도록 개선
-            - 결제 취소 알림톡을 전액/부분 취소 및 로밍 결제 취소 케이스로 분리해 사용자에게 표시되는 취소 금액과 상태 메시지 정확도 개선
+            - "[멀티 벤더 아키텍처] 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이·토스페이먼츠·카카오T를 수용하는 멀티 벤더 결제 아키텍처 구축"
+            - "[DLQ 미수 복구 시스템] GCP Pub/Sub DLQ 및 보완 배치 기반 다층 미수 처리 시스템을 구축하여 재시도·NACK을 통한 미수 처리 누락 방지"
+            - "[상태 전이 정합성] DLQ 재시도 정체를 막기 위해 failover 상태 전이 및 latestRetriedAt을 보강하고 결제 취소 알림톡 문맥 정확도 개선"
           en:
-            - Owned payment service 0→1 as core engineer
-            - Designed vendor strategy pattern with abstract base classes to integrate 3 PG providers with unified interface
-            - GCP Pub/Sub DLQ pattern to isolate failed payment events and keep arrears-processing targets traceable
-            - DLQ-based arrears and permanent-arrears handling system with retries, NACKs, and recovery batches to prevent missed arrears handling
-            - Hardened failover transitions and latestRetriedAt recording to prevent stuck DLQ retries, while keeping unpaid-payment recovery flows intact on PG not-found responses
-            - Split payment-cancel AlimTalk contexts for full, partial, and roaming cancellations to improve the accuracy of user-facing cancellation amounts and status messages
+            - "[Multi-Vendor Architecture] Designed vendor strategy pattern to integrate KakaoPay, TossPayments, and KakaoT with a unified interface"
+            - "[DLQ Arrears Recovery] Built GCP Pub/Sub DLQ pattern and retry/recovery batches to keep arrears processing reliable and traceable"
+            - "[State Transition Integrity] Hardened failover transitions and AlimTalk cancellation contexts for full, partial, and roaming payment scenarios"
+        results:
+          ko:
+            - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현
+          en:
+            - "Full KakaoT partner integration: card registration, payment, cancellation, and promotion lifecycle implemented"
 
       - title:
           ko: 통합 프로모션(쿠폰/포인트) 플랫폼 구축 및 고도화
-          en: Coupon & point promotion platform buildout and enhancement
+          en: Promotion Platform (Coupon & Point)
         portfolioSlug: promotion-platform
         period:
           ko: "쿠폰: 2025.07 / 포인트: 2025.08 ~ 현재"
           en: "Coupon: Jul 2025 / Points: Aug 2025 — Present"
         summary:
           ko: |
-            다양한 제휴사(넥센, 도요타, 블루멤버스)의 프로모션 요구사항을 수용하는 범용 쿠폰·포인트 백엔드 시스템을
-            구축하고, 쿠폰팩별 결제수단 제한 정책까지 발급/조회/사용/관리 화면 전 구간에 반영했습니다.
+            다양한 제휴사(넥센, 도요타, 블루멤버스)의 프로모션 요구사항을 수용하는 범용 쿠폰·포인트 백엔드 시스템을 구축하고, 쿠폰팩별 결제수단 제한 정책까지 발급/조회/사용/관리 화면 전 구간에 반영했습니다.
           en: |
-            Built a reusable coupon and points backend for partner-driven promotions such as Nexen, Toyota, and Bluemembers, including coupon-pack payment-vendor restrictions across issuance, lookup, usage, and admin management.
+            Built a scalable coupon & point backend for B2B partners (Nexen, Toyota, Bluemembers) with coupon-pack payment restrictions across issuance, lookup, usage, and admin workflows.
         tech:
           - Kotlin
           - Spring Boot
@@ -420,23 +415,17 @@ projectSections:
           - JPA
         highlights:
           ko:
-            - 적립 건마다 유효기간이 다른 포인트 지갑 시스템 설계 — 적립 시 별도 지갑 엔티티 생성, 잔액 합산 조회 및 만료 임박(7일) 포인트 별도 추적
-            - 포인트 사용 시 무상 포인트 우선, 유효기간 임박순 차감 정책 구현 — 결제 취소 시에는 역순(유효기간 긴 지갑부터 환불)으로 사용자 유리하게 설계
-            - Hold→Confirm→Release 3단계 포인트 차감 라이프사이클로 결제 실패 시 자동 복원 보장
-            - 제휴사(넥센/도요타/블루멤버스) 쿠폰 만료일·중복발급·금액 설정 등 비즈니스 요구사항에 맞춘 유연한 프로모션 로직 개발
-            - 쿠폰팩별 허용 결제수단(카카오T/일반 카드/카카오페이 등)을 정책화하고 발급·조회·사용·Admin 생성 폼까지 동일한 제한 기준 적용
-            - 프로모션 쿠폰 발급 배치 구상 및 개발
+            - "[포인트 지갑 시스템] 적립 건마다 유효기간이 다른 포인트 지갑 엔티티 설계 및 만료 임박(7일) 포인트 추적, 유효기간 임박순 차감/역순 환불 구현"
+            - "[3단계 라이프사이클] Hold→Confirm→Release 3단계 포인트 차감 라이프사이클로 결제 실패 시 자동 복원 보장"
+            - "[결제수단 제한 정책] 쿠폰팩별 허용 결제수단(카카오T/일반 카드/카카오페이 등) 정책을 발급·조회·사용·Admin 생성 폼까지 동일 기준 적용"
           en:
-            - Designed point wallet system with per-deposit expiration — separate wallet entity per deposit, aggregated balance with 7-day expiry-soon tracking
-            - "Point deduction policy: free points first, then earliest-expiring; cancellation refunds in reverse order (longest-expiry wallets first) to benefit users"
-            - Hold→Confirm→Release 3-phase point lifecycle ensuring auto-restoration on payment failure
-            - Partner-specific promo rules — expiry, duplicate issuance, amount settings (Nexen/Toyota/Bluemembers)
-            - Modeled allowed payment vendors per coupon pack and applied the same restriction across issuance, lookup, usage, and Admin creation flows
-            - Promotion coupon issuance batch — designed and developed
+            - "[Point Wallet System] Designed point wallet system with per-deposit expiration and 7-day expiry-soon tracking"
+            - "[3-Phase Lifecycle] Implemented 3-phase point lifecycle (Hold→Confirm→Release) ensuring automatic rollback on payment failure"
+            - "[Payment Restriction Policy] Modeled allowed payment vendor restrictions per coupon pack across issuance, lookup, usage, and Admin creation flows"
 
       - title:
           ko: U+ VIP콕 제휴 쿠폰 및 VoC 운영 대행 시스템
-          en: U+ VIP partnership coupons and VoC operations support
+          en: U+ VIP Coupon
         portfolioSlug: uplus-vip-coupon-ops
         period:
           ko: 2026.06 ~ 현재
@@ -446,8 +435,7 @@ projectSections:
             LGU+ 멤버십 VIP/VVIP 고객의 월 1회 U+ VIP콕 혜택 쿠폰 발급을 위해
             feapp, coupon-service, voltup-admin-fe를 연결하고, 운영팀이 고객 문의 중 직접 조회·대행·판단할 수 있는 Admin 흐름을 구축했습니다.
           en: |
-            Connected feapp, coupon-service, and voltup-admin-fe for monthly U+ VIP benefit coupon issuance for LGU+ Membership VIP/VVIP customers,
-            while building Admin flows that let operations search, proxy, and decide during customer inquiries.
+            Integrated feapp, coupon-service, and admin-fe for monthly U+ VIP coupon issuance and created operational proxy tooling to resolve VoC bottlenecks.
         tech:
           - Kotlin
           - Spring Boot
@@ -465,24 +453,21 @@ projectSections:
             - UPLUS_VIP 쿠폰팩 생성 옵션, 혜택 월 자동 입력, 정액 할인 최소사용금액 보정, 허용 결제수단 멀티셀렉을 admin-fe에 반영
             - 고객 대상 문자/푸시/알림톡 1회 발송 어드민과 즉시/예약 발송을 위한 dispatch batch, 발송 이력 조회 흐름 구축
           en:
-            - Added the UPLUS_VIP coupon-pack type, benefit-month overlap prevention, and payment-vendor restrictions to coupon-service, applying them consistently across preview, search, use, and Admin creation
-            - Built UplusMembershipIssueService in feapp for phone-based card lookup, member birthday verification, once-per-user/card monthly limits, LGU+ approval, coupon issuance, and compensating approval cancellation on failure
-            - Implemented Admin APIs and screens for the member-detail U+ VIP proxy panel, phone-based card lookup, identity-mismatch pre-checks, and issue/coupon mapping history
-            - Reflected UPLUS_VIP coupon-pack creation options, benefit-month autofill, fixed-discount minimum-amount correction, and allowed-payment-vendor multiselect in admin-fe
-            - Built one-time SMS/push/AlimTalk customer-message Admin tooling with immediate/scheduled dispatch batches and send-history search
+            - Added UPLUS_VIP coupon pack type and benefit-month overlap prevention logic to coupon-service
+            - Built member card verification, monthly issuance caps, and LGU+ approval cancellation compensation in feapp
+            - Implemented Admin UI & APIs for phone-based card lookups, identity pre-checks, and instant/scheduled SMS/AlimTalk dispatch
         results:
           ko:
             - 외부 LGU+ 멤버십 승인과 내부 쿠폰 발급 상태를 end-to-end로 연결해 고객 혜택 발급과 운영 대행을 같은 검증 기준 안에서 처리
             - 운영팀이 개발자에게 수동 로그/정책 조회를 요청하던 VoC 대응 지점을 Admin 조회·사전 점검 화면으로 옮겨 고객 응대 속도를 높일 수 있는 기반 마련
             - 반복 캠페인성 고객 메시지 발송을 Admin과 배치 기반으로 전환해 개발자 의존 운영 요청을 줄이는 방향으로 확장
           en:
-            - Connected external LGU+ membership approval and internal coupon issuance end-to-end so customer issue and operations proxy issue follow the same validation rules
-            - Moved developer-dependent manual log/policy checks into Admin search and pre-check surfaces, creating a foundation for faster customer VoC response
-            - Shifted repeated customer-message campaigns toward Admin and batch-based operation, reducing developer-dependent operations requests
+            - Connected external LGU+ membership approval and internal coupon issuance end-to-end for consistent verification
+            - Shifted manual developer log/policy checks to Admin pre-check screens, accelerating VoC resolution
 
       - title:
           ko: 유저 사이드 백엔드
-          en: User-side Backend
+          en: User-Side Backend
         portfolioSlug: kakao-t-integration
         portfolioAnchor: user-side-backend-overview
         period:
@@ -501,18 +486,16 @@ projectSections:
         highlights:
           ko:
             - 카카오T 계정/결제 연동을 4개 MSA(auth→user→billing→feapp)에 걸쳐 설계 및 구현 — OAuth2 기반 계정 연동, 결제수단 등록(5단계), 결제 승인/부분 취소까지 전체 플로우 담당
-            - 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리하고, 검색 인덱스·해지 검증·앱 콜백 전용 activate API를 보강
-            - 차량 등록 서비스 및 PnC(Plug & Charge) 인증 등록 서비스 개발
+            - 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리하고, 검색 인덱스·해지 검증·앱 콜백 전용 activate API 보강
+            - 차량 등록 서비스 및 PnC(Plug & Charge) 충전기-차량 고유 키 자동 매핑·인증 시스템 개발
             - 홈페이지 통계 API — 전월 누적합·전일 누적 delta·당일 실시간 합산을 하나의 누적 지표로 결합하고, 공개 트래픽을 고려해 Local/RemoteCache와 분산 락으로 원본 부하 최소화
             - 프로모션 쿠폰 발급 배치 구상 및 개발
             - 외부 인증서 서비스에 서킷브레이커 패턴 — 장애 인증서 자동 비활성화 및 복구, 전체 장애 시 강제 리셋 복구 경로 지정
           en:
-            - Designed and implemented KakaoT account/payment integration across 4 MSAs (auth→user→billing→feapp) — OAuth2 account linking, 5-step card registration, payment approval/partial cancellation
-            - Promoted the partner customer token as the key between external payment methods and internal user context, adding search indexes, unlink validation, and an app-callback-specific activate API
-            - Vehicle registration service and PnC (Plug & Charge) authentication registration service
-            - Built homepage statistics API — combined prior-month cumulative totals, daily cumulative deltas, and same-day real-time sums into one cumulative metric, using Local/RemoteCache and distributed locks to protect origins from public traffic
-            - Promotion coupon issuance batch — designed and developed
-            - Circuit breaker pattern for external certificate service — auto-disable and recover failed certificates, with a force-reset recovery path for total outages
+            - Designed KakaoT account & payment integration across 4 MSAs (OAuth2 linking, card registration, payment approval/cancellation)
+            - Built vehicle registration and PnC (Plug & Charge) charger-vehicle unique key auto-mapping & authorization service
+            - Built homepage statistics API with local/remote cache and distributed locks for high-concurrency public traffic
+            - Applied circuit breaker pattern to external certificate service for auto-disable and emergency recovery
         results:
           ko:
             - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현
@@ -597,59 +580,17 @@ projectSections:
             - Turned one-off JS fetch operational corrections into a reusable internal tool flow
 
       - title:
-          ko: Voltbot Crew — 업무 맥락 기반 AI 에이전트 라우팅
-          en: Voltbot Crew — Context-Aware AI Agent Routing
-        portfolioSlug: voltbot-crew
+          ko: Voltbot — 사내 업무 에이전트 플랫폼
+          en: Voltbot — Internal Agent Platform
+        portfolioSlug: voltbot-agent-platform
         period:
           ko: "2026.05 ~ 현재"
           en: "May 2026 — Present"
         summary:
           ko: |
-            운영팀의 고객 VoC 대응 지연을 줄이기 위해, 코드 정책 조회와 로그 조회 에이전트가 같은 컨텍스트를 공유하는 Voltbot Crew 기반 운영 진단 흐름을 제안하고 자동 라우팅 구조를 설계했습니다.
+            사내 업무 에이전트 플랫폼 Voltbot을 구축하고, 사용자 요청 의도·권한 기반 에이전트 자동 라우터(Voltbot Crew)와 GCP 로그·코드 기반 장애 원인 진단 자동화 흐름을 개발했습니다.
           en: |
-            Proposed and designed Voltbot Crew, an automatic routing flow where code-policy and log-query agents can share context to reduce delays in operations teams' customer VoC response.
-        tech:
-          - Kotlin
-          - Spring Boot
-          - React
-          - TypeScript
-          - WebSocket
-          - Gemini API
-        highlights:
-          ko:
-            - 하나의 대화 세션에서 2개 에이전트가 컨텍스트를 공유하는 팀 에이전트 구조를 프로토타입으로 구현
-            - 세션-에이전트 매핑, 메시지별 담당 에이전트 기록, WebSocket 요청 확장, 프론트엔드 에이전트 선택 UX까지 end-to-end 구성
-            - 최종적으로 사용자의 권한 있는 전문 에이전트 후보 중 요청 맥락에 맞는 에이전트를 LLM이 자동 배정하는 AUTO_ROUTING 구조로 전환
-            - 향후 코드 정책 조회 + 로그 조회를 통합해 고객 오류 상황의 1차 원인 분류와 운영팀 답변 속도 개선을 지원하는 방향 제안
-          en:
-            - Prototyped a team-agent structure where two agents share context inside one conversation session
-            - Built the end-to-end path across session-agent mapping, per-message agent attribution, WebSocket request expansion, and frontend agent selection UX
-            - Evolved the design into AUTO_ROUTING, where an LLM chooses the most relevant specialist among agents the user is authorized to use
-            - Proposed an integrated code-policy + log-query flow to support first-pass customer-issue triage and faster operations responses
-        results:
-          ko:
-            - 사용자가 에이전트 종류를 직접 판단하지 않아도 요청 맥락에 맞는 전문 에이전트로 연결할 수 있는 기반 마련
-            - 운영팀이 개발자에게 반복 확인하던 코드 정책/로그 조회 병목을 줄이기 위한 AI 운영 진단 확장 방향 수립
-          en:
-            - Created the foundation for routing users to the right specialist without requiring them to classify the request first
-            - Established an AI-assisted operations diagnosis direction to reduce repeated developer checks for code policy and logs
-
-      - title:
-          ko: Voltbot — 사내 업무 에이전트 플랫폼 및 로그 진단 자동화
-          en: Voltbot — Internal Work-Agent Platform & Log Diagnosis Automation
-        portfolioSlug: voltbot-agent-platform
-        period:
-          ko: "2026.06 ~ 현재"
-          en: "Jun 2026 — Present"
-        summary:
-          ko: |
-            운영/CS가 “고객 결제 실패 원인을 확인해달라”처럼 업무 언어로 질문하면 Agent Router가 로그 분석 에이전트로 연결하고,
-            에이전트가 GCP 운영 로그, 사내 진단 가이드, GitHub 코드 근거를 순차 조회해 진단·근거·권장 조치로 답변하는 흐름을 구축했습니다.
-            특히 결제 실패처럼 billing-service, consumer, feapp, 외부 PG가 얽힌 이슈에서 traceId가 끊겨도 user_id/order_number로 재조회해 원인 흐름을 이어가도록 설계했습니다.
-          en: |
-            Built a flow where operations and CS can ask in work language, such as “why did this customer's payment fail?”, and the Agent Router sends the request to the log-diagnosis agent.
-            The agent queries GCP production logs, internal diagnosis guides, and GitHub code evidence, then returns a diagnosis, supporting evidence, and recommended action.
-            For payment failures spanning billing-service, consumers, feapp, and external PGs, the flow can continue investigation with user_id/order_number even when traceId continuity breaks.
+            Developed Voltbot, an internal AI agent platform featuring intent-based agent routing (Voltbot Crew) and automated log diagnosis cross-checking GCP logs, guides, and GitHub code.
         tech:
           - Kotlin
           - Spring Boot
@@ -657,37 +598,29 @@ projectSections:
           - TypeScript
           - WebSocket
           - GCP Cloud Logging
-          - LLM Tool Calling
-          - Gemini API
+          - Gemini Native Function Calling
+          - Gemini API (3.6 Flash)
           - GitHub API
         highlights:
           ko:
-            - 사용자의 자연어 요청을 의도·권한·에이전트 상태 기준으로 분류해 로그 분석, 데이터 분석, 법률 지원, 코드 정책 등 전문 에이전트로 연결하는 AgentRouter 구현
-            - 공통 Agent/Tool 계약 위에 AgentRunner, ToolHandler, WebSocket 스트리밍을 연결해 Tool 실행 내역, 권한, 쿼터, 중단 요청, 최종 답변이 같은 대화 흐름에 남도록 구성
-            - LogDiagnosisAgent에 고객 모드와 운영 모드를 나누고, `services`, `severity`, `range/from/to`, `pageToken`, raw LQL 조건으로 GCP 운영 로그를 반복 조회하는 `searchUserLogs` 도구 흐름 설계
-            - 결제 실패 분석에서 traceId, user_id, order_number를 상황에 맞게 갈아타는 상관키 pivot 규칙을 두어 서비스 경계나 Pub/Sub consumer에서 trace가 끊겨도 인과 흐름을 추적
-            - 로그 분석 가이드 조회 도구와 GitHub 코드 근거 검색을 결합해 에러 코드, 정책상 정상 차단, 외부 PG/카드사 점검, 내부 상태 불일치를 구분하는 답변 기준 정리
-            - 최종 답변을 진단, 근거 로그, 연계 플로우, 운영/고객 안내 조치로 구조화하고 자연인 식별 정보는 마스킹하되 user_id/order_number 같은 시스템 식별자는 추적 가능하게 유지
+            - "[에이전트 라우팅] 사용자 요청의 의도·권한을 분석해 전문 에이전트로 배정하는 AgentRouter 및 세션 간 컨텍스트 공유(AUTO_ROUTING) 구현"
+            - "[Gemini 네이티브 펑션 콜 & 승인 제어] Gemini API의 Native Function Calling 스키마 변환 레이어를 구축하고, 민감 도구 실행 시 사용자 승인 제어(ToolWithApproval) 및 WebSocket 스트리밍 흐름 연동"
+            - "[로그 진단 자동화] GCP Cloud Logging과 상관키(traceId, user_id, order_number) Pivot 규칙을 설계해 분산 서비스 장애를 추적하는 LogDiagnosisAgent 구축"
           en:
-            - Implemented AgentRouter to classify natural-language requests by intent, permission, and agent availability, then route to specialist agents such as log diagnosis, data analysis, legal support, and code policy
-            - Connected AgentRunner, ToolHandler, and WebSocket streaming on a shared Agent/Tool contract so tool trails, permissions, quotas, interruptions, and final answers remain visible in the same conversation flow
-            - Split LogDiagnosisAgent into customer and operations modes, designing a `searchUserLogs` tool flow that repeatedly queries GCP production logs with `services`, `severity`, `range/from/to`, `pageToken`, and raw LQL conditions
-            - Added correlation-key pivot rules across traceId, user_id, and order_number so payment-failure investigations can remain traceable even when traces break across service boundaries or Pub/Sub consumers
-            - Combined log-diagnosis guide tools with GitHub code evidence to distinguish error codes, expected policy blocks, external PG/card-company maintenance, and internal state mismatches
-            - Structured final answers into diagnosis, evidence logs, linked flow, and operations/customer guidance, while masking natural-person identifiers and keeping system identifiers such as user_id/order_number traceable
+            - "[Agent Routing] Implemented AgentRouter and AUTO_ROUTING to dynamically route user requests to specialist agents based on intent and permissions"
+            - "[Gemini Native Function Calling & Safety Engine] Integrated Gemini Native Function Calling with a unified Agent/Tool schema conversion layer and user-approval safety controls (ToolWithApproval) over WebSocket streaming"
+            - "[Automated Log Diagnosis] Built LogDiagnosisAgent with GCP Cloud Logging and correlation key pivoting (traceId, user_id, order_number) for multi-service triage"
         results:
           ko:
-            - 운영/CS가 개발자에게 “로그 확인”을 요청하기 전, 고객 결제 실패·서비스 에러·특정 기간 장애 패턴을 채팅에서 1차 진단하고 안내 방향을 잡을 수 있는 업무 흐름 마련
-            - Cloud Logging, 사내 가이드, GitHub 코드 검색을 오가던 개발자 의존 반복 진단 절차를 재사용 가능한 에이전트 Tool 흐름으로 표준화
-            - 결제 실패 원인이 사용자 결제수단 문제인지, 외부 PG/카드사 점검인지, 내부 서비스 상태 불일치인지 근거 중심으로 나눠 운영 답변 품질을 높일 수 있는 기반 구축
+            - 반복적인 로그 확인 및 VoC 대응 병목을 축소하고 원인 진단 흐름 표준화
+            - 요청 맥락에 따라 최적의 전문 에이전트로 자동 연결되는 단일 진입점 확보
           en:
-            - Created a workflow where operations and CS can perform first-pass diagnosis for customer payment failures, service errors, and incident patterns before asking engineers to “check the logs”
-            - Standardized repeated developer-dependent diagnosis across Cloud Logging, internal guides, and GitHub code search into a reusable agent tool flow
-            - Built a foundation for evidence-based operations responses by separating user payment-method issues, external PG/card-company maintenance, and internal service-state mismatches
+            - Reduced developer log-triage bottlenecks while standardising incident response
+            - Created a single entry point automatically connecting users to the right specialist agent
 
       - title:
-          ko: 로밍 서비스 안정성 및 성능 최적화
-          en: Roaming service reliability & performance
+          ko: 환경부 전산망 — 충전기 로밍 서비스
+          en: EV Charger Roaming Service (Ministry of Environment Network)
         portfolioSlug: roaming-reliability
         period:
           ko: "2026.02 ~ 현재"
@@ -1084,9 +1017,39 @@ projectSections:
             - Integrated account systems and mission-related APIs
 
   - heading:
-      ko: 기타 프로젝트
-      en: Personal Projects
+      ko: 사이드 프로젝트
+      en: Side Projects
     projects:
+      - title:
+          ko: Clip Atlas (clip-indexer) — 미디어 태그 제너레이터
+          en: Clip Atlas (clip-indexer) — Media Tag Generator
+        githubUrl: https://github.com/gongdongho12/clip-indexer
+        badge:
+          ko: 개인 프로젝트
+          en: Personal Project
+        period:
+          ko: 운영 중
+          en: Ongoing
+        summary:
+          ko: |
+            미디어(영상/사진/오디오) 파일의 메타데이터 및 FFmpeg 프레임 추출과 LLM 분석을 결합하여 장면·음성을 자동 태깅하고, 파일명 정제, 태그 Sidecar 저장 및 로컬 웹 UI 관리를 제공하는 미디어 태그 제너레이터 툴입니다.
+          en: |
+            Built a CLI & local Web media manager that scans media files, combining FFmpeg and LLM multimodal scene/voice analysis for smart file renaming, tag sidecar storage, and web UI file management.
+        tech:
+          - Golang
+          - FFmpeg / ffprobe
+          - Gemini API (Multimodal)
+          - React / Web UI
+        highlights:
+          ko:
+            - "[미디어 인덱싱 엔진] 고성능 미디어 파일 스캔·인덱싱 파이프라인 및 CLI / HTTP 웹 서버 개발"
+            - "[멀티모달 분석 알고리즘] FFmpeg 프레임 추출 및 LLM 멀티모달 힌트 분석을 결합한 장소·장면·음성 자동 태깅 구현"
+            - "[로컬 웹 파일 매니저] 웹 UI에서 인터랙티브 폴더 플래닝, 메타데이터 Sidecar 저장, 파일 이동 dry-run/적용 흐름 구축"
+          en:
+            - "[Media Indexing Engine] Developed high-performance media indexing pipeline, CLI tools, and HTTP web server"
+            - "[Multimodal Analysis] Built scene/voice tagging algorithms combining FFmpeg frame extraction and LLM multimodal analysis"
+            - "[Local Web File Manager] Created interactive web UI for folder planning, metadata sidecar generation, and dry-run file movement"
+
       - title:
           ko: Commit Map
           en: Commit Map

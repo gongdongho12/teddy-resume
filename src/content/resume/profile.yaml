@@ -14,43 +14,45 @@ summary:
   ko: |
     문제 해결과 서비스의 완성도에 집중하는 소프트웨어 엔지니어입니다.
     기획 단계부터 주도적으로 참여하여 고객 편의성을 최우선으로 고려하며,
-    현재 다수의 MSA 환경에서 빌링 및 유저사이드 서비스 전반을 담당하고 있습니다.
+    현재 다수의 MSA 환경에서 빌링, 유저사이드 및 충전·로밍 서비스 전반을 담당하고 있습니다.
   en: |
-    Software engineer focused on problem-solving and the completeness of services without limiting tech stack.
-    Actively contributes from the planning stage to prioritize user convenience.
-    Currently responsible for the overall billing and user-side services across multiple MSA environments.
+    Software engineer focused on solving operationally complex problems and delivering reliable, polished products.
+    I contribute from product planning through production operations, with customer experience as a primary design constraint.
+    At VoltUp, I work across billing, customer-facing, charging, and roaming services in a microservices architecture.
 
 languages_note:
   ko: 한국어 — 네이티브
-  en: Korean — Native · English — capable of technical document research and reading, technical discussions, and technical article writing
+  en: Korean - Native · English - Professional working proficiency in technical contexts
 
 experience:
   - company:
       ko: LG 유플러스 볼트업
-      en: LG Uplus VoltUp
+      en: VoltUp (LG Uplus × Kakao Mobility)
     period:
       ko: 2024.09 ~ 재직중
       en: Sep 2024 — Present
     role:
       ko: Tech Innovation Tribe, Back-end
-      en: Tech Innovation Tribe, Back-end
+      en: Backend Engineer, Tech Innovation Tribe
     location_en: Seoul, South Korea
     descriptionLead:
       ko: 카카오모빌리티와 LG유플러스가 함께 운영하는 전기차 충전 서비스 JV
-      en: ""
+      en: An EV-charging joint venture operated by LG Uplus and Kakao Mobility
     description:
       ko: |
-        빌링 - DLQ 및 다단계 미수 배치로 결제/미수 처리 안정성 확보
+        빌링 - DB 승인권, DLQ 및 다단계 복구 흐름으로 중복 결제 방지와 결제/미수 처리 안정성 확보
         프로모션(쿠폰/포인트) - 고객 리텐션 증대
         유저사이드 - 차량정보 조회, PnC(Plug & Charge) 인증 및 유저사이드 백엔드와 모바일 앱 담당
+        MSA 안정화 - Pub/Sub 무중단 종료 표준화 및 외부 API 장애 격리
         사내 AI 도구 - 에이전트 라우팅, 로그 진단 자동화, DX 워크플로우 구축
         DX 인프라 - CI/CD 통합, 문서 자동 생성 적용
       en: |
-        Billing — Payment & arrears reliability (DLQ, recovery batches)
-        Promotions — Coupon & point platform for user retention
-        User-Side — Vehicle lookup, PnC auth, backend & Flutter app
-        Internal AI — Agent routing & automated log diagnosis
-        DX Infra — CI/CD integration & auto-doc tooling
+        Payments - Prevented duplicate charges and made failed-payment recovery traceable with database-backed approval ownership, dead-letter queues, and layered recovery flows
+        Promotions - Built reusable coupon and points systems for partner campaigns
+        Customer-facing services - Developed vehicle lookup, Plug & Charge authorization, backend services, and the mobile app
+        Microservice reliability - Standardized graceful Pub/Sub shutdown and isolated failures from external APIs
+        Internal AI tools - Built specialist-agent routing and first-pass log diagnosis workflows
+        Developer experience - Standardized CI/CD workflows and automated technical documentation
 
   - company:
       ko: 카카오스타일
@@ -60,7 +62,7 @@ experience:
       en: Jun 2022 — Sep 2024
     role:
       ko: Pricing System, Back-end
-      en: Pricing System, Back-end
+      en: Backend Engineer, Pricing Platform
     location_en: Seongnam, South Korea
     description:
       ko: |
@@ -68,8 +70,8 @@ experience:
         상품 카탈로그 Engine Page 연동 (네이버 쇼핑 / 구글 쇼핑)
         외부 상품 가격 수집 및 타사 대비 가격 우위/열위 자동화 파이프라인
       en: |
-        Final pricing service, product matching, Zigzag membership new development and migration, and shopping EP integrations
-        (Naver Shopping / Google Shopping). Pipelines for external price collection and competitive position automation.
+        Built unified pricing, cross-store product matching, and the Zigzag membership platform
+        Integrated shopping feeds for Naver Shopping and Google Shopping, with automated external price collection and competitive pricing workflows
 
   - company:
       ko: 스토어링크
@@ -86,22 +88,22 @@ experience:
         상품 데이터 수집 및 키워드 기반 순위 분석 플랫폼
         애드링크, 유짓, 퍼그샵, 프라이데이 개발
       en: |
-        Product-data collection and keyword-ranking analysis platform
+        Built product-data collection and keyword-ranking analytics services
         Developed AdLink, Uzzit, Pugshop, and Friday
 
   - company:
       ko: 와탭랩스
-      en: Whatap Labs
+      en: WhaTap Labs
     period:
       ko: 2019.03 ~ 2021.03
       en: Mar 2019 — Mar 2021
     role:
       ko: Front-end Engineer
-      en: Front-end Engineer
+      en: Frontend Engineer
     location_en: Seoul, South Korea
     description:
       ko: Infra, JVM 어플리케이션, 쿠버네티스 등의 모니터링 대시보드 프론트엔드 개발
-      en: Frontend development for monitoring dashboards across infrastructure, JVM applications, and Kubernetes.
+      en: Built monitoring dashboards for infrastructure, JVM applications, databases, and Kubernetes environments.
 
   - company:
       ko: 함샤우트
@@ -114,7 +116,7 @@ experience:
       en: SW Engineer
     description:
       ko: 인플루언서와 비즈니스를 매칭시켜주는 잇플루언서 플랫폼 개발
-      en: Developed the Itfluencer platform matching influencers with businesses.
+      en: Built Itfluencer, a platform that connects advertisers with influencers for campaign delivery.
 
   - company:
       ko: 오픈브릿지
@@ -202,7 +204,7 @@ education:
       en: Kookmin University
     degree:
       ko: 소프트웨어전공 공학사
-      en: B.S., Computer Science
+      en: B.S. in Computer Science
     period:
       ko: 2016.03 ~ 2023.02
       en: Mar 2016 — Feb 2023
@@ -226,8 +228,8 @@ activities:
       ko: 2024.03 ~ 현재
       en: Mar 2024 — Present
     description:
-      ko: SW 아키텍처, 문제 해결 전략 수립, 유저 사이드 플로우 최적화 관점 멘토링
-      en: Mentored students on SW architecture, problem-solving, and user flow optimization
+      ko: SW 아키텍처, 문제 해결 전략 수립, 유저 사이드 플로우 최적화 관점의 멘토링을 진행했습니다.
+      en: Mentored students in software architecture, problem-solving strategy, and customer-facing flow design.
     externalUrl: https://mentor.cs.kookmin.ac.kr/%EB%A9%98%ED%86%A0%EC%86%8C%EA%B0%9C#h.dlkra2kupnvf
     externalLabel:
       ko: 멘토 소개
@@ -237,7 +239,7 @@ activities:
       en: Codeit Backend Course Mock Interview Mentor
     period:
       ko: 2025.09 / 2025.12 (2회)
-      en: Sep, Dec 2025
+      en: Sep and Dec 2025
     description:
       ko: 백엔드 과정 수료생 대상 기술 및 모의면접 멘토링 진행
       en: Technical and mock interview mentoring for backend bootcamp graduates
@@ -248,8 +250,8 @@ activities:
       ko: 2023.12 ~ 2025.08
       en: Dec 2023 — Aug 2025
     description:
-      ko: 5개 기수에 걸쳐 프론트/백엔드 협업 기반 기업 문제 해결 프로젝트 멘토링
-      en: Guided collaboration-based enterprise problem-solving projects across 5 cohorts
+      ko: 5개 기수(1~5기)에 걸쳐 프론트/백엔드 협업 기반 기업 문제 해결 프로젝트의 멘토로 참여했습니다.
+      en: Mentored five cohorts working in frontend-backend teams on projects based on real company problems.
   - title:
       ko: 카카오테크 캠퍼스 2기 백엔드 멘토
       en: Kakao Tech Campus Backend Mentor (2nd)
@@ -257,8 +259,8 @@ activities:
       ko: 2024.06 ~ 2024.08
       en: Jun 2024 — Aug 2024
     description:
-      ko: 카카오테크캠퍼스 2기 백엔드 트랙 프로젝트 멘토링
-      en: Mentored backend track project teams for 2nd Kakao Tech Campus
+      ko: 카카오테크캠퍼스 2기 백엔드 멘토로 참여
+      en: Mentored the second cohort of the Kakao Tech Campus backend track.
   - title:
       ko: 한양대 ERICA SW창업특강 (Effective Backend)
       en: Hanyang ERICA SW Startup Lecture
@@ -279,22 +281,22 @@ activities:
       en: Mentored two iOS service project teams for Boostcamp
   - title:
       ko: 한빛N MSA — Monitoring 세션 발표
-      en: Hanbit N MSA — Monitoring session
+      en: Hanbit N Microservices - Monitoring Session
     period:
       ko: 2023.12.07
       en: Dec 2023
     description:
-      ko: 한빛미디어 MSA 세미나 9회차 모니터링 구축 세션 발표
-      en: Led the 9th session on MSA Monitoring for Hanbit Media seminar
+      ko: 한빛미디어에서 준비한 세미나 시리즈로 9회차 모니터링 세션을 진행했습니다
+      en: Presented the ninth session, focused on monitoring, in Hanbit Media's microservices seminar series.
   - title:
       ko: 부스트캠프 웹·모바일 7~8기 백엔드 리뷰어
-      en: Boostcamp 7th~8th Backend Reviewer
+      en: Boostcamp Backend Reviewer (7th-8th Cohorts)
     period:
       ko: 2022.09 ~ 2023.10
       en: Sep 2022 — Oct 2023
     description:
-      ko: 웹 백엔드 캠퍼 미팅 및 연속 코드 리뷰 진행
-      en: Conducted campus meetings and code reviews for backend campers
+      ko: 부스트캠프 웹 백엔드 캠퍼미팅 및 코드리뷰를 진행했습니다 (7기, 8기 연속 참여)
+      en: Led campus meetings and code reviews for web-backend participants across two cohorts.
   - title:
       ko: UbuCon Korea 2023 Speaker
       en: UbuCon Korea 2023 Speaker
@@ -306,7 +308,7 @@ activities:
       en: Presented on "Building a Development NAS using WSL"
   - title:
       ko: SW중심대학 공동해커톤 2023 멘토
-      en: SW University Joint Hackathon 2023 Mentor
+      en: 2023 SW University Joint Hackathon Mentor
     period:
       ko: 2023.06.28 ~ 2023.06.30
       en: Jun 2023
@@ -324,8 +326,9 @@ activities:
       ko: 2023.03 ~ 2023.04
       en: Mar 2023 — Apr 2023
     description:
-      ko: 질의응답, 코드 리뷰 및 화상 멘토링 진행
-      en: Provided Q&A, code reviews, and video mentoring
+      ko: 질의응답 및 코드리뷰 및 화상 멘토링을 진행했습니다
+      en: Provided technical Q&A, code reviews, and remote mentoring.
+
   - title:
       ko: 경북소프트웨어고등학교 리액트 특강
       en: Gyeongbuk SW High School React Lecture
@@ -333,17 +336,17 @@ activities:
       ko: 2022.09 ~ 2022.10
       en: Sep 2022 — Oct 2022
     description:
-      ko: 마이스터고 학생 대상 클론코딩 및 프로젝트 리액트 특강
-      en: Conducted React lectures and project guidance for high school students
+      ko: 마이스터고 고등학생 대상으로 설명 > 클론코딩 > 프로젝트 순으로 리액트 특강을 진행했습니다
+      en: Taught a React course for vocational high-school students, progressing from concepts to clone coding and a final project.
   - title:
       ko: 우분투 한국 커뮤니티 Infra Manager
-      en: Ubuntu Korea Community Infra Manager
+      en: Ubuntu Korea Community Infrastructure Manager
     period:
       ko: 2018.03 ~ 2021.05
       en: Mar 2018 — May 2021
     description:
-      ko: 리눅스 커뮤니티 인프라(포럼, 위키, 메일서버) 구축 및 유지보수
-      en: Managed community infrastructure including Forum, Wiki, and mail servers
+      ko: 리눅스 관련 커뮤니티의 운영진으로 Infra를 담당하여 Forum과 Wiki 그리고 ASK 등의 서비스 및 메일서버의 구축 및 유지보수를 진행했습니다
+      en: Built and maintained the community's forum, wiki, Q&A service, and mail infrastructure.
   - title:
       ko: AngelHack 2020 해커톤 수상 (Common Computer Prize)
       en: AngelHack 2020 Winner (Common Computer Prize)
@@ -361,20 +364,22 @@ activities:
 projectSections:
   - heading:
       ko: 주요 프로젝트 — LGU+ VoltUp
-      en: Projects — LGU+ VoltUp
+      en: Selected Projects - VoltUp
     projects:
       - title:
           ko: 멀티 벤더 결제 시스템 및 미수 복구 안정화
-          en: Multi-Vendor Payment & Arrears Recovery
+          en: Multi-Provider Payments and Failed-Payment Recovery
         portfolioSlug: multi-pg-payment
         period:
           ko: 2024.10 ~ 현재
           en: Oct 2024 — Present
         summary:
           ko: |
-            결제 서비스를 초기 설계부터 주도하여 단일 결제에서 멀티 벤더사를 수용하는 모듈로 확장하고, 다층 미수 관리 시스템을 구축하여 결제 상태 정합성과 실패/미수 결제의 복구 가능성을 높였습니다.
+            결제 서비스를 초기 설계부터 주도하여 단일 결제에서 멀티 벤더사를 수용하는 모듈로 확장하고,
+            DB 기반 승인권과 다층 복구 시스템을 구축하여 중복 청구를 방지하고 실패·미수 결제를 추적 가능한 상태로 복구했습니다.
           en: |
-            Led payment architecture from scratch, expanding into a modular multi-vendor PG structure and a multi-tiered arrears recovery system for state consistency and automated failover.
+            Led the payment service from initial architecture through production delivery, evolving a single-provider flow into a modular multi-provider platform.
+            Added database-backed approval ownership and layered recovery to prevent duplicate charges and move failed or unpaid transactions into traceable, recoverable states.
         tech:
           - Kotlin
           - Spring Boot
@@ -383,22 +388,23 @@ projectSections:
           - Cloud SQL
         highlights:
           ko:
-            - "[멀티 벤더 아키텍처] 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이·토스페이먼츠·카카오T를 수용하는 멀티 벤더 결제 아키텍처 구축"
-            - "[DLQ 미수 복구 시스템] GCP Pub/Sub DLQ 및 보완 배치 기반 다층 미수 처리 시스템을 구축하여 재시도·NACK을 통한 미수 처리 누락 방지"
-            - "[상태 전이 정합성] DLQ 재시도 정체를 막기 위해 failover 상태 전이 및 latestRetriedAt을 보강하고 결제 취소 알림톡 문맥 정확도 개선"
+            - 결제 서비스를 프로젝트 초기 설계부터 구현까지 전담하며 핵심 개발자로 주도
+            - 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이·토스페이먼츠·카카오T를 수용하는 멀티 벤더 결제 아키텍처 구축
+            - GCP Pub/Sub DLQ, 영구 미수 처리, 재시도·보완 배치를 연결한 다단계 복구 흐름으로 실패 이벤트 격리와 미수 처리 누락 방지
+            - PG 승인 직전 결제 상태를 `AUTHORIZED`로 조건부 전이하는 DB 승인권을 설계해 Redis 락 만료·응답 유실·벤더 변경 상황에서도 재승인을 fail-closed로 차단; 동일 주문 8스레드 경합에서 1건만 선점하는 MySQL 동시성 테스트로 검증
+            - 결제 확정 트랜잭션과 미수 부기를 분리해 부기 락 경합이 승인 성공을 롤백해 이중 청구로 이어지는 경로를 차단하고, 미수 재결제의 포인트 이중 차감·설정 소급 문제를 함께 교정
+            - READY 고아 주문 상태 동기화·이벤트 자동 재발행과 AUTHORIZED 체류 해소 배치·수동 복구 API를 구성해 결과 미확정 건을 자동 복구 또는 운영 판단 가능한 상태로 전환
           en:
-            - "[Multi-Vendor Architecture] Designed vendor strategy pattern to integrate KakaoPay, TossPayments, and KakaoT with a unified interface"
-            - "[DLQ Arrears Recovery] Built GCP Pub/Sub DLQ pattern and retry/recovery batches to keep arrears processing reliable and traceable"
-            - "[State Transition Integrity] Hardened failover transitions and AlimTalk cancellation contexts for full, partial, and roaming payment scenarios"
-        results:
-          ko:
-            - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현
-          en:
-            - "Full KakaoT partner integration: card registration, payment, cancellation, and promotion lifecycle implemented"
+            - Led the payment service from initial design through implementation as a core engineer
+            - Designed a provider strategy layer that integrates Kakao Pay, Toss Payments, and Kakao T - a South Korean ride-hailing and mobility platform - behind one interface
+            - Combined Pub/Sub dead-letter queues, retries, and recovery batches into a layered flow that isolates failures and prevents unpaid transactions from being missed
+            - Added database-backed approval ownership before payment-gateway calls, preventing duplicate approvals after lock expiry, lost responses, or provider changes; an eight-thread MySQL concurrency test confirmed a single winner per order
+            - Separated payment confirmation from unpaid-balance bookkeeping so ledger-lock contention cannot roll back successful approvals or trigger duplicate charges; also corrected double point deductions and retroactive configuration changes during retries
+            - Added recovery for orphaned READY orders and long-running AUTHORIZED states through event republishing, scheduled reconciliation, and operator repair APIs
 
       - title:
           ko: 통합 프로모션(쿠폰/포인트) 플랫폼 구축 및 고도화
-          en: Promotion Platform (Coupon & Point)
+          en: Coupon and Points Promotion Platform
         portfolioSlug: promotion-platform
         period:
           ko: "쿠폰: 2025.07 / 포인트: 2025.08 ~ 현재"
@@ -407,7 +413,8 @@ projectSections:
           ko: |
             다양한 제휴사(넥센, 도요타, 블루멤버스)의 프로모션 요구사항을 수용하는 범용 쿠폰·포인트 백엔드 시스템을 구축하고, 쿠폰팩별 결제수단 제한 정책까지 발급/조회/사용/관리 화면 전 구간에 반영했습니다.
           en: |
-            Built a scalable coupon & point backend for B2B partners (Nexen, Toyota, Bluemembers) with coupon-pack payment restrictions across issuance, lookup, usage, and admin workflows.
+            Built reusable coupon and points services for partner campaigns including Nexen, Toyota, and Bluemembers.
+            Applied coupon-level payment-method restrictions consistently across issuance, lookup, redemption, and operations-console workflows.
         tech:
           - Kotlin
           - Spring Boot
@@ -419,13 +426,16 @@ projectSections:
             - "[3단계 라이프사이클] Hold→Confirm→Release 3단계 포인트 차감 라이프사이클로 결제 실패 시 자동 복원 보장"
             - "[결제수단 제한 정책] 쿠폰팩별 허용 결제수단(카카오T/일반 카드/카카오페이 등) 정책을 발급·조회·사용·Admin 생성 폼까지 동일 기준 적용"
           en:
-            - "[Point Wallet System] Designed point wallet system with per-deposit expiration and 7-day expiry-soon tracking"
-            - "[3-Phase Lifecycle] Implemented 3-phase point lifecycle (Hold→Confirm→Release) ensuring automatic rollback on payment failure"
-            - "[Payment Restriction Policy] Modeled allowed payment vendor restrictions per coupon pack across issuance, lookup, usage, and Admin creation flows"
+            - Designed a point-wallet model with independent expiration per deposit, aggregate balance queries, and separate tracking for points expiring within seven days
+            - Applied free points first and then the earliest-expiring balance; cancellation refunds reverse that order to preserve the most useful balance for customers
+            - Implemented a Hold-Confirm-Release lifecycle that automatically restores points when payment fails
+            - Encoded partner-specific rules for expiration, duplicate issuance, and benefit amounts across Nexen, Toyota, and Bluemembers campaigns
+            - Enforced coupon-level payment-method restrictions across issuance, lookup, redemption, and operations-console creation flows
+            - Designed and implemented scheduled campaign-coupon issuance
 
       - title:
-          ko: U+ VIP콕 제휴 쿠폰 및 VoC 운영 대행 시스템
-          en: U+ VIP Coupon
+          ko: U+ VIP콕 제휴 쿠폰
+          en: U+ VIP Monthly Coupon Integration
         portfolioSlug: uplus-vip-coupon-ops
         period:
           ko: 2026.06 ~ 현재
@@ -435,7 +445,8 @@ projectSections:
             LGU+ 멤버십 VIP/VVIP 고객의 월 1회 U+ VIP콕 혜택 쿠폰 발급을 위해
             feapp, coupon-service, voltup-admin-fe를 연결하고, 운영팀이 고객 문의 중 직접 조회·대행·판단할 수 있는 Admin 흐름을 구축했습니다.
           en: |
-            Integrated feapp, coupon-service, and admin-fe for monthly U+ VIP coupon issuance and created operational proxy tooling to resolve VoC bottlenecks.
+            Connected the customer app, coupon service, and operations console to issue monthly benefits for LG Uplus VIP and VVIP members.
+            Gave operations teams the lookup, eligibility checks, and assisted-issuance tools needed to resolve customer inquiries without manual engineering support.
         tech:
           - Kotlin
           - Spring Boot
@@ -453,21 +464,24 @@ projectSections:
             - UPLUS_VIP 쿠폰팩 생성 옵션, 혜택 월 자동 입력, 정액 할인 최소사용금액 보정, 허용 결제수단 멀티셀렉을 admin-fe에 반영
             - 고객 대상 문자/푸시/알림톡 1회 발송 어드민과 즉시/예약 발송을 위한 dispatch batch, 발송 이력 조회 흐름 구축
           en:
-            - Added UPLUS_VIP coupon pack type and benefit-month overlap prevention logic to coupon-service
-            - Built member card verification, monthly issuance caps, and LGU+ approval cancellation compensation in feapp
-            - Implemented Admin UI & APIs for phone-based card lookups, identity pre-checks, and instant/scheduled SMS/AlimTalk dispatch
+            - Added the UPLUS_VIP coupon type, overlapping-benefit-month checks, and payment-method restrictions across preview, search, redemption, and operations-console creation
+            - Built phone-based membership lookup, birth-date verification, monthly user/card limits, LG Uplus approval, coupon issuance, and compensating approval cancellation in one service flow
+            - Implemented operations-console APIs and screens for assisted issuance, identity-mismatch checks, and issuance-history lookup
+            - Added benefit-month defaults, minimum-spend validation, and allowed-payment-method selection to coupon configuration
+            - Built one-time SMS, push, and Kakao AlimTalk messaging with immediate or scheduled dispatch and searchable delivery history
         results:
           ko:
             - 외부 LGU+ 멤버십 승인과 내부 쿠폰 발급 상태를 end-to-end로 연결해 고객 혜택 발급과 운영 대행을 같은 검증 기준 안에서 처리
             - 운영팀이 개발자에게 수동 로그/정책 조회를 요청하던 VoC 대응 지점을 Admin 조회·사전 점검 화면으로 옮겨 고객 응대 속도를 높일 수 있는 기반 마련
             - 반복 캠페인성 고객 메시지 발송을 Admin과 배치 기반으로 전환해 개발자 의존 운영 요청을 줄이는 방향으로 확장
           en:
-            - Connected external LGU+ membership approval and internal coupon issuance end-to-end for consistent verification
-            - Shifted manual developer log/policy checks to Admin pre-check screens, accelerating VoC resolution
+            - Unified external membership approval and internal coupon issuance so self-service and assisted issuance follow the same validation rules
+            - Moved recurring log and policy checks into operations-console search and pre-check screens, reducing engineering dependency during customer support
+            - Shifted recurring customer messaging to console and batch workflows, reducing manual requests to developers
 
       - title:
           ko: 유저 사이드 백엔드
-          en: User-Side Backend
+          en: Customer-Facing Backend and Kakao T Integration
         portfolioSlug: kakao-t-integration
         portfolioAnchor: user-side-backend-overview
         period:
@@ -475,9 +489,9 @@ projectSections:
           en: Jul 2025 — Present
         summary:
           ko: |
-            카카오T 계정/결제 연동(4개 MSA 관통), PnC(Plug & Charge) 자동충전, 미결제 감시 등 사용자 경험의 핵심이 되는 백엔드 전반을 개발했습니다.
+            카카오T 계정/결제 연동(4개 MSA 관통), PnC(Plug & Charge) 자동충전, 미결제 감시와 외부 연동 장애 격리 등 사용자 경험의 핵심이 되는 백엔드 전반을 개발했습니다.
           en: |
-            Developed core user-side backend features including KakaoT account/payment integration across 4 MSAs, PnC (Plug & Charge) auto-charge, and unpaid-charge monitoring.
+            Built customer-facing backend services spanning four microservices, including Kakao T account and payment integration, Plug & Charge enrollment, failed-payment monitoring, and isolation of external-system failures.
         tech:
           - Kotlin
           - Spring Boot
@@ -489,18 +503,18 @@ projectSections:
             - 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리하고, 검색 인덱스·해지 검증·앱 콜백 전용 activate API 보강
             - 차량 등록 서비스 및 PnC(Plug & Charge) 충전기-차량 고유 키 자동 매핑·인증 시스템 개발
             - 홈페이지 통계 API — 전월 누적합·전일 누적 delta·당일 실시간 합산을 하나의 누적 지표로 결합하고, 공개 트래픽을 고려해 Local/RemoteCache와 분산 락으로 원본 부하 최소화
-            - 프로모션 쿠폰 발급 배치 구상 및 개발
-            - 외부 인증서 서비스에 서킷브레이커 패턴 — 장애 인증서 자동 비활성화 및 복구, 전체 장애 시 강제 리셋 복구 경로 지정
+            - 외부 인증서·U+ 멤버십·블루멤버스 포인트 연동에 전용 풀, 타임아웃, 서킷 브레이커/CallGuard를 적용해 지연 전파와 스레드 고갈을 격리하고 승인·포인트 결과가 불확실할 때 명시적으로 실패하도록 설계
           en:
-            - Designed KakaoT account & payment integration across 4 MSAs (OAuth2 linking, card registration, payment approval/cancellation)
-            - Built vehicle registration and PnC (Plug & Charge) charger-vehicle unique key auto-mapping & authorization service
-            - Built homepage statistics API with local/remote cache and distributed locks for high-concurrency public traffic
-            - Applied circuit breaker pattern to external certificate service for auto-disable and emergency recovery
+            - Designed Kakao T account and payment integration across auth, user, billing, and customer-app services, covering OAuth2 linking, five-step card registration, payment approval, and partial cancellation
+            - Established the partner customer token as the link between external payment methods and internal user context, adding search indexes, unlink validation, and a callback-specific activation API
+            - Built vehicle enrollment and Plug & Charge credential-registration services
+            - Combined historical totals and same-day real-time data in one homepage statistics API, using local and remote caches plus distributed locks to protect source systems from public traffic
+            - Isolated external certificate, LG Uplus Membership, and Bluemembers integrations with dedicated thread pools, timeouts, circuit breakers, and CallGuard so uncertain outcomes fail explicitly instead of exhausting request threads
         results:
           ko:
             - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현
           en:
-            - "Full KakaoT partner integration: card registration, payment, cancellation, and promotion lifecycle implemented across 4 MSA services"
+            - Delivered the complete Kakao T partner lifecycle - card registration, payment, cancellation, and promotions - across four microservices
 
       - title:
           ko: 볼트업 하이브리드 앱 (Flutter - iOS/Android)
@@ -515,7 +529,7 @@ projectSections:
           ko: |
             서비스 2.0 런칭을 위해 Flutter 하이브리드 앱 개발을 주도하고, WebView-네이티브 브릿지와 QR/권한/푸시/강제 업데이트 등 앱 핵심 흐름을 설계 및 구현했습니다.
           en: |
-            Led Flutter hybrid delivery for 2.0; designed WebView-native bridge flows and core app paths such as QR scanning, permissions, push notifications, and forced updates.
+            Led delivery of the Flutter-based VoltUp 2.0 app, designing its WebView-to-native bridge and core flows for QR scanning, permissions, push notifications, and mandatory updates.
         tech:
           - Flutter
           - Gradle
@@ -531,8 +545,8 @@ projectSections:
             - FCM 기반 푸시 알림 시스템 구축
             - Crashlytics 기반 Dart/native 오류 수집과 카메라/FCM 안정화
           en:
-            - Rapid Android/iOS hybrid delivery via Flutter for 2.0 launch (2025.03)
-            - JSBridge for frontend–hardware and app message communication
+            - Scoped the app through a proof of concept and delivered the Android/iOS hybrid app for the March 2025 launch
+            - Defined a JS bridge for communication between the web frontend, native app, and device hardware
             - Built WebView-based UX flows for new-window handling, QR scanning, camera permission, and forced updates
             - Custom ML Kit-based QR scanner page and responsive scan UI
             - FCM-based push notification system
@@ -544,12 +558,12 @@ projectSections:
             - Crashlytics 기반 안정화와 QR/권한/업데이트 흐름 개선으로 앱 핵심 진입점 품질 개선
           en:
             - Launched within 2 months (Dec 2024 — Feb 2025)
-            - designed protocols for frontend to invoke native functions via JS Bridge
+            - Defined the contract that allows the web frontend to invoke native capabilities through the JS bridge
             - Improved core app entry points through Crashlytics-based stabilization and QR/permission/update-flow refinements
 
       - title:
           ko: 볼트업 앱 검증/운영 보정 익스텐션
-          en: VoltUp App Validation & Ops Correction Extension
+          en: Browser-Based App Validation and Operations Tool
         portfolioSlug: voltup-app-extension
         period:
           ko: "2026.05 ~ 현재"
@@ -558,7 +572,8 @@ projectSections:
           ko: |
             앱 연결이 필요한 검증 병목을 줄이기 위해 브라우저에서 앱 의존 흐름을 재현하고, Admin에서 지원하지 않는 단일 API 운영 보정 작업까지 replay할 수 있는 Chrome Extension을 구현했습니다.
           en: |
-            Built a Chrome Extension that recreates app-dependent flows in the browser to reduce app-attachment validation delays, then extends into replayable single-API operational corrections not supported by Admin.
+            Built a Chrome extension that reproduces app-dependent flows in the browser, removing the need to connect a mobile app for routine validation.
+            Extended it with controlled API capture and replay for operational corrections not available in the operations console.
         tech:
           - TypeScript
           - Chrome Extension
@@ -568,20 +583,20 @@ projectSections:
             - API 요청 capture/replay 구조를 구현해 앱 개발 검증 시간을 단축하고 반복 QA 흐름을 자동화
             - 충전존 생성 오류 대응처럼 Admin 화면에서 직접 지원하지 않는 단일 API 보정 작업을 row 기반 Bulk Replay로 처리할 수 있도록 확장
           en:
-            - Recreated app-supported flows such as new windows, QR scanning, camera permission, and forced-update version branches in a browser extension without connecting the app
-            - Built API capture/replay to shorten app-development validation time and automate repeated QA flows
-            - Extended the tool into row-based Bulk Replay for single-API corrections not directly supported by Admin, such as charge-zone correction cases
+            - Reproduced new-window handling, QR scanning, camera permissions, and mandatory-update branches without connecting the mobile app
+            - Added API capture and replay to shorten validation cycles and automate repeated QA workflows
+            - Added row-based bulk replay for controlled, single-API corrections not available in the operations console, including charge-zone repair cases
         results:
           ko:
             - 앱 연결이 필요한 기능 검증을 브라우저에서 빠르게 확인할 수 있게 해 개발 대기/반복 조작 시간을 단축
             - 일회성 JS fetch 대응으로 끝나던 운영 보정 작업을 팀이 재사용할 수 있는 내부 도구 흐름으로 전환
           en:
-            - Reduced waiting and repeated interaction time by making app-dependent validation quickly testable from the browser
-            - Turned one-off JS fetch operational corrections into a reusable internal tool flow
+            - Reduced waiting and repetitive manual steps by making app-dependent behavior testable directly in the browser
+            - Replaced one-off JavaScript corrections with a reusable, auditable internal workflow
 
       - title:
-          ko: Voltbot — 사내 업무 에이전트 플랫폼
-          en: Voltbot — Internal Agent Platform
+          ko: Voltbot — 사내 업무 에이전트 플랫폼, 개별 에이전트 자동 라우팅 및 로그 진단 자동화
+          en: Voltbot - Agent Routing and AI-Assisted Incident Diagnosis
         portfolioSlug: voltbot-agent-platform
         period:
           ko: "2026.05 ~ 현재"
@@ -590,7 +605,10 @@ projectSections:
           ko: |
             사내 업무 에이전트 플랫폼 Voltbot을 구축하고, 사용자 요청 의도·권한 기반 에이전트 자동 라우터(Voltbot Crew)와 GCP 로그·코드 기반 장애 원인 진단 자동화 흐름을 개발했습니다.
           en: |
-            Developed Voltbot, an internal AI agent platform featuring intent-based agent routing (Voltbot Crew) and automated log diagnosis cross-checking GCP logs, guides, and GitHub code.
+            Voltbot is an internal platform that gives employees chat-based access to specialized agents for code policy, BigQuery analysis, legal support, operations, and log diagnosis.
+            Within the platform, I designed intent- and permission-aware routing so users reach the right specialist without selecting an agent themselves.
+            I also built a shared diagnostic context where operations and customer-support teams can ask plain-language questions, combine log, BigQuery, and code findings, and pass that evidence to the next agent.
+            For failures spanning payment services, workers, mobile gateways, and external payment gateways, the workflow can continue an investigation through user and order identifiers even when trace continuity is lost.
         tech:
           - Kotlin
           - Spring Boot
@@ -603,67 +621,82 @@ projectSections:
           - GitHub API
         highlights:
           ko:
-            - "[에이전트 라우팅] 사용자 요청의 의도·권한을 분석해 전문 에이전트로 배정하는 AgentRouter 및 세션 간 컨텍스트 공유(AUTO_ROUTING) 구현"
-            - "[Gemini 네이티브 펑션 콜 & 승인 제어] Gemini API의 Native Function Calling 스키마 변환 레이어를 구축하고, 민감 도구 실행 시 사용자 승인 제어(ToolWithApproval) 및 WebSocket 스트리밍 흐름 연동"
-            - "[로그 진단 자동화] GCP Cloud Logging과 상관키(traceId, user_id, order_number) Pivot 규칙을 설계해 분산 서비스 장애를 추적하는 LogDiagnosisAgent 구축"
+            - 사용자의 자연어 요청을 의도·권한·에이전트 상태 기준으로 분류해 로그 분석, BigQuery 조회, 법률 지원, 코드 정책 등 필요한 전문 에이전트로 연결하는 AgentRouter 구현
+            - 공통 Agent/Tool 계약 위에 AgentRunner, ToolHandler, WebSocket 스트리밍을 연결해 Tool 실행 내역, 권한, 쿼터, 중단 요청, 최종 답변이 같은 대화 흐름에 남도록 구성
+            - 정규식 기반 텍스트 도구 호출을 Gemini 네이티브 function calling으로 전환하고 독립 도구를 병렬 실행해 구조화된 인자·실패 결과 저장·즉시 스트리밍을 보장
+            - LogDiagnosisAgent에 고객/운영 모드와 반복 조회 도구를 구성하고, traceId·user_id·order_number·시간대/제보 시그니처를 오가는 pivot 및 가설→흔적→조회→판정 루프로 첫 결론 고착과 미검증 단정을 방지
+            - 코드 정책의 정상 조건·상태 전이·에러 코드, BigQuery의 집계·이력·패턴 정보, 로그 조회 결과를 공통 컨텍스트에 남기고 다음 에이전트가 이를 이어받는 통합 진단 흐름 구현
+            - 최종 답변을 진단, 근거 로그, 연계 플로우, 운영/고객 안내 조치로 구조화하고 자연인 식별 정보는 마스킹하되 user_id/order_number 같은 시스템 식별자는 추적 가능하게 유지
           en:
-            - "[Agent Routing] Implemented AgentRouter and AUTO_ROUTING to dynamically route user requests to specialist agents based on intent and permissions"
-            - "[Gemini Native Function Calling & Safety Engine] Integrated Gemini Native Function Calling with a unified Agent/Tool schema conversion layer and user-approval safety controls (ToolWithApproval) over WebSocket streaming"
-            - "[Automated Log Diagnosis] Built LogDiagnosisAgent with GCP Cloud Logging and correlation key pivoting (traceId, user_id, order_number) for multi-service triage"
+            - Implemented AgentRouter to classify requests by intent, permission, and agent availability before routing them to specialists for log diagnosis, BigQuery analysis, legal support, or code policy
+            - Connected AgentRunner, ToolHandler, and WebSocket streaming through a shared Agent/Tool contract so tool history, permissions, quotas, interruptions, and final answers remain visible in one conversation
+            - Replaced regex-based tool calls with Gemini native function calling and parallel tool execution, providing schema-validated arguments, persisted failures, and immediate text streaming
+            - Added customer-support and operations modes to LogDiagnosisAgent, with iterative pivots across trace IDs, user IDs, order numbers, time windows, and report signatures; enforced a hypothesis-trace-query-verdict loop to reduce premature conclusions
+            - Stored policy conditions, state transitions, error codes, BigQuery findings, and log evidence in shared context so each specialist can continue from prior work
+            - Structured final responses around diagnosis, supporting evidence, related service flow, and recommended operations or customer guidance while masking personal identifiers
         results:
           ko:
-            - 반복적인 로그 확인 및 VoC 대응 병목을 축소하고 원인 진단 흐름 표준화
-            - 요청 맥락에 따라 최적의 전문 에이전트로 자동 연결되는 단일 진입점 확보
+            - 사용자가 에이전트 종류를 직접 판단하지 않아도 요청 맥락에 맞는 전문 에이전트로 연결할 수 있는 기반 마련
+            - 운영/CS가 개발자에게 로그 확인을 요청하기 전 결제 실패·서비스 오류·장애 패턴을 1차 진단하도록 Cloud Logging, 사내 가이드, GitHub 코드 검색을 재사용 가능한 Tool 흐름으로 표준화
+            - 9개 평가 케이스를 3회씩 비교한 하네스에서 기존 루프와 답변 품질은 통계적으로 동등하게 유지하면서 정합성 지표 평균 87.7%→100%, 토큰·비용 46% 절감, 실행 시간 10% 단축
+            - 결제 실패 원인이 사용자 결제수단 문제인지, 외부 PG/카드사 점검인지, 내부 서비스 상태 불일치인지 근거 중심으로 나눠 운영 답변 품질을 높일 수 있는 기반 구축
           en:
-            - Reduced developer log-triage bottlenecks while standardising incident response
-            - Created a single entry point automatically connecting users to the right specialist agent
+            - Routed users to the appropriate specialist without requiring them to understand the agent taxonomy
+            - Standardized Cloud Logging, internal documentation, and GitHub code search as reusable tools for first-pass diagnosis before engineering escalation
+            - In a 9-case × 3-run evaluation harness, preserved statistically equivalent answer quality while improving average groundedness from 87.7% to 100%, cutting tokens/cost by 46%, and reducing runtime by 10%
+            - Improved evidence-based support responses by distinguishing customer payment-method issues, external gateway or card-network maintenance, and internal service-state mismatches
 
       - title:
-          ko: 환경부 전산망 — 충전기 로밍 서비스
-          en: EV Charger Roaming Service (Ministry of Environment Network)
+          ko: 로밍 서비스 안정성 및 배치 운영 고도화
+          en: EV Roaming Reliability and Batch Operations
         portfolioSlug: roaming-reliability
         period:
           ko: "2026.02 ~ 현재"
           en: "Feb 2026 — Present"
         summary:
-          ko: 기후에너지환경부 공공 로밍 연계 서비스의 카드 상태 관리 로직을 재설계하고, 이벤트 누락/일시 장애 이후에도 기준 데이터를 회복할 수 있도록 재처리·월간 재동기화 경로를 구성했습니다.
-          en: Redesigned card-state management for the Ministry of Climate, Energy and Environment public roaming integration and added retry/monthly resync paths so baseline data can recover after missed events or transient failures.
+          ko: 기후에너지환경부 공공 로밍의 카드 상태 관리·재동기화 경로를 재설계하고, 카카오T 파트너 로밍의 장시간 배치를 안전하게 종료·전환할 수 있는 운영 기반을 구성했습니다.
+          en: Redesigned card-state recovery and resynchronization for Korea's public EV-roaming network, and made long-running Kakao T partner batches safe to stop and migrate without overlapping executions.
         tech:
           - Kotlin
           - Spring Boot
           - GCP Pub/Sub
           - Spring Batch
+          - Redis
         highlights:
           ko:
             - 기후에너지환경부 공공 로밍 카드 상태 업데이트 로직을 결제 응답 기반에서 빌링 미수 이벤트 기반으로 재설계 — 미수 발생 건에 대해서만 선별적 상태 업데이트로 데이터 정확성 향상
             - 로밍 카드 상태 처리 경로를 단순화하고 빌링 조회를 통합해 처리 성능 개선
             - 공공 API 에러 발생 시 재처리 프로세스 구성 — 회원카드 등 중요 데이터는 우선 재처리, 충전기 상태 등 누락 허용 가능한 항목은 후순위로 분리
             - 환경부 회원카드 월 1회 전체 재동기화 스케줄러와 task seed를 추가해 외부 시스템과 장기 상태 불일치가 누적되지 않도록 보강
+            - 카카오T 파트너 로밍 배치 종료 시 실행 작업보다 Redis 연결이 먼저 닫히던 순서를 교정하고, 60~75분 충전기 동기화 잡을 중복 실행 없이 상주형으로 전환할 수 있는 opt-in 스케줄러와 종료 가드를 구성
           en:
-            - Redesigned card-state updates in the Ministry of Climate, Energy and Environment public roaming flow from payment-response-based to billing-arrears-event-driven — selective updates only for arrears events
+            - Changed public-roaming card-state updates from payment responses to unpaid-balance events so only relevant failures trigger state changes
             - Simplified the roaming card-state processing path and consolidated billing lookups to improve throughput
-            - Built an MCEE API retry process that prioritizes critical data (membership cards) over tolerably-lossy items (charger status)
-            - Added a monthly full resync scheduler and task seed for MCEE member cards to prevent long-term drift from the external system
+            - Built a retry process that prioritizes baseline membership-card data over lower-priority charger-status updates
+            - Added monthly full resynchronization for public-roaming membership cards to prevent long-term drift from the external system
+            - Corrected Kakao T batch shutdown ordering so Redis remains available until active work completes, then added an opt-in resident scheduler and shutdown guards for 60-75 minute charger-sync jobs
         results:
           ko:
             - 카드 상태 업데이트 로직 재설계로 데이터 정확성 향상
             - 변환 오버헤드 제거 및 통합 조회로 처리 성능 개선
             - 이벤트 누락이나 일시 장애 이후에도 회원카드 기준 데이터를 주기적으로 복구할 수 있는 운영 안전망 확보
+            - 장시간 배치의 강제 종료·스케줄 누락 위험을 줄이고 기존 CronJob과 경합 없이 단계적으로 전환할 수 있는 기반 마련
           en:
-            - Improved data accuracy by rearchitecting card state update logic
+            - Improved data accuracy by aligning card-state changes with unpaid-balance events
             - Reduced processing overhead by eliminating serialization and consolidating billing queries
             - Added an operational safety net that periodically restores member-card baseline data after missed events or transient failures
+            - Reduced forced-shutdown and missed-schedule risk while allowing a staged migration without racing existing CronJobs
 
       - title:
           ko: 개발 생산성 자동화 및 DevOps 개선
-          en: Developer productivity & DevOps
+          en: Developer Productivity and Delivery Automation
         portfolioSlug: devops-automation
         period:
           ko: 2024.10 ~ 현재
           en: Oct 2024 — Present
         summary:
           ko: 반복되는 운영 업무와 개발 비효율을 제거하기 위해 AI 코드 리뷰, 배포 자동화, MSA 개발 환경 도구, 내부 API 호출 표준을 구축했습니다.
-          en: AI-first reviews, mobile CI/CD hardening, remote Gradle cache, iOS TestFlight automation, obfuscation policy, Firebase distribution, and internal Admin API standards.
+          en: Standardized recurring engineering work through automated first-pass reviews, shared CI/CD workflows, developer-environment tooling, documentation automation, and internal API conventions.
         tech:
           - Gemini API
           - GitHub Copilot
@@ -677,47 +710,51 @@ projectSections:
         highlights:
           ko:
             - 여러 생성형 LLM에서 활용할 수 있도록 각 마이크로서비스의 작업 컨벤션과 공통 작업 형상을 재사용 가능한 스킬 레포지토리로 구축 (Claude Code, Cursor, Gemini 등)
-            - run-gemini-cli를 활용한 1차 코드 리뷰 자동화
+            - LiteLLM 프록시와 LLM 기본 모델 단일 정본을 여러 MSA 레포에 적용하고, 1차 코드 리뷰·PR 본문 생성·보안성 검토 기안·Slack 알림을 공용 CI 워크플로로 표준화
             - Docusaurus + GitHub Actions 기반 개발 문서 자동 생성 시스템 구축 — Git Polling 방식으로 코드 변경 감지 시 문서 자동 갱신
+            - billing·feapp·messaging·roaming 4개 Pub/Sub 컨슈머에 SIGTERM 시 신규 구독 중지→in-flight 처리 완료→미처리 건 재배송으로 이어지는 graceful shutdown 표준을 설계·적용하고 Kubernetes 종료 예산과 정렬
             - Firebase App Distribution 도입으로 QA/배포 프로세스 병목 제거
             - MSA 환경의 설정 파일(application-local.yaml) 자동 생성 도구 개발
             - Admin 내부 API 호출이 늘어나는 상황에서 admin-internal-* 클라이언트와 X-Internal-Caller 헤더 규약을 도입해 운영자 도구의 내부 호출 경계 표준화
             - Android/iOS 앱 배포 과정을 정리해 인증 키 관리 부담과 불필요한 실패 요인을 줄임
             - Android Jenkins 파이프라인 공통 라이브러리화, GCS Gradle 캐시, iOS 자동 배포, ProGuard/R8 정책 등
           en:
-            - Built a reusable skill repository of microservice conventions and recurring task shapes so it could be applied across generative LLM tools such as Claude Code, Cursor, and Gemini
-            - Gemini CLI for first-pass review load shedding
-            - Docusaurus + GitHub Actions auto-doc system with git-polling change detection
-            - Firebase App Distribution for faster QA and release cycles
-            - Gradle generator for application-local.yaml
-            - Standardized Admin internal API boundaries with admin-internal-* clients and an X-Internal-Caller header convention
-            - Simplified Android/iOS app delivery to reduce key-management burden and avoidable failure points
-            - Refactored Android Jenkins into shared libs; GCS remote cache; iOS GA/TestFlight pipeline; 300+ line R8 rules
+            - Built a reusable repository of microservice conventions and recurring task patterns for Claude Code, Cursor, Gemini, and other coding agents
+            - Rolled out a LiteLLM proxy and a single source of truth for model defaults, then standardized first-pass reviews, pull-request summaries, security-review drafts, and Slack notifications as shared CI workflows
+            - Built automated Docusaurus documentation with GitHub Actions and change detection
+            - "Standardized graceful shutdown across four Pub/Sub consumers: stop intake on SIGTERM, drain in-flight work, redeliver unfinished messages, and align application timing with Kubernetes termination budgets"
+            - Introduced Firebase App Distribution to shorten QA and release cycles
+            - Built a Gradle-based generator for local microservice configuration
+            - Standardized internal operations-console API boundaries with shared clients and an X-Internal-Caller convention
+            - Simplified Android and iOS delivery to reduce key-management overhead and avoidable failures
+            - Consolidated Android Jenkins pipelines into shared libraries and added remote Gradle caching, iOS TestFlight automation, and shared R8 policies
         results:
           ko:
             - AI 코드 리뷰 자동화로 리뷰 리소스 절감
+            - 정상 노드 드레인·롤링 배포 중 신규 메시지 수신과 처리 중 작업 유실 창을 제거하고 4개 서비스에 재사용 가능한 종료 규약 확립
             - Firebase 도입으로 QA 배포 사이클 단축 및 QA 자체 검증 편의성 향상
             - 문서 자동 생성 시스템 구축으로 관리 리소스 절감
             - 모바일 배포의 인증 키 관리 부담과 불필요한 실패 요인을 줄여 릴리즈 안정성 개선
           en:
             - Reduced review overhead via automated first-pass AI review
-            - Shortened QA/deploy cycle and improved QA self-serve with Firebase Distribution
-            - Auto-doc system reduced manual documentation maintenance
+            - Removed the intake/in-flight loss window during normal node drains and rolling deployments, establishing a reusable shutdown contract across four services
+            - Shortened QA and deployment cycles while enabling self-service distribution through Firebase
+            - Reduced manual documentation maintenance through automated generation
             - Improved release stability by reducing mobile delivery key-management burden and avoidable failure points
 
   - heading:
       ko: 프로젝트 — 카카오스타일 (2022.06 ~ 2024.09)
-      en: Projects — Kakao Style (2022.06 — 2024.09)
+      en: Selected Projects - Kakao Style (Jun 2022 - Sep 2024)
     projects:
       - title:
           ko: 모바일 IP 대역 프록시 인프라 및 다이나믹 프라이싱
-          en: Mobile IP Pool Proxy Infrastructure & Dynamic Pricing
+          en: Mobile Proxy Infrastructure and Dynamic Pricing
         period:
           ko: 2024.01 ~ 2024.09
           en: Jan 2024 — Sep 2024
         summary:
           ko: 크롤링 차단 회피를 위한 모바일 IP 대역 프록시 인프라 구축 및 가격 우열위 기반 다이나믹 프라이싱 자동화 파이프라인 구성
-          en: Built a mobile IP pool proxy infrastructure to bypass crawling blocks and automated a dynamic pricing pipeline based on price competitiveness.
+          en: Built a mobile proxy pool to keep product-data collection reliable under anti-bot restrictions, then automated dynamic pricing from competitor price comparisons.
         tech:
           - Docker
           - K8S
@@ -734,12 +771,12 @@ projectSections:
           en:
             - Allocated per-port mobile HTTP proxies and developed proxy pool lookup APIs
             - Built mobile device control APIs (airplane mode, reboot) and automated rate limit management
-            - Constructed matching datasets between external (EP, lowest price) and internal products via AWS Athena
-            - Developed batch jobs for dynamic pricing based on price-gap analysis and Excel report generation
+            - Built AWS Athena datasets that connect external shopping-feed and lowest-price data with internal products
+            - Developed batch jobs for competitor-price analysis, dynamic pricing, and Excel reporting
 
       - title:
           ko: 내/외부 동일 상품 매칭
-          en: Internal/External Identical Product Matching
+          en: Cross-Store Product Matching
         portfolioSlug: pricing-platform
         portfolioAnchor: pricing-platform-product-matching
         period:
@@ -747,7 +784,7 @@ projectSections:
           en: Feb 2024 — Sep 2024
         summary:
           ko: 기존 1:1 매칭 구조를 N:M으로 개편하여 스토어/타입 구분 없는 전사적 동일 상품 매칭 시스템 구축
-          en: Overhauled 1:1 matching to an N:M structure to match identical products across all stores and types.
+          en: Replaced a one-to-one model with many-to-many matching so the same product could be linked across stores and product types.
         tech:
           - Kotlin
           - Spring Boot
@@ -761,13 +798,13 @@ projectSections:
             - AWS Athena를 활용하여 이미지 유사도 99.5% 이상의 상품을 추출하는 매칭 배치잡 개발
             - 리뷰 통합을 위한 매칭 데이터 조회 API 및 Kafka 컨슈머를 통한 신규 매칭 자동 적용
           en:
-            - Implemented dual caching for full matching lookups and served "Winner" data for search
+            - Added a two-level cache for complete match-group lookups and served the selected canonical product in search
             - Developed matching batch jobs using AWS Athena for items with ≥99.5% image similarity
-            - Built matching lookup APIs for review integration and automated matching via Kafka consumers
+            - Built match-review APIs and applied new matches automatically through Kafka consumers
 
       - title:
           ko: 파이널 프라이싱 (각 서비스별 가격 계산 로직 통합 API)
-          en: Final Pricing (Unified API for Service-Level Pricing Logic)
+          en: Unified Pricing API
         portfolioSlug: pricing-platform
         portfolioAnchor: pricing-platform-final-pricing
         period:
@@ -775,7 +812,7 @@ projectSections:
           en: Dec 2023 — Sep 2024
         summary:
           ko: 각 지면별로 분산되어 있던 가격 계산 로직을 하나의 API로 통합하여 쿠폰, 프로모션 등 모든 혜택을 통일
-          en: Unified scattered pricing logic into a single API so coupons, promotions, and other benefits follow one contract.
+          en: Consolidated channel-specific pricing rules into one API so coupons, promotions, and other benefits follow a consistent contract.
         tech:
           - Kotlin
           - Spring Boot
@@ -786,18 +823,18 @@ projectSections:
             - 사내 전 지면 게이트웨이와 연동해 분산된 가격 계산 로직을 통합 API로 정리하고 가격 노출 정합성 확보
           en:
             - Applied timeouts and circuit breakers for service stability
-            - Consolidated scattered pricing logic into a unified API across company-wide gateways and ensured price exposure consistency
+            - Connected company-wide gateways to the unified API, keeping displayed prices consistent across customer-facing channels
 
       - title:
           ko: 멤버십/마일리지 서비스 이관 및 고도화
-          en: Membership & Mileage Migration
+          en: Membership Platform Migration
         portfolioSlug: membership-migration
         period:
           ko: 2023.04 ~ 2023.06
           en: Apr 2023 — Jun 2023
         summary:
           ko: 리텐션 강화를 위해 멤버십 등급 체계를 재설계하고, 레거시 멤버십 서비스를 Spring Boot로 안정적으로 이관
-          en: Redesigned membership tiers for retention and migrated the legacy membership service to Spring Boot.
+          en: Redesigned membership tiers and migrated the legacy service to Spring Boot without downtime.
         tech:
           - Kotlin
           - Spring Boot
@@ -812,7 +849,7 @@ projectSections:
             - 멤버십 등급 산정 기간 확대(3→6개월)
             - 3개월 단위 등급 산정액 계산을 달별 캐시와 누적합으로 최적화
           en:
-            - Zero-downtime migration of the legacy membership service (cormo.js-based) to Spring Boot via 1:1 DB migration
+            - Migrated the legacy cormo.js service to Spring Boot with a schema-compatible database transition and no downtime
             - Expanded the membership tier calculation period from 3 to 6 months
             - Optimized 3-month tier calculation by caching monthly totals and using cumulative sums
         results:
@@ -820,12 +857,12 @@ projectSections:
             - 캐싱 도입으로 DB 부하를 임계치(70%)에서 30% 이내로 대폭 감소
             - API 입출력 통합 테스트 및 게이트웨이 점진적 전환으로 무중단 배포 성공
           en:
-            - Reduced DB load from 70% to under 30% through strategic caching
+            - Reduced database load from the 70% threshold to below 30% by caching monthly totals and using cumulative sums
             - Achieved zero-downtime deployment through API I/O integration tests and gradual gateway switching
 
       - title:
           ko: 쇼핑 카탈로그 Engine Page 및 최저가 갱신 (네이버쇼핑 / 유튜브쇼핑)
-          en: Shopping Catalog Engine Page & Lowest-Price Updates (Naver Shopping / YouTube Shopping)
+          en: Shopping Feeds and Lowest-Price Updates (Naver Shopping / YouTube Shopping)
         portfolioSlug: pricing-platform
         portfolioAnchor: pricing-platform-shopping-catalog
         period:
@@ -833,7 +870,7 @@ projectSections:
           en: Jun 2022 — Sep 2024
         summary:
           ko: 지그재그 상품의 가격 경쟁력을 확보하여 네이버 쇼핑 가격 비교에 노출시키고 거래액을 견인
-          en: Enhanced price competitiveness of Zigzag products for exposure on Naver Shopping price comparison.
+          en: Built shopping-feed and lowest-price update pipelines that kept Zigzag products eligible for Naver Shopping price comparison.
         tech:
           - Kotlin
           - Spring Boot
@@ -846,9 +883,9 @@ projectSections:
             - 타 가격비교 서비스와의 가격 우열위 판단 로직 및 Kafka 기반 실시간 상품 정보 컨슈밍
             - 네이버 쇼핑 Engine Page·최저가 갱신 구조를 공통화해 구글 Engine Page(유튜브 쇼핑)까지 빠르게 확장하고, 운영 효율화용 백오피스와 CPC→CPS 전환까지 담당
           en:
-            - Developed batch jobs for GMV-competitive products and integrated card promos/delivery badges
+            - Built batch jobs that selected commercially competitive products and attached card promotions, delivery badges, and category mappings
             - Implemented logic to compare prices with competitors and consumed real-time Kafka updates
-            - Commonized the Engine Page and lowest-price update flow so it could be quickly extended to Google Engine Page (YouTube Shopping), while also building backoffice tooling and leading the CPC-to-CPS transition
+            - Standardized the shopping-feed and lowest-price pipeline for reuse with Google and YouTube Shopping, while also building operations tooling and supporting the transition from CPC to CPS billing
         results:
           ko:
             - CPS 방식 전환에 필요한 2시간 상품 업데이트 간격을 맞추기 위해 전체 상품 갱신 대신 품절·가격 변동 상품만 부분 업데이트하도록 재구성해, 1시간 이내에 네이버 쇼핑이 읽어가는 CSV와 변경 상품 동기화용 데이터셋을 생성할 수 있게 함
@@ -856,16 +893,16 @@ projectSections:
             - 각 팀이 별도로 운영하던 최종 가격 API를 파이널 프라이싱 API로 통합해, 지면별로 달랐던 가격 계산 로직을 하나의 기준으로 정리하는 계기 마련
           en:
             - To satisfy the 2-hour product update interval required for CPS, replaced full-catalog refreshes with partial updates for sold-out or price-changed items, enabling generation of the Naver Shopping feed CSV and changed-product sync dataset within an hour
-            - Built a shared Engine Page and lowest-price update structure that could be extended quickly to Google Engine Page (YouTube Shopping)
-            - Created the path to consolidate team-specific final-price APIs into a unified Final Pricing API, aligning previously inconsistent pricing logic across surfaces
+            - Built a reusable shopping-feed and lowest-price pipeline that could be extended quickly to Google and YouTube Shopping
+            - Consolidated team-specific final-price APIs behind the Unified Pricing API, aligning pricing logic across customer-facing channels
 
   - heading:
       ko: 프로젝트 — 이전 경력
-      en: Projects — Earlier experience
+      en: Earlier Experience
     projects:
       - title:
           ko: 프라이데이 서비스
-          en: Friday analytics
+          en: Friday Commerce Analytics
         externalUrl: https://dongholab.notion.site/Friday-Storelink-Project-2021-03-2022-06-2022-07-de901f54ec704d61b30d09efed7e750e?source=copy_link
         externalLinkVisibility: hover
         period:
@@ -879,7 +916,7 @@ projectSections:
           - Redis
         summary:
           ko: 커머스 키워드 통계 분석 서비스 백엔드 개발
-          en: Backend development for commerce keyword analytics service.
+          en: Built backend services for commerce keyword and search-ranking analytics.
         highlights:
           ko:
             - 개발팀 전체에 Kotlin과 WebFlux를 메인 기술 스택으로 도입
@@ -888,15 +925,15 @@ projectSections:
             - AMD64/ARM64 크로스 빌드 환경 구성 (Docker buildx, AWS Graviton2 대응)
             - Puppeteer 기반 크롤링 API 개발 — 외부 페이지 API 조회/태그 선택/JS 함수 주입 지원
           en:
-            - Introduced Kotlin and WebFlux as the main tech stack for the entire team
-            - Replaced core service features with Friday search APIs (still in use)
-            - "In-house automation tools: Jenkins CI/CD, WireGuard VPN, NPM modules/NPX boilerplates"
+            - Introduced Kotlin and WebFlux as the team's primary backend stack
+            - Replaced core product capabilities with Friday search APIs that remained in production
+            - Built internal developer tooling for Jenkins CI/CD, WireGuard VPN, and reusable npm/NPX boilerplates
             - Cross-architecture Docker builds (AMD64/ARM64) via buildx for AWS Graviton2 compatibility
-            - Puppeteer crawler API — page access, API query, tag selection, and JS function injection
+            - Built a Puppeteer-based collection API for page access, API queries, element selection, and controlled JavaScript execution
 
       - title:
           ko: 와탭 모니터링 FE
-          en: Whatap monitoring FE
+          en: WhaTap Monitoring Frontend
         externalUrl: https://dongholab.notion.site/Whatap-Project-2019-03-2021-03-42f7a7cbb2af4cc88a88b2e959d89a86?source=copy_link
         externalLinkVisibility: hover
         period:
@@ -904,7 +941,7 @@ projectSections:
           en: Mar 2019 — Mar 2021
         summary:
           ko: 어플리케이션, 서버, DB, 컨테이너 등 에이전트 수집 데이터를 시각화하는 통합 모니터링 대시보드 FE 개발
-          en: Developed integrated monitoring dashboards to visualize data collected from various agents (App, Server, DB, Container).
+          en: Built unified monitoring dashboards for telemetry collected from applications, servers, databases, and containers.
         tech:
           - React.js
           - Redux
@@ -917,16 +954,16 @@ projectSections:
             - 리액트 컴포넌트 위에 구형 페이지 핸들러 적용 및 에이전트 설정/설치 화면 개발
             - 데이터 처리 공통 메서드 구현을 통한 코드 재사용성 향상
           en:
-            - Developed core components including TimeSelector and Server List dashboards
-            - Integrated legacy page handlers on React components and developed agent setup/install screens
-            - Implemented common data processing methods for better code reusability
+            - Developed core components including time-range controls, server lists, and unified dashboards
+            - Bridged legacy page handlers into React components and built agent setup and installation screens
+            - Created shared data-processing utilities to improve consistency and reuse
         results:
           ko:
             - 실시간 대시보드의 API 반복 호출 축소 및 차트 대시보드 메모리 부족 현상 감소
             - 실제 서비스 운영자 관점으로 모니터링을 직접 활용하며, 장애·성능 분석에 유의미한 메트릭/차트 조합과 대시보드 구성을 설계·개선
           en:
             - Reduced API polling churn for real-time dashboards and mitigated memory pressure on chart-heavy screens
-            - Used the product from an operator's perspective to shape meaningful metric/chart combinations and dashboard compositions for troubleshooting and performance analysis
+            - Used the product in real operational workflows to refine metric combinations and dashboard layouts for troubleshooting and performance analysis
 
       - title:
           ko: 잇플루언서 프로젝트
@@ -936,7 +973,7 @@ projectSections:
           en: Aug 2017 — Aug 2018
         summary:
           ko: 광고주가 캠페인을 구성하고 인플루언서가 참여하여 포인트/협찬을 받는 인플루언서 마케팅 플랫폼 개발
-          en: Developed an influencer marketing platform for campaign management and influencer matching.
+          en: Built an influencer-marketing platform where advertisers manage campaigns and creators participate in sponsored work.
         tech:
           - React.js
           - Redux
@@ -958,7 +995,7 @@ projectSections:
             - 광고주-인플루언서 매칭 프로세스 자동화로 컨택 리소스 및 시간 대폭 단축
             - 소상공인 및 스타트업의 인플루언서 마케팅 접근성 개선
           en:
-            - Automated advertiser–influencer matching, reducing contact overhead
+            - Automated advertiser-influencer matching, reducing manual outreach
             - Improved marketing accessibility for small businesses and startups
 
       - title:
@@ -971,7 +1008,7 @@ projectSections:
           en: May 2016 — Aug 2017
         summary:
           ko: 알람과 채팅을 결합하여 사용자들이 서로 깨워줄 수 있는 소셜 알람 서비스
-          en: Social alarm service combining alarms and chat for mutual wake-up calls.
+          en: Built a social alarm app that combines alarms and chat so users can help wake one another.
         tech:
           - Java
           - Android
@@ -999,7 +1036,7 @@ projectSections:
           en: May 2016 — Aug 2017
         summary:
           ko: 미션 수행을 통해 포인트를 쌓고 사진 인화까지 가능한 미션 기반 사진 필터 앱
-          en: Mission-based photo filter app where users earn points for printing photos.
+          en: Built a mission-based photo app where users earn points and redeem them for photo prints.
         tech:
           - Java
           - Android
@@ -1013,7 +1050,7 @@ projectSections:
             - 사용자 계정 시스템 및 미션 수행 API 연동
           en:
             - Developed core photo adjustment components (brightness, contrast, crop, etc.)
-            - Implemented photo filter engine and effects through design collaboration
+            - Implemented the photo-filter engine and effects in close collaboration with the design team
             - Integrated account systems and mission-related APIs
 
   - heading:
@@ -1064,7 +1101,7 @@ projectSections:
           en: Ongoing
         summary:
           ko: 개인적으로 여행 계획과 이동 동선을 공유하고, 여행 루트 초안을 빠르게 잡기 위해 만든 지도 기반 여행 계획 서비스
-          en: A map-based travel planning service built to share my travel plans and quickly draft route ideas.
+          en: A map-based travel planner for drafting itineraries, visualizing routes, and sharing trip plans through one link.
         tech:
           - Astro
           - React
@@ -1078,9 +1115,9 @@ projectSections:
             - 여행지와 이동 루트를 자연어로 입력하면 AI 워크플로우가 일정 초안과 장소 구성을 잡아주고, 이후 Markdown으로 세부 계획을 직접 고도화할 수 있는 플로우 구성
             - Markdown 기반 여행 데이터를 관리해 여행별 콘텐츠를 손쉽게 추가·운영하고, 정적 배포로 링크 하나만으로 여행 계획을 공유할 수 있게 운영
           en:
-            - Built as a personal service that shows travel plans and routes together on a map and timeline
+            - Combined trip schedules and travel routes in a shared map and timeline view
             - Added an AI workflow that turns natural-language destinations and routes into a rough itinerary draft, which can then be refined directly in Markdown
-            - Manages trip content through Markdown-based travel data and static deployment so a single link can be used to share plans easily
+            - Managed trip content as Markdown-backed structured data and deployed it statically for simple link-based sharing
       - title:
           ko: Teddy Resume
           en: Teddy Resume
@@ -1094,7 +1131,7 @@ projectSections:
           en: Ongoing
         summary:
           ko: 단일 YAML 소스에서 다국어 이력서와 프로젝트 포트폴리오를 여러 레이아웃으로 관리하고, 인쇄/PDF 출력까지 최적화한 개인 이력서 서비스
-          en: A personal resume service that manages multilingual resumes and project portfolio pages from a single YAML source across multiple layouts, optimized for print and PDF output.
+          en: A multilingual resume and portfolio service that generates multiple layouts and print-ready PDFs from one YAML source.
         tech:
           - Astro
           - TypeScript
@@ -1108,6 +1145,6 @@ projectSections:
             - A4 자동 페이지네이션, 인쇄 여백 없음 가이드, 배경 그래픽 포함 안내, PDF 출력 흐름 등 실제 제출/공유 상황을 고려한 출력 UX 구현
             - 프로젝트 링크 연결, 공통 언어 전환, 문구/구조 반복 튜닝이 빠르게 반영되도록 공통 컴포넌트와 콘텐츠 구조를 지속적으로 리팩토링
           en:
-            - Structured the app so Korean/English resumes, project portfolio pages, and multiple resume layouts are managed from one YAML data source
-            - Implemented output UX for real submission and sharing scenarios, including A4 auto-pagination, no-margin print guidance, background-graphics hints, and PDF export flow
-            - Continuously refactored shared components and content structure so project links, common language switching, and repeated wording/layout tuning can be applied quickly
+            - Managed Korean and English resumes, portfolio pages, and multiple layouts from one YAML data source
+            - Built A4 pagination, print guidance, background-graphics checks, and PDF export for real submission and sharing workflows
+            - Refactored shared components and content models so project links, language switching, and copy or layout changes remain consistent across views

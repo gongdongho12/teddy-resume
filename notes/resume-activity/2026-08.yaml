@@ -1,0 +1,109 @@
+version: 1
+month: 2026-08
+last_collected_at: 2026-08-28
+
+entries:
+  - id: 2026-08-payment-approval-recovery
+    period: 2026-07-13..2026-08-21
+    status: reflected
+    delivery: merged
+    area: billing
+    headline: DB 승인권과 상태별 복구 경로로 중복 결제 방지 및 결과 미확정 건 자동·수동 복구
+    impact: Redis 락 만료, PG 응답 유실, DB 롤백, 벤더 변경이 겹쳐도 재승인을 fail-closed로 차단하고 운영 판단 지점을 상태로 표면화
+    metrics:
+      - 동일 주문 8스레드 경합에서 승인권 1건만 획득하는 실 MySQL 테스트
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/billing-service/pull/534
+        - https://github.com/lgvoltup/billing-service/pull/536
+        - https://github.com/lgvoltup/billing-service/pull/539
+        - https://github.com/lgvoltup/billing-service/pull/559
+        - https://github.com/lgvoltup/billing-service/pull/563
+      commits: []
+    resume_targets:
+      - multi-pg-payment
+    reflected_at: 2026-08-28
+    skip_reason:
+
+  - id: 2026-08-external-api-callguard
+    period: 2026-08-06..2026-08-19
+    status: reflected
+    delivery: merged
+    area: user-side
+    headline: 외부 인증서·U+ 멤버십·블루멤버스 포인트 호출 장애 격리
+    impact: 전용 풀, 타임아웃, 서킷 브레이커와 CallGuard로 외부 지연의 전체 요청 스레드 확산을 막고 결과 미확정 상태를 명시적 실패로 전달
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/voltup-feapp/pull/884
+        - https://github.com/lgvoltup/voltup-feapp/pull/905
+        - https://github.com/lgvoltup/voltup-feapp/pull/906
+      commits: []
+    resume_targets:
+      - kakao-t-integration
+    reflected_at: 2026-08-28
+    skip_reason:
+
+  - id: 2026-08-voltbot-native-tool-loop
+    period: 2026-07-28..2026-08-19
+    status: reflected
+    delivery: deployed
+    area: internal-ai
+    headline: Voltbot 에이전트 루프를 네이티브 function calling과 병렬 도구 호출로 전환
+    impact: 구조화된 도구 호출과 가설 검증 루프로 근거 없는 답변 경로를 줄이고 동일 품질에서 비용과 실행 시간을 절감
+    metrics:
+      - 9개 케이스를 3회씩 비교해 정합성 평균 87.7%에서 100%로 개선
+      - 토큰·비용 46% 절감
+      - 실행 시간 10% 단축
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/voltbot/pull/20
+        - https://github.com/lgvoltup/voltbot/pull/22
+        - https://github.com/lgvoltup/voltbot/pull/25
+      commits: []
+    resume_targets:
+      - voltbot-agent-platform
+    reflected_at: 2026-08-28
+    skip_reason:
+
+  - id: 2026-08-pubsub-graceful-shutdown
+    period: 2026-07-13..2026-08-12
+    status: reflected
+    delivery: merged
+    area: msa-reliability
+    headline: 4개 MSA Pub/Sub 컨슈머 graceful shutdown 표준화
+    impact: SIGTERM 이후 신규 구독을 막고 in-flight 처리를 완료한 뒤 미처리 메시지를 재배송해 정상 노드 드레인·롤링 배포의 유실 창을 제거
+    metrics:
+      - billing, feapp, messaging, roaming 4개 서비스 적용
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/billing-service/pull/487
+        - https://github.com/lgvoltup/voltup-feapp/pull/835
+        - https://github.com/lgvoltup/messaging-service/pull/18
+        - https://github.com/lgvoltup/roaming-service/pull/251
+        - https://github.com/lgvoltup/dev_docs/pull/66
+      commits: []
+    resume_targets:
+      - devops-automation
+    reflected_at: 2026-08-28
+    skip_reason:
+
+  - id: 2026-08-partner-roaming-batch
+    period: 2026-07-28..2026-08-27
+    status: reflected
+    delivery: merged
+    area: roaming
+    headline: 카카오T 파트너 로밍 장시간 배치 종료 안정화와 상주형 전환 기반 구성
+    impact: 실행 중 작업보다 Redis가 먼저 종료되던 순서를 교정하고 기존 CronJob과 경합 없이 단계적으로 이전할 수 있는 opt-in 스케줄러를 마련
+    metrics:
+      - 60~75분 충전기 동기화 잡 대상
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/partner-roaming-service/pull/69
+        - https://github.com/lgvoltup/partner-roaming-service/pull/70
+      commits: []
+    resume_targets:
+      - roaming-reliability
+    reflected_at: 2026-08-28
+    skip_reason:
+

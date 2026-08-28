@@ -335,9 +335,9 @@ const sectionLabels =
             </div>
           </div>
 
-          <div class="grid gap-4 sm:grid-cols-2">
+          <div class="flex snap-x gap-4 overflow-x-auto pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0">
             {roleFocus.map((item, index) => (
-            <div class="flex min-w-0 gap-3 rounded-[1.15rem] border border-slate-900/10 bg-[#f7fbfe] px-4 py-4">
+            <div class="flex w-[min(17rem,82vw)] shrink-0 snap-start gap-3 rounded-[1.15rem] border border-slate-900/10 bg-[#f7fbfe] px-4 py-4 sm:w-auto">
                   <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold leading-none tracking-[0.02em] text-sky-800">
                     {(index + 1).toString().padStart(2, '0')}
                   </span>
@@ -367,9 +367,9 @@ const sectionLabels =
                   ? '실제 서비스 환경에서 문제를 풀어온 방식과 설계 판단의 기준을 정리했습니다.'
                   : 'A concise summary of the problem-solving approach and design judgment applied across real service environments.'}
               </p>
-              <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-2">
+              <div class="mt-4 flex snap-x gap-3 overflow-x-auto pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-2">
                 {engineeringThemes.map((theme, index) => (
-                  <article class="rounded-[1rem] border border-white/10 bg-white/[0.06] px-3 py-3">
+                  <article class="w-[min(15.5rem,76vw)] shrink-0 snap-start rounded-[1rem] border border-white/10 bg-white/[0.06] px-3 py-3 sm:w-auto">
                     <div class="flex items-start gap-2.5">
                       <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-sky-200/20 bg-sky-300/10 text-[10px] font-semibold tracking-[0.08em] text-sky-100">
                         {(index + 1).toString().padStart(2, '0')}

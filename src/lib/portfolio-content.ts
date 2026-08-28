@@ -7,8 +7,8 @@ const multiPgArchitectureDiagram = localized(`flowchart TD
   Lock --> Hold["PointUpdater.hold()<br/>wallet -> HOLD 2000P"]
   Hold --> Ready["createWithReady()<br/>payment READY"]
   Ready --> Sub["resolve subscription<br/>methodId=17 or primary"]
-  Sub --> Vendor["PG Vendor Router<br/>supports: KakaoPay / TossPayments / KakaoT<br/>selected: KakaoT"]
-  subgraph PGV["PG Vendor Layer"]
+  Sub --> Vendor["Payment Provider Router<br/>Kakao Pay / Toss Payments / Kakao T<br/>selected: Kakao T"]
+  subgraph PGV["Payment Provider Layer"]
     direction TD
     Vendor --> Keys["read vendor keys<br/>pgPayKey + token"]
     Keys --> Api["vendor client.pay(...)"]
@@ -23,7 +23,7 @@ const multiPgArchitectureDiagram = localized(`flowchart TD
   style PGV fill:#eef7fb,stroke:#0f4c81,stroke-width:2px,color:#0f172a;`);
 
 const multiVendorContractDiagram = localized(`flowchart TD
-  Vendors["VendorType<br/>KakaoPay / TossPayments / KakaoT"] --> Select["VendorChecker.select(vendorType)"]
+  Vendors["VendorType<br/>Kakao Pay / Toss Payments / Kakao T"] --> Select["VendorChecker.select(vendorType)"]
   Select --> Required["Required on all vendors<br/>VendorPaymentProcessor<br/>VendorMethodProcessor"]
   Select --> Partial["Required on some vendors<br/>VendorPaymentOnceProcessor<br/>(KakaoPay only)"]
   Select --> Optional["Optional extensions<br/>RepairService / vendor hooks"]
@@ -41,13 +41,13 @@ const multiVendorContractDiagram = localized(`flowchart TD
 
 const kakaoTLinkAndCardDiagram = localized(
   `flowchart TD
-  User["VoltUp member<br/>encrypted CI"] --> OAuth["KakaoT OAuth<br/>external account + encrypted CI"]
+  User["VoltUp member<br/>encrypted CI"] --> OAuth["Kakao T OAuth<br/>external account + encrypted CI"]
   OAuth --> Link["identity-service<br/>linked auth method"]
   Link --> Session["mobile-gateway link session<br/>ACCOUNT + PAYMENT"]
   Session --> Ready["payment-service init<br/>READY 상태 전환"]
   Ready --> Active["confirm success<br/>ACTIVE 상태 전환"]`,
   `flowchart TD
-  User["VoltUp member<br/>encrypted CI"] --> OAuth["KakaoT OAuth<br/>external account + encrypted CI"]
+  User["VoltUp member<br/>encrypted CI"] --> OAuth["Kakao T OAuth<br/>external account + encrypted CI"]
   OAuth --> Link["identity-service<br/>linked auth method"]
   Link --> Session["mobile-gateway link session<br/>ACCOUNT + PAYMENT"]
   Session --> Ready["payment-service init<br/>READY transition"]
@@ -77,7 +77,7 @@ const vehiclePncDiagram = localized(
   Manual --> Confirm["user-confirmed link"]
   Link --> Auth["charging authorization<br/>user / auth tag"]
   Confirm --> Auth
-  Auth --> Context["vehicle context<br/>for app/admin"]
+  Auth --> Context["vehicle context<br/>for app and operations"]
   Auth --> Charge["start charging"]`,
 );
 
@@ -196,14 +196,14 @@ const voltupAppExtensionDiagram = localized(
   class Extension,Sim,Capture,Template,Replay tool;
   class QA,Ops,Share result;`,
   `flowchart TD
-  Pain["app-attachment bottleneck<br/>new window / QR / camera / version"] --> Extension["Chrome Extension<br/>app-like controls"]
-  Extension --> Sim["recreate app-dependent flows in browser"]
+  Pain["full app setup for every check<br/>new window / QR / camera / version"] --> Extension["Chrome Extension<br/>app-like controls"]
+  Extension --> Sim["reproduce app-dependent flows in browser"]
   Extension --> Capture["API request capture"]
   Capture --> Template["row parser<br/>variable template"]
   Template --> Replay["Bulk Replay executor"]
-  Replay --> QA["shorter repeated dev QA"]
-  Replay --> Ops["single-API ops correction<br/>beyond Admin UI"]
-  Ops --> Share["one-off JS fetch -> team tool"]
+  Replay --> QA["faster repeatable QA"]
+  Replay --> Ops["targeted API corrections<br/>outside the operations console"]
+  Ops --> Share["one-off JS fetch -> reusable team tool"]
   classDef pain fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef tool fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
@@ -391,7 +391,7 @@ const roamingReliabilityDiagram = localized(
   class Baseline,Stable result;`,
   `flowchart TD
   Source["public roaming API<br/>member cards / charger status"] --> Online["online event handling<br/>card state update"]
-  Online --> Arrears["payment-arrears events<br/>update only required cases"]
+  Online --> Arrears["failed-payment events<br/>update only required cases"]
   Source --> Retry["public API error retry<br/>priority by importance"]
   Retry --> Member["member-card retry first<br/>recover baseline data"]
   Retry --> Charger["charger status later<br/>separate tolerable loss"]
@@ -719,7 +719,7 @@ const voltbotCrewDiagram = localized(
   class Policy,Log,Data,Shared,Next ai;
   class Triage,Expected,External,Internal,Reply result;`,
   `flowchart TD
-  Voc["Ops VoC<br/>customer context / time range / identifiers"] --> Crew["automatic specialist-agent routing<br/>intent-based handoff"]
+  Voc["Customer issue<br/>context / time range / identifiers"] --> Crew["automatic specialist-agent routing<br/>intent-based handoff"]
   Crew --> Auth["candidate agents<br/>limited by user permission"]
   Auth --> Policy["Code-policy agent<br/>expected behavior / exception rules"]
   Auth --> Log["Log agent<br/>trace / order / user search"]
@@ -733,9 +733,9 @@ const voltbotCrewDiagram = localized(
   Next --> Data
   Shared --> Triage{"first-pass triage"}
   Triage --> Expected["expected policy block"]
-  Triage --> External["external API / PG failure"]
+  Triage --> External["external API / payment-gateway failure"]
   Triage --> Internal["internal state mismatch"]
-  Triage --> Reply["ops response draft<br/>shorter developer wait"]
+  Triage --> Reply["operations response draft<br/>shorter developer wait"]
   classDef ops fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef ai fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef result fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
@@ -866,7 +866,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     },
     {
       ko: 'OAuth2, PG, 게이트웨이, 외부 인증서 서비스가 포함된 MSA 연동 경험',
-      en: 'Experience integrating MSAs with OAuth2, PGs, gateways, and external certificate services',
+      en: 'Experience integrating microservices with OAuth2, payment gateways, API gateways, and external certificate services',
     },
     {
       ko: 'U+ VIP콕 제휴 쿠폰, 외부 멤버십 G/W, 운영 어드민 연동 경험',
@@ -918,36 +918,36 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       summary: {
         ko:
-          '결제 서비스 초기 설계부터 구현까지 전담하며, 단일 결제 구조를 멀티 벤더사를 수용하는 모듈 구조로 확장하고, DLQ 기반 미수 이벤트 처리와 자동 복구 체계를 구성했습니다. 이후 DLQ retry stuck 방지, PG not-found 후속 재결제, 취소 알림톡 분기까지 운영 안정화 영역을 보강했습니다.',
+          '결제 서비스 초기 설계부터 구현까지 전담하며 단일 결제 구조를 멀티 벤더 모듈로 확장하고, DLQ 기반 미수 처리와 DB 승인권 기반 중복 결제 방지 체계를 구축했습니다. READY 고아 주문과 AUTHORIZED 체류 건을 자동 복구·수동 판단 경로로 연결해 결과 미확정 상태를 추적 가능하게 만들었습니다.',
         en:
-          'Owned the payment service from initial design through implementation, expanding a single payment flow into a modular structure that supports multiple payment vendors and building DLQ-based unpaid-event processing with automatic recovery. Later hardened operational paths such as DLQ retry stuck prevention, PG not-found repayment continuity, and cancellation-message branching.',
+          'Owned the payment service from initial design through implementation, expanding a single flow into a multi-provider module and adding dead-letter-queue recovery plus database-backed approval ownership to prevent duplicate charges. Connected stranded READY and AUTHORIZED states to automated recovery and operator-review paths so indeterminate outcomes remain traceable.',
       },
       challenge: {
         ko:
-          '단일 결제 중심 구조에서 복수 벤더를 같은 방식으로 수용하고, 이후 새로운 벤더가 늘어나더라도 같은 확장 지점으로 붙일 수 있는 구조가 필요했습니다.',
+          '복수 벤더를 같은 확장 지점으로 수용하는 것뿐 아니라, Redis 락 만료·PG 응답 유실·DB 롤백·벤더 변경이 겹쳐도 같은 주문이 재승인되지 않는 최종 안전장치와 복구 경계가 필요했습니다.',
         en:
-          'The service needed to move beyond a single-payment structure into one that can absorb multiple payment vendors through the same extension point, while also handling unpaid-processing flows.',
+          'Beyond supporting multiple providers through one extension point, the service needed a final safety boundary that prevents reapproval across Redis-lock expiry, lost payment-gateway responses, database rollbacks, and provider changes, with clear recovery ownership.',
       },
       actions: [
         {
           ko: '추상 클래스 기반 벤더 전략 패턴으로 PG사 통합 아키텍처를 구성했습니다.',
-          en: 'Built a PG integration architecture with an abstract-class-based vendor strategy pattern.',
+          en: 'Built a payment-gateway integration architecture using an abstract-class-based provider strategy.',
         },
         {
           ko: 'GCP Pub/Sub 기반 DLQ 패턴을 구현하고 실패 이벤트를 별도 큐로 격리해 미수 처리 대상이 추적 가능하도록 구성했습니다.',
-          en: 'Implemented a GCP Pub/Sub-based DLQ pattern that isolates failed events and keeps arrears-processing targets traceable.',
+          en: 'Implemented a GCP Pub/Sub dead-letter-queue pattern that isolates failed events and keeps failed-payment recovery traceable.',
         },
         {
-          ko: '재시도, DLQ, NACK 기반 자동 복구 경로를 구현해 미수 이벤트가 결제 보완 처리 흐름으로 이어지도록 구성했습니다.',
-          en: 'Implemented retries, DLQ, and NACK-based recovery paths so unpaid events could flow into follow-up payment recovery.',
+          ko: 'PG 호출 직전 `payments.status`를 `AUTHORIZED`로 조건부 전이하는 DB 승인권을 두어, 상태 저장소가 한 주문의 승인 주체를 원자적으로 선점하도록 설계했습니다.',
+          en: 'Added database-backed approval ownership that conditionally transitions `payments.status` to `AUTHORIZED` immediately before the payment-gateway call, letting the database atomically claim the single approver for an order.',
         },
         {
-          ko: 'FAILOVER 상태 전이와 retry timestamp 기록을 보강해 dead-letter 재시도가 stuck 되지 않도록 만들고, PG not-found 응답에서도 미수 재결제 플로우가 끊기지 않도록 수정했습니다.',
-          en: 'Hardened FAILOVER transitions and retry timestamp recording to prevent dead-letter retries from getting stuck, while keeping unpaid-payment recovery flows intact on PG not-found responses.',
+          ko: '결제 확정 트랜잭션에서 미수 부기를 분리해 부기 락 경합이 승인 성공을 되감지 않게 하고, 미수 재결제에서 포인트가 이중 차감되거나 현재 설정이 과거 주문에 소급되던 경로를 교정했습니다.',
+          en: 'Separated unpaid-balance bookkeeping from payment confirmation so ledger-lock contention cannot roll back an approval, while correcting duplicate point deductions and preventing current settings from being applied retroactively during retries.',
         },
         {
-          ko: '전액 취소, 부분 취소, 로밍 결제 취소 알림톡 context를 분리하고 금액 포맷팅을 정리해 사용자 커뮤니케이션 정확도를 높였습니다.',
-          en: 'Separated AlimTalk contexts for full, partial, and roaming payment cancellations and normalized amount formatting to improve user-facing communication accuracy.',
+          ko: 'READY 고아 주문의 상태 동기화·이벤트 재발행과 AUTHORIZED 체류 해소 배치·수동 복구 API를 구성해 자동 복구와 운영 확인 경계를 분리했습니다.',
+          en: 'Added state sync/event republishing for READY orphans and resolution batches/manual repair APIs for AUTHORIZED holds, separating automatic recovery from operator review.',
         },
       ],
       engineeringViews: [
@@ -956,35 +956,35 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Centered request orchestration, point hold/confirm, and success/failure transitions around PaymentProcessor so state changes remain traceable in one place.',
         },
         {
-          ko: '같은 사용자의 중복 결제 시도가 포인트 hold를 동시에 건드리지 않도록, 유저 단위 락 안에서 hold와 payment READY 생성을 함께 처리했습니다.',
-          en: 'Protected point holds from concurrent payment attempts by keeping both hold and payment-READY creation inside a user-scoped lock.',
+          ko: 'Redis 락은 요청 동시성을 줄이는 1차 장치로 두고, 돈이 움직이기 직전에는 DB 조건부 UPDATE가 최종 직렬화를 보장하도록 방어선을 분리했습니다.',
+          en: 'Kept Redis locks as a first-line concurrency control, while making a conditional DB update the final serialization boundary immediately before money moves.',
         },
         {
-          ko: 'PG 네트워크 불확실성은 repair, 컨슈머 재시도, failover 배치로 층을 나눠 즉시 복구와 운영 개입 경계를 분리했습니다.',
-          en: 'Split PG-network uncertainty into repair, consumer retries, and failover batches so immediate recovery and operator intervention remain clearly separated.',
+          ko: '승인 결과가 명확하면 PAID/FAILED로 전이하고 결과가 불확실하면 AUTHORIZED에 남기는 fail-closed 모델로, 가용성보다 이중 청구 방지를 우선했습니다.',
+          en: 'Used a fail-closed model: transition to PAID/FAILED only for definitive outcomes and retain AUTHORIZED when uncertain, prioritizing duplicate-charge prevention over automatic availability.',
         },
         {
-          ko: '재시도 자체도 운영 관찰 대상이라고 보고, 실패 이벤트가 어디에서 멈췄는지 latestRetriedAt과 상태 전이로 남겨 후속 보정 판단이 가능하게 했습니다.',
-          en: 'Treated retries themselves as observable operations, leaving latestRetriedAt and state transitions behind so operators can tell where a failed event stopped.',
+          ko: '동일 주문을 8개 스레드로 동시에 선점하는 실 MySQL 테스트를 두어 정확히 1건만 승인권을 얻는지 검증하고, 목 테스트가 놓치는 조건부 UPDATE의 직렬화 보장을 회귀 테스트로 고정했습니다.',
+          en: 'Verified with a real-MySQL 8-thread concurrency test that exactly one contender wins approval ownership, locking the conditional UPDATE serialization guarantee into a regression test rather than relying on mocks.',
         },
       ],
       outcomes: [
         {
           ko: '복수 PG를 단일 인터페이스로 통합하고, 새로운 벤더가 추가돼도 같은 구조로 확장 가능한 결제 아키텍처를 만들었습니다.',
-          en: 'Built a payment architecture that integrates multiple PG vendors behind one interface and remains extensible as new vendors are added.',
+          en: 'Built a payment architecture that integrates multiple payment providers behind one interface and remains extensible as providers are added.',
         },
         {
-          ko: 'DLQ 기반 미수 이벤트 처리와 자동 복구 경로를 운영에 적용했습니다.',
-          en: 'Applied DLQ-based unpaid-event processing and automatic recovery paths in operation.',
+          ko: 'DLQ 기반 미수 처리와 READY/AUTHORIZED 상태별 복구 경로를 운영에 적용해 실패 지점을 자동 복구 또는 수동 판단 가능한 상태로 표면화했습니다.',
+          en: 'Applied dead-letter-queue handling and state-specific recovery paths for READY and AUTHORIZED payments, making each failure either automatically recoverable or explicitly reviewable by an operator.',
         },
         {
-          ko: '외부 PG 응답 예외와 취소 알림 분기를 보강해 미수 복구 흐름과 사용자 안내 메시지의 신뢰도를 높였습니다.',
-          en: 'Improved trust in unpaid-payment recovery and user-facing cancellation messages by hardening external PG exception handling and cancellation-message branching.',
+          ko: '승인 성공 후 DB 경합·응답 유실·다른 PG로의 재시도가 이중 청구로 번지는 경로를 상태 기반으로 차단했습니다.',
+          en: 'Blocked paths where post-approval database contention, lost responses, or retries through a different payment provider could lead to duplicate charges.',
         },
       ],
       note: {
-        ko: 'PG 확장과 미수 이벤트 재처리 기준을 함께 설명할 수 있는 프로젝트입니다.',
-        en: 'A project for explaining both PG expansion and unpaid-event retry strategy.',
+        ko: '멀티 PG 확장성뿐 아니라 결제 상태머신, 원자적 승인권, 결과 미확정 복구 경계를 함께 설명할 수 있는 프로젝트입니다.',
+        en: 'A project that demonstrates multi-provider extensibility, payment state machines, atomic approval ownership, and recovery boundaries for indeterminate outcomes.',
       },
       tech: ['Kotlin', 'Spring Boot', 'Spring Batch', 'GCP Pub/Sub', 'Cloud SQL'],
       diagrams: [
@@ -997,7 +997,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
             ko:
               'PaymentProcessor 기준으로, 요청 데이터와 락 키, 포인트 hold, payment READY, `PG Vendor` 내부 승인 단계, 성공/실패 상태 전이가 한 장 안에서 자연스럽게 이어지도록 정리했습니다.',
             en:
-              'Keeps request data, lock key, point hold, payment READY creation, internal `PG Vendor` approval steps, and success/failure transitions in one integrated diagram.',
+          'Shows request data, lock keys, point holds, READY-state creation, provider approval, and success or failure transitions in one integrated diagram.',
           },
           code: multiPgArchitectureDiagram,
         },
@@ -1020,7 +1020,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       slug: 'kakao-t-integration',
       title: {
         ko: '카카오T 계정 링크 및 결제수단 등록',
-        en: 'KakaoT Account Linking and Payment Method Registration',
+        en: 'Kakao T Account Linking and Payment Method Registration',
       },
       period: {
         ko: '2025.07 - 현재',
@@ -1038,35 +1038,35 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko:
           'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, mobile-gateway의 한 스텝 API에서 결제수단 등록 세션 생성부터 payment-service의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다. 이후 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리해 검색, 해지 검증, 앱 콜백 activate 흐름을 안정화했습니다.',
         en:
-          'Designed the flow that links KakaoT external accounts to existing VoltUp members through encrypted CI and carries payment-method registration from the mobile-gateway one-step API through payment-service READY-state and ACTIVE-state transitions. Later promoted the partner customer token as the key between external payment methods and internal user context, stabilizing lookup, unlink validation, and app-callback activate flows.',
+          'Designed account and payment-method integration between VoltUp and Kakao T, a South Korean ride-hailing and mobility platform. The flow links existing members through encrypted identity data and carries registration from session creation through activation. A partner customer token provides a consistent key for lookup, unlink validation, and app callbacks.',
       },
       challenge: {
         ko:
           '기존 VoltUp 회원과 KakaoT 유저를 중복 계정 없이 합쳐야 했고, 그 위에서 카드 등록 세션과 최종 결제수단 상태가 같은 사용자 컨텍스트를 공유해야 했습니다.',
         en:
-          'The system had to merge existing VoltUp members with KakaoT users without creating duplicate identities, then keep card-registration sessions and final payment-method state under the same user context.',
+          'The system had to link existing VoltUp members with Kakao T accounts without creating duplicate identities, then keep registration sessions and final payment-method state under the same user context.',
       },
       subsections: [
         {
           id: 'user-side-backend-overview',
           title: {
             ko: '유저 사이드 백엔드',
-            en: 'User-side Backend',
+            en: 'Customer-Facing Backend and Kakao T Integration',
           },
           description: {
-            ko: '이력서의 유저 사이드 백엔드 항목은 카카오T 연동을 중심으로 차량/PnC(Plug & Charge), 인증서 안정화 등 사용자 경험 핵심 흐름을 함께 다룬 이 영역으로 연결됩니다.',
-            en: 'The resume entry for User-side Backend maps here as the broader area around KakaoT integration, vehicle/PnC (Plug & Charge) flows, and user-facing stability work.',
+            ko: '이력서의 유저 사이드 백엔드 항목은 카카오T 연동을 중심으로 차량/PnC(Plug & Charge), 인증서 안정화, 외부 멤버십·포인트 호출 격리 등 사용자 경험 핵심 흐름을 함께 다룬 이 영역으로 연결됩니다.',
+            en: 'This section expands on the resume entry covering Kakao T integration, vehicle and Plug & Charge flows, certificate reliability, and isolation of external membership and points services.',
           },
         },
       ],
       actions: [
         {
           ko: 'KakaoT OAuth 결과의 `externalId`, `ci`를 기준으로 기존 VoltUp 회원을 찾고 연결된 인증 수단을 추가하는 흐름을 설계했습니다.',
-          en: 'Designed the linking flow that resolves the existing VoltUp member from KakaoT OAuth account data and encrypted CI, then adds the linked auth method.',
+          en: 'Designed the linking flow that identifies an existing VoltUp member from Kakao T OAuth data and encrypted identity information, then adds the linked authentication method.',
         },
         {
           ko: 'mobile-gateway에서 현재 사용자의 암호화된 CI를 기준으로 카카오T 결제수단 연동 세션을 생성하는 한 스텝 API 흐름을 정리했습니다.',
-          en: 'Built the one-step mobile-gateway flow that uses the current user encrypted CI to create the KakaoT payment-link session.',
+          en: 'Built a single mobile-gateway endpoint that uses the current member’s encrypted identity data to create a Kakao T payment-linking session.',
         },
         {
           ko: 'payment-service에서는 payment payload에 `session_key`를 저장하고, confirm 시 `pgPayKey`와 제휴사 고객 토큰을 확정하는 상태 전이를 구현했습니다.',
@@ -1074,11 +1074,15 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: '제휴사 고객 토큰 검색 필터와 복합 인덱스를 추가하고, 카카오T 해지 시 현재 사용자의 결제수단인지 검증하는 경로를 보강했습니다.',
-          en: 'Added partner-customer-token lookup filters plus a composite index, and hardened unlink validation so KakaoT teardown checks whether the payment-method record belongs to the current user.',
+          en: 'Added partner-customer-token filters and a composite index, and hardened unlink validation so Kakao T disconnection verifies that the payment method belongs to the current member.',
         },
         {
           ko: '앱 콜백 전용 activate API를 분리하고 DTO alias, `@JsonProperty`, 검색 로그를 보강해 외부 스키마 차이와 운영 추적성을 흡수했습니다.',
-          en: 'Separated the app-callback-specific activate API and added DTO aliases, `@JsonProperty`, and search logs to absorb external schema drift and improve operational traceability.',
+          en: 'Separated the activation endpoint used by app callbacks and added DTO aliases, `@JsonProperty`, and search logs to absorb external schema differences and improve operational traceability.',
+        },
+        {
+          ko: '외부 인증서·U+ 멤버십·블루멤버스 포인트 호출을 전용 풀과 타임아웃, 서킷 브레이커/CallGuard로 감싸 지연이 전체 요청 스레드로 번지지 않게 하고, 승인·포인트 결과가 불확실하면 조용한 fallback 대신 명시적으로 실패하도록 설계했습니다.',
+          en: 'Wrapped external certificate, U+ Membership, and Bluemembers point calls with dedicated pools, timeouts, circuit breakers, and CallGuard so latency cannot consume all request threads, explicitly failing uncertain approval/point outcomes instead of using silent fallbacks.',
         },
       ],
       engineeringViews: [
@@ -1098,11 +1102,15 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: '제휴사 고객 토큰을 단순 응답 필드가 아니라 사용자-외부 결제수단 정합성을 확인하는 운영 키로 보고, 조회와 해지 검증이 같은 기준을 공유하도록 정리했습니다.',
           en: 'Treated the partner customer token not as a response field but as an operational key for user-to-external-payment consistency, so lookup and unlink validation share the same basis.',
         },
+        {
+          ko: '외부 의존성 격리는 fallback으로 성공처럼 보이게 만드는 대신 호출별 동시성·대기 상한을 제한하고, 불확실한 결과는 상위 도메인이 보상·재처리 여부를 판단하도록 경계를 명확히 했습니다.',
+          en: 'External-dependency isolation limits concurrency and wait time per integration rather than making failures look successful, leaving compensation or retry decisions to the owning domain when outcomes are uncertain.',
+        },
       ],
       outcomes: [
         {
           ko: '기존 VoltUp 회원과 KakaoT 계정을 동일인 기준으로 연결한 뒤 카드 등록을 이어가는 사용자 흐름을 정리했습니다.',
-          en: 'Established the user flow that links existing VoltUp members to KakaoT accounts before continuing into card registration.',
+          en: 'Established a flow that links an existing VoltUp member to a Kakao T account before card registration begins.',
         },
         {
           ko: '결제수단 등록 완료 후 subscription이 ACTIVE 상태를 유지하며 승인, 취소, 조회가 같은 식별 컨텍스트를 재사용하도록 만들었습니다.',
@@ -1110,7 +1118,11 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: '앱 콜백, 웹 로그인, 해지 검증이 섞이는 상황에서도 현재 사용자와 결제수단의 매칭 기준이 흔들리지 않도록 만들었습니다.',
-          en: 'Kept the current user and payment method matching basis stable across mixed app-callback, web-login, and unlink-validation flows.',
+          en: 'Kept member and payment-method matching consistent across app callbacks, web sign-in, and unlink validation.',
+        },
+        {
+          ko: '외부 멤버십·포인트 API 지연이 유저사이드 전체 장애로 확산되는 경로를 격리하고, 결과 미확정 상태를 호출부가 명시적으로 처리할 수 있게 했습니다.',
+          en: 'Contained external membership/point API latency so it cannot cascade into a user-side outage, while making indeterminate outcomes explicit to callers.',
         },
       ],
         note: {
@@ -1123,11 +1135,11 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
             src: '/images/portfolio/voltup-multi-auth.png',
             title: {
               ko: '로그인 수단 연결: 동일 회원 아래 카카오T 계정 연결',
-              en: 'Linked auth methods: connecting KakaoT under the same member',
+              en: 'Linked sign-in methods: connecting Kakao T to the same member',
             },
             caption: {
               ko: '동일 사용자 기준으로 여러 로그인 수단을 묶고, 카카오T 계정 연결 이후 결제수단 등록 흐름으로 이어지도록 설계한 화면입니다.',
-              en: 'A screen showing how multiple auth methods were unified under one member, then connected into the KakaoT payment-registration flow.',
+              en: 'A screen showing multiple sign-in methods unified under one member before entering the Kakao T payment-registration flow.',
             },
             alt: {
               ko: 'VoltUp 로그인 수단 연결 화면',
@@ -1138,11 +1150,11 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
             src: '/images/portfolio/voltup-add-payments.png',
             title: {
               ko: '결제수단 등록: 카카오T / 카카오페이 / 일반 카드 분기',
-              en: 'Payment registration: KakaoT, KakaoPay, and card options',
+              en: 'Payment registration: Kakao T, Kakao Pay, and card options',
             },
             caption: {
               ko: '추가하기 한 번으로 카카오T, 카카오페이, 일반 카드 등록 경로를 한 바텀시트에서 노출해 사용자 선택 흐름을 단순화한 화면입니다.',
-              en: 'A bottom-sheet entry that exposes KakaoT, KakaoPay, and normal card registration in one place to simplify the user choice flow.',
+              en: 'A bottom sheet that presents Kakao T, Kakao Pay, and standard card registration in one place.',
             },
             alt: {
               ko: 'VoltUp 결제수단 등록 바텀시트 화면',
@@ -1154,7 +1166,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           {
             title: {
               ko: 'VoltUp 회원과 카카오T 계정 연결 후 카드 등록',
-              en: 'Card registration after VoltUp-to-KakaoT account linking',
+              en: 'Card registration after linking VoltUp and Kakao T accounts',
           },
           description: {
             ko:
@@ -1323,7 +1335,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko:
           '넥센, 도요타, 블루멤버스 등 제휴사별 요구사항을 수용하면서도, 쿠폰은 코드형 발급과 무코드 직접 할당을 같이 지원해야 했고, 일부 쿠폰팩은 카카오T/일반 카드/카카오페이처럼 허용 결제수단이 달라야 했습니다. 포인트는 적립 건마다 다른 만료일을 가진 구조를 안정적으로 처리해야 했습니다.',
         en:
-          'The project had to support partner-specific promotion requirements while handling both code-based coupon issuance and direct coupon assignment without codes, and some coupon packs needed different allowed payment vendors such as KakaoT, normal cards, or KakaoPay. The point model also had to handle per-accrual expiration reliably.',
+          'The project had to support partner-specific promotion rules, both code-based issuance and direct coupon assignment, and payment-method restrictions such as Kakao T, standard cards, or Kakao Pay. The points model also had to apply expiration dates to each accrual reliably.',
       },
       actions: [
         {
@@ -1482,7 +1494,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: 'Admin UI에는 회원 상세 U+ VIP콕 보조 발급 패널, 발급/쿠폰 매핑 이력 페이지, U+ VIP 쿠폰팩 생성 옵션, 혜택 월 자동 입력, 정액 할인 최소사용금액 보정, 허용 결제수단 멀티셀렉을 구현했습니다.',
-          en: 'Implemented the member-detail U+ VIP assisted-issue panel, issue/coupon mapping history page, U+ VIP coupon-pack option, benefit-month autofill, fixed-discount minimum-amount correction, and allowed-payment-method multiselect in Admin UI.',
+          en: 'Implemented an assisted-issuance panel in member details, searchable issuance history, U+ VIP coupon-pack settings, benefit-month autofill, fixed-discount minimum-spend validation, and payment-method selection in the operations console.',
         },
         {
           ko: '고객 대상 문자/푸시/알림톡 1회 발송 어드민을 만들고, 즉시/예약 발송이 같은 발송 기록을 기준으로 처리되도록 예약 디스패치 배치와 발송 이력 조회를 구성했습니다.',
@@ -1678,13 +1690,13 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko:
           '앱 개발 중 매번 실제 앱 빌드를 연결해야 검증할 수 있던 새창, QR 스캔, 카메라 권한, 강제 업데이트 버전 분기 등을 브라우저 익스텐션에서 재현해 검증 시간을 줄였습니다. 이후 같은 capture/replay 구조를 충전존 생성 오류 대응처럼 Admin 화면에서 직접 지원하지 않는 단일 API 보정 작업까지 확장했습니다.',
         en:
-          'Reduced validation time by recreating app-dependent flows such as new-window handling, QR scanning, camera permission, and forced-update version branches inside a browser extension instead of requiring a real app build every time. The same capture/replay structure was then extended to single-API operational corrections not directly supported by the Admin UI.',
+          'Reduced validation time by reproducing app-dependent flows—new-window handling, QR scanning, camera permissions, and forced-update branches—in a browser extension. The same capture-and-replay foundation later supported targeted operational corrections that were unavailable in the operations console.',
       },
       challenge: {
         ko:
           '앱 기능 검증은 준비 비용이 컸습니다. 간단한 API 흐름이나 WebView-앱 브릿지 동작을 확인하려 해도 앱을 연결해야 했고, 운영에서는 충전존 생성 오류처럼 Admin 화면에 기능이 없지만 단일 API로는 보정 가능한 상황이 반복될 수 있었습니다.',
         en:
-          'App feature validation had high setup cost. Even simple API flows or WebView-app bridge behavior required attaching the app, while operations sometimes had cases such as charge-zone correction where the Admin UI lacked a feature but the issue could be corrected through a single API.',
+          'Validating even simple APIs or WebView-to-app bridge behavior required a full app setup. Operations teams also encountered narrow correction cases, such as fixing a charging-zone record, that the operations console did not support even though a single API call could resolve them.',
       },
       actions: [
         {
@@ -1697,13 +1709,13 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: 'Admin 화면에서 직접 지원하지 않는 단일 API 보정 작업을 위해 variable template, row parser, executor를 구성하고 Bulk Replay로 실행할 수 있게 했습니다.',
-          en: 'Added variable templates, row parsing, and an executor so single-API correction work beyond the Admin UI can run through Bulk Replay.',
+          en: 'Added variable templates, row parsing, and an executor so targeted corrections unavailable in the operations console can run through Bulk Replay.',
         },
       ],
       engineeringViews: [
         {
           ko: '이 도구는 처음부터 운영 자동화만을 목표로 한 것이 아니라, 앱 연결이 필요한 개발 검증 병목을 먼저 줄이는 데서 출발했습니다. 이후 같은 capture/replay 구조가 운영 보정에도 유효하다는 점을 확인하고 범위를 넓혔습니다.',
-          en: 'This tool did not start as ops automation alone. It first targeted app-attachment validation delays, then expanded once the same capture/replay structure proved useful for operational corrections.',
+          en: 'The tool began by removing app-setup delays from development validation, then expanded when the same capture-and-replay model proved useful for operational corrections.',
         },
         {
           ko: '충전존 생성 오류 대응 때 JS `fetch` 스크립트를 직접 세팅해 처리했던 경험을, 매번 새로 짜는 임시 스크립트가 아니라 팀이 다시 쓸 수 있는 row 기반 실행 도구로 바꿨습니다.',
@@ -1752,8 +1764,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       slug: 'roaming-reliability',
       title: {
-        ko: '로밍 서비스 안정성: 공공 연계 상태 재동기화와 재처리',
-        en: 'Roaming Reliability: Public-Integration Resync and Retry',
+        ko: '로밍 서비스 안정성: 상태 재동기화와 배치 운영 고도화',
+        en: 'Roaming Reliability: State Resync and Batch Operations',
       },
       period: {
         ko: '2026.02 - 현재',
@@ -1764,14 +1776,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'LG Uplus VoltUp',
       },
       roleLabel: {
-        ko: '환경부 로밍 카드 상태 재설계, 공공 API 재처리, 월간 전체 재동기화',
-        en: 'Public roaming card-state redesign, API retries, and monthly full resync',
+        ko: '환경부 로밍 상태 재설계, 카카오T 파트너 로밍 장시간 배치 안정화',
+        en: 'Public roaming state redesign and long-running Kakao T partner-roaming batch hardening',
       },
       summary: {
         ko:
-          '기후에너지환경부 공공 로밍 연계에서 회원카드 상태가 외부 시스템과 장기적으로 어긋나지 않도록 카드 상태 갱신 기준을 결제 응답에서 결제 미수 이벤트 중심으로 재설계했습니다. 공공 API 오류 재처리와 월 1회 전체 재동기화 스케줄러를 더해 이벤트 누락이나 일시 장애 이후에도 기준 데이터를 회복할 수 있게 했습니다.',
+          '기후에너지환경부 공공 로밍의 카드 상태 갱신 기준을 결제 미수 이벤트 중심으로 재설계하고 공공 API 재처리·월간 전체 재동기화로 장기 drift를 복구했습니다. 카카오T 파트너 로밍에서는 실행 작업보다 Redis가 먼저 종료되는 순서를 교정하고, 60~75분 충전기 동기화 잡을 경합 없이 상주형으로 전환할 기반을 구성했습니다.',
         en:
-          'Redesigned the Ministry of Climate, Energy and Environment public roaming integration so member-card state does not drift long-term from the external system, moving card-state updates from payment responses to payment-arrears events. Added public API retry handling and a monthly full-resync scheduler so baseline data can recover after missed events or transient failures.',
+          'Redesigned public-roaming card-state updates around unpaid-balance events and added public-API retries plus a monthly full resync to correct long-term drift. For Kakao T partner roaming, corrected shutdown ordering so Redis remains available during active work and prepared a non-overlapping in-process scheduler for charger-sync jobs that run for 60–75 minutes.',
       },
       challenge: {
         ko:
@@ -1782,7 +1794,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       actions: [
         {
           ko: '카드 상태 업데이트 기준을 결제 응답 중심에서 결제 미수 이벤트 중심으로 바꾸고, 미수 발생 건에 대해서만 선별적으로 상태를 갱신하도록 정리했습니다.',
-          en: 'Moved card-state updates from payment-response-driven logic to payment-arrears-event-driven logic, updating state selectively only for arrears cases.',
+          en: 'Moved card-state updates from payment responses to unpaid-balance events, so state changes occur only when a failed payment requires correction.',
         },
         {
           ko: '로밍 카드 상태 처리 경로를 단순화하고 결제 상태 조회를 통합해 변환/조회 오버헤드를 줄였습니다.',
@@ -1796,11 +1808,19 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: '환경부 회원카드 월 1회 전체 재동기화 스케줄러와 task seed를 추가해 온라인 이벤트가 놓친 차이를 주기적으로 복구할 수 있게 했습니다.',
           en: 'Added a monthly full-resync scheduler and task seed for public roaming member cards so differences missed by online events can be periodically restored.',
         },
+        {
+          ko: '카카오T 파트너 로밍 배치의 graceful shutdown이 활성 작업 완료를 기다린 뒤 Redis 연결을 닫도록 종료 순서를 교정했습니다.',
+          en: 'Corrected Kakao T partner-roaming shutdown so active batch work completes before Redis connections close.',
+        },
+        {
+          ko: '매시 실행보다 런타임이 긴 충전기 동기화 잡을 기존 CronJob과 경합 없이 전환할 수 있도록 기본 비활성 opt-in 스케줄러, fixed-delay 실행, 종료 가드를 구성했습니다.',
+          en: 'Added a disabled-by-default opt-in scheduler, fixed-delay execution, and shutdown guards so charger-sync jobs that run longer than their hourly schedule can migrate without racing the existing CronJob.',
+        },
       ],
       engineeringViews: [
         {
           ko: '상태 갱신 기준을 결제 응답에 묶어두면 정상 결제 흐름까지 로밍 상태 변경의 원인이 될 수 있어, 실제 보정이 필요한 미수 이벤트로 기준을 좁혔습니다.',
-          en: 'Keeping state updates tied to payment responses could make normal payment flows a cause of roaming-state changes, so I narrowed the trigger to arrears events where correction is actually needed.',
+          en: 'Tying state updates to every payment response allowed normal payment flows to alter roaming state, so I narrowed the trigger to failed-payment events that actually require correction.',
         },
         {
           ko: '재처리는 “무조건 다시 시도”가 아니라 데이터 중요도에 따라 우선순위를 나누는 운영 설계로 봤습니다. 회원카드는 기준 데이터라 먼저 회복하고, 충전기 상태는 후순위로 두어 비용을 조절했습니다.',
@@ -1809,6 +1829,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '월간 전체 재동기화는 온라인 이벤트 처리의 보완재로 두었습니다. 이벤트 누락을 완전히 없애려 하기보다, 누락이 생겨도 장기 drift가 누적되지 않는 회복 경로를 만든 것입니다.',
           en: 'The monthly full resync complements online event handling. Instead of trying to eliminate every missed event, it creates a recovery path that prevents long-term drift from accumulating.',
+        },
+        {
+          ko: '장시간 배치의 상주형 전환은 코드 머지만으로 활성화되지 않게 분리하고, 기존 CronJob 중단과 Deployment 활성화를 같은 배포에서 수행하도록 설계해 이중 스윕 위험을 통제했습니다.',
+          en: 'Kept resident-mode migration disabled by code defaults and designed CronJob suspension plus Deployment activation as one deployment step, controlling duplicate-sweep risk.',
         },
       ],
       outcomes: [
@@ -1840,7 +1864,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
             ko:
               '결제 미수 이벤트 기준 상태 갱신, 중요도별 공공 API 재처리, 월간 전체 재동기화를 함께 두어 외부 시스템과의 장기 drift를 줄이는 구조입니다.',
             en:
-              'Shows how payment-arrears-based updates, priority-based public API retries, and monthly full resync work together to reduce long-term drift from the external system.',
+              'Shows how failed-payment updates, priority-based public API retries, and a monthly full resync work together to reduce long-term drift from the external system.',
           },
           code: roamingReliabilityDiagram,
         },
@@ -1871,9 +1895,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       summary: {
         ko:
-          'Voltbot은 사내 구성원이 코드 정책, BigQuery 데이터 조회, 법률 지원, 운영, 로그 진단 같은 전문 에이전트를 채팅으로 사용하는 업무 플랫폼입니다. 이 안에서 제가 만든 핵심 축은 두 가지였습니다. 첫째, 사용자가 에이전트를 직접 고르지 않아도 질문 의도와 권한을 기준으로 필요한 전문 에이전트를 자동 선택하는 개별 에이전트 자동 라우팅(`Voltbot Crew`/`AgentRouter`)을 설계·구현했습니다. 둘째, 운영/CS가 개발자에게 요청하던 원인 분석 병목을 줄이기 위해 로그 조회, BigQuery 조회, 코드 정책 확인 결과가 같은 대화 컨텍스트에 쌓이고 다음 에이전트가 그 컨텍스트를 이어받아 판단하는 흐름을 구성했습니다.',
+          'Voltbot은 사내 구성원이 코드 정책, BigQuery 데이터 조회, 법률 지원, 운영, 로그 진단 같은 전문 에이전트를 채팅으로 사용하는 업무 플랫폼입니다. 질문 의도와 권한에 맞는 에이전트를 자동 선택하고, 네이티브 function calling과 병렬 도구 실행으로 로그·데이터·코드 근거를 같은 컨텍스트에 축적하도록 구성했습니다. 평가 하네스로 기존 루프와 품질을 비교해 정합성과 비용 개선을 검증했습니다.',
         en:
-          'Voltbot is an internal work platform where employees use specialized agents for code policy, BigQuery data lookup, legal support, operations, and log diagnosis through chat. My core contributions were two connected parts inside that service: first, automatic specialist-agent routing (`Voltbot Crew`/`AgentRouter`), which selects the needed specialist based on question intent and permissions without requiring manual agent selection; second, a shared-context workflow where log lookup, BigQuery lookup, and code-policy findings accumulate in the same conversation context so the next agent can continue from that evidence.',
+          'Voltbot is an internal work platform where employees use specialist agents for code policy, BigQuery lookup, legal support, operations, and log diagnosis through chat. It routes by intent and permissions, then uses native function calling and parallel tools to accumulate log, data, and code evidence in shared context. An evaluation harness compared the new loop with the legacy path and verified groundedness and cost improvements.',
       },
       challenge: {
         ko:
@@ -1891,12 +1915,12 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Connected `AgentRunner`, `AgentRouter`, and `ToolHandler` on top of the shared `Agent`/`Tool` contract so sessions, context, permissions, quotas, interruptions, tool calls, and tool results flow through WebSocket responses.',
         },
         {
-          ko: '초기에는 하나의 대화 세션에서 2개 에이전트를 조합하고 같은 컨텍스트를 공유하는 `TEAM` 구조를 프로토타입으로 검증했고, 이후 제품 적용이 더 단순한 `AUTO_ROUTING` 구조로 전환해 복잡한 세션 모델을 사용자에게 노출하지 않도록 정리했습니다.',
-          en: 'First validated a `TEAM` prototype where two agents could share context inside one conversation, then evolved it into a simpler `AUTO_ROUTING` model so users would not need to understand a complex session structure.',
+          ko: '정규식 기반 텍스트 태그 도구 호출을 Gemini 네이티브 function calling으로 전환하고, 독립 도구는 병렬 실행하되 승인·질문 도구는 순차 처리하도록 에이전트 루프를 재설계했습니다.',
+          en: 'Replaced regex-parsed text-tag calls with Gemini native function calling, redesigning the loop to run independent tools in parallel while keeping approval and user-question tools sequential.',
         },
         {
-          ko: '`LogDiagnosisAgent`에는 고객 모드와 운영 모드를 나누고, userId가 없어도 기간·증상·서비스 패턴만으로 조사할 수 있도록 검색 전략을 설계했습니다.',
-          en: 'Split `LogDiagnosisAgent` into customer and operations modes, so it can investigate from time windows, symptoms, and service patterns even without a userId.',
+          ko: '`LogDiagnosisAgent`에는 고객/운영 모드와 traceId·user_id·order_number·시간대/제보 시그니처 pivot을 두고, 가설→흔적 정의→조회→판정 루프로 첫 결론 고착과 미검증 단정을 방지했습니다.',
+          en: 'Added customer/operations modes plus pivots across traceId, user_id, order_number, time windows, and report signatures, enforcing a hypothesis→trace→query→verdict loop to prevent anchoring and unverified conclusions.',
         },
         {
           ko: '`searchUserLogs` 도구를 통해 GCP 운영 로그를 `services`, `severity`, `excludeIstio`, `range/from/to`, `pageToken`, raw LQL 조합으로 조회하고, 결과가 비거나 모호하면 범위 확대와 query 보강을 반복하도록 만들었습니다.',
@@ -1942,10 +1966,14 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: '운영 VoC 진단에서는 질문에 따라 코드 정책, 로그, BigQuery 조회 중 필요한 에이전트를 고르고, 각 에이전트의 결과를 같은 컨텍스트에서 비교해 정책상 정상 차단인지 외부 API/PG 오류인지 내부 상태 불일치인지 구분하도록 구성했습니다.',
-          en: 'For ops VoC diagnosis, the system chooses the needed agents among code policy, logs, and BigQuery based on the question, then compares each agent result in the same context to distinguish expected policy blocks, external API or PG failures, and internal state mismatches.',
+          en: 'For customer-issue diagnosis, the system selects the relevant code-policy, log, and BigQuery agents, then compares their evidence in shared context to distinguish expected policy blocks, external API or payment-gateway failures, and internal state mismatches.',
         },
       ],
       outcomes: [
+        {
+          ko: '9개 평가 케이스를 3회씩 실행한 비교에서 기존 루프와 답변 품질은 통계적으로 동등하게 유지하면서 정합성 평균 87.7%→100%, 토큰·비용 46% 절감, 실행 시간 10% 단축을 확인했습니다.',
+          en: 'Across 9 evaluation cases run 3 times each, preserved statistically equivalent answer quality while improving average groundedness from 87.7% to 100%, cutting token/cost by 46%, and reducing runtime by 10%.',
+        },
         {
           ko: '사용자가 에이전트 종류를 미리 알지 못해도 질문 내용만으로 적절한 업무 에이전트에 진입할 수 있게 만들어, 사내 AI 도구의 첫 사용 장벽을 낮췄습니다.',
           en: 'Lowered the entry barrier for the internal AI tool by letting users reach the right work agent from the question itself, even when they do not know the available agent types in advance.',
@@ -2052,9 +2080,9 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       summary: {
         ko:
-          'Voltup Workflow는 개발과 운영 사이에서 반복되던 PR 리뷰, PR 본문 작성, 변경사항 요약, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포 작업을 재사용 가능한 workflow와 CI 자동화 도구로 묶은 프로젝트입니다. `/voltup-review` 코드/보안 리뷰와 `/voltup-pr` PR 본문 자동 생성은 저장소별 `project-context`, `review-template`, `docs`를 읽어 repo-local 개발 문맥을 반영하고, `pr-changes-detector`, Vault-local sync, Jenkins/ArgoCD 표준화와 함께 리뷰 품질과 릴리즈 안정성을 높이는 방향으로 정리했습니다.',
+          'Voltup Workflow는 PR 리뷰·본문 작성·보안 검토·알림, 로컬 환경 셋업, 내부 API 연동, 서비스/앱 배포를 재사용 가능한 workflow와 CI 자동화로 묶은 프로젝트입니다. LiteLLM 프록시와 LLM 기본 모델을 단일 정본으로 관리하고, 저장소별 문맥을 읽는 공용 워크플로 및 4개 MSA의 Pub/Sub 종료 표준을 구축해 리뷰 품질과 릴리즈 안정성을 함께 높였습니다.',
         en:
-          'Voltup Workflow turns repeated work between development and operations, including PR review, PR description writing, change summaries, local environment setup, internal API integration, and service/app delivery, into reusable workflows and CI automation tools. The `/voltup-review` code/security review and `/voltup-pr` PR body generation flows read repo-local `project-context`, `review-template`, and docs, while `pr-changes-detector`, Vault-local sync, and Jenkins/ArgoCD standardization improve review quality and release reliability.',
+          'Voltup Workflow packages recurring engineering work—PR reviews and descriptions, security checks, notifications, local setup, internal API integration, and deployments—into reusable workflows and CI automation. It centralizes LLM access through LiteLLM, applies shared defaults across repositories, and standardizes Pub/Sub shutdown across four microservices to improve review quality and release reliability.',
       },
       challenge: {
         ko:
@@ -2063,6 +2091,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           'As the number of services grew, review rules, microservice-level conventions, recurring task patterns, local secret delivery, internal API invocation, and delivery steps were drifting per person. In a development/operations split, this drift can turn into missed reviews, environment mismatches, release failures, and unclear operator-tool trust boundaries, so the team needed shared workflows and automation.',
       },
       actions: [
+        {
+          ko: 'LiteLLM 프록시와 LLM 기본 모델 단일 정본을 여러 MSA 저장소에 적용하고, 코드 리뷰·PR 본문 생성·보안성 검토 기안·Slack 알림을 공용 workflow에서 재사용하도록 표준화했습니다.',
+          en: 'Rolled out a LiteLLM proxy and centrally managed model defaults across microservice repositories, standardizing code review, PR-description generation, security-review drafts, and Slack notifications as reusable workflows.',
+        },
         {
           ko: '조직 공통 workflow 허브에 `/voltup-review` 댓글 트리거형 GitHub Actions reusable workflow를 만들고, LLM과 저장소별 `project-context`, `review-template`, `docs`를 연계해 PR diff를 repo 문맥에 맞춰 자동 코드/보안 리뷰하도록 구성했습니다.',
           en: 'Built a reusable GitHub Actions workflow in a shared workflow hub triggered by `/voltup-review`, connecting an LLM with per-repo `project-context`, `review-template`, and docs so PR diffs are automatically reviewed against repository-specific context.',
@@ -2077,7 +2109,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 배치해 각 서비스의 작업 컨벤션, API 우선 개발 흐름, 보안 규칙, 반복 운영 작업 형상을 여러 생성형 LLM 도구에서 공유 가능한 repo-local context로 만들었습니다.',
-          en: 'Added `.agent/workflows`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` to MSA repositories, turning service conventions, API-first development flow, security rules, and recurring operational task shapes into reusable repo-local context for generative LLM tools.',
+          en: 'Added `.agent/workflows`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` to microservice repositories, giving generative AI tools reusable, repository-specific context for service conventions, API-first development, security rules, and recurring operational tasks.',
         },
         {
           ko: '루트 `build.gradle.kts`에는 base yaml의 placeholder를 Vault에서 치환해 local config yaml을 생성하는 로직을 넣고, 서비스별 Vault path와 shared dev path를 순차 조회하도록 만들었습니다. Vault CLI 로그인 확인, 비대화형 환경 대응, `gcloud` 계정 기반 DB 사용자명 치환까지 포함해 새 키가 추가돼도 개발자별 local 환경이 자동으로 같은 기준을 유지하도록 했습니다.',
@@ -2090,6 +2122,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '운영자 도구 내부 연동 API가 늘어나는 상황에서 공통 내부 API 클라이언트 패턴과 호출 주체 식별 헤더 규약을 문서화하고 적용해 신뢰 경계를 일관되게 관리했습니다.',
           en: 'Documented and applied a shared internal API client pattern plus a caller-identity header convention so growing operator-tool integrations keep a consistent trust boundary.',
+        },
+        {
+          ko: 'billing·feapp·messaging·roaming 4개 Pub/Sub 컨슈머가 SIGTERM을 받으면 신규 구독을 중지하고 in-flight 작업을 마친 뒤 미처리 메시지는 재배송되도록 graceful shutdown을 표준화하고, 애플리케이션 대기 시간과 Kubernetes 종료 예산을 정렬했습니다.',
+          en: 'Standardized graceful shutdown across billing, feapp, messaging, and roaming Pub/Sub consumers: stop intake on SIGTERM, drain in-flight work, redeliver unfinished messages, and align application timing with Kubernetes termination budgets.',
         },
         {
           ko: '배포는 공통 Jenkins shared library 위에서 서비스별 `Jenkinsfile`이 job name으로 API/BATCH/CONSUMER/APP target을 분기하고, Docker build/push 후 ArgoCD 배포로 이어지도록 통일했습니다. Android 앱은 cache, track 선택, 알림까지 같은 패턴으로 자동화했습니다.',
@@ -2127,6 +2163,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
       ],
       outcomes: [
+        {
+          ko: '정상 노드 드레인과 롤링 배포 중 신규 메시지 수신·처리 중 작업 유실 창을 제거하고 4개 서비스가 재사용하는 종료 규약을 확립했습니다.',
+          en: 'Removed the intake and in-flight loss window during normal node drains and rolling deployments, establishing a reusable shutdown contract across four services.',
+        },
         {
           ko: '조직 공통 `voltup-workflow`와 마이크로서비스별 repo-local context 체계를 만들어, 신규 저장소나 신규 작업도 같은 PR 리뷰, PR 본문, 변경사항 요약 기준과 운영 컨벤션으로 빠르게 온보딩할 수 있게 했습니다.',
           en: 'Established the org-wide `voltup-workflow` plus repo-local context patterns, allowing new repositories and workstreams to onboard under the same PR review, PR description, change-summary, and operational conventions.',
@@ -2451,13 +2491,13 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko:
           '리텐션 강화를 위해 멤버십 등급 체계를 재설계하고, 레거시 Node.js 기반 멤버십 서비스를 Spring Boot로 1:1 DB 마이그레이션 및 무중단 이관했습니다. 특히 기존 멤버십 API에서 실제 request·response 셋을 수집해 테스트케이스를 만들고, 이를 Spring 로직에 직접 재주입해 응답 차이를 비교한 뒤 게이트웨이를 점진 전환하는 방식으로 오픈했으며, 월간 등급 산정도 Athena partition source 기반으로 다시 정리했습니다.',
         en:
-          'Redesigned membership tiers for retention, migrated the legacy Node.js-based membership service to Spring Boot through a 1:1 DB migration with zero downtime, and did the cutover by collecting real request/response sets from the legacy membership API, turning them into test cases, replaying them through the Spring implementation, and comparing output before gradually switching the gateway. The monthly tier calculation was also rebuilt around a partitioned Athena source.',
+          'Redesigned membership tiers for retention and migrated the legacy Node.js service to Spring Boot without downtime while preserving its database contract. I captured real request-and-response pairs as regression cases, replayed them through the Spring implementation, compared outputs, and gradually shifted traffic at the gateway. I also rebuilt monthly tier calculations around partitioned Athena data.',
       },
       challenge: {
         ko:
           '기존 Node.js 기반 서비스를 1:1 DB 마이그레이션으로 옮기면서도 실제 사용자 응답이 달라지지 않게 유지해야 했고, 월간 등급 산정 배치가 사용자 수와 월 수가 늘어날수록 더 넓은 범위를 재조회하는 구조가 되지 않도록 막아야 했습니다.',
         en:
-          'The project required a 1:1 DB migration from the Node.js legacy service while keeping real user-facing responses unchanged, while also preventing monthly tier batches from widening their scan scope as both users and months accumulated.',
+          'The migration had to preserve the legacy database contract and user-facing responses while preventing monthly tier jobs from scanning an ever-growing history as users and months accumulated.',
       },
       actions: [
         {

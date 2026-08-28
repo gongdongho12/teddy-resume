@@ -52,6 +52,15 @@ const m = messages(lang);
         h2.print\:break-before-page {
           break-before: page !important;
         }
+        html[lang='en'] [data-a4-page='cover'] [data-a4-cover-main] {
+          padding: 4.5mm !important;
+        }
+        html[lang='en'] [data-a4-page='cover'] [data-a4-cover-main] > section {
+          margin-bottom: 6mm !important;
+        }
+        html[lang='en'] [data-a4-cover-experience-list] > :nth-child(n + 3) [data-a4-experience-detail] {
+          display: none !important;
+        }
       }
     </style>
   </head>
@@ -75,8 +84,8 @@ const m = messages(lang);
 
     <article class="mx-auto flex flex-col gap-4 w-full max-w-[794px] xl:max-w-none xl:flex-row xl:flex-wrap xl:justify-center xl:px-20 print:block print:w-[210mm] mb-10 print:mb-0 transition-all duration-500">
 
-      <div class="flex flex-row min-h-[297mm] print:h-[297mm] print:min-h-[297mm] print:max-h-[297mm] bg-white shadow-md print:shadow-none relative overflow-hidden w-full max-w-[794px] xl:max-w-[794px]">
-        <aside class="w-[280px] shrink-0 bg-teal-900 text-teal-50 p-8 flex flex-col gap-8 print:bg-teal-900">
+      <div data-a4-page="cover" class="a4-page flex flex-col md:flex-row print:flex-row min-h-[297mm] print:h-[297mm] print:min-h-[297mm] print:max-h-[297mm] bg-white shadow-md print:shadow-none relative overflow-hidden w-full max-w-[794px] xl:max-w-[794px]">
+        <aside class="w-full md:w-[280px] print:w-[280px] shrink-0 bg-teal-900 text-teal-50 p-8 flex flex-col gap-8 print:bg-teal-900">
           <div>
             {
               lang === 'en' ? (
@@ -141,7 +150,7 @@ const m = messages(lang);
           </div>
         </aside>
 
-        <main class="flex-1 p-8 bg-white">
+        <main data-a4-cover-main class="flex-1 p-8 bg-white">
           <section class="mb-10">
             <p class="whitespace-pre-line text-[14.5px] text-gray-700 leading-relaxed font-medium">
               {t(profile.summary, lang)}
@@ -153,7 +162,7 @@ const m = messages(lang);
               <h2 class="text-lg font-bold uppercase tracking-wider text-teal-900 shrink-0">{m.experience}</h2>
               <div class="h-px bg-teal-100 w-full"></div>
             </div>
-            <div class="space-y-6">
+            <div data-a4-cover-experience-list class="space-y-6">
               {profile.experience.map((exp) => (
                 <div class="break-inside-avoid relative pl-5 border-l-2 border-teal-100">
                   <div class="flex flex-wrap items-baseline justify-between gap-2 mb-1">
@@ -172,17 +181,17 @@ const m = messages(lang);
                   )}
                   {exp.descriptionLead?.[lang]?.trim() ? (
                     <>
-                      <p class="mb-2 text-[12.5px] text-gray-600 leading-relaxed">
+                      <p data-a4-experience-detail class="mb-2 text-[12.5px] text-gray-600 leading-relaxed">
                         {exp.descriptionLead[lang]}
                       </p>
-                      <ul class="space-y-1.5 pl-5 text-[12.5px] text-gray-600 leading-relaxed list-disc marker:text-teal-700">
+                      <ul data-a4-experience-detail class="space-y-1.5 pl-5 text-[12.5px] text-gray-600 leading-relaxed list-disc marker:text-teal-700">
                         {t(exp.description, lang).split('\n').map((line) => line.trim()).filter(Boolean).map((line) => (
                           <li>{line}</li>
                         ))}
                       </ul>
                     </>
                   ) : (
-                    <p class="whitespace-pre-line text-[12.5px] text-gray-600 leading-relaxed">
+                    <p data-a4-experience-detail class="whitespace-pre-line text-[12.5px] text-gray-600 leading-relaxed">
                       {t(exp.description, lang)}
                     </p>
                   )}
@@ -197,7 +206,7 @@ const m = messages(lang);
         <section class="paginate-content px-10 py-0 print:px-[15mm] print:py-0">
           {profile.projectSections.map((section) => (
             <>
-              <h2 class="flex items-center gap-4 mb-8 pt-0 print:break-before-page text-xl font-bold uppercase tracking-wider text-teal-900 shrink-0">
+              <h2 class="flex items-center gap-4 mb-8 pt-0 text-xl font-bold uppercase tracking-wider text-teal-900 shrink-0">
                 <span class="shrink-0">{t(section.heading, lang)}</span>
                 <div class="h-px bg-teal-100 w-full"></div>
               </h2>
@@ -252,7 +261,7 @@ const m = messages(lang);
           {/* ACTIVITIES SECTION */}
           {profile.activities && profile.activities.length > 0 && (
             <>
-              <h2 class="flex items-center gap-4 mb-8 pt-0 print:break-before-page text-xl font-bold uppercase tracking-wider text-teal-900 shrink-0">
+              <h2 class="flex items-center gap-4 mb-8 pt-0 text-xl font-bold uppercase tracking-wider text-teal-900 shrink-0">
                 <span class="shrink-0">{m.activities || 'Activities'}</span>
                 <div class="h-px bg-teal-100 w-full"></div>
               </h2>
@@ -290,4 +299,3 @@ const m = messages(lang);
     </article>
   </body>
 </html>
-

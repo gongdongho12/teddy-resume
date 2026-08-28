@@ -3,50 +3,138 @@
 
 <script>
   /**
-   * Automatic Pagination Logic for A4 Resume
+   * Automatic pagination for the A4 resume.
+   *
+   * Page dimensions are measured from CSS millimetres in the current media mode.
+   * The original source container is retained as a template so pagination can be
+   * rebuilt when the browser switches from screen styles to print styles.
    */
   const A4_HEIGHT_MM = 297;
-  const DPI = 96;
-  const A4_HEIGHT_PX = Math.floor((A4_HEIGHT_MM * DPI) / 25.4); // ~1122.5px
+  const PAGE_MARGIN_MM = 12;
+  const SAFE_BUFFER_PX = 20;
+  const MOBILE_BREAKPOINT_PX = 768;
+  let resizeTimer: number | undefined;
+  const paginationSources: Array<{
+    id: string;
+    anchor: Comment;
+    template: HTMLElement;
+  }> = [];
 
-  function paginate() {
-    const containers = document.querySelectorAll('.auto-paginate:not([data-paginated="true"])');
-    
+  function rememberPaginationSources() {
+    document.querySelectorAll<HTMLElement>('.auto-paginate').forEach((container, index) => {
+      const id = `a4-source-${index + 1}`;
+      const anchor = document.createComment(id);
+      container.dataset.a4Owner = id;
+      container.before(anchor);
+      paginationSources.push({ id, anchor, template: container.cloneNode(true) as HTMLElement });
+    });
+  }
+
+  function restorePaginationSources() {
+    paginationSources.forEach(({ id, anchor, template }) => {
+      document.querySelectorAll<HTMLElement>(`[data-a4-owner="${id}"]`).forEach((element) => {
+        element.remove();
+      });
+      anchor.after(template.cloneNode(true));
+    });
+  }
+
+  function measureMillimetres(mm: number) {
+    const probe = document.createElement('div');
+    probe.style.cssText = [
+      'position:absolute',
+      'visibility:hidden',
+      'pointer-events:none',
+      'inset:auto',
+      'width:1px',
+      `height:${mm}mm`,
+    ].join(';');
+    document.body.appendChild(probe);
+    const pixels = probe.getBoundingClientRect().height;
+    probe.remove();
+    return pixels;
+  }
+
+  function twoAnimationFrames() {
+    return new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    });
+  }
+
+  function numericMargin(value: string) {
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function paginateNow() {
+    document.documentElement.dataset.a4PaginationReady = 'false';
+
+    const pageHeight = measureMillimetres(A4_HEIGHT_MM);
+    const pageMargin = measureMillimetres(PAGE_MARGIN_MM);
+    const containers = document.querySelectorAll<HTMLElement>('.auto-paginate:not([data-paginated="true"])');
+    const oversizeItems: string[] = [];
+
     containers.forEach((container) => {
-      const contentWrapper = container.querySelector('.paginate-content');
+      const contentWrapper = container.querySelector<HTMLElement>('.paginate-content');
       if (!contentWrapper) return;
 
-      const children = Array.from(contentWrapper.children).filter(child => !child.classList.contains('print-spacer'));
-      const pages = [];
-      let currentPageItems = [];
+      const children = Array.from(contentWrapper.children).filter(
+        (child) => !child.classList.contains('print-spacer'),
+      ) as HTMLElement[];
+      const pages: HTMLElement[][] = [];
+      let currentPageItems: HTMLElement[] = [];
+      const isCreative = container.dataset.template === 'creative';
+      const topInset = pageMargin;
+      const bottomInset = isCreative ? 0 : pageMargin;
+      const usableHeight = pageHeight - topInset - bottomInset - SAFE_BUFFER_PX;
+      const maximumItemHeight = pageHeight - topInset - bottomInset - 1;
+      let currentHeight = 0;
 
-      // Adjusted Margin to 12mm (~45.4px)
-      const MARGIN_PX = 45.4; 
-      const SAFE_BUFFER = 5; 
-      const isCreative = (container as HTMLElement).dataset.template === 'creative';
-      let currentHeight = MARGIN_PX; 
+      const itemHeights = children.map((child) => {
+        const computedStyle = window.getComputedStyle(child);
+        return (
+          child.getBoundingClientRect().height +
+          numericMargin(computedStyle.marginTop) +
+          numericMargin(computedStyle.marginBottom)
+        );
+      });
 
-      children.forEach((child) => {
-        const isHeader = child.tagName === 'H2' && child.classList.contains('print:break-before-page');
-        const childHeight = (child as HTMLElement).offsetHeight;
-        const computedStyle = window.getComputedStyle(child as HTMLElement);
-        const childMargin = parseFloat(computedStyle.marginTop) + parseFloat(computedStyle.marginBottom);
-        const fullItemHeight = childHeight + childMargin;
+      children.forEach((child, childIndex) => {
+        const fullItemHeight = itemHeights[childIndex];
+        const isSectionHeading = child.tagName === 'H2';
+        const keepWithNextHeight = isSectionHeading ? (itemHeights[childIndex + 1] ?? 0) : 0;
+        const explicitlyBreaksBefore = child.dataset.a4BreakBefore === 'true';
 
-        const bottomLimit = isCreative ? A4_HEIGHT_PX - SAFE_BUFFER : A4_HEIGHT_PX - MARGIN_PX - SAFE_BUFFER;
-        const shouldBreak = (isHeader && currentPageItems.length > 0) || 
-                           (currentHeight + fullItemHeight > bottomLimit && currentPageItems.length > 0);
+        child.removeAttribute('data-a4-oversize');
+        if (fullItemHeight > maximumItemHeight) {
+          child.dataset.a4Oversize = 'true';
+          oversizeItems.push(
+            `${container.dataset.template || 'default'} item ${childIndex + 1}: ${Math.round(fullItemHeight)}px > ${Math.round(maximumItemHeight)}px`,
+          );
+        }
+
+        // Section headings stay with the first item that follows them. This avoids
+        // both a heading stranded at the bottom of a page and a forced page break
+        // that leaves otherwise usable space behind.
+        const wouldOrphanHeading =
+          isSectionHeading &&
+          currentPageItems.length > 0 &&
+          currentHeight + fullItemHeight + keepWithNextHeight > usableHeight;
+        const shouldBreak =
+          (explicitlyBreaksBefore && currentPageItems.length > 0) ||
+          wouldOrphanHeading ||
+          (currentHeight + fullItemHeight > usableHeight && currentPageItems.length > 0);
 
         if (shouldBreak) {
           pages.push(currentPageItems);
           currentPageItems = [child];
-          currentHeight = MARGIN_PX + fullItemHeight;
+          currentHeight = fullItemHeight;
         } else {
           currentPageItems.push(child);
           currentHeight += fullItemHeight;
         }
       });
-      
+
       if (currentPageItems.length > 0) pages.push(currentPageItems);
 
       if (pages.length > 0) {
@@ -56,48 +144,114 @@
 
         pages.forEach((pageItems, index) => {
           const pageDiv = document.createElement('div');
-          pageDiv.className = originalClasses + ' paginated-page' + (index > 0 ? ' print:break-before-page print:mt-0' : '');
+          pageDiv.className = `${originalClasses} paginated-page a4-page${index > 0 ? ' print:break-before-page print:mt-0' : ''}`;
           pageDiv.dataset.paginated = 'true';
-          
+          pageDiv.dataset.a4Page = `generated-${index + 1}`;
+          pageDiv.dataset.a4Owner = container.dataset.a4Owner || '';
+
           const innerDiv = document.createElement('div');
           innerDiv.className = originalContentClasses;
-          
-          // Use 12mm Top Spacer
+          innerDiv.dataset.a4PageContent = 'true';
+
           const topSpacer = document.createElement('div');
           topSpacer.className = 'print-spacer h-[12mm] w-full shrink-0';
           innerDiv.appendChild(topSpacer);
-          
-          pageItems.forEach(item => innerDiv.appendChild(item));
 
-          // Use 12mm Bottom Spacer (Skip for creative template)
-          if ((container as HTMLElement).dataset.template !== 'creative') {
+          pageItems.forEach((item) => innerDiv.appendChild(item));
+
+          if (!isCreative) {
             const bottomSpacer = document.createElement('div');
             bottomSpacer.className = 'print-spacer h-[12mm] w-full shrink-0 mt-auto';
             innerDiv.appendChild(bottomSpacer);
           }
-          
+
           pageDiv.appendChild(innerDiv);
           fragment.appendChild(pageDiv);
         });
 
-        const parent = container.parentElement;
-        if (parent) {
-          parent.insertBefore(fragment, container);
-          parent.removeChild(container);
-        }
+        container.before(fragment);
+        container.remove();
       }
     });
+
+    const overflowingPages = Array.from(document.querySelectorAll<HTMLElement>('.a4-page'))
+      .filter(
+        (page) =>
+          page.scrollHeight > page.clientHeight + 1 || page.scrollWidth > page.clientWidth + 1,
+      )
+      .map((page) => page.dataset.a4Page || 'unknown');
+
+    document.documentElement.dataset.a4OversizeCount = String(oversizeItems.length);
+    document.documentElement.dataset.a4OverflowCount = String(overflowingPages.length);
+    document.documentElement.dataset.a4PaginationReady = 'true';
+    window.dispatchEvent(
+      new CustomEvent('a4-pagination-ready', {
+        detail: { oversizeItems, overflowingPages },
+      }),
+    );
+  }
+
+  async function paginateAfterLayout() {
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+    await twoAnimationFrames();
+    renderForCurrentViewport();
+  }
+
+  function usesContinuousMobileLayout() {
+    return !window.matchMedia('print').matches && window.innerWidth < MOBILE_BREAKPOINT_PX;
+  }
+
+  function renderForCurrentViewport() {
+    restorePaginationSources();
+
+    if (usesContinuousMobileLayout()) {
+      document.documentElement.dataset.a4OversizeCount = '0';
+      document.documentElement.dataset.a4OverflowCount = '0';
+      document.documentElement.dataset.a4PaginationReady = 'true';
+      window.dispatchEvent(
+        new CustomEvent('a4-pagination-ready', {
+          detail: { oversizeItems: [], overflowingPages: [], continuous: true },
+        }),
+      );
+      return;
+    }
+
+    paginateNow();
+  }
+
+  function repaginateForCurrentMedia() {
+    renderForCurrentViewport();
   }
 
   window.addEventListener('load', () => {
-    paginate();
-    setTimeout(paginate, 500);
-    setTimeout(paginate, 1500);
+    document.documentElement.dataset.a4Debug =
+      new URLSearchParams(window.location.search).get('a4-debug') === '1' ? 'true' : 'false';
+    rememberPaginationSources();
+    void paginateAfterLayout();
+  });
+
+  window.addEventListener('beforeprint', repaginateForCurrentMedia);
+  window.addEventListener('afterprint', () => {
+    void paginateAfterLayout();
+  });
+
+  window.addEventListener('resize', () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => void paginateAfterLayout(), 150);
+  });
+
+  window.matchMedia('print').addEventListener('change', (event) => {
+    if (event.matches) {
+      repaginateForCurrentMedia();
+    }
   });
 </script>
 
 <style is:global>
   .paginated-page {
+    position: relative;
     background: white;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
     min-height: 297mm;
@@ -105,17 +259,69 @@
     flex-direction: column;
   }
 
+  html[data-a4-debug='true'] .a4-page::before,
+  html[data-a4-debug='true'] .a4-page::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  html[data-a4-debug='true'] .a4-page::before {
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgb(14 165 233 / 0.16) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(14 165 233 / 0.16) 1px, transparent 1px),
+      linear-gradient(to right, rgb(239 68 68 / 0.22) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(239 68 68 / 0.22) 1px, transparent 1px);
+    background-size: 5mm 5mm, 5mm 5mm, 10mm 10mm, 10mm 10mm;
+  }
+
+  html[data-a4-debug='true'] .a4-page::after {
+    inset: 12mm;
+    border: 0.35mm dashed rgb(220 38 38 / 0.85);
+  }
+
+  html[data-a4-debug='true'] [data-a4-oversize='true'] {
+    outline: 1mm solid rgb(220 38 38 / 0.9) !important;
+    outline-offset: 1mm;
+  }
+
+  @media screen and (max-width: 767px) {
+    .a4-page,
+    .auto-paginate {
+      width: 100% !important;
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      overflow: visible !important;
+      box-shadow: none !important;
+    }
+
+    .paginate-content {
+      padding-top: 1.5rem !important;
+      padding-bottom: 1.5rem !important;
+    }
+  }
+
   @media print {
     .print\:break-before-page {
       break-before: page !important;
     }
-    .paginated-page {
+
+    .a4-page {
+      width: 210mm !important;
       height: 297mm !important;
       min-height: 297mm !important;
       max-height: 297mm !important;
       box-shadow: none !important;
       margin: 0 !important;
       overflow: hidden !important;
+    }
+
+    html[lang='ko'] .a4-page {
+      word-break: keep-all;
+      overflow-wrap: break-word;
     }
   }
 </style>

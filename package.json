@@ -8,7 +8,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "export:pdf": "node scripts/export-pdf.mjs"
+    "export:pdf": "node scripts/export-pdf.mjs",
+    "verify:a4": "npm run build && node scripts/verify-a4.mjs",
+    "verify:a4:debug": "npm run build && node scripts/verify-a4.mjs --debug-grid"
   },
   "dependencies": {
     "astro": "^4.16.18",

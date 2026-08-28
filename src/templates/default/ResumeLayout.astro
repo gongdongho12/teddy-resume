@@ -450,22 +450,22 @@ const m = messages(lang);
           {/* ACTIVITIES SECTION */}
           <>
             <h2
-              class="mb-6 border-b-2 border-[#0f3460] pb-2 text-[15px] font-bold uppercase tracking-[0.2em] text-[#0f3460] mt-0 print:mt-0 print:break-before-page"
+              class="mb-4 border-b-2 border-[#0f3460] pb-2 text-[15px] font-bold uppercase tracking-[0.2em] text-[#0f3460] mt-0 print:mt-0 print:mb-4"
             >
               {m.activities}
             </h2>
             {
               Array.from({ length: Math.ceil(profile.activities.length / 2) }).map((_, i) => (
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6 mb-6 last:mb-0 print:gap-y-5 print:mb-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4 mb-4 last:mb-0 print:gap-y-3.5 print:mb-3.5">
                   {profile.activities.slice(i * 2, i * 2 + 2).map((a) => (
-                    <div class="break-inside-avoid flex flex-col border-l-4 border-gray-200 pl-4 py-1.5">
-                      <div class="flex flex-col mb-1">
-                        <span class="text-[15.5px] print:text-[14.5px] font-bold text-black leading-snug">{t(a.title, lang)}</span>
-                        <span class="text-[12.5px] print:text-[11.5px] text-gray-500 font-bold uppercase tracking-wider">{t(a.period, lang)}</span>
+                    <div class="break-inside-avoid flex flex-col border-l-4 border-gray-200 pl-4 py-1 print:py-0.5">
+                      <div class="flex flex-col mb-0.5 print:mb-0.5">
+                        <span class="text-[14.5px] print:text-[14px] font-bold text-black leading-snug">{t(a.title, lang)}</span>
+                        <span class="text-[12px] print:text-[11px] text-gray-500 font-bold uppercase tracking-wider">{t(a.period, lang)}</span>
                       </div>
                       {a.description && (
-                        <div class="space-y-1.5">
-                          <p class="text-[12.5px] print:text-[11.5px] text-gray-700 leading-relaxed whitespace-pre-line">
+                        <div class="space-y-1 print:space-y-0.5">
+                          <p class="text-[12px] print:text-[11px] text-gray-700 leading-relaxed whitespace-pre-line">
                             {t(a.description, lang)}
                           </p>
                           {a.externalUrl && a.externalLabel && (
@@ -473,7 +473,7 @@ const m = messages(lang);
                               href={a.externalUrl}
                               target="_blank"
                               rel="noreferrer"
-                              class="inline-flex items-center text-[13px] print:text-[12px] font-semibold text-[#0f3460] hover:underline"
+                              class="inline-flex items-center text-[12px] print:text-[11px] font-semibold text-[#0f3460] hover:underline"
                             >
                               [{t(a.externalLabel, lang)}]
                             </a>

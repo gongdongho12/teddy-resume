@@ -910,7 +910,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG Uplus VoltUp',
+        en: 'LG U+ VoltUp',
       },
       roleLabel: {
         ko: '서비스 초기 설계부터 구현까지 전담',
@@ -920,7 +920,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko:
           '결제 서비스 초기 설계부터 구현까지 전담하며 단일 결제 구조를 멀티 벤더 모듈로 확장하고, DLQ 기반 미수 처리와 DB 승인권 기반 중복 결제 방지 체계를 구축했습니다. READY 고아 주문과 AUTHORIZED 체류 건을 자동 복구·수동 판단 경로로 연결해 결과 미확정 상태를 추적 가능하게 만들었습니다.',
         en:
-          'Owned the payment service from initial design through implementation, expanding a single flow into a multi-provider module and adding dead-letter-queue recovery plus database-backed approval ownership to prevent duplicate charges. Connected stranded READY and AUTHORIZED states to automated recovery and operator-review paths so indeterminate outcomes remain traceable.',
+          'Led the end-to-end architecture and implementation of VoltUp\'s payment platform, evolving a single-provider system into a multi-provider module featuring DLQ-based recovery and atomic database approval locks to eliminate duplicate charges. Connected stranded READY and AUTHORIZED states to automated recovery and operator-review paths so indeterminate outcomes remain traceable.',
       },
       challenge: {
         ko:
@@ -1028,7 +1028,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG Uplus VoltUp',
+        en: 'LG U+ VoltUp',
       },
       roleLabel: {
         ko: '회원 식별 통합, AuthMethod 연결, 카드 등록 상태와 제휴사 고객 토큰 기준 설계',
@@ -1038,7 +1038,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko:
           'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, mobile-gateway의 한 스텝 API에서 결제수단 등록 세션 생성부터 payment-service의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다. 이후 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리해 검색, 해지 검증, 앱 콜백 activate 흐름을 안정화했습니다.',
         en:
-          'Designed account and payment-method integration between VoltUp and Kakao T, a South Korean ride-hailing and mobility platform. The flow links existing members through encrypted identity data and carries registration from session creation through activation. A partner customer token provides a consistent key for lookup, unlink validation, and app callbacks.',
+          'Designed the account linking and payment-method integration between VoltUp and Kakao T (South Korea\'s premier mobility platform). Unified member identities via encrypted CI data and established an end-to-end flow spanning session creation, payment-method authorization, and lifecycle activation.',
       },
       challenge: {
         ko:
@@ -1192,7 +1192,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG Uplus VoltUp',
+        en: 'LG U+ VoltUp',
       },
       roleLabel: {
         ko: '차량정보 조회 안정화, 차량 기준 트리 설계, 차량식별자 안전 매핑',
@@ -1319,7 +1319,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG Uplus VoltUp',
+        en: 'LG U+ VoltUp',
       },
       roleLabel: {
         ko: 'promotion-service 정책 확장, 결제수단 제한, 포인트 지갑 구조 설계',
@@ -1457,7 +1457,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG Uplus VoltUp',
+        en: 'LG U+ VoltUp',
       },
       roleLabel: {
         ko: 'U+ VIP콕 쿠폰팩 정책, 외부 멤버십 승인, 발급/보상 흐름 설계',
@@ -1583,7 +1583,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG Uplus VoltUp',
+        en: 'LG U+ VoltUp',
       },
       roleLabel: {
         ko: 'Flutter 하이브리드 앱 런칭, JSBridge, QR/권한/푸시/강제 업데이트 흐름 설계',
@@ -1680,7 +1680,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG Uplus VoltUp',
+        en: 'LG U+ VoltUp',
       },
       roleLabel: {
         ko: '앱 연결 없는 기능 검증, API capture/replay, Admin 미지원 운영 보정',
@@ -1773,7 +1773,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG Uplus VoltUp',
+        en: 'LG U+ VoltUp',
       },
       roleLabel: {
         ko: '환경부 로밍 상태 재설계, 카카오T 파트너 로밍 장시간 배치 안정화',
@@ -1887,7 +1887,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG Uplus VoltUp',
+        en: 'LG U+ VoltUp',
       },
       roleLabel: {
         ko: '채팅 기반 업무 에이전트 플랫폼, 개별 에이전트 자동 라우팅, 로그 진단 에이전트 설계·구현',
@@ -2072,7 +2072,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG Uplus VoltUp',
+        en: 'LG U+ VoltUp',
       },
       roleLabel: {
         ko: '조직 공통 PR 자동화 workflow, repo-local 운영 문맥, Vault-local sync, CI/CD 표준화',

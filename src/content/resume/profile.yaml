@@ -37,7 +37,7 @@ experience:
     location_en: Seoul, South Korea
     descriptionLead:
       ko: 카카오모빌리티와 LG유플러스가 함께 운영하는 전기차 충전 서비스 JV
-      en: An EV-charging joint venture operated by LG Uplus and Kakao Mobility
+      en: EV-charging joint venture between LG U+ and Kakao Mobility (South Korea's leading mobility platform)
     description:
       ko: |
         빌링 - DB 승인권, DLQ 및 다단계 복구 흐름으로 중복 결제 방지와 결제/미수 처리 안정성 확보
@@ -47,12 +47,12 @@ experience:
         사내 AI 도구 - 에이전트 라우팅, 로그 진단 자동화, DX 워크플로우 구축
         DX 인프라 - CI/CD 통합, 문서 자동 생성 적용
       en: |
-        Payments - Prevented duplicate charges and made failed-payment recovery traceable with database-backed approval ownership, dead-letter queues, and layered recovery flows
-        Promotions - Built reusable coupon and points systems for partner campaigns
-        Customer-facing services - Developed vehicle lookup, Plug & Charge authorization, backend services, and the mobile app
-        Microservice reliability - Standardized graceful Pub/Sub shutdown and isolated failures from external APIs
-        Internal AI tools - Built specialist-agent routing and first-pass log diagnosis workflows
-        Developer experience - Standardized CI/CD workflows and automated technical documentation
+        Payments & Billing — Built multi-provider payment architecture and dead-letter queue (DLQ) recovery, preventing duplicate charges via database-backed atomic approval locks
+        Promotions — Engineered reusable coupon and points systems with payment-method restrictions for partner campaigns
+        Customer-facing services — Developed vehicle lookup, Plug & Charge authorization, backend services, and the mobile app
+        Microservice reliability — Standardized graceful Pub/Sub shutdown and isolated failure domain boundaries from external APIs
+        Internal AI tools — Built specialist-agent routing and first-pass log diagnosis workflows
+        Developer experience — Standardized CI/CD workflows and automated technical documentation
 
   - company:
       ko: 카카오스타일
@@ -445,7 +445,7 @@ projectSections:
             LGU+ 멤버십 VIP/VVIP 고객의 월 1회 U+ VIP콕 혜택 쿠폰 발급을 위해
             feapp, coupon-service, voltup-admin-fe를 연결하고, 운영팀이 고객 문의 중 직접 조회·대행·판단할 수 있는 Admin 흐름을 구축했습니다.
           en: |
-            Connected the customer app, coupon service, and operations console to issue monthly benefits for LG Uplus VIP and VVIP members.
+            Connected the customer app, coupon service, and operations console to issue monthly benefits for LG U+ VIP and VVIP members.
             Gave operations teams the lookup, eligibility checks, and assisted-issuance tools needed to resolve customer inquiries without manual engineering support.
         tech:
           - Kotlin
@@ -465,7 +465,7 @@ projectSections:
             - 고객 대상 문자/푸시/알림톡 1회 발송 어드민과 즉시/예약 발송을 위한 dispatch batch, 발송 이력 조회 흐름 구축
           en:
             - Added the UPLUS_VIP coupon type, overlapping-benefit-month checks, and payment-method restrictions across preview, search, redemption, and operations-console creation
-            - Built phone-based membership lookup, birth-date verification, monthly user/card limits, LG Uplus approval, coupon issuance, and compensating approval cancellation in one service flow
+            - Built phone-based membership lookup, birth-date verification, monthly user/card limits, LG U+ approval, coupon issuance, and compensating approval cancellation in one service flow
             - Implemented operations-console APIs and screens for assisted issuance, identity-mismatch checks, and issuance-history lookup
             - Added benefit-month defaults, minimum-spend validation, and allowed-payment-method selection to coupon configuration
             - Built one-time SMS, push, and Kakao AlimTalk messaging with immediate or scheduled dispatch and searchable delivery history
@@ -509,7 +509,7 @@ projectSections:
             - Established the partner customer token as the link between external payment methods and internal user context, adding search indexes, unlink validation, and a callback-specific activation API
             - Built vehicle enrollment and Plug & Charge credential-registration services
             - Combined historical totals and same-day real-time data in one homepage statistics API, using local and remote caches plus distributed locks to protect source systems from public traffic
-            - Isolated external certificate, LG Uplus Membership, and Bluemembers integrations with dedicated thread pools, timeouts, circuit breakers, and CallGuard so uncertain outcomes fail explicitly instead of exhausting request threads
+            - Isolated external certificate, LG U+ Membership, and Bluemembers integrations with dedicated thread pools, timeouts, circuit breakers, and CallGuard so uncertain outcomes fail explicitly instead of exhausting request threads
         results:
           ko:
             - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현

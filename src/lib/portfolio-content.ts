@@ -573,7 +573,7 @@ const pricingPlatformDiagram = localized(
   subgraph PROMO["Promotion Service"]
     direction TD
     Member["Membership<br/>grade / eligibility"]
-    Final["Unified Final Pricing API<br/>coupon / promotion / shipping"]
+    Final["Final Pricing API<br/>coupon / promotion / shipping"]
     Member --> Final
   end
   External --> Expose
@@ -910,7 +910,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG U+ VoltUp',
+        en: 'LG Uplus VoltUp',
       },
       roleLabel: {
         ko: '서비스 초기 설계부터 구현까지 전담',
@@ -1028,7 +1028,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG U+ VoltUp',
+        en: 'LG Uplus VoltUp',
       },
       roleLabel: {
         ko: '회원 식별 통합, AuthMethod 연결, 카드 등록 상태와 제휴사 고객 토큰 기준 설계',
@@ -1192,7 +1192,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG U+ VoltUp',
+        en: 'LG Uplus VoltUp',
       },
       roleLabel: {
         ko: '차량정보 조회 안정화, 차량 기준 트리 설계, 차량식별자 안전 매핑',
@@ -1319,7 +1319,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG U+ VoltUp',
+        en: 'LG Uplus VoltUp',
       },
       roleLabel: {
         ko: 'promotion-service 정책 확장, 결제수단 제한, 포인트 지갑 구조 설계',
@@ -1457,7 +1457,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG U+ VoltUp',
+        en: 'LG Uplus VoltUp',
       },
       roleLabel: {
         ko: 'U+ VIP콕 쿠폰팩 정책, 외부 멤버십 승인, 발급/보상 흐름 설계',
@@ -1583,7 +1583,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG U+ VoltUp',
+        en: 'LG Uplus VoltUp',
       },
       roleLabel: {
         ko: 'Flutter 하이브리드 앱 런칭, JSBridge, QR/권한/푸시/강제 업데이트 흐름 설계',
@@ -1680,7 +1680,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG U+ VoltUp',
+        en: 'LG Uplus VoltUp',
       },
       roleLabel: {
         ko: '앱 연결 없는 기능 검증, API capture/replay, Admin 미지원 운영 보정',
@@ -1773,7 +1773,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG U+ VoltUp',
+        en: 'LG Uplus VoltUp',
       },
       roleLabel: {
         ko: '환경부 로밍 상태 재설계, 카카오T 파트너 로밍 장시간 배치 안정화',
@@ -1887,7 +1887,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG U+ VoltUp',
+        en: 'LG Uplus VoltUp',
       },
       roleLabel: {
         ko: '채팅 기반 업무 에이전트 플랫폼, 개별 에이전트 자동 라우팅, 로그 진단 에이전트 설계·구현',
@@ -2072,7 +2072,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       company: {
         ko: 'LG유플러스 볼트업',
-        en: 'LG U+ VoltUp',
+        en: 'LG Uplus VoltUp',
       },
       roleLabel: {
         ko: '조직 공통 PR 자동화 workflow, repo-local 운영 문맥, Vault-local sync, CI/CD 표준화',
@@ -2240,7 +2240,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko:
           '상품 관리 시스템(PIM)은 외·내부 상품 매칭, 다이나믹 프라이싱, 쇼핑 카탈로그 Engine Page를 담당하고 프로모션 서비스는 멤버십과 파이널 프라이싱을 담당하도록 경계를 나눠, 프로모션의 최종 혜택가와 외부 상품 값을 함께 비교해 고객에게 노출할 합리적 최적가를 계산하도록 정리한 프로젝트입니다.',
         en:
-          'Built four core capabilities across the Product Information Management (PIM) and Promotion services: external-to-internal product matching, dynamic pricing, a unified Final Pricing API, and Catalog Engine Page pipelines for Naver and YouTube Shopping. PIM combines promotion-adjusted prices with external market prices to select the best price shown to customers.',
+          'Built four core capabilities across the Product Information Management (PIM) and Promotion services: external-to-internal product matching, dynamic pricing, the Final Pricing API, and Catalog Engine Page pipelines for Naver and YouTube Shopping. PIM combines promotion-adjusted prices with external market prices to select the best price shown to customers.',
       },
       challenge: {
         ko:
@@ -2275,7 +2275,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           id: 'pricing-platform-final-pricing',
           title: {
             ko: '파이널 프라이싱 (각 서비스별 가격 계산 로직 통합 API)',
-            en: 'Unified Final Pricing API',
+            en: 'Final Pricing API',
           },
           description: {
             ko: '멤버십·쿠폰·프로모션·배송비를 포함한 혜택가를 하나의 파이널 프라이싱 API로 표준화한 영역입니다.',

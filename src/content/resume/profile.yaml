@@ -27,7 +27,7 @@ languages_note:
 experience:
   - company:
       ko: LG 유플러스 볼트업
-      en: VoltUp
+      en: LG Uplus VoltUp
     period:
       ko: 2024.09 ~ 재직중
       en: Sep 2024 — Present
@@ -37,7 +37,7 @@ experience:
     location_en: Seoul, South Korea
     descriptionLead:
       ko: 카카오모빌리티와 LG유플러스가 함께 운영하는 전기차 충전 서비스 JV
-      en: EV charging platform jointly operated by LG U+ and Kakao Mobility.
+      en: EV charging joint venture between LG U+ and Kakao Mobility.
     description:
       ko: |
         빌링 - DB 승인권, DLQ 및 다단계 복구 흐름으로 중복 결제 방지와 결제/미수 처리 안정성 확보
@@ -68,7 +68,7 @@ experience:
         상품 카탈로그 Engine Page 연동 (네이버 쇼핑 / 구글 쇼핑)
         외부 상품 가격 수집 및 타사 대비 가격 우위/열위 자동화 파이프라인
       en: |
-        Built external-to-internal product matching, dynamic pricing, and a unified Final Pricing API
+        Built external-to-internal product matching, dynamic pricing, and the Final Pricing API
         Developed Catalog Engine Page and lowest-price update pipelines for Naver Shopping and YouTube Shopping
 
   - company:
@@ -227,7 +227,7 @@ activities:
       en: Mar 2024 — Present
     description:
       ko: SW 아키텍처, 문제 해결 전략 수립, 유저 사이드 플로우 최적화 관점의 멘토링을 진행했습니다.
-      en: Mentored students in software architecture, problem-solving strategy, and customer-facing flow design.
+      en: Mentored students in software architecture, problem-solving strategy, and flow design.
     externalUrl: https://mentor.cs.kookmin.ac.kr/%EB%A9%98%ED%86%A0%EC%86%8C%EA%B0%9C#h.dlkra2kupnvf
     externalLabel:
       ko: 멘토 소개
@@ -249,7 +249,7 @@ activities:
       en: Dec 2023 — Aug 2025
     description:
       ko: 5개 기수(1~5기)에 걸쳐 프론트/백엔드 협업 기반 기업 문제 해결 프로젝트의 멘토로 참여했습니다.
-      en: Mentored five cohorts working in frontend-backend teams on projects based on real company problems.
+      en: Mentored five cohorts on team projects solving real company problems.
   - title:
       ko: 카카오테크 캠퍼스 2기 백엔드 멘토
       en: Backend Mentor, Kakao Tech Campus (2nd Cohort)
@@ -285,7 +285,7 @@ activities:
       en: Dec 2023
     description:
       ko: 한빛미디어에서 준비한 세미나 시리즈로 9회차 모니터링 세션을 진행했습니다
-      en: Presented the ninth session, focused on monitoring, in Hanbit Media's microservices seminar series.
+      en: Presented the monitoring session in Hanbit Media's MSA seminar series.
   - title:
       ko: 부스트캠프 웹·모바일 7~8기 백엔드 리뷰어
       en: Backend Code Reviewer, Boostcamp Web·Mobile (7th–8th Cohorts)
@@ -294,7 +294,7 @@ activities:
       en: Sep 2022 — Oct 2023
     description:
       ko: 부스트캠프 웹 백엔드 캠퍼미팅 및 코드리뷰를 진행했습니다 (7기, 8기 연속 참여)
-      en: Led campus meetings and code reviews for web-backend participants across two cohorts.
+      en: Led campus meetings and code reviews for web-backend campers across two cohorts.
   - title:
       ko: UbuCon Korea 2023 Speaker
       en: Speaker, UbuCon Korea 2023
@@ -335,7 +335,7 @@ activities:
       en: Sep 2022 — Oct 2022
     description:
       ko: 마이스터고 고등학생 대상으로 설명 > 클론코딩 > 프로젝트 순으로 리액트 특강을 진행했습니다
-      en: Taught a React course for vocational high-school students, progressing from concepts to clone coding and a final project.
+      en: Taught a hands-on React course progressing from concepts to a final project.
   - title:
       ko: 우분투 한국 커뮤니티 Infra Manager
       en: Infrastructure Manager, Ubuntu Korea Community
@@ -344,7 +344,7 @@ activities:
       en: Mar 2018 — May 2021
     description:
       ko: 리눅스 관련 커뮤니티의 운영진으로 Infra를 담당하여 Forum과 Wiki 그리고 ASK 등의 서비스 및 메일서버의 구축 및 유지보수를 진행했습니다
-      en: Built and maintained the community's forum, wiki, Q&A service, and mail infrastructure.
+      en: Maintained the community forum, wiki, Q&A, and mail infrastructure.
   - title:
       ko: AngelHack 2020 해커톤 수상 (Common Computer Prize)
       en: Award Winner, AngelHack Seoul 2020 (Common Computer Prize)
@@ -800,7 +800,7 @@ projectSections:
 
       - title:
           ko: 파이널 프라이싱 (각 서비스별 가격 계산 로직 통합 API)
-          en: Unified Pricing API
+          en: Final Pricing API
         portfolioSlug: pricing-platform
         portfolioAnchor: pricing-platform-final-pricing
         period:
@@ -819,7 +819,7 @@ projectSections:
             - 사내 전 지면 게이트웨이와 연동해 분산된 가격 계산 로직을 통합 API로 정리하고 가격 노출 정합성 확보
           en:
             - Applied timeouts and circuit breakers for service stability
-            - Connected company-wide gateways to the unified API, keeping displayed prices consistent across customer-facing channels
+            - Connected company-wide gateways to the Final Pricing API, keeping displayed prices consistent across customer-facing channels
 
       - title:
           ko: 멤버십/마일리지 서비스 이관 및 고도화
@@ -890,7 +890,7 @@ projectSections:
           en:
             - To satisfy the 2-hour product update interval required for CPS, replaced full-catalog refreshes with partial updates for sold-out or price-changed items, enabling generation of the Naver Shopping feed CSV and changed-product sync dataset within an hour
             - Built a reusable shopping-feed and lowest-price pipeline that could be extended quickly to Google and YouTube Shopping
-            - Consolidated team-specific final-price APIs behind the Unified Pricing API, aligning pricing logic across customer-facing channels
+            - Consolidated team-specific final-price APIs behind the Final Pricing API, aligning pricing logic across customer-facing channels
 
   - heading:
       ko: 이전 경력 프로젝트

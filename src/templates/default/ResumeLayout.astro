@@ -56,10 +56,7 @@ const m = messages(lang);
           padding-bottom: 7mm !important;
         }
         html[lang='en'] [data-a4-cover-experience-list] > * + * {
-          margin-top: 0.65rem !important;
-        }
-        html[lang='en'] [data-a4-cover-experience-list] > :nth-child(n + 3) [data-a4-experience-detail] {
-          display: none !important;
+          margin-top: 0.45rem !important;
         }
         html[lang='en'] [data-a4-cover-experience] p,
         html[lang='en'] [data-a4-cover-experience] ul {
@@ -303,14 +300,19 @@ const m = messages(lang);
             profile.projectSections.map((section) => (
               <>
                 <h2
-                  class="mb-6 border-b-2 border-[#0f3460] pb-2 text-[14px] font-bold uppercase tracking-[0.2em] text-[#0f3460] mt-0 first:mt-0 print:mt-0"
+                  data-a4-break-before={section.pageBreakBefore ? 'true' : undefined}
+                  class="mb-6 print:mb-4 border-b-2 border-[#0f3460] pb-2 text-[14px] font-bold uppercase tracking-[0.2em] text-[#0f3460] mt-0 first:mt-0 print:mt-0"
                 >
-                  {t(section.heading, lang)}
+                  <span>{t(section.heading, lang)}</span>
+                  {section.period && (
+                    <span class="ml-2 whitespace-nowrap text-[12px] font-semibold normal-case tracking-normal text-gray-600">
+                      ({t(section.period, lang)})
+                    </span>
+                  )}
                 </h2>
-                {t(section.heading, 'en')?.includes('Side Projects') || t(section.heading, 'ko')?.includes('사이드 프로젝트') ? (
-                  <div class="space-y-3 print:space-y-2.5 mb-6 print:mb-4">
-                    {section.projects.map((proj) => (
-                      <div class="break-inside-avoid border border-gray-200 bg-white p-3.5 print:p-3 rounded-md shadow-sm print:shadow-none">
+                {section.layout === 'compact' ? (
+                  section.projects.map((proj) => (
+                      <div class="break-inside-avoid border border-gray-200 bg-white p-3.5 print:p-3 rounded-md shadow-sm print:shadow-none mb-3 last:mb-0 print:mb-2.5">
                         <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-1.5 border-b border-gray-100 pb-1.5">
                           <h3 class="text-[15px] print:text-[14px] font-bold text-black flex items-center gap-2">
                             <PortfolioProjectTitleLink
@@ -364,13 +366,15 @@ const m = messages(lang);
                           )}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                  ))
                 ) : (
                   section.projects.map((proj) => (
-                    <div class="break-inside-avoid border border-gray-100 bg-white p-5 rounded shadow-sm print:shadow-none print:border-gray-200 mb-4 last:mb-0 print:mb-4 print:pb-4">
+                    <div class="break-inside-avoid border border-gray-100 bg-white p-5 rounded shadow-sm print:shadow-none print:border-gray-200 mb-4 last:mb-0 print:p-4 print:mb-4 print:pb-4">
                       <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2 border-b border-gray-100 pb-2.5">
-                        <h3 class="text-[16px] font-bold text-black flex items-center gap-2">
+                        <h3 class="text-[16px] print:text-[15px] font-bold text-black flex items-center gap-2">
+                          {proj.company && (
+                            <span class="shrink-0 text-[#0f3460]">[{t(proj.company, lang)}]</span>
+                          )}
                           <PortfolioProjectTitleLink
                             href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
                             label={t(proj.title, lang)}
@@ -391,13 +395,13 @@ const m = messages(lang);
                             </span>
                           )}
                         </h3>
-                        <span class="whitespace-nowrap text-[14px] font-bold text-gray-600 mt-2 md:mt-0">
+                        <span class="whitespace-nowrap text-[14px] print:text-[12.5px] font-bold text-gray-600 mt-2 md:mt-0">
                           {t(proj.period, lang)}
                         </span>
                       </div>
                       
                       {proj.summary && (
-                        <p class="mb-4 whitespace-pre-line text-[14px] text-gray-800 leading-[1.6] font-medium bg-gray-50 px-4 py-3 rounded-sm border-l-4 border-gray-200">
+                        <p class="mb-4 print:mb-3 whitespace-pre-line text-[14px] print:text-[12.5px] text-gray-800 leading-[1.6] print:leading-[1.45] font-medium bg-gray-50 px-4 py-3 print:px-3 print:py-2 rounded-sm border-l-4 border-gray-200">
                           {t(proj.summary, lang)}
                         </p>
                       )}
@@ -405,9 +409,9 @@ const m = messages(lang);
                       <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
                         <!-- LEFT: HIGHLIGHTS -->
                         <div class="space-y-4">
-                          <ul class="grid grid-cols-1 gap-y-1.5 list-disc pl-5 marker:text-[#0f3460]">
+                          <ul class="grid grid-cols-1 gap-y-1.5 print:gap-y-1 list-disc pl-5 marker:text-[#0f3460]">
                             {bullets(proj.highlights, lang).map((line, index) => (
-                              <li class:list={['pl-1 text-[13.5px] text-gray-800 leading-[1.6]', { 'print:hidden': index >= 4 }]}>{line}</li>
+                              <li class="pl-1 text-[13.5px] print:text-[12.5px] text-gray-800 leading-[1.6] print:leading-[1.45]">{line}</li>
                             ))}
                           </ul>
                           
@@ -416,7 +420,7 @@ const m = messages(lang);
                               <p class="mb-2.5 text-[12px] font-bold uppercase tracking-wider text-[#0f3460]">{m.results}</p>
                               <ul class="grid grid-cols-1 gap-y-2.5 list-none pl-0">
                                 {bullets(proj.results, lang).map((line, index) => (
-                                  <li class:list={['relative pl-5 text-[14px] font-bold text-gray-900 leading-[1.6] before:absolute before:left-0 before:top-[8px] before:w-1.5 before:h-1.5 before:bg-[#0f3460] before:rotate-45', { 'print:hidden': index >= 2 }]}>
+                                  <li class="relative pl-5 text-[14px] print:text-[12.5px] font-bold text-gray-900 leading-[1.6] print:leading-[1.45] before:absolute before:left-0 before:top-[8px] before:w-1.5 before:h-1.5 before:bg-[#0f3460] before:rotate-45">
                                     {line}
                                   </li>
                                 ))}
@@ -429,7 +433,7 @@ const m = messages(lang);
                         {proj.tech?.length > 0 && (
                           <aside class="flex flex-col">
                             <div class="h-full bg-slate-50/50 rounded-sm border-l-2 border-gray-100 p-2 md:p-3.5">
-                              <div class="flex flex-row flex-wrap md:flex-col md:items-end gap-1.5 md:gap-1 md:text-right font-bold text-gray-600 text-[11.5px] font-sans tracking-tight">
+                              <div class="flex flex-row flex-wrap md:flex-col md:items-end gap-1.5 md:gap-1 md:text-right font-bold text-gray-600 text-[11.5px] print:text-[10.5px] font-sans tracking-tight">
                                 {proj.tech.map((item) => (
                                   <span class="break-words px-2 py-0.5 md:px-0 md:py-0 bg-gray-100 md:bg-transparent rounded-full md:rounded-none">
                                     {item}

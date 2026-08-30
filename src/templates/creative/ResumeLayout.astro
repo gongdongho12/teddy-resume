@@ -58,8 +58,8 @@ const m = messages(lang);
         html[lang='en'] [data-a4-page='cover'] [data-a4-cover-main] > section {
           margin-bottom: 6mm !important;
         }
-        html[lang='en'] [data-a4-cover-experience-list] > :nth-child(n + 3) [data-a4-experience-detail] {
-          display: none !important;
+        html[lang='en'] [data-a4-cover-experience-list] > * + * {
+          margin-top: 0.75rem !important;
         }
       }
     </style>
@@ -206,8 +206,18 @@ const m = messages(lang);
         <section class="paginate-content px-10 py-0 print:px-[15mm] print:py-0">
           {profile.projectSections.map((section) => (
             <>
-              <h2 class="flex items-center gap-4 mb-8 pt-0 text-xl font-bold uppercase tracking-wider text-teal-900 shrink-0">
-                <span class="shrink-0">{t(section.heading, lang)}</span>
+              <h2
+                data-a4-break-before={section.pageBreakBefore ? 'true' : undefined}
+                class="flex items-center gap-4 mb-8 pt-0 text-xl font-bold uppercase tracking-wider text-teal-900 shrink-0"
+              >
+                <span class="shrink-0">
+                  {t(section.heading, lang)}
+                  {section.period && (
+                    <span class="ml-2 whitespace-nowrap text-[12px] font-semibold normal-case tracking-normal text-gray-500">
+                      ({t(section.period, lang)})
+                    </span>
+                  )}
+                </span>
                 <div class="h-px bg-teal-100 w-full"></div>
               </h2>
               
@@ -215,6 +225,9 @@ const m = messages(lang);
                 <div class="bg-gray-50 rounded-xl p-6 border border-gray-100 shadow-sm mb-8 last:mb-0">
                     <div class="break-inside-avoid flex flex-wrap items-center justify-between gap-2 mb-3">
                       <h3 class="text-[16px] font-bold text-gray-900 flex items-center gap-3">
+                      {proj.company && (
+                        <span class="shrink-0 text-teal-800">[{t(proj.company, lang)}]</span>
+                      )}
                       <PortfolioProjectTitleLink
                         href={getPortfolioProjectHref(lang, proj.portfolioSlug, proj.portfolioAnchor)}
                         label={t(proj.title, lang)}

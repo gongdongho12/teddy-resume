@@ -103,7 +103,7 @@
         const fullItemHeight = itemHeights[childIndex];
         const isSectionHeading = child.tagName === 'H2';
         const keepWithNextHeight = isSectionHeading
-          ? (itemHeights[childIndex + 1] ?? 0) + (itemHeights[childIndex + 2] ?? 0)
+          ? itemHeights[childIndex + 1] ?? 0
           : 0;
         const explicitlyBreaksBefore = child.dataset.a4BreakBefore === 'true';
 

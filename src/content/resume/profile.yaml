@@ -27,17 +27,17 @@ languages_note:
 experience:
   - company:
       ko: LG 유플러스 볼트업
-      en: VoltUp (LG U+ × Kakao Mobility)
+      en: VoltUp
     period:
       ko: 2024.09 ~ 재직중
       en: Sep 2024 — Present
     role:
-      ko: Tech Innovation Tribe, Back-end
-      en: Backend Engineer, Tech Innovation Tribe
+      ko: Software Engineer
+      en: Software Engineer
     location_en: Seoul, South Korea
     descriptionLead:
       ko: 카카오모빌리티와 LG유플러스가 함께 운영하는 전기차 충전 서비스 JV
-      en: EV-charging joint venture between LG U+ and Kakao Mobility (South Korea's leading mobility platform)
+      en: EV charging platform jointly operated by LG U+ and Kakao Mobility.
     description:
       ko: |
         빌링 - DB 승인권, DLQ 및 다단계 복구 흐름으로 중복 결제 방지와 결제/미수 처리 안정성 확보
@@ -47,12 +47,10 @@ experience:
         사내 AI 도구 - 에이전트 라우팅, 로그 진단 자동화, DX 워크플로우 구축
         DX 인프라 - CI/CD 통합, 문서 자동 생성 적용
       en: |
-        Payments & Billing — Built multi-provider payment architecture and dead-letter queue (DLQ) recovery, preventing duplicate charges via database-backed atomic approval locks
-        Promotions — Engineered reusable coupon and points systems with payment-method restrictions for partner campaigns
-        Customer-facing services — Developed vehicle lookup, Plug & Charge authorization, backend services, and the mobile app
-        Microservice reliability — Standardized graceful Pub/Sub shutdown and isolated failure domain boundaries from external APIs
-        Internal AI tools — Built specialist-agent routing and first-pass log diagnosis workflows
-        Developer experience — Standardized CI/CD workflows and automated technical documentation
+        Payments & Billing — Built multi-provider payment architecture and dead-letter queue (DLQ) recovery, preventing duplicate charges with database-backed atomic approval locks
+        Promotions & Customer Products — Built reusable coupon and points systems, customer-facing backend services, and the VoltUp mobile app
+        Reliability — Standardized graceful Pub/Sub shutdown and isolated external API failures across microservices
+        Developer & AI Tooling — Built specialist-agent routing, first-pass log diagnosis, shared CI/CD workflows, and automated technical documentation
 
   - company:
       ko: 카카오스타일
@@ -70,8 +68,8 @@ experience:
         상품 카탈로그 Engine Page 연동 (네이버 쇼핑 / 구글 쇼핑)
         외부 상품 가격 수집 및 타사 대비 가격 우위/열위 자동화 파이프라인
       en: |
-        Built unified pricing, cross-store product matching, and the Zigzag membership platform
-        Integrated shopping feeds for Naver Shopping and Google Shopping, with automated external price collection and competitive pricing workflows
+        Built external-to-internal product matching, dynamic pricing, and a unified Final Pricing API
+        Developed Catalog Engine Page and lowest-price update pipelines for Naver Shopping and YouTube Shopping
 
   - company:
       ko: 스토어링크
@@ -223,7 +221,7 @@ awards: []
 activities:
   - title:
       ko: 국민대학교 SW중심대학 멘토
-      en: Kookmin SW-Centered University Mentor
+      en: Mentor, Kookmin University SW-Centered University Program
     period:
       ko: 2024.03 ~ 현재
       en: Mar 2024 — Present
@@ -236,16 +234,16 @@ activities:
       en: Mentor Profile
   - title:
       ko: 코드잇 백엔드 코스 모의면접 멘토
-      en: Codeit Backend Course Mock Interview Mentor
+      en: Mock Interview Mentor, Codeit Backend Program
     period:
       ko: 2025.09 / 2025.12 (2회)
       en: Sep and Dec 2025
     description:
       ko: 백엔드 과정 수료생 대상 기술 및 모의면접 멘토링 진행
-      en: Technical and mock interview mentoring for backend bootcamp graduates
+      en: Provided technical and mock-interview coaching for backend program graduates.
   - title:
       ko: 커널360 1~5기 백엔드 멘토
-      en: Kernel360 Backend Mentor (1st ~ 5th cohorts)
+      en: Backend Mentor, Kernel360 (Cohorts 1–5)
     period:
       ko: 2023.12 ~ 2025.08
       en: Dec 2023 — Aug 2025
@@ -254,7 +252,7 @@ activities:
       en: Mentored five cohorts working in frontend-backend teams on projects based on real company problems.
   - title:
       ko: 카카오테크 캠퍼스 2기 백엔드 멘토
-      en: Kakao Tech Campus Backend Mentor (2nd)
+      en: Backend Mentor, Kakao Tech Campus (2nd Cohort)
     period:
       ko: 2024.06 ~ 2024.08
       en: Jun 2024 — Aug 2024
@@ -263,25 +261,25 @@ activities:
       en: Mentored the second cohort of the Kakao Tech Campus backend track.
   - title:
       ko: 한양대 ERICA SW창업특강 (Effective Backend)
-      en: Hanyang ERICA SW Startup Lecture
+      en: Guest Lecturer, Hanyang University ERICA Software Startup Program
     period:
       ko: 2024.02.02
       en: Feb 2024
     description:
       ko: Effective Backend 주제로 SW 창업 특강 발표
-      en: Gave a lecture on "Effective Backend" for SW startup series
+      en: Delivered an "Effective Backend" lecture for a software startup program.
   - title:
       ko: 부스트캠프 웹·모바일 8기 백엔드 멘토
-      en: Boostcamp 8th Backend Mentor
+      en: Backend Mentor, Boostcamp Web·Mobile (8th Cohort)
     period:
       ko: 2023.11 ~ 2023.12
       en: Nov 2023 — Dec 2023
     description:
       ko: 부스트캠프 iOS 서비스 프로젝트 2개 팀 기술 멘토링
-      en: Mentored two iOS service project teams for Boostcamp
+      en: Mentored two iOS service project teams.
   - title:
       ko: 한빛N MSA — Monitoring 세션 발표
-      en: Hanbit N Microservices - Monitoring Session
+      en: Speaker, Hanbit N Microservices Monitoring Session
     period:
       ko: 2023.12.07
       en: Dec 2023
@@ -290,7 +288,7 @@ activities:
       en: Presented the ninth session, focused on monitoring, in Hanbit Media's microservices seminar series.
   - title:
       ko: 부스트캠프 웹·모바일 7~8기 백엔드 리뷰어
-      en: Boostcamp Backend Reviewer (7th-8th Cohorts)
+      en: Backend Code Reviewer, Boostcamp Web·Mobile (7th–8th Cohorts)
     period:
       ko: 2022.09 ~ 2023.10
       en: Sep 2022 — Oct 2023
@@ -299,29 +297,29 @@ activities:
       en: Led campus meetings and code reviews for web-backend participants across two cohorts.
   - title:
       ko: UbuCon Korea 2023 Speaker
-      en: UbuCon Korea 2023 Speaker
+      en: Speaker, UbuCon Korea 2023
     period:
       ko: 2023.09.09
       en: Sep 2023
     description:
       ko: WSL을 이용해 개발용 NAS 구축하기 발표 진행
-      en: Presented on "Building a Development NAS using WSL"
+      en: Presented "Building a Development NAS Using WSL."
   - title:
       ko: SW중심대학 공동해커톤 2023 멘토
-      en: 2023 SW University Joint Hackathon Mentor
+      en: Mentor, 2023 SW-Centered Universities Joint Hackathon
     period:
       ko: 2023.06.28 ~ 2023.06.30
       en: Jun 2023
     description:
       ko: 해커톤 멘토로 참여하여 FE/BE 멘토링 및 커리어 상담 진행
-      en: Provided FE/BE technical mentoring and career counseling
+      en: Provided frontend and backend technical mentoring and career guidance.
     externalUrl: https://mentor.cs.kookmin.ac.kr/%EB%A9%98%ED%86%A0%EC%86%8C%EA%B0%9C#h.dlkra2kupnvf
     externalLabel:
       ko: 멘토 소개
       en: Mentor Profile
   - title:
       ko: 프로그래머스 스쿨 내일배움코스 11기 JAVA 멘토
-      en: Programmers School JAVA Mentor (11th)
+      en: Java Mentor, Programmers School (11th Cohort)
     period:
       ko: 2023.03 ~ 2023.04
       en: Mar 2023 — Apr 2023
@@ -331,7 +329,7 @@ activities:
 
   - title:
       ko: 경북소프트웨어고등학교 리액트 특강
-      en: Gyeongbuk SW High School React Lecture
+      en: Guest Lecturer, React Course at Gyeongbuk Software High School
     period:
       ko: 2022.09 ~ 2022.10
       en: Sep 2022 — Oct 2022
@@ -340,7 +338,7 @@ activities:
       en: Taught a React course for vocational high-school students, progressing from concepts to clone coding and a final project.
   - title:
       ko: 우분투 한국 커뮤니티 Infra Manager
-      en: Ubuntu Korea Community Infrastructure Manager
+      en: Infrastructure Manager, Ubuntu Korea Community
     period:
       ko: 2018.03 ~ 2021.05
       en: Mar 2018 — May 2021
@@ -349,13 +347,13 @@ activities:
       en: Built and maintained the community's forum, wiki, Q&A service, and mail infrastructure.
   - title:
       ko: AngelHack 2020 해커톤 수상 (Common Computer Prize)
-      en: AngelHack 2020 Winner (Common Computer Prize)
+      en: Award Winner, AngelHack Seoul 2020 (Common Computer Prize)
     period:
       ko: "2020"
       en: "2020"
     description:
       ko: 소상공인을 위한 재고 할인/공동구매 서비스 LiBi 개발 및 수상
-      en: Developed local group-buying platform LiBi; awarded Common Computer Prize
+      en: Developed LiBi, a local group-buying platform, and received the Common Computer Prize.
     externalUrl: https://medium.com/@seoulangelhack/%EC%97%94%EC%A0%A4%ED%95%B5-%EC%84%9C%EC%9A%B8-2020-%EC%98%A8%EB%9D%BC%EC%9D%B8-%EC%9C%84%EA%B8%B0-%EC%86%8D%EC%9D%98-%EC%B0%BD%EC%9D%98%EC%84%B1-%EC%9A%B0%EC%8A%B9%ED%8C%80-%EB%B0%9C%ED%91%9C-ac97c2ddf520
     externalLabel:
       ko: 관련자료
@@ -363,8 +361,11 @@ activities:
 
 projectSections:
   - heading:
-      ko: 주요 프로젝트 — LGU+ VoltUp
-      en: Selected Projects - VoltUp
+      ko: 볼트업 프로젝트
+      en: VoltUp Projects
+    period:
+      ko: 2024.09 ~ 현재
+      en: Sep 2024 — Present
     projects:
       - title:
           ko: 멀티 벤더 결제 시스템 및 미수 복구 안정화
@@ -396,7 +397,7 @@ projectSections:
             - READY 고아 주문 상태 동기화·이벤트 자동 재발행과 AUTHORIZED 체류 해소 배치·수동 복구 API를 구성해 결과 미확정 건을 자동 복구 또는 운영 판단 가능한 상태로 전환
           en:
             - Led the payment service from initial design through implementation as a core engineer
-            - Designed a provider strategy layer that integrates Kakao Pay, Toss Payments, and Kakao T - a South Korean ride-hailing and mobility platform - behind one interface
+            - Designed a provider strategy layer that integrates Kakao Pay, Toss Payments, and Kakao T, a South Korean ride-hailing and mobility platform, behind a common interface
             - Combined Pub/Sub dead-letter queues, retries, and recovery batches into a layered flow that isolates failures and prevents unpaid transactions from being missed
             - Added database-backed approval ownership before payment-gateway calls, preventing duplicate approvals after lock expiry, lost responses, or provider changes; an eight-thread MySQL concurrency test confirmed a single winner per order
             - Separated payment confirmation from unpaid-balance bookkeeping so ledger-lock contention cannot roll back successful approvals or trigger duplicate charges; also corrected double point deductions and retroactive configuration changes during retries
@@ -465,7 +466,7 @@ projectSections:
             - 고객 대상 문자/푸시/알림톡 1회 발송 어드민과 즉시/예약 발송을 위한 dispatch batch, 발송 이력 조회 흐름 구축
           en:
             - Added the UPLUS_VIP coupon type, overlapping-benefit-month checks, and payment-method restrictions across preview, search, redemption, and operations-console creation
-            - Built phone-based membership lookup, birth-date verification, monthly user/card limits, LG U+ approval, coupon issuance, and compensating approval cancellation in one service flow
+            - Consolidated phone-based membership lookup, birth-date verification, monthly user/card limits, LG U+ approval, coupon issuance, and compensating cancellation in a dedicated U+ VIP issuance service
             - Implemented operations-console APIs and screens for assisted issuance, identity-mismatch checks, and issuance-history lookup
             - Added benefit-month defaults, minimum-spend validation, and allowed-payment-method selection to coupon configuration
             - Built one-time SMS, push, and Kakao AlimTalk messaging with immediate or scheduled dispatch and searchable delivery history
@@ -514,11 +515,11 @@ projectSections:
           ko:
             - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현
           en:
-            - Delivered the complete Kakao T partner lifecycle - card registration, payment, cancellation, and promotions - across four microservices
+            - Delivered the end-to-end Kakao T integration—card registration, payments, cancellations, and promotions—across four microservices
 
       - title:
           ko: 볼트업 하이브리드 앱 (Flutter - iOS/Android)
-          en: VoltUp Hybrid App (Flutter - iOS/Android)
+          en: VoltUp Hybrid App (Flutter for iOS and Android)
         portfolioSlug: voltup-hybrid-app
         googlePlayUrl: https://play.google.com/store/apps/details?id=com.lgvoltup.app
         appStoreUrl: https://apps.apple.com/kr/app/%EB%B3%BC%ED%8A%B8%EC%97%85-voltup/id6739238828
@@ -583,7 +584,7 @@ projectSections:
             - API 요청 capture/replay 구조를 구현해 앱 개발 검증 시간을 단축하고 반복 QA 흐름을 자동화
             - 충전존 생성 오류 대응처럼 Admin 화면에서 직접 지원하지 않는 단일 API 보정 작업을 row 기반 Bulk Replay로 처리할 수 있도록 확장
           en:
-            - Reproduced new-window handling, QR scanning, camera permissions, and mandatory-update branches without connecting the mobile app
+            - Reproduced new-window handling, QR scanning, camera permissions, and mandatory-update scenarios without connecting the mobile app
             - Added API capture and replay to shorten validation cycles and automate repeated QA workflows
             - Added row-based bulk replay for controlled, single-API corrections not available in the operations console, including charge-zone repair cases
         results:
@@ -603,12 +604,9 @@ projectSections:
           en: "May 2026 — Present"
         summary:
           ko: |
-            사내 업무 에이전트 플랫폼 Voltbot을 구축하고, 사용자 요청 의도·권한 기반 에이전트 자동 라우터(Voltbot Crew)와 GCP 로그·코드 기반 장애 원인 진단 자동화 흐름을 개발했습니다.
+            사내 업무 에이전트 플랫폼 Voltbot을 구축하고, 사용자 의도·권한·에이전트 상태에 따라 전문 에이전트를 자동 연결하는 Voltbot Crew와 로그·BigQuery·코드 근거를 결합한 장애 진단 흐름을 개발했습니다. 평가 하네스로 답변 품질을 유지하면서 정합성과 비용 개선을 검증했습니다.
           en: |
-            Voltbot is an internal platform that gives employees chat-based access to specialized agents for code policy, BigQuery analysis, legal support, operations, and log diagnosis.
-            Within the platform, I designed intent- and permission-aware routing so users reach the right specialist without selecting an agent themselves.
-            I also built a shared diagnostic context where operations and customer-support teams can ask plain-language questions, combine log, BigQuery, and code findings, and pass that evidence to the next agent.
-            For failures spanning payment services, workers, mobile gateways, and external payment gateways, the workflow can continue an investigation through user and order identifiers even when trace continuity is lost.
+            Built Voltbot, an internal agent platform that routes employees to specialized agents based on intent, permissions, and agent availability. Developed an evidence-driven incident-diagnosis workflow that combines Cloud Logging, BigQuery, internal guidance, and code search across broken trace boundaries, then verified groundedness and cost improvements with an evaluation harness.
         tech:
           - Kotlin
           - Spring Boot
@@ -623,28 +621,20 @@ projectSections:
           ko:
             - 사용자의 자연어 요청을 의도·권한·에이전트 상태 기준으로 분류해 로그 분석, BigQuery 조회, 법률 지원, 코드 정책 등 필요한 전문 에이전트로 연결하는 AgentRouter 구현
             - 공통 Agent/Tool 계약 위에 AgentRunner, ToolHandler, WebSocket 스트리밍을 연결해 Tool 실행 내역, 권한, 쿼터, 중단 요청, 최종 답변이 같은 대화 흐름에 남도록 구성
-            - 정규식 기반 텍스트 도구 호출을 Gemini 네이티브 function calling으로 전환하고 독립 도구를 병렬 실행해 구조화된 인자·실패 결과 저장·즉시 스트리밍을 보장
             - LogDiagnosisAgent에 고객/운영 모드와 반복 조회 도구를 구성하고, traceId·user_id·order_number·시간대/제보 시그니처를 오가는 pivot 및 가설→흔적→조회→판정 루프로 첫 결론 고착과 미검증 단정을 방지
-            - 코드 정책의 정상 조건·상태 전이·에러 코드, BigQuery의 집계·이력·패턴 정보, 로그 조회 결과를 공통 컨텍스트에 남기고 다음 에이전트가 이를 이어받는 통합 진단 흐름 구현
-            - 최종 답변을 진단, 근거 로그, 연계 플로우, 운영/고객 안내 조치로 구조화하고 자연인 식별 정보는 마스킹하되 user_id/order_number 같은 시스템 식별자는 추적 가능하게 유지
+            - 정규식 기반 도구 호출을 Gemini 네이티브 function calling과 병렬 실행으로 전환하고, 구조화된 인자·실패 결과·로그/데이터/코드 근거를 공통 컨텍스트에 남겨 다음 에이전트가 이어받도록 구성
           en:
             - Implemented AgentRouter to classify requests by intent, permission, and agent availability before routing them to specialists for log diagnosis, BigQuery analysis, legal support, or code policy
             - Connected AgentRunner, ToolHandler, and WebSocket streaming through a shared Agent/Tool contract so tool history, permissions, quotas, interruptions, and final answers remain visible in one conversation
-            - Replaced regex-based tool calls with Gemini native function calling and parallel tool execution, providing schema-validated arguments, persisted failures, and immediate text streaming
             - Added customer-support and operations modes to LogDiagnosisAgent, with iterative pivots across trace IDs, user IDs, order numbers, time windows, and report signatures; enforced a hypothesis-trace-query-verdict loop to reduce premature conclusions
-            - Stored policy conditions, state transitions, error codes, BigQuery findings, and log evidence in shared context so each specialist can continue from prior work
-            - Structured final responses around diagnosis, supporting evidence, related service flow, and recommended operations or customer guidance while masking personal identifiers
+            - Replaced regex-based tool calls with Gemini native function calling and parallel execution, persisting structured inputs, failures, and shared log, data, and code evidence for downstream agents
         results:
           ko:
-            - 사용자가 에이전트 종류를 직접 판단하지 않아도 요청 맥락에 맞는 전문 에이전트로 연결할 수 있는 기반 마련
             - 운영/CS가 개발자에게 로그 확인을 요청하기 전 결제 실패·서비스 오류·장애 패턴을 1차 진단하도록 Cloud Logging, 사내 가이드, GitHub 코드 검색을 재사용 가능한 Tool 흐름으로 표준화
             - 9개 평가 케이스를 3회씩 비교한 하네스에서 기존 루프와 답변 품질은 통계적으로 동등하게 유지하면서 정합성 지표 평균 87.7%→100%, 토큰·비용 46% 절감, 실행 시간 10% 단축
-            - 결제 실패 원인이 사용자 결제수단 문제인지, 외부 PG/카드사 점검인지, 내부 서비스 상태 불일치인지 근거 중심으로 나눠 운영 답변 품질을 높일 수 있는 기반 구축
           en:
-            - Routed users to the appropriate specialist without requiring them to understand the agent taxonomy
             - Standardized Cloud Logging, internal documentation, and GitHub code search as reusable tools for first-pass diagnosis before engineering escalation
             - In a 9-case × 3-run evaluation harness, preserved statistically equivalent answer quality while improving average groundedness from 87.7% to 100%, cutting tokens/cost by 46%, and reducing runtime by 10%
-            - Improved evidence-based support responses by distinguishing customer payment-method issues, external gateway or card-network maintenance, and internal service-state mismatches
 
       - title:
           ko: 로밍 서비스 안정성 및 배치 운영 고도화
@@ -743,12 +733,18 @@ projectSections:
             - Improved release stability by reducing mobile delivery key-management burden and avoidable failure points
 
   - heading:
-      ko: 프로젝트 — 카카오스타일 (2022.06 ~ 2024.09)
-      en: Selected Projects - Kakao Style (Jun 2022 - Sep 2024)
+      ko: 카카오스타일 프로젝트
+      en: Kakao Style Projects
+    period:
+      ko: 2022.06 ~ 2024.09
+      en: Jun 2022 — Sep 2024
+    pageBreakBefore: true
     projects:
       - title:
           ko: 모바일 IP 대역 프록시 인프라 및 다이나믹 프라이싱
           en: Mobile Proxy Infrastructure and Dynamic Pricing
+        portfolioSlug: pricing-platform
+        portfolioAnchor: pricing-platform-dynamic-pricing
         period:
           ko: 2024.01 ~ 2024.09
           en: Jan 2024 — Sep 2024
@@ -776,7 +772,7 @@ projectSections:
 
       - title:
           ko: 내/외부 동일 상품 매칭
-          en: Cross-Store Product Matching
+          en: External-to-Internal Product Matching
         portfolioSlug: pricing-platform
         portfolioAnchor: pricing-platform-product-matching
         period:
@@ -784,7 +780,7 @@ projectSections:
           en: Feb 2024 — Sep 2024
         summary:
           ko: 기존 1:1 매칭 구조를 N:M으로 개편하여 스토어/타입 구분 없는 전사적 동일 상품 매칭 시스템 구축
-          en: Replaced a one-to-one model with many-to-many matching so the same product could be linked across stores and product types.
+          en: Replaced a one-to-one model with many-to-many matching that links external marketplace products to internal catalog products across stores and product types.
         tech:
           - Kotlin
           - Spring Boot
@@ -862,7 +858,7 @@ projectSections:
 
       - title:
           ko: 쇼핑 카탈로그 Engine Page 및 최저가 갱신 (네이버쇼핑 / 유튜브쇼핑)
-          en: Shopping Feeds and Lowest-Price Updates (Naver Shopping / YouTube Shopping)
+          en: Catalog Engine Page and Lowest-Price Update Pipelines (Naver Shopping / YouTube Shopping)
         portfolioSlug: pricing-platform
         portfolioAnchor: pricing-platform-shopping-catalog
         period:
@@ -897,12 +893,16 @@ projectSections:
             - Consolidated team-specific final-price APIs behind the Unified Pricing API, aligning pricing logic across customer-facing channels
 
   - heading:
-      ko: 프로젝트 — 이전 경력
-      en: Earlier Experience
+      ko: 이전 경력 프로젝트
+      en: Earlier-Career Projects
+    pageBreakBefore: true
     projects:
       - title:
           ko: 프라이데이 서비스
           en: Friday Commerce Analytics
+        company:
+          ko: 스토어링크
+          en: Storelink
         externalUrl: https://dongholab.notion.site/Friday-Storelink-Project-2021-03-2022-06-2022-07-de901f54ec704d61b30d09efed7e750e?source=copy_link
         externalLinkVisibility: hover
         period:
@@ -934,6 +934,9 @@ projectSections:
       - title:
           ko: 와탭 모니터링 FE
           en: WhaTap Monitoring Frontend
+        company:
+          ko: 와탭랩스
+          en: WhaTap Labs
         externalUrl: https://dongholab.notion.site/Whatap-Project-2019-03-2021-03-42f7a7cbb2af4cc88a88b2e959d89a86?source=copy_link
         externalLinkVisibility: hover
         period:
@@ -967,7 +970,10 @@ projectSections:
 
       - title:
           ko: 잇플루언서 프로젝트
-          en: Influencer platform
+          en: Influencer Marketing Platform
+        company:
+          ko: 함샤우트
+          en: Hamshout
         period:
           ko: 2017.08 ~ 2018.08
           en: Aug 2017 — Aug 2018
@@ -1001,6 +1007,9 @@ projectSections:
       - title:
           ko: 알람톡 (Android)
           en: AlarmTalk (Android)
+        company:
+          ko: 오픈브릿지
+          en: OpenBridge
         externalUrl: https://dongholab.notion.site/AlarmTalk-Project-2016-05-2017-08-5c037a4e31ad422985d33a0a156e1ada?source=copy_link
         externalLinkVisibility: hover
         period:
@@ -1029,6 +1038,9 @@ projectSections:
       - title:
           ko: 포션 (Android)
           en: Potion (Android)
+        company:
+          ko: 오픈브릿지
+          en: OpenBridge
         externalUrl: https://dongholab.notion.site/Phosion-Project-2016-12-2017-05-baa9768aa75e46f3b197e51786d3a9db?source=copy_link
         externalLinkVisibility: hover
         period:
@@ -1056,6 +1068,8 @@ projectSections:
   - heading:
       ko: 사이드 프로젝트
       en: Side Projects
+    pageBreakBefore: true
+    layout: compact
     projects:
       - title:
           ko: Clip Atlas (clip-indexer) — 미디어 태그 제너레이터
@@ -1071,9 +1085,9 @@ projectSections:
           ko: |
             미디어(영상/사진/오디오) 파일의 메타데이터 및 FFmpeg 프레임 추출과 LLM 분석을 결합하여 장면·음성을 자동 태깅하고, 파일명 정제, 태그 Sidecar 저장 및 로컬 웹 UI 관리를 제공하는 미디어 태그 제너레이터 툴입니다.
           en: |
-            Built a CLI & local Web media manager that scans media files, combining FFmpeg and LLM multimodal scene/voice analysis for smart file renaming, tag sidecar storage, and web UI file management.
+            Built a CLI and local web media manager that scans media files, combining FFmpeg and multimodal LLM analysis for smart file renaming, tag sidecar storage, and browser-based file management.
         tech:
-          - Golang
+          - Go
           - FFmpeg / ffprobe
           - Gemini API (Multimodal)
           - React / Web UI

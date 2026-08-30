@@ -7,6 +7,12 @@ description: Verify Teddy Resume print output as exact A4 PDFs and block commits
 
 Treat A4 verification as a required quality gate for resume content, layout, pagination, fonts, and print CSS changes.
 
+## Layout approval boundary
+
+Preserve the established visual structure unless the user explicitly approves a proposed change. Before changing column counts, hiding content in print, reordering sections, forcing new page boundaries, regrouping cards, or shrinking typography and spacing to reduce page count, show what will change and wait for approval. A request for one layout change does not authorize adjacent restructuring.
+
+Keep Other Activities in its existing two-column desktop and print layout unless the user explicitly approves another structure. When pagination leaves blank space, prefer reporting the tradeoff over hiding content or changing columns without approval.
+
 ## Run the gate
 
 Run `npm run verify:a4` from the repository root. It builds the site, renders Korean and English PDFs for the default and creative templates, checks 210mm × 297mm sizing, compares DOM and PDF page counts, and fails on overflow, clipped elements, oversized pagination items, browser errors, or non-A4 page geometry.

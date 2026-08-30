@@ -49,6 +49,7 @@ export interface Activity {
 }
 
 export interface Project {
+  company?: Localized;
   title: Localized;
   period: Localized;
   portfolioSlug?: string;
@@ -67,6 +68,9 @@ export interface Project {
 
 export interface ProjectSection {
   heading: Localized;
+  period?: Localized;
+  pageBreakBefore?: boolean;
+  layout?: 'standard' | 'compact';
   projects: Project[];
 }
 

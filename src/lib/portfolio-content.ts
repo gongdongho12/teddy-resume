@@ -477,14 +477,14 @@ const uplusVipCouponOpsDiagram = localized(
   class UserFlow,AdminFlow,Guard,Approve,Issue,History flow;
   class Cancel,Complete,Ops result;`,
   `flowchart TD
-  Pack["Admin pre-registers coupon pack<br/>U+ VIP benefit month + usable window"] --> Policy["promotion-service policy<br/>payment-method restriction<br/>no overlapping active pack in same month"]
+  Pack["Operations console<br/>pre-register coupon pack<br/>benefit month + usable window"] --> Policy["promotion-service policy<br/>payment-method restriction<br/>no overlapping active pack in same month"]
   Policy --> UserFlow["Customer issue flow<br/>phone + birthday<br/>card lookup"]
-  Policy --> AdminFlow["Admin assisted issue<br/>member detail panel<br/>phone-based card lookup"]
+  Policy --> AdminFlow["Assisted issuance<br/>member detail panel<br/>phone-based card lookup"]
   UserFlow --> Guard["Pre-checks<br/>member birthday match<br/>once per user per month<br/>once per card per month"]
   AdminFlow --> Guard
   Guard --> Approve["external membership gateway<br/>approval request"]
   Approve --> Issue["promotion-service issue<br/>U+ VIP coupon"]
-  Issue --> History["Issue/coupon mapping history<br/>Admin list search"]
+  Issue --> History["Issuance/coupon mapping history<br/>operations-console search"]
   Issue --> Fail{"Coupon issue failed?"}
   Fail -->|yes| Cancel["Compensating LGU+ cancel<br/>response-code diagnostics"]
   Fail -->|no| Complete["Customer benefit granted"]
@@ -515,14 +515,14 @@ const customerMessageOpsDiagram = localized(
   class Source,Immediate,Reserved,Dispatch,Provider process;
   class History,Ops result;`,
   `flowchart TD
-  Admin["Admin message send<br/>SMS / push / AlimTalk"] --> Template["Custom template<br/>targets + variables"]
+  Admin["Operations console<br/>SMS / push / AlimTalk"] --> Template["Custom template<br/>targets + variables"]
   Template --> Source["Send ledger<br/>same record for immediate/scheduled"]
   Source --> Immediate["Immediate send<br/>send orchestrator"]
   Source --> Reserved["Scheduled send<br/>customerMessageDispatchJob"]
   Reserved --> Dispatch["Dispatch tasklet<br/>queries sendable time"]
   Immediate --> Provider["Message provider call"]
   Dispatch --> Provider
-  Provider --> History["Send history / failure status<br/>Admin search"]
+  Provider --> History["Send history / failure status<br/>operations-console search"]
   History --> Ops["Operations campaign response<br/>fewer repeated dev requests"]
   classDef admin fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef process fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
@@ -564,21 +564,21 @@ const pricingPlatformDiagram = localized(
   Req --> Member
   subgraph PIMSYS["Product Management System (PIM)"]
     direction TD
-    Match["Internal/external product matching<br/>matchingId / same-shop / winner score"]
+    Match["External-to-internal product matching<br/>matchingId / same-shop / winner score"]
     Optimize["Dynamic pricing<br/>price score / compare set"]
-    Catalog["Shopping catalog Engine Page<br/>Naver / YouTube feed sync"]
+    Catalog["Catalog Engine Page pipelines<br/>Naver / YouTube feed sync"]
     External["External product values<br/>lowest price / sync dataset"]
     Match --> Optimize --> Catalog --> External
   end
   subgraph PROMO["Promotion Service"]
     direction TD
     Member["Membership<br/>grade / eligibility"]
-    Final["Final Pricing API<br/>coupon / promotion / shipping"]
+    Final["Unified Final Pricing API<br/>coupon / promotion / shipping"]
     Member --> Final
   end
   External --> Expose
   Final --> Expose
-  Expose["PIM user-facing price<br/>promotion final + external price"] --> Resp["response<br/>show best reasonable price"]
+  Expose["Customer-facing price selection<br/>promotion-adjusted + external price"] --> Resp["response<br/>best available price"]
   classDef pim fill:#fff4db,stroke:#9a6700,stroke-width:2px,color:#0f172a;
   classDef promo fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
   classDef expose fill:#edf9f3,stroke:#2f6f57,stroke-width:2px,color:#0f172a;
@@ -870,7 +870,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     },
     {
       ko: 'U+ VIP콕 제휴 쿠폰, 외부 멤버십 G/W, 운영 어드민 연동 경험',
-      en: 'Experience connecting U+ VIP partnership coupons, external membership gateways, and Admin tooling',
+      en: 'Experience connecting U+ VIP partnership coupons, external membership gateways, and operations-console tooling',
     },
     {
       ko: 'Flutter/WebView 기반 하이브리드 앱과 앱 검증 도구 개발 경험',
@@ -1038,7 +1038,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko:
           'VoltUp 회원가입 이후 카카오T 외부 계정을 암호화된 CI 기준으로 연결하고, mobile-gateway의 한 스텝 API에서 결제수단 등록 세션 생성부터 payment-service의 READY 상태 전환, ACTIVE 상태 전환까지 이어지는 흐름을 설계했습니다. 이후 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리해 검색, 해지 검증, 앱 콜백 activate 흐름을 안정화했습니다.',
         en:
-          'Designed the account linking and payment-method integration between VoltUp and Kakao T (South Korea\'s premier mobility platform). Unified member identities via encrypted CI data and established an end-to-end flow spanning session creation, payment-method authorization, and lifecycle activation.',
+          'Designed account linking and payment-method integration between VoltUp and Kakao T, a South Korean ride-hailing and mobility platform. Unified member identities through encrypted identity data and built an end-to-end flow from session creation through payment-method authorization and activation.',
       },
       challenge: {
         ko:
@@ -1329,7 +1329,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko:
           'VoltUp `promotion-service`에서는 쿠폰팩의 등록 기간과 사용 기간을 기준으로 코드 발급, 코드 등록, 코드 없이 유저 직접 할당, 만료 알림 배치를 처리했고, 제휴 쿠폰별 허용 결제수단 정책까지 발급/조회/사용/Admin 생성 흐름에 반영했습니다. 별도로 포인트는 accrual 단위 만료를 다루기 위해 지갑 구조와 차감 순서를 설계했습니다.',
         en:
-          'In VoltUp `promotion-service`, handled code issuance, code registration, direct user assignment without codes, and expiry reminder batches based on coupon-pack registration and usage windows, while applying partner-coupon payment-vendor restrictions across issuance, lookup, usage, and Admin creation flows. Separately designed point wallets and redemption order for per-accrual expiration.',
+          'In VoltUp `promotion-service`, implemented code issuance, code registration, direct coupon assignment, and expiry reminders based on coupon-pack registration and usage windows. Applied partner-specific payment-method restrictions consistently across issuance, lookup, redemption, and operations-console creation, and designed point wallets with per-accrual expiration and deterministic redemption order.',
       },
       challenge: {
         ko:
@@ -1356,7 +1356,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: 'Admin 쿠폰팩 생성 폼에는 허용 결제수단 멀티셀렉과 Encoded ID 노출을 추가해 운영자가 정책을 생성 시점부터 확인할 수 있게 했습니다.',
-          en: 'Added an allowed-payment-vendor multiselect and Encoded ID exposure to the Admin coupon-pack creation flow so operators can verify the policy from creation time.',
+          en: 'Added allowed-payment-method selection and encoded ID visibility to the operations-console coupon-pack form so operators can verify policy settings at creation time.',
         },
         {
           ko: '포인트는 `addBulk`에서 `expiredAt`이 있으면 새 `PointWallet`을 만들고, 없으면 같은 `type + chargeType` 지갑에 합산해 적립 단위와 만료 단위를 함께 관리했습니다.',
@@ -1386,7 +1386,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: '결제수단 제한은 화면 조건으로만 두지 않고 쿠폰팩 도메인 정책으로 끌어올려, Admin에서 만든 정책이 사용자 발급/조회/사용 단계까지 같은 의미로 흐르도록 했습니다.',
-          en: 'Promoted payment-vendor restrictions from a UI condition into a coupon-pack domain policy, so policies created in Admin carry the same meaning through user issuance, lookup, and usage.',
+          en: 'Moved payment-method restrictions from UI-only conditions into coupon-pack domain policy, keeping rules created in the operations console consistent across issuance, lookup, and redemption.',
         },
         {
           ko: '포인트를 단일 잔액이 아닌 `PointWallets` 엔티티로 분리하고, `expiredAt`이 있는 적립은 새 wallet, 없는 적립은 동일 `type + chargeType` 지갑에 합산해 만료 규칙이 데이터 구조에 직접 드러나게 했습니다.',
@@ -1461,28 +1461,28 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       roleLabel: {
         ko: 'U+ VIP콕 쿠폰팩 정책, 외부 멤버십 승인, 발급/보상 흐름 설계',
-        en: 'Designed U+ VIP coupon-pack policy, external membership approval, and issue/compensation flows',
+        en: 'Designed U+ VIP coupon-pack policy, external membership approval, issuance, and failure recovery',
       },
       summary: {
         ko:
           'LGU+ 멤버십 VIP/VVIP 고객에게 월 1회 U+ VIP콕 쿠폰을 지급하기 위해 월별 쿠폰팩 정책, 외부 멤버십 승인 연동, 발급/취소 보상, 발급 이력 조회까지 end-to-end로 연결했습니다. 고객 문의 대응을 위한 Admin 보조 발급과 상태 확인 화면은 이 쿠폰 발급 흐름을 운영에서 안전하게 다루기 위한 부가 기능으로 정리했습니다.',
         en:
-          'Connected monthly coupon-pack policy, external membership approval, issue/cancel compensation, and issue-history search end to end so LGU+ VIP/VVIP customers can receive a monthly U+ VIP benefit coupon. Admin assisted issue and status-check screens were positioned as supporting features for safely operating that coupon flow.',
+          'Connected monthly coupon-pack policy, external membership approval, coupon issuance, compensating cancellation, and issuance history so LG U+ VIP and VVIP members can receive one benefit coupon per month. Added assisted-issuance and status-check screens so operations teams can handle customer inquiries safely.',
       },
       challenge: {
         ko:
           '외부 멤버십 승인과 내부 쿠폰 발급이 하나의 사용자 경험으로 보여야 했지만, 혜택 월 기준 쿠폰팩 사전 등록, 사용자/카드 단위 월 1회 제한, 생년월일 본인확인, 쿠폰 발급 실패 시 외부 승인 취소 보상 기준을 동시에 맞춰야 했습니다. 여기에 결제수단 제한 쿠폰 정책, Admin 보조 발급, 고객 메시지 예약 발송처럼 운영 안정성을 높이는 도구도 함께 정리해야 했습니다.',
         en:
-          'External membership approval and internal coupon issuance had to feel like one user flow while satisfying pre-registered benefit-month coupon packs, once-per-user and once-per-card monthly limits, birthday verification, and compensating approval cancellation on coupon failure. The work also included supporting Admin tools for payment-vendor-restricted coupons, assisted issue, and scheduled customer messages.',
+          'External membership approval and internal coupon issuance had to behave as one customer flow while enforcing pre-registered benefit-month coupon packs, monthly limits per user and card, date-of-birth verification, and compensating approval cancellation when coupon issuance failed. The project also required operations-console support for payment-method restrictions, assisted issuance, and scheduled customer messages.',
       },
       actions: [
         {
           ko: '`promotion-service`에 U+ VIP 쿠폰팩 정책과 혜택 월 기준 활성 기간 중복 제한을 추가하고, 허용 결제수단 정책이 미리보기/조회/사용/Admin 생성까지 같은 의미로 흐르도록 정리했습니다.',
-          en: 'Added the U+ VIP coupon-pack policy to `promotion-service`, blocked overlapping active packs within the same benefit month, and kept allowed-payment-method rules consistent through preview, search, use, and Admin creation.',
+          en: 'Added U+ VIP coupon-pack policy to `promotion-service`, blocked overlapping active packs within the same benefit month, and kept payment-method rules consistent across preview, search, redemption, and operations-console creation.',
         },
         {
           ko: '사용자 발급 API의 핵심 발급 로직을 U+ VIP 발급 서비스로 분리해 휴대폰번호 카드조회, 회원 생일 검증, 사용자/카드 월 1회 제한, LGU+ 승인, 쿠폰 발급, 실패 시 승인 취소 보상을 한 흐름으로 묶었습니다.',
-          en: 'Extracted core issuing logic into a U+ VIP issue service, tying phone-based card lookup, member birthday verification, once-per-user/card monthly limits, LGU+ approval, coupon issue, and compensating approval cancellation into one flow.',
+          en: 'Consolidated phone-based card lookup, date-of-birth verification, monthly limits per user and card, LG U+ approval, coupon issuance, and compensating cancellation in a dedicated U+ VIP issuance service.',
         },
         {
           ko: 'LGU+ 응답코드별 진단 로그와 한도 초과 분기를 보강하고, 카드번호/키는 마스킹과 암호화 경계를 지켜 운영 로그에 민감값이 남지 않도록 했습니다.',
@@ -1490,7 +1490,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: 'Admin API에는 회원 상세에서 휴대폰번호로 카드조회 후 혜택 발급을 보조하는 경로, 본인확인 불일치 사전 점검, 발급/쿠폰 매핑 이력 조회를 추가했습니다.',
-          en: 'Added Admin APIs for phone-based card lookup and assisted benefit issue from member detail, pre-checks for identity mismatches, and searchable issue/coupon mapping history.',
+          en: 'Added operations-console APIs for phone-based card lookup, assisted issuance from member details, identity-mismatch pre-checks, and searchable issuance-to-coupon history.',
         },
         {
           ko: 'Admin UI에는 회원 상세 U+ VIP콕 보조 발급 패널, 발급/쿠폰 매핑 이력 페이지, U+ VIP 쿠폰팩 생성 옵션, 혜택 월 자동 입력, 정액 할인 최소사용금액 보정, 허용 결제수단 멀티셀렉을 구현했습니다.',
@@ -1498,7 +1498,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: '고객 대상 문자/푸시/알림톡 1회 발송 어드민을 만들고, 즉시/예약 발송이 같은 발송 기록을 기준으로 처리되도록 예약 디스패치 배치와 발송 이력 조회를 구성했습니다.',
-          en: 'Built a one-time customer SMS/push/AlimTalk Admin tool so immediate and scheduled sends are processed from the same send record, backed by a scheduled dispatch batch and send-history search.',
+          en: 'Built an operations-console tool for one-time SMS, push, and Kakao AlimTalk messages, using one delivery record for both immediate and scheduled sends with batch dispatch and searchable history.',
         },
       ],
       engineeringViews: [
@@ -1508,11 +1508,11 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: 'Admin 보조 발급은 규칙 우회가 아니라 운영자가 같은 검증 기준을 더 빠르게 실행하는 화면으로 봤습니다. 회원 상세 패널과 이력 조회를 붙여 고객 문의의 현재 상태, 실패 원인, 재시도 가능성을 한 자리에서 확인하게 했습니다.',
-          en: 'I treated Admin assisted issue as a faster execution path for the same rules, not as a bypass. The member-detail panel and history search let operations see current status, failure causes, and retry feasibility in one place.',
+          en: 'Treated assisted issuance as a faster way to execute the same validation rules, not as a bypass. The member-detail panel and history search let operations teams review status, failure causes, and retry eligibility in one place.',
         },
         {
           ko: '쿠폰팩 생성 정책은 화면 조건으로 흩어두지 않고 promotion-service 도메인 정책으로 유지했습니다. Admin은 그 정책을 입력하고 확인하는 표면이고, 사용자 발급/조회/사용은 같은 정책 값을 읽는 구조로 맞췄습니다.',
-          en: 'Coupon-pack creation rules stayed as promotion-service domain policy instead of scattered frontend conditions. Admin became the surface for entering and reviewing policy, while user issue/search/use flows read the same policy values.',
+          en: 'Kept coupon-pack creation rules in `promotion-service` domain policy instead of scattering them across frontend conditions. The operations console edits and displays the policy, while customer issuance, lookup, and redemption use the same values.',
         },
         {
           ko: '고객 메시지 발송은 캠페인 요청마다 별도 코드를 만드는 방식 대신 발송 요청 자체를 데이터로 남기고, 즉시 발송과 예약 디스패치가 같은 발송 원장을 공유하도록 설계했습니다.',
@@ -1522,44 +1522,44 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       outcomes: [
         {
           ko: 'U+ VIP/VVIP 혜택 쿠폰 발급을 고객 화면, 쿠폰 정책, 외부 LGU+ 승인, 실패 보상, 발급 이력까지 end-to-end로 운영 가능한 상태로 연결했습니다.',
-          en: 'Connected U+ VIP/VVIP benefit issuing end-to-end across customer flow, coupon policy, external LGU+ approval, failure compensation, and issue history.',
+          en: 'Connected U+ VIP and VVIP benefit issuance end to end across the customer flow, coupon policy, external LG U+ approval, compensating cancellation, and issuance history.',
         },
         {
           ko: '고객 문의 중 개발자에게 수동 로그/정책 확인을 요청하던 지점을 Admin 조회와 사전 점검 화면으로 옮겨 운영 확인을 빠르게 할 수 있는 기반을 만들었습니다.',
-          en: 'Moved developer-dependent manual log and policy checks into Admin search and pre-check surfaces, creating a foundation for faster customer-inquiry checks.',
+          en: 'Moved manual log and policy checks from developers into operations-console search and pre-check screens, enabling faster customer-inquiry handling.',
         },
         {
           ko: '결제수단 제한, 쿠폰 미리보기, U+ VIP콕 쿠폰팩 생성, 소프트삭제 후 재발급 제약 같은 프로모션 정책 정합성을 promotion-service와 Admin 양쪽에서 맞췄습니다.',
-          en: 'Aligned promotion-policy consistency across promotion-service and Admin for payment-vendor restrictions, coupon preview, U+ VIP coupon-pack creation, and reissue after soft deletion.',
+          en: 'Kept promotion policy consistent between `promotion-service` and the operations console for payment-method restrictions, coupon preview, U+ VIP coupon-pack creation, and reissuance after soft deletion.',
         },
         {
           ko: '고객 메시지 발송 어드민과 예약 발송 배치를 통해 반복 캠페인/공지성 발송을 개발자 작업 없이 운영팀이 처리할 수 있는 방향으로 확장했습니다.',
-          en: 'Extended operations tooling with customer-message Admin sends and scheduled dispatch batches so repeated campaign or notice sends can be handled without developer intervention.',
+          en: 'Extended operations tooling with customer-message composition and scheduled dispatch so recurring campaign and notice sends no longer require developer intervention.',
         },
       ],
       note: {
         ko: 'U+ VIP콕 제휴 쿠폰을 중심으로, 외부 멤버십 승인과 내부 쿠폰 발급/보상, Admin 운영 보조 기능까지 한 흐름으로 설명하기 좋은 프로젝트입니다.',
-        en: 'A strong project for explaining U+ VIP partnership coupons through external membership approval, internal coupon issue/compensation, and supporting Admin operations tooling.',
+        en: 'Demonstrates how external membership approval, internal coupon issuance, compensating cancellation, and operations tooling work together in a production benefit flow.',
       },
       tech: ['Kotlin', 'Spring Boot', 'Spring Batch', 'React', 'TypeScript', 'MySQL', 'JPA', 'QueryDSL', 'Feign', 'Flyway'],
       diagrams: [
         {
           title: {
             ko: 'U+ VIP콕: 외부 멤버십 승인과 내부 쿠폰 발급을 잇는 운영 흐름',
-            en: 'U+ VIP: operational flow connecting external membership approval and internal coupon issue',
+            en: 'U+ VIP: operational flow connecting external membership approval and internal coupon issuance',
           },
           description: {
             ko:
               'Admin 쿠폰팩 사전 등록부터 휴대폰번호 카드조회, 본인확인, LGU+ 승인, promotion-service 발급, 실패 보상, 발급 이력 조회까지 U+ VIP콕 쿠폰 흐름을 한 장으로 정리했습니다.',
             en:
-              'Shows the U+ VIP coupon flow from Admin coupon-pack pre-registration through phone-based card lookup, identity check, LGU+ approval, promotion-service issue, failure compensation, and issue-history search.',
+              'Shows the U+ VIP coupon flow from operations-console pre-registration through phone-based card lookup, identity verification, LG U+ approval, coupon issuance, compensating cancellation, and issuance-history search.',
           },
           code: uplusVipCouponOpsDiagram,
         },
         {
           title: {
             ko: '고객 메시지 발송 어드민: 즉시/예약 발송 원장',
-            en: 'Customer-message Admin: send ledger for immediate and scheduled sends',
+            en: 'Customer messaging: one delivery ledger for immediate and scheduled sends',
           },
           description: {
             ko:
@@ -1684,7 +1684,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       roleLabel: {
         ko: '앱 연결 없는 기능 검증, API capture/replay, Admin 미지원 운영 보정',
-        en: 'App-free validation, API capture/replay, and Admin-unsupported ops corrections',
+        en: 'Browser-based app validation, API capture and replay, and targeted operational corrections',
       },
       summary: {
         ko:
@@ -1733,7 +1733,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: 'Admin 미지원 단일 API 보정 작업을 일회성 스크립트가 아니라 반복 가능한 내부 도구 절차로 다룰 수 있게 했습니다.',
-          en: 'Turned Admin-unsupported single-API correction work from one-off scripts into a repeatable internal tooling procedure.',
+          en: 'Turned targeted single-API corrections outside the operations console from one-off scripts into a repeatable internal workflow.',
         },
         {
           ko: '병목이 보이면 작은 도구로 만들어 공유하는 작업 방식을 실제 앱 개발/운영 맥락에서 보여주는 사례가 됐습니다.',
@@ -1755,7 +1755,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
             ko:
               '앱 연결 없이 앱 의존 흐름을 재현하고, 캡처한 API 요청을 row 기반 replay로 바꿔 개발 QA와 Admin 미지원 운영 보정을 같은 도구 구조로 다루는 흐름입니다.',
             en:
-              'Shows how the extension recreates app-dependent flows without app attachment, then turns captured API requests into row-based replay for both development QA and Admin-unsupported operational corrections.',
+              'Shows how the extension recreates app-dependent flows without connecting a mobile app, then converts captured API requests into row-based replay for development QA and targeted operational corrections.',
           },
           code: voltupAppExtensionDiagram,
         },
@@ -2088,7 +2088,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         ko:
           'MSA가 늘수록 코드 리뷰 기준, 마이크로서비스별 작업 컨벤션, 반복 작업 방식, 로컬 환경값 전달, 내부 API 호출 방식, 배포 절차가 사람마다 달라지기 쉬웠습니다. 개발과 운영이 분리된 상황에서는 이런 drift가 리뷰 누락, 환경 불일치, 배포 실패, 운영자 도구 호출 경계 불명확성으로 이어질 수 있어 공통 workflow와 자동화 체계가 필요했습니다.',
         en:
-          'As the number of services grew, review rules, microservice-level conventions, recurring task patterns, local secret delivery, internal API invocation, and delivery steps were drifting per person. In a development/operations split, this drift can turn into missed reviews, environment mismatches, release failures, and unclear operator-tool trust boundaries, so the team needed shared workflows and automation.',
+          'As the service landscape grew, review standards, microservice conventions, recurring task patterns, local secret delivery, internal API usage, and release procedures became inconsistent across engineers. With development and operations owned by different teams, those inconsistencies increased the risk of missed reviews, environment drift, failed releases, and unclear access boundaries for internal tools.',
       },
       actions: [
         {
@@ -2181,7 +2181,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: 'Admin internal API와 모바일 배포 인증 방식을 표준화해 운영자 도구 확장과 앱 릴리즈에서 반복되는 보안/운영 리스크를 줄였습니다.',
-          en: 'Standardized Admin internal APIs and mobile delivery authentication, reducing recurring security and operational risks around operator-tool expansion and app releases.',
+          en: 'Standardized internal operations-console APIs and mobile delivery authentication, reducing recurring security and operational risks as internal tools and app-release workflows expanded.',
         },
       ],
       note: {
@@ -2222,7 +2222,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       slug: 'pricing-platform',
       title: {
         ko: '프라이싱 플랫폼: 상품 관리 시스템과 프로모션 서비스',
-        en: 'Pricing Platform: Product Management System and Promotion Service',
+        en: 'Pricing Platform: Product Matching, Dynamic Pricing, Final Pricing, and Catalog Pipelines',
       },
       period: {
         ko: '2023.12 - 2024.09',
@@ -2234,116 +2234,127 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       roleLabel: {
         ko: 'PIM과 프로모션을 분리해 고객 노출 최적가 흐름 설계',
-        en: 'Designed the customer-facing best-price flow across PIM and Promotion',
+        en: 'Built four core pricing capabilities across PIM and Promotion services',
       },
       summary: {
         ko:
           '상품 관리 시스템(PIM)은 외·내부 상품 매칭, 다이나믹 프라이싱, 쇼핑 카탈로그 Engine Page를 담당하고 프로모션 서비스는 멤버십과 파이널 프라이싱을 담당하도록 경계를 나눠, 프로모션의 최종 혜택가와 외부 상품 값을 함께 비교해 고객에게 노출할 합리적 최적가를 계산하도록 정리한 프로젝트입니다.',
         en:
-          'Split the boundary so PIM owns internal/external product matching, dynamic pricing, and shopping-catalog Engine Pages while Promotion owns membership and Final Pricing, allowing the user-facing best price to be chosen by comparing promotion-calculated benefit prices against external market prices.',
+          'Built four core capabilities across the Product Information Management (PIM) and Promotion services: external-to-internal product matching, dynamic pricing, a unified Final Pricing API, and Catalog Engine Page pipelines for Naver and YouTube Shopping. PIM combines promotion-adjusted prices with external market prices to select the best price shown to customers.',
       },
       challenge: {
         ko:
           '외부 상품 가격, 내부 최적화 점수, 멤버십·쿠폰 혜택처럼 가격 결정 요소가 여러 서비스에 흩어져 있던 상태에서, 운영 정책은 자주 바뀌고 고객에게는 일관된 합리적 최적가를 보여줘야 했기 때문에 PIM과 프로모션의 책임을 나누면서도 한 흐름으로 연결할 구조가 필요했습니다.',
         en:
-          'Price drivers such as external market prices, internal optimization signals, and membership or coupon benefits were spread across multiple services, while operating policies kept changing. The system needed a structure that separated PIM from Promotion yet still produced a consistent and rational best price for users.',
+          'External market prices, internal optimization signals, and membership or coupon benefits were spread across multiple services while pricing rules changed frequently. The platform needed clear ownership boundaries between PIM and Promotion while still producing one consistent customer-facing price.',
       },
       subsections: [
         {
           id: 'pricing-platform-product-matching',
           title: {
             ko: '내/외부 동일 상품 매칭',
-            en: 'Internal/External Identical Product Matching',
+            en: 'External-to-Internal Product Matching',
           },
           description: {
             ko: '이미지 유사도, same-shop exact match, winner score를 기반으로 비교 가능한 상품군을 안정적으로 만드는 상품 매칭 영역입니다.',
-            en: 'This covers product matching that stabilizes comparable groups through image similarity, same-shop exact matches, and winner scores.',
+            en: 'Builds stable comparison groups from image similarity, exact matches within the same shop, and canonical-product scores.',
+          },
+        },
+        {
+          id: 'pricing-platform-dynamic-pricing',
+          title: {
+            ko: '다이나믹 프라이싱',
+            en: 'Dynamic Pricing',
+          },
+          description: {
+            ko: '외부 최저가와 내부 상품 데이터를 비교해 가격 우위·동등·미확인 상태를 점수화하고 가격 조정과 리포팅에 활용한 영역입니다.',
+            en: 'Scores competitive position from external lowest-price data and internal catalog data, then feeds those signals into pricing adjustments and reporting.',
           },
         },
         {
           id: 'pricing-platform-final-pricing',
           title: {
             ko: '파이널 프라이싱 (각 서비스별 가격 계산 로직 통합 API)',
-            en: 'Final Pricing (Unified API for Service-Level Pricing Logic)',
+            en: 'Unified Final Pricing API',
           },
           description: {
             ko: '멤버십·쿠폰·프로모션·배송비를 포함한 혜택가를 하나의 파이널 프라이싱 API로 표준화한 영역입니다.',
-            en: 'This covers the Final Pricing API that standardizes membership, coupon, promotion, and shipping-adjusted benefit prices.',
+            en: 'Standardizes membership, coupon, promotion, and shipping adjustments behind one pricing contract.',
           },
         },
         {
           id: 'pricing-platform-shopping-catalog',
           title: {
             ko: '쇼핑 카탈로그 Engine Page 및 최저가 갱신 (네이버쇼핑 / 유튜브쇼핑)',
-            en: 'Shopping Catalog Engine Page & Lowest-Price Updates (Naver Shopping / YouTube Shopping)',
+            en: 'Catalog Engine Page and Lowest-Price Update Pipelines',
           },
           description: {
             ko: '변경 상품만 추려 Engine Page, 쇼핑 피드 CSV, 동기화 데이터셋을 빠르게 생성하는 쇼핑 연동 영역입니다.',
-            en: 'This covers shopping integration that generates Engine Page outputs, feed CSVs, and sync datasets from changed items only.',
+            en: 'Generates Engine Page outputs, shopping-feed CSVs, and synchronization datasets from changed products only for Naver and YouTube Shopping.',
           },
         },
       ],
       actions: [
         {
           ko: '상품 관리 시스템의 상품 매칭은 version cache 기준으로 `productId -> matchingId`를 조회하고, 같은 shop의 exact match와 winner score를 묶어 프라이싱 기준 상품군을 정리했습니다.',
-          en: 'Used versioned product-matching caches in PIM to resolve `productId -> matchingId`, then grouped exact same-shop matches with winner scores as the basis for pricing comparison.',
+          en: 'Used versioned matching caches in PIM to resolve `productId -> matchingId`, then combined exact same-shop matches with canonical-product scores to build stable comparison groups.',
         },
         {
           ko: '가격 최적화는 Athena 적용 대상을 읽어 내부/외부 상품을 다시 구성하고, `SUPERIOR / EQUAL = 100`, `UNKNOWN = 50` 규칙으로 price score를 upsert하는 배치 흐름을 운영했습니다.',
-          en: 'Ran price-optimization batches that read Athena-applied targets, rebuilt internal/external comparison sets, and upserted price scores with rules such as `SUPERIOR / EQUAL = 100` and `UNKNOWN = 50`.',
+          en: 'Ran dynamic-pricing batches that loaded eligible products from Athena, rebuilt external-to-internal comparison sets, and updated price scores using rules such as `SUPERIOR / EQUAL = 100` and `UNKNOWN = 50`.',
         },
         {
           ko: '쇼핑 카탈로그 영역은 상품 업데이트·가격 업데이트 이벤트를 받아 변경 상품만 추려 Engine Page, 쇼핑 피드 CSV, 동기화 데이터셋을 생성하는 공통 경로로 운영했습니다.',
-          en: 'Built a shared shopping-catalog path that consumes product and price update events, filters only changed items, and generates Engine Pages, feed CSVs, and sync datasets.',
+          en: 'Built a shared Catalog Engine Page pipeline that consumes product and price-update events, filters changed items, and generates Engine Page outputs, shopping-feed CSVs, and synchronization datasets.',
         },
         {
           ko: '프로모션 서비스에서는 멤버십 혜택 조건과 `product / item / order final price` API를 나누고, shipping fee는 `MappedBatchLoader`로 묶어 최종 혜택가를 조합했습니다.',
-          en: 'Separated membership eligibility and `product / item / order final price` APIs in Promotion, then composed shipping fees through a `MappedBatchLoader` into the final benefit price.',
+          en: 'Separated membership eligibility from `product / item / order` Final Pricing APIs, then composed shipping fees through `MappedBatchLoader` into the final customer price.',
         },
       ],
       engineeringViews: [
         {
           ko: '상품 관리 시스템은 외·내부 상품 매칭, 다이나믹 프라이싱, 쇼핑 카탈로그를 운영하고 프로모션 서비스는 멤버십과 파이널 프라이싱을 담당하도록 경계를 나눠, PIM이 프로모션의 최종 혜택가와 외부 상품 값을 함께 비교해 고객 노출 최적가를 결정하도록 했습니다.',
-          en: 'Split the boundary so PIM owns internal/external matching, dynamic pricing, and shopping catalogs while Promotion owns membership and Final Pricing, allowing PIM to determine the user-facing best price by comparing promotion-calculated benefit prices against external product values.',
+          en: 'Defined clear ownership boundaries: PIM handles external-to-internal product matching, dynamic pricing, and catalog pipelines, while Promotion owns membership and Final Pricing. PIM then compares promotion-adjusted prices with external market prices to select the customer-facing price.',
         },
         {
           ko: '상품 매칭은 version cache와 same-shop exact match 기준을 사용해 비교 가능한 상품군을 먼저 안정화했고, winner score를 함께 노출해 운영 판단 근거도 남겼습니다.',
-          en: 'Stabilized comparable product groups first through versioned caches and same-shop exact matching, while exposing winner-score context for operational decisions.',
+          en: 'Stabilized comparable product groups through versioned caches and exact same-shop matching, while exposing canonical-product scores for operational review.',
         },
         {
           ko: '전체 상품을 매번 다시 읽어 변경값을 보내던 흐름 대신, 상품 업데이트와 가격 업데이트 이벤트를 받아 변경 상품만 추려 Engine Page와 네이버 쇼핑이 읽는 CSV·동기화용 데이터셋을 만드는 공통 경로로 바꿔 CPS 2시간 갱신 기준을 맞추고, 같은 구조를 구글 Engine Page(유튜브 쇼핑)에도 빠르게 확장할 수 있게 했습니다.',
-          en: 'Replaced the flow that re-read the entire catalog on every run with a shared path that consumes product and price update events, filters only changed items, and generates the Engine Page plus the Naver Shopping feed CSV and sync dataset, meeting the CPS 2-hour refresh interval and making it quick to extend the same structure to Google Engine Page (YouTube Shopping).',
+          en: 'Replaced full-catalog scans with an event-driven pipeline that processes only changed products and generates Engine Page outputs, the Naver Shopping feed CSV, and synchronization datasets. This met the two-hour CPS refresh interval and made the same pipeline reusable for Google Engine Page and YouTube Shopping.',
         },
         {
           ko: '파이널 프라이싱은 `product / item / order` 경계를 분리하고, 멤버십·쿠폰·프로모션·배송비를 한 응답 안에서 조합하면서도 shipping 조회 비용은 DataLoader로 제어했습니다.',
-          en: 'Separated final pricing by `product / item / order` boundary and combined membership, coupons, promotions, and shipping in one response while controlling shipping-query cost through DataLoader.',
+          en: 'Separated Final Pricing by `product / item / order` boundary and combined membership, coupons, promotions, and shipping in one response while controlling shipping-query cost through DataLoader.',
         },
       ],
       outcomes: [
         {
           ko: '상품 관리 시스템이 프로모션의 파이널 프라이싱 값과 외부 상품 값을 함께 받아 고객 노출 최적가를 계산하도록 구조를 정리했습니다.',
-          en: 'Structured the system so PIM can combine Promotion Final Pricing values with external product prices to calculate the user-facing best price.',
+          en: 'Enabled PIM to compare Promotion Final Pricing results with external market prices and select the best price shown to customers.',
         },
         {
           ko: '전체 상품 갱신에 기대면 약 6시간이 걸리던 구조에서, 변경 상품만 이벤트 기반으로 반영하는 경로를 추가해 네이버 쇼핑용 CSV와 동기화 데이터셋을 1시간 이내에 생성할 수 있게 했습니다.',
-          en: 'Instead of depending on a full-catalog refresh that took about 6 hours, added an event-driven path for changed items so the Naver Shopping feed CSV and sync dataset can be generated within an hour.',
+          en: 'Replaced a roughly six-hour full-catalog refresh with an event-driven changed-product path that generates the Naver Shopping feed CSV and synchronization dataset within an hour.',
         },
         {
           ko: '네이버 쇼핑 기준으로 만든 Engine Page·최저가 갱신 구조를 공통화해 구글 Engine Page(유튜브 쇼핑)도 빠르게 반영할 수 있는 확장 기반을 마련했습니다.',
-          en: 'Commonized the Engine Page and lowest-price update structure built for Naver Shopping so Google Engine Page (YouTube Shopping) could be added quickly on top of the same foundation.',
+          en: 'Standardized the Engine Page and lowest-price update pipeline built for Naver Shopping so Google Engine Page and YouTube Shopping could reuse the same foundation.',
         },
         {
           ko: '상품, 아이템, 주문 단위의 파이널 프라이싱 응답을 표준화해 멤버십·쿠폰·프로모션 혜택가를 여러 지면과 운영 배치에서 같은 계약으로 재사용할 수 있게 했습니다.',
-          en: 'Standardized final-pricing responses across product, item, and order boundaries so membership, coupon, and promotion-adjusted prices can be reused under one contract across surfaces and operational batches.',
+          en: 'Standardized Final Pricing responses across product, item, and order boundaries so customer-facing services and operational batches can reuse one contract for membership, coupon, and promotion-adjusted prices.',
         },
         {
           ko: '상품 관리 시스템 쪽 정책이 바뀌어도 그쪽 입력과 운영 로직만 조정하고, 프로모션 서비스의 사용자 응답 계약은 안정적으로 유지할 수 있게 했습니다.',
-          en: 'Made it possible to change policies inside the product-management system while keeping the user-facing response contract in the promotion service stable.',
+          en: 'Allowed pricing policies inside PIM to change without breaking the customer-facing response contract owned by Promotion.',
         },
       ],
       note: {
         ko: 'PIM이 외부 상품 값과 프로모션의 파이널 프라이싱 값을 함께 받아 고객에게 보여줄 합리적 최적가를 노출하도록 만든 서비스 경계를 설명하기 좋은 프로젝트입니다.',
-        en: 'A strong project for explaining the boundary where PIM combines external product values with Promotion Final Pricing to expose a rational best price to users.',
+        en: 'Demonstrates how product matching, dynamic pricing, Final Pricing, and catalog pipelines work together to produce a consistent customer-facing price.',
       },
       tech: ['Kotlin', 'Spring Boot', 'AWS Athena'],
       diagrams: [
@@ -2356,7 +2367,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
             ko:
               'PIM은 외·내부 상품 매칭, 다이나믹 프라이싱, 쇼핑 카탈로그를 담당하고 프로모션 서비스는 멤버십과 파이널 프라이싱을 담당한 뒤, PIM이 프로모션의 최종 혜택가와 외부 상품 값을 함께 비교해 고객 노출 최적가를 만드는 구조를 한 장으로 정리했습니다.',
             en:
-              'Shows in one diagram how PIM owns internal/external matching, dynamic pricing, and shopping catalogs while Promotion owns membership and Final Pricing, then how PIM combines promotion-calculated benefit prices with external product values to expose the best user-facing price.',
+              'Shows how PIM owns external-to-internal matching, dynamic pricing, and Catalog Engine Page pipelines while Promotion owns membership and Final Pricing, and how both services contribute to the customer-facing price.',
           },
           code: pricingPlatformDiagram,
         },
@@ -2423,7 +2434,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
         {
           ko: '여행 콘텐츠는 글만 있는 블로그보다 지도, 타임라인, 장소 데이터가 함께 보여야 공유 가치가 높다고 보고, 시각화와 데이터 구조를 한 흐름으로 묶었습니다.',
-          en: 'Viewed travel content as more valuable when maps, timelines, and location data are shown together rather than as text-only blog posts, so visualization and data structure were designed as one flow.',
+          en: 'Designed the content model and visualizations together so maps, timelines, and location data reinforce the itinerary instead of appearing as disconnected additions to a text-only post.',
         },
         {
           ko: '개인 프로젝트여도 운영 부담이 커지지 않도록 정적 배포와 콘텐츠 파일 기반 운영으로 유지비를 낮추고, 필요한 부분만 점진적으로 확장할 수 있게 했습니다.',

@@ -24,7 +24,7 @@ entries:
 
   - id: 2026-09-authmethod-delete-idor
     period: 2026-09-08..2026-09-08
-    status: candidate
+    status: reflected
     delivery: merged
     area: security
     headline: 인증수단 삭제 IDOR 취약점 대응 — 소유권 가드 + 개인정보 삭제 userId 스코프, 6개월 노출 구간 전수 검사
@@ -38,12 +38,12 @@ entries:
         - 3fb4ea91
         - c1955af02
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-09-20
     skip_reason:
 
   - id: 2026-09-csms-logging-cost-reduction
     period: 2026-09-07..2026-09-15
-    status: candidate
+    status: reflected
     delivery: merged
     area: csms
     headline: CSMS Cloud Logging 적재량 절감 — 로거 바디 상한·MDC 중복 제거로 일 약 120GB → 18GB(−85%) 감량, prod 실측 확인
@@ -61,7 +61,7 @@ entries:
         - 8e0d98fe
         - 92acf64d
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-09-20
     skip_reason:
 
   - id: 2026-09-charging-observability-contract
@@ -201,7 +201,7 @@ entries:
 
   - id: 2026-09-admin-charging-order-count-cache
     period: 2026-09-14..2026-09-14
-    status: candidate
+    status: reflected
     delivery: merged
     area: feapp-admin
     headline: 어드민 충전주문 목록 무필터 총건수 2단 캐싱(로컬 1분 + Redis 10분) — prod 1.64s 슬로우 쿼리 흡수
@@ -215,7 +215,7 @@ entries:
         - eeaacada9
         - 507610556
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-09-20
     skip_reason:
 
   - id: 2026-09-voltup-biz-service-bootstrap
@@ -303,7 +303,7 @@ entries:
 
   - id: 2026-09-liveness-probe-group-standardization
     period: 2026-09-17..2026-09-17
-    status: candidate
+    status: reflected
     delivery: merged
     area: platform
     headline: liveness 프로브 판정 범위 표준화 — DB 순단이 전 파드 재기동 연쇄로 번지던 경로 차단
@@ -316,7 +316,7 @@ entries:
         - 4538bd25
         - 292dfe3a
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-09-20
     skip_reason:
 
   - id: 2026-09-csms-health-check-throttle-lock
@@ -338,7 +338,7 @@ entries:
 
   - id: 2026-09-charger-charging-count-cache
     period: 2026-09-18..2026-09-18
-    status: candidate
+    status: reflected
     delivery: merged
     area: backend
     headline: 충전 이력 무필터 총건수 2단 캐싱 — 945만 행 클러스터 전수 스캔(1.4s) 부하 차단
@@ -350,12 +350,12 @@ entries:
       commits:
         - 50e0e64
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-09-20
     skip_reason:
 
   - id: 2026-09-flutter-impeller-anr-fix
     period: 2026-09-18..2026-09-18
-    status: candidate
+    status: reflected
     delivery: merged
     area: frontend
     headline: Flutter 엔진 업그레이드 및 안드로이드 예측 뒤로가기 대응 — 렌더러 데드락 ANR 해소
@@ -369,5 +369,5 @@ entries:
         - 734c06a
         - 42b1182
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-09-20
     skip_reason:

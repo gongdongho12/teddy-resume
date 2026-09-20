@@ -43,13 +43,13 @@ experience:
         빌링 - DB 승인권, DLQ 및 다단계 복구 흐름으로 중복 결제 방지와 결제/미수 처리 안정성 확보
         프로모션(쿠폰/포인트) - 고객 리텐션 증대
         유저사이드 - 차량정보 조회, PnC(Plug & Charge) 인증 및 유저사이드 백엔드와 모바일 앱 담당
-        MSA 안정화 - Pub/Sub 무중단 종료 표준화 및 외부 API 장애 격리
+        MSA 안정화 & FinOps - K8s Liveness 캐스케이드 차단, Cloud Logging 85% 비용 절감, Pub/Sub 무중단 종료 표준화
         사내 AI 도구 - 에이전트 라우팅, 로그 진단 자동화, DX 워크플로우 구축
         DX 인프라 - CI/CD 통합, 문서 자동 생성 적용
       en: |
         Payments & Billing — Built multi-provider payment architecture and dead-letter queue (DLQ) recovery, preventing duplicate charges with database-backed atomic approval locks
         Promotions & Customer Products — Built reusable coupon and points systems, customer-facing backend services, and the VoltUp mobile app
-        Reliability — Standardized graceful Pub/Sub shutdown and isolated external API failures across microservices
+        Reliability & FinOps — Cut logging volume by 85%, prevented K8s cascade restarts, and enforced graceful Pub/Sub shutdowns
         Developer & AI Tooling — Built specialist-agent routing, first-pass log diagnosis, shared CI/CD workflows, and automated technical documentation
 
   - company:
@@ -505,12 +505,16 @@ projectSections:
             - 차량 등록 서비스 및 PnC(Plug & Charge) 충전기-차량 고유 키 자동 매핑·인증 시스템 개발
             - 홈페이지 통계 API — 전월 누적합·전일 누적 delta·당일 실시간 합산을 하나의 누적 지표로 결합하고, 공개 트래픽을 고려해 Local/RemoteCache와 분산 락으로 원본 부하 최소화
             - 외부 인증서·U+ 멤버십·블루멤버스 포인트 연동에 전용 풀, 타임아웃, 서킷 브레이커/CallGuard를 적용해 지연 전파와 스레드 고갈을 격리하고 승인·포인트 결과가 불확실할 때 명시적으로 실패하도록 설계
+            - 945만 행 규모의 충전 이력 및 어드민 주문 목록에서 발생하던 무필터 COUNT 슬로우 쿼리(1.4~1.6s)를 로컬(1분) + Redis(10분) 2단 캐시로 완충해 DB 풀스캔 부하 해소
+            - 타인 인증수단 삭제 IDOR 취약점 식별 즉시 소유권 검증 가드를 적용해 당일 배포하고, 6개월 노출 구간 로그 전수 검사를 통해 오사용 0건 확인
           en:
             - Designed Kakao T account and payment integration across auth, user, billing, and customer-app services, covering OAuth2 linking, five-step card registration, payment approval, and partial cancellation
             - Established the partner customer token as the link between external payment methods and internal user context, adding search indexes, unlink validation, and a callback-specific activation API
             - Built vehicle enrollment and Plug & Charge credential-registration services
             - Combined historical totals and same-day real-time data in one homepage statistics API, using local and remote caches plus distributed locks to protect source systems from public traffic
             - Isolated external certificate, LG U+ Membership, and Bluemembers integrations with dedicated thread pools, timeouts, circuit breakers, and CallGuard so uncertain outcomes fail explicitly instead of exhausting request threads
+            - Mitigated 1.4–1.6s full-table scan slow queries on a 9.45M-row charging history table by implementing a two-tier cache (1-min local memory + 10-min Redis)
+            - Remediated an IDOR vulnerability in payment-method deletion with same-day backend ownership validation and deployed to production, verifying zero malicious exploitation across 6 months of historical logs
         results:
           ko:
             - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현
@@ -545,6 +549,7 @@ projectSections:
             - ML Kit 기반 커스텀 QR 스캐너 페이지와 반응형 스캔 UI 구현
             - FCM 기반 푸시 알림 시스템 구축
             - Crashlytics 기반 Dart/native 오류 수집과 카메라/FCM 안정화
+            - Android Impeller/Vulkan 렌더러에서 메인-래스터 스레드 상호 대기로 발생하던 네이티브 데드락 ANR 크래시를 Flutter 엔진 핫픽스 업그레이드 및 예측 뒤로가기(PopScope) 연동으로 해결
           en:
             - Scoped the app through a proof of concept and delivered the Android/iOS hybrid app for the March 2025 launch
             - Defined a JS bridge for communication between the web frontend, native app, and device hardware
@@ -552,6 +557,7 @@ projectSections:
             - Custom ML Kit-based QR scanner page and responsive scan UI
             - FCM-based push notification system
             - Crashlytics-driven Dart/native error collection and camera/FCM stabilization
+            - Resolved native deadlock ANR crashes caused by main-and-raster thread contention on Android Impeller/Vulkan renderer through Flutter engine hotfix upgrades and predictive back navigation (PopScope)
         results:
           ko:
             - 2개월 이내 런칭 (2024.12 ~ 2025.02)
@@ -708,6 +714,8 @@ projectSections:
             - Admin 내부 API 호출이 늘어나는 상황에서 admin-internal-* 클라이언트와 X-Internal-Caller 헤더 규약을 도입해 운영자 도구의 내부 호출 경계 표준화
             - Android/iOS 앱 배포 과정을 정리해 인증 키 관리 부담과 불필요한 실패 요인을 줄임
             - Android Jenkins 파이프라인 공통 라이브러리화, GCS Gradle 캐시, iOS 자동 배포, ProGuard/R8 정책 등
+            - CSMS 로그 진입점의 페이로드 상한 설정 및 MDC 중복 제거로 Cloud Logging 일 적재량을 85% 감량(120GB → 18GB, 월 약 3TB 절감)하고 월 약 $1,400의 인프라 비용 절감 실측
+            - K8s Liveness Probe 판정 범위를 프로세스 생존 상태로 한정하도록 공통 표준을 수립하여, DB 일시 순단 시 정상 동작 중인 파드까지 연쇄 재시작(Cascade)되는 장애 경로 원천 차단
           en:
             - Built a reusable repository of microservice conventions and recurring task patterns for Claude Code, Cursor, Gemini, and other coding agents
             - Rolled out a LiteLLM proxy and a single source of truth for model defaults, then standardized first-pass reviews, pull-request summaries, security-review drafts, and Slack notifications as shared CI workflows
@@ -718,6 +726,8 @@ projectSections:
             - Standardized internal operations-console API boundaries with shared clients and an X-Internal-Caller convention
             - Simplified Android and iOS delivery to reduce key-management overhead and avoidable failures
             - Consolidated Android Jenkins pipelines into shared libraries and added remote Gradle caching, iOS TestFlight automation, and shared R8 policies
+            - Cut Cloud Logging volume by 85% (120GB to 18GB/day, saving ~3TB and ~$1,400/month) by enforcing body size limits and removing redundant MDC fields at log ingestion points
+            - Standardized Kubernetes liveness probe boundaries to process-liveness indicators, preventing cascading pod restarts across microservices during transient database hiccups
         results:
           ko:
             - AI 코드 리뷰 자동화로 리뷰 리소스 절감

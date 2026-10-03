@@ -850,8 +850,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     en: 'Project Portfolio',
   },
   eyebrow: {
-    ko: '결제, 앱, 로밍, 사내 AI 에이전트, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
-    en: 'Selected cases across payments, apps, roaming, internal AI agents, pricing, membership, promotions, DX, and personal products',
+    ko: '결제, 충전 플랫폼, 앱, 로밍, 사내 AI 에이전트, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
+    en: 'Selected cases across payments, charging platform, apps, roaming, internal AI agents, pricing, membership, promotions, DX, and personal products',
   },
   intro: {
     ko:
@@ -1015,6 +1015,88 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           code: multiVendorContractDiagram,
         },
       ],
+    },
+    {
+      slug: 'charging-platform-reliability',
+      title: {
+        ko: '충전 플랫폼(CSMS) 안정화 및 충전 주문 경로 분리',
+        en: 'Charging Platform (CSMS) Reliability and Order-Path Isolation',
+      },
+      period: {
+        ko: '2026.08 - 현재',
+        en: 'Aug 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: '그리드 스쿼드 — 충전기 통신 서버(CSMS)와 충전 경로 담당',
+        en: 'Grid squad — owner of the charger communication server (CSMS) and charging path',
+      },
+      summary: {
+        ko:
+          '충전기 통신 서버(CSMS)와 충전 경로를 맡아, 충전 주문 처리를 앱 부가 기능에서 분리하고 원격 충전 시작 실패와 고객에게 잘못 전달되던 실패 알림을 원인별로 정리했습니다. 충전 1건을 여러 서비스에 걸쳐 하나의 ID로 추적하는 표준도 함께 세웠습니다.',
+        en:
+          'Took over the charger communication server (CSMS) and charging path, separated charging-order processing from non-essential app features, and resolved remote-start failures and false failure alerts by root cause. Also established a standard for tracing each charging session across services with a single ID.',
+      },
+      challenge: {
+        ko:
+          '충전 주문 처리가 앱의 부가 기능과 같은 서비스에 묶여 있어, 차량 조회 같은 외부 연동이 느려지면 충전 시작까지 영향을 받을 수 있었습니다. 원격 충전 시작은 충전기 펌웨어, CSMS, 앱 서버가 함께 관여해 실패 원인이 한곳에 보이지 않았고, 서비스 사이에서 추적 정보가 끊겨 충전 1건의 흐름을 따라가기도 어려웠습니다.',
+        en:
+          'Charging-order processing shared a service with non-essential app features, so slow external integrations such as vehicle lookups could delay charging starts. Remote starts involve charger firmware, CSMS, and the app server, so failure causes were not visible in one place, and tracing context was lost between services, making a single charging session hard to follow.',
+      },
+      actions: [
+        {
+          ko: '충전 시작에 꼭 필요한 주문 경로만 별도 서비스로 분리하고, 배포 순서와 기동 검증(부팅 스모크 테스트)을 정의해 2026.09부터 운영 환경에서 운영했습니다.',
+          en: 'Moved only the order path required to start charging into a dedicated service, defined its deployment order and startup smoke test, and ran it in production from Sep 2026.',
+        },
+        {
+          ko: '원격 충전 시작 실패를 4가지 유형으로 분류하고, 규격에 맞지 않는 충전기 메시지 격리, 동시 요청 간 충돌 해소, 오프라인 충전기의 재전송 폭주 차단으로 하나씩 해결했습니다.',
+          en: 'Classified remote-start failures into four types and fixed each by isolating non-compliant charger messages, resolving conflicts between simultaneous requests, and blocking retransmission floods from chargers coming back online.',
+        },
+        {
+          ko: '원격 시작 응답 지연 하루 5,861건이 실패가 아닌 평소 흐름임을 데이터로 확인하고, CSMS와 앱 서버 사이의 오류 기준을 다시 정해 고객에게 잘못 가던 "충전 시작 실패" 알림 2종을 없앴습니다.',
+          en: 'Confirmed with data that 5,861 delayed remote-start responses per day were normal flow, then redefined the error contract between CSMS and the app server to remove two kinds of false "charging failed" alerts.',
+        },
+        {
+          ko: '메시지 큐(Pub/Sub)와 비동기 처리 구간에서 끊기던 추적 ID를 잇고, 충전·주문·추적 ID 세 가지 키로 8개 서비스의 로그를 연결하는 표준과 런북을 만들었습니다.',
+          en: 'Restored trace IDs lost across Pub/Sub and asynchronous hops, and wrote a standard and runbook that link logs across 8 services through three keys: charging ID, order number, and trace ID.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: '서비스 전체를 한 번에 나누기보다, 앱 없이도 성립해야 하는 충전 주문 경로만 먼저 분리해 위험을 줄이고 단계적으로 옮겼습니다.',
+          en: 'Instead of splitting everything at once, I first separated only the order path that must work without the app, reducing risk and migrating in stages.',
+        },
+        {
+          ko: '고객 알림의 실패 여부는 서버 응답 코드가 아니라 충전기 원시 로그로 판단했습니다. 응답이 늦어도 실제 충전은 시작되는 경우가 많아, 지연을 곧바로 실패로 보지 않도록 기준을 정했습니다.',
+          en: 'I judged whether a customer alert was truly a failure from raw charger logs rather than server status codes. Many delayed responses still led to a started session, so delays are no longer treated as failures by default.',
+        },
+        {
+          ko: '추적 표준은 문서만 두지 않고 실제 충전 건을 끝까지 따라가며 끊기는 지점을 하나씩 메워, 표준이 실제로 동작하는지 확인했습니다.',
+          en: 'Rather than leaving tracing as documentation, I followed real charging sessions end to end and closed each break point, verifying that the standard actually works.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '앱 부가 기능의 장애나 외부 연동 지연이 충전 시작으로 번지지 않는 구조를 운영 환경에 적용했습니다.',
+          en: 'Put a structure in production that keeps app-feature outages and slow external integrations from spreading to charging starts.',
+        },
+        {
+          ko: '고객에게 잘못 가던 충전 실패 알림을 없애 불필요한 문의와 혼란을 줄였습니다.',
+          en: 'Removed false charging-failure alerts, reducing unnecessary customer confusion and inquiries.',
+        },
+        {
+          ko: '장애 분석이 사후 로그 검색에서 충전 1건 단위의 추적으로 바뀌었습니다.',
+          en: 'Shifted incident analysis from after-the-fact log searches to tracing individual charging sessions.',
+        },
+      ],
+      note: {
+        ko: '새로 맡은 충전 플랫폼에서 구조 분리, 원인별 실패 해결, 추적 표준화를 함께 진행한 안정화 프로젝트입니다.',
+        en: 'A reliability project on a newly owned charging platform, combining structural isolation, root-cause failure fixes, and tracing standards.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'OCPP', 'GCP Pub/Sub', 'Redis', 'Kubernetes', 'OpenTelemetry'],
     },
     {
       slug: 'kakao-t-integration',

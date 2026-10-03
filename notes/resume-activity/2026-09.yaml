@@ -1,8 +1,8 @@
 entries:
   - id: 2026-09-auth-kms-jwt-signing
     period: 2026-08-28..2026-09-10
-    status: candidate
-    delivery: in_progress
+    status: reflected
+    delivery: deployed
     area: auth
     headline: JWT 서명키를 Cloud KMS 전용으로 전환 — 어드민/유저 신뢰 도메인(JWKS) 분리, 무중단 2단계 컷오버 설계
     impact: 서명 개인키가 서버·Vault 밖으로 나오지 않는 구조로 전환한 보안 아키텍처 작업. legacy 토큰 롤링 재서명으로 무중단 전환, aud 검사 관측→차단 단계 게이트 설계. prod 1단계 9/7·2단계 컷오버 9/8 완료(재서명 정상, 세션 조회 실패 0건). 컷오버 직후 소비자 서명키 참조 누락 1건을 forward fix 로 39분 내 복구하고, pin 대상을 런북이 아니라 코드(서명키 선택 로직·ServiceCode enum)에서 도출하도록 절차를 개정. 9/10 legacy 키 제거·aud 차단 잔여. 9/15 후속으로 KMS 서명 gRPC 가 CANCELLED 로 끝날 때 재시도 없이 500 이 나던 경로를 재시도·타임아웃 60s→5s·호출 계측으로 보강(PR #142, 리뷰 대기).
@@ -18,8 +18,9 @@ entries:
         - https://github.com/lgvoltup/voltup-feapp/pull/948
         - https://github.com/lgvoltup/voltup-feapp/pull/963
       commits: []
-    resume_targets: []
-    reflected_at:
+    resume_targets:
+      - kakao-t-integration
+    reflected_at: 2026-10-03
     skip_reason:
 
   - id: 2026-09-authmethod-delete-idor
@@ -66,8 +67,8 @@ entries:
 
   - id: 2026-09-charging-observability-contract
     period: 2026-09-04..2026-09-17
-    status: candidate
-    delivery: in_progress
+    status: reflected
+    delivery: deployed
     area: observability
     headline: 충전 1건 종단 추적 체계 설계·1단계 구현 — Pub/Sub 구간 traceId 전파 표준과 피벗 키 관측 계약
     impact: CSMS→feapp→charger-service→로밍으로 이어지는 단가 조회 연쇄에서 Pub/Sub 3홉이 traceId를 잃던 문제를 W3C traceparent 속성 전파로 잇고, 서비스 간 추적 식별자·피벗 키·스팬 이름 표준을 관측 계약 문서와 추적 런북으로 정본화. 5개 서비스에 걸친 관측 표준화 작업으로 장애 원인 파악 경로를 사후 로그 검색에서 상관키 추적으로 전환. 9/15에는 Pub/Sub 소비자가 공용 스레드에 trace_id·pubsub_message_id 를 남겨 다른 메시지 로그와 오조인되던 MDC 수명 결함을 feapp 소비자 15곳에서 정리하고, 재발을 막는 소스 가드 테스트와 행위 테스트를 추가. 피벗 키(user_id 등)를 raw MDC.put 대신 baggage API로 올리는 표준을 csms·roaming·common(코루틴 MDCContext)에 걸쳐 적용. 9/16 에는 stg 실측으로 traceparent 는 이어지지만 baggage 헤더가 0건이라 피벗 키가 첫 홉에서 전멸한다는 것을 확인하고, charger-service 전환(#137)과 csms Feign 발신 baggage 직렬화(#261)까지 메워 서비스 간 피벗 키 전파율 0% → 관통 확인. 원인 중 하나였던 @Value 의 yaml 시퀀스 미바인딩(빈 목록 무음 주입)은 설정 프로퍼티 주입으로 고치고 실제 yaml 을 바인딩하는 회귀 테스트로 고정. 결제 구간이 charging_id 를 몰라 충전↔결제가 2단 조인이던 구조는 결제 요청 페이로드에 chargingId 선택 필드를 더해 common·billing·feapp 3개 저장소에 걸쳐 잇고, 로그 기반 충전 추적 대시보드로 조회 경로를 제공. 9/17 에는 baggage 전환을 csms·charger-service·roaming·partner-roaming·feapp 5개 서비스에서 일괄 머지하고 피벗 키 계약 자체를 공통 모듈 설정으로 끌어올려 서비스별 중복 정의를 없앴으며, 남아 있던 광역 MDC.clear() 를 자기 키만 지우는 방식으로 고치고 소스 전수 가드 테스트로 재발을 막았다. 배포는 추석 일정에 맞춰 관측 계약 전체를 9/22 릴리스 라인으로, Pub/Sub 소비자 trace_id 구간은 9/29 라인으로 분리해 롤백 단위를 좁혔다.
@@ -97,14 +98,15 @@ entries:
         - 5c43f04
         - a8d089cd
         - 1d127721
-    resume_targets: []
-    reflected_at:
+    resume_targets:
+      - charging-platform-reliability
+    reflected_at: 2026-10-03
     skip_reason:
 
   - id: 2026-09-voltup-order-extraction
     period: 2026-08-31..2026-09-11
-    status: candidate
-    delivery: in_progress
+    status: reflected
+    delivery: deployed
     area: architecture
     headline: 충전 주문 처리 서비스(voltup-order) 분리 — 핵심 경로를 외부 연동 지연에서 격리
     impact: 외부 연동(차량 조회 등) 지연이 충전 시작·종료 경로로 번지는 구조를 끊기 위해 주문 경로를 독립 서비스로 분리. 이번 구간에서는 dev/stg 기동 실패를 복구하고 주문 후속 이벤트 핸들러 15개를 전용 모듈로 이관, 앱 전용 설정·검색 의존을 제거했으며, 기동 시 핸들러 등록을 검증하는 부팅 스모크 테스트를 추가해 같은 유형의 기동 실패를 배포 전에 차단. 9/10~9/11 stg 연동 검증에서 회원카드 인증 경로 간헐 지연의 원류를 노드 처닝 가설이 아니라 user-service NetworkPolicy 에 voltup-order 가 누락된 것으로 확정(드롭이라 30초 수렴, Envoy timeout 은 upstream 로그에 안 남는 특성까지 정리)하고, 인증 경로 내부 호출에 타임아웃 예산을 명시하고 웜업을 Redis·인증 하위 계층까지 확장(PR #1010).
@@ -119,8 +121,9 @@ entries:
         - 433818f54
         - e285ad910
         - 15c8465e2
-    resume_targets: []
-    reflected_at:
+    resume_targets:
+      - charging-platform-reliability
+    reflected_at: 2026-10-03
     skip_reason:
 
   - id: 2026-09-tariff-zone-remap-misapplication
@@ -180,7 +183,7 @@ entries:
 
   - id: 2026-09-login-session-race-serialization
     period: 2026-09-10..2026-09-14
-    status: candidate
+    status: reflected
     delivery: in_progress
     area: auth
     headline: 로그인 세션 경합 직렬화 — userId 단위 분산 락 + 세션복구 발급 멱등화로 중복 세션 적재·로그인 차단 재발 방지
@@ -195,8 +198,9 @@ entries:
         - 20b4f0a5
         - 0829f95c
         - 461d8d2
-    resume_targets: []
-    reflected_at:
+    resume_targets:
+      - kakao-t-integration
+    reflected_at: 2026-10-03
     skip_reason:
 
   - id: 2026-09-admin-charging-order-count-cache
@@ -264,8 +268,8 @@ entries:
 
   - id: 2026-09-csms-charging-lookup-storm-guard
     period: 2026-09-16..2026-09-16
-    status: candidate
-    delivery: in_progress
+    status: reflected
+    delivery: deployed
     area: csms
     headline: 오프라인 충전 재생 폭주 방어 — 미상 트랜잭션 조회 차단 + 404 네거티브 캐시(TTL 스로틀)
     impact: 충전기가 오프라인 구간의 이벤트를 한꺼번에 재생하면서 존재하지 않는 충전 건을 반복 조회해 내부 왕복과 에러 로그가 동시에 폭주하던 경로를, 트랜잭션 식별자가 유효하지 않은 요청은 애초에 차단하고 404 응답은 5분 네거티브 캐시로 흡수하도록 바꿨다. 충전기 폴링 주기를 덮는 TTL 을 선택해 정상 복귀 시에도 수 분 내 자동으로 다시 조회되게 했고, 재생 경로는 조용한 경로로 분리해 로그 적재까지 함께 줄였다.
@@ -276,8 +280,9 @@ entries:
       commits:
         - 228dc906
         - 9f14befa
-    resume_targets: []
-    reflected_at:
+    resume_targets:
+      - charging-platform-reliability
+    reflected_at: 2026-10-03
     skip_reason:
 
   - id: 2026-09-stg-release-note-automation
@@ -370,4 +375,56 @@ entries:
         - 42b1182
     resume_targets: []
     reflected_at: 2026-09-20
+    skip_reason:
+
+  - id: 2026-09-csms-frame-lock-hardening
+    period: 2026-08-17..2026-09-11
+    status: reflected
+    delivery: deployed
+    area: csms
+    headline: CSMS 원격 시작 실패 4유형 분석 — 규격 위반·파싱 불가 프레임 격리, outbound 락 경합 해소
+    impact: 비정상 트랜잭션 재생 폭주 시 정리용 RemoteStop을 억제해 고객 RemoteStart가 락을 얻지 못하던 문제를 해소하고, 제어문자 프레임 분리·파싱 불가 프레임 CallError 회신(1.6·2.1 공통)과 분산 락 p99 계측을 추가
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/csms/pull/165
+        - https://github.com/lgvoltup/csms/pull/166
+        - https://github.com/lgvoltup/csms/pull/192
+        - https://github.com/lgvoltup/csms/pull/193
+        - https://github.com/lgvoltup/csms/pull/194
+        - https://github.com/lgvoltup/csms/pull/195
+        - https://github.com/lgvoltup/csms/pull/196
+        - https://github.com/lgvoltup/csms/pull/197
+        - https://github.com/lgvoltup/csms/pull/198
+        - https://github.com/lgvoltup/csms/pull/201
+        - https://github.com/lgvoltup/csms/pull/203
+        - https://github.com/lgvoltup/csms/pull/217
+        - https://github.com/lgvoltup/csms/pull/219
+      commits:
+        - 611e994d
+        - f0713870
+        - d42eb630
+        - c62b7a3d
+    resume_targets:
+      - charging-platform-reliability
+    reflected_at: 2026-10-03
+    skip_reason:
+
+  - id: 2026-09-roaming-govern-history-recovery
+    period: 2026-09-01..2026-09-01
+    status: reflected
+    delivery: deployed
+    area: roaming
+    headline: 환경부 외부 충전이력 다운로드 장기 전량 실패 복구 — 배치 실패 가시화, 확정 거절 건 데드레터 격리
+    impact: 두 달간 성공 0회였던 공공 충전이력 수집을 복구하고 이후 실패가 즉시 드러나도록 정비
+    metrics:
+      - 2026-07-28~08-27 실패 1,440회·성공 0회 (PR 본문 기준)
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/roaming-service/pull/260
+        - https://github.com/lgvoltup/roaming-service/pull/261
+      commits: []
+    resume_targets:
+      - roaming-reliability
+    reflected_at: 2026-10-03
     skip_reason:

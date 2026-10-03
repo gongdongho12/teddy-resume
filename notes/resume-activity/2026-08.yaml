@@ -128,8 +128,8 @@ entries:
 
   - id: 2026-08-voltup-order-separation
     period: 2026-08-19..2026-08-31
-    status: candidate
-    delivery: in_progress
+    status: reflected
+    delivery: deployed
     area: user-side
     headline: 충전 주문 핵심 경로를 voltup-order 배포 단위로 분리해 앱 부가 기능 장애와 격리
     impact: 8/5 차량조회(codef) 장애가 충전 인증까지 전파된 사고를 계기로, 앱 없이 성립하는 주문 경로만 별도 서비스로 분리(Phase 1 머지)하고 Vault 시크릿·로컬 프로파일·배포 순서(feapp 싱크 차단→order→feapp)를 정의; Phase 2·3 진행 중
@@ -141,6 +141,7 @@ entries:
         - https://github.com/lgvoltup/voltup-feapp/pull/904
         - https://github.com/lgvoltup/voltup-feapp/pull/907
       commits: []
-    resume_targets: []
-    reflected_at:
+    resume_targets:
+      - charging-platform-reliability
+    reflected_at: 2026-10-03
     skip_reason:

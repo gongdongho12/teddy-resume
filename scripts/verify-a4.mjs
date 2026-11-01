@@ -102,6 +102,29 @@ async function validateResumeSource() {
     }
   }
 
+  // 포트폴리오 페이지 정렬 목록에서 빠진 slug 는 페이지 맨 뒤로 밀린다.
+  // 이력서의 portfolioSlug 가 포트폴리오에 없으면 링크가 깨진다.
+  const portfolioSource = await readFile(path.resolve('src/lib/portfolio-content.ts'), 'utf8');
+  const portfolioSlugs = [...portfolioSource.matchAll(/^ {6}slug: '([^']+)'/gm)].map((m) => m[1]);
+  for (const page of ['src/pages/portfolio/[lang]/index.astro', 'src/pages/[lang]/portfolio.astro']) {
+    const block = (await readFile(path.resolve(page), 'utf8')).match(/orderedSlugs = \[([\s\S]*?)\]/);
+    if (!block) {
+      issues.push(`${page}: orderedSlugs not found`);
+      continue;
+    }
+    const ordered = [...block[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+    portfolioSlugs
+      .filter((slug) => !ordered.includes(slug))
+      .forEach((slug) => issues.push(`${page}: portfolio slug '${slug}' missing from orderedSlugs`));
+  }
+  for (const section of profile.projectSections || []) {
+    for (const project of section.projects || []) {
+      if (project.portfolioSlug && !portfolioSlugs.includes(project.portfolioSlug)) {
+        issues.push(`profile.yaml portfolioSlug '${project.portfolioSlug}' has no portfolio project`);
+      }
+    }
+  }
+
   return { sourcePath, issues };
 }
 

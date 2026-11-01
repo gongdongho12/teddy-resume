@@ -113,12 +113,13 @@
        * part keeps the header, summary, and tech stack; the continuation repeats the
        * title with a "continued" label and carries the remaining bullets and results.
        */
-      const splitCard = (card: HTMLElement, availableHeight: number) => {
+      const splitCard = (card: HTMLElement, availableHeight: number, requireRestBullets: boolean) => {
         if (card.dataset.a4Splittable !== 'true') return null;
         const bullets = card.querySelectorAll('[data-a4-split-list] > li');
         const hasTail = card.querySelector('[data-a4-split-tail]') !== null;
         const minimumLead = 2;
-        const minimumRest = hasTail ? 0 : 2;
+        // Medium cards must carry real bullets onto the next page, not just the results block.
+        const minimumRest = hasTail && !requireRestBullets ? 0 : 2;
         const isKorean = document.documentElement.lang.startsWith('ko');
 
         for (let keep = bullets.length - minimumRest; keep >= minimumLead; keep -= 1) {
@@ -149,12 +150,15 @@
           rest.querySelector('[data-a4-split-summary]')?.remove();
           rest.querySelector('[data-a4-split-aside]')?.remove();
           rest.dataset.a4SplitPart = 'rest';
-          const title = rest.querySelector('[data-a4-split-header] h3');
-          if (title) {
+          // Put the label before the period, not in the title, so long titles keep
+          // their original line breaks on the continuation page.
+          const header = rest.querySelector('[data-a4-split-header]');
+          const period = header?.querySelector(':scope > span:last-child');
+          if (period) {
             const label = document.createElement('span');
-            label.className = 'text-[11px] font-semibold text-gray-500';
+            label.className = 'mr-1.5 text-[11px] font-semibold text-gray-400';
             label.textContent = isKorean ? '(계속)' : '(continued)';
-            title.appendChild(label);
+            period.prepend(label);
           }
           return { lead, rest };
         }
@@ -164,7 +168,9 @@
       const queue = children.map((element) => ({ element, height: outerHeight(element) }));
       const minimumSplitSpace = usableHeight * 0.25;
       // Small cards move whole; splitting them leaves a near-empty continuation.
-      const minimumSplitCardHeight = usableHeight * 0.45;
+      // Medium cards split only when real bullets continue on the next page.
+      const minimumSplitCardHeight = usableHeight * 0.3;
+      const largeCardHeight = usableHeight * 0.45;
 
       for (let childIndex = 0; childIndex < queue.length; childIndex += 1) {
         const child = queue[childIndex].element;
@@ -183,7 +189,7 @@
           fullItemHeight >= minimumSplitCardHeight &&
           remainingHeight >= minimumSplitSpace
         ) {
-          const parts = splitCard(child, remainingHeight);
+          const parts = splitCard(child, remainingHeight, fullItemHeight < largeCardHeight);
           if (parts) {
             currentPageItems.push(parts.lead);
             pages.push(currentPageItems);

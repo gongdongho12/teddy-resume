@@ -395,6 +395,7 @@ projectSections:
             - 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이·토스페이먼츠·카카오T를 수용하는 멀티 벤더 결제 아키텍처 구축
             - GCP Pub/Sub DLQ, 영구 미수 처리, 재시도·보완 배치를 연결한 다단계 복구 흐름으로 실패 이벤트 격리와 미수 처리 누락 방지
             - PG 승인 직전 결제 상태를 `AUTHORIZED`로 조건부 전이하는 DB 승인권을 설계해 Redis 락 만료·응답 유실·벤더 변경 상황에서도 재승인을 fail-closed로 차단; 동일 주문 8스레드 경합에서 1건만 선점하는 MySQL 동시성 테스트로 검증
+            - 결제 실패를 원인별로 분리 — PG가 거절을 확정한 건(카드사 거절·잔액 부족)만 미수로 기록하고, 응답 유실·타임아웃처럼 결과를 모르는 시스템 사유는 AUTHORIZED로 유지해 고객에게 미수·충전 차단이 걸리지 않게 한 뒤 PG 실승인 조회로 자동 확정
             - 결제 확정 트랜잭션과 미수 부기를 분리해 부기 락 경합이 승인 성공을 롤백해 이중 청구로 이어지는 경로를 차단하고, 미수 재결제의 포인트 이중 차감·설정 소급 문제를 함께 교정
             - READY 고아 주문 상태 동기화·이벤트 자동 재발행과 AUTHORIZED 체류 해소 배치·수동 복구 API를 구성해 결과 미확정 건을 자동 복구 또는 운영 판단 가능한 상태로 전환
             - 같은 결제에 요청이 동시에 들어올 때 기다리던 요청이 "실패"로 잘못 안내되던 문제를 해결하고, 먼저 진행 중인 결제의 실제 상태를 그대로 알려 주도록 변경
@@ -403,6 +404,7 @@ projectSections:
             - Designed a provider strategy layer that integrates Kakao Pay, Toss Payments, and Kakao T, a South Korean ride-hailing and mobility platform, behind a common interface
             - Combined Pub/Sub dead-letter queues, retries, and recovery batches into a layered flow that isolates failures and prevents unpaid transactions from being missed
             - Added database-backed approval ownership before payment-gateway calls, preventing duplicate approvals after lock expiry, lost responses, or provider changes; an eight-thread MySQL concurrency test confirmed a single winner per order
+            - Split failures by cause — only definitive gateway declines (card declines, insufficient funds) create unpaid balances, while unknown outcomes from lost responses or timeouts stay AUTHORIZED so customers are not blocked from charging, then get settled automatically through gateway lookups
             - Separated payment confirmation from unpaid-balance bookkeeping so ledger-lock contention cannot roll back successful approvals or trigger duplicate charges; also corrected double point deductions and retroactive configuration changes during retries
             - Added recovery for orphaned READY orders and long-running AUTHORIZED states through event republishing, scheduled reconciliation, and operator repair APIs
             - Fixed concurrent payment requests being wrongly reported as failed; waiting requests now receive the actual status of the payment already in progress

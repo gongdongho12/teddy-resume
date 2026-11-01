@@ -80,6 +80,31 @@ const observabilityContractDiagram = localized(
   class Keys,Trace key;`,
 );
 
+const paymentFailureRoutingDiagram = localized(
+  `flowchart TD
+  Call["PG 승인 호출<br/>(승인권 AUTHORIZED 선점 후)"] --> Result{"PG 응답"}
+  Result -->|"승인"| Paid["PAID 확정"]
+  Result -->|"거절 확정<br/>카드사 거절·잔액 부족"| Denied["FAILED + 미수 생성<br/>승인권 반납 · 메시지 ACK<br/>(같은 거절 반복 호출 안 함)"]
+  Result -->|"결과 모름<br/>응답 유실·타임아웃"| Held["AUTHORIZED 유지<br/>미수 만들지 않음<br/>→ 고객 충전 차단·미납 알림 없음"]
+  Held --> Recheck{"재진입 시 PG 실승인 조회"}
+  Recheck -->|"실승인"| Backfill["자동 PAID 백필"]
+  Recheck -->|"미승인 확정"| Release["승인권 반납 후 정상 재승인"]
+  Recheck -->|"판단 불가"| Manual["차단 + Slack 알림<br/>사유 필수 수동 반납 API"]
+  classDef held fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  class Held,Recheck held;`,
+  `flowchart TD
+  Call["Payment-gateway approval call<br/>(after claiming AUTHORIZED)"] --> Result{"Gateway response"}
+  Result -->|"approved"| Paid["PAID"]
+  Result -->|"definitive decline<br/>card declined, insufficient funds"| Denied["FAILED + unpaid balance<br/>release ownership, ACK message<br/>(no repeated calls for the same decline)"]
+  Result -->|"unknown outcome<br/>lost response, timeout"| Held["Keep AUTHORIZED<br/>no unpaid balance<br/>→ no charging block or overdue notice"]
+  Held --> Recheck{"On re-entry: query gateway first"}
+  Recheck -->|"approved there"| Backfill["Backfill to PAID"]
+  Recheck -->|"confirmed not approved"| Release["Release ownership, approve normally"]
+  Recheck -->|"undetermined"| Manual["Block + Slack alert<br/>manual release API with reason"]
+  classDef held fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  class Held,Recheck held;`,
+);
+
 const multiVendorContractDiagram = localized(`flowchart TD
   Vendors["VendorType<br/>Kakao Pay / Toss Payments / Kakao T"] --> Select["VendorChecker.select(vendorType)"]
   Select --> Required["Required on all vendors<br/>VendorPaymentProcessor<br/>VendorMethodProcessor"]
@@ -1016,8 +1041,16 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Separated unpaid-balance bookkeeping from payment confirmation so ledger-lock contention cannot roll back an approval, while correcting duplicate point deductions and preventing current settings from being applied retroactively during retries.',
         },
         {
-          ko: 'READY 고아 주문의 상태 동기화·이벤트 재발행과 AUTHORIZED 체류 해소 배치·수동 복구 API를 구성해 자동 복구와 운영 확인 경계를 분리했습니다.',
-          en: 'Added state sync/event republishing for READY orphans and resolution batches/manual repair APIs for AUTHORIZED holds, separating automatic recovery from operator review.',
+          ko: '결제 실패를 원인별로 나눴습니다. 카드사 거절·잔액 부족처럼 PG가 거절을 확정한 건만 실패·미수로 기록하고 메시지를 종료(ACK)해 같은 거절을 PG에 반복 호출하지 않게 했고, 응답 유실·타임아웃처럼 결과를 모르는 시스템 사유는 미수를 만들지 않고 AUTHORIZED로 남겨 고객에게 미수·충전 차단·미납 알림이 걸리지 않게 했습니다.',
+          en: 'Split payment failures by cause. Only definitive gateway declines, such as card declines or insufficient funds, become failed payments with an unpaid balance, and their messages are acknowledged so the same decline is not retried against the gateway. Unknown outcomes caused by our side or the network, such as lost responses and timeouts, stay AUTHORIZED without an unpaid balance, so customers are not blocked from charging or sent overdue notices.',
+        },
+        {
+          ko: 'AUTHORIZED로 남은 건이 다시 들어오면 PG 실승인 조회를 먼저 거치게 하고, 실승인이면 자동 PAID 백필, 미승인 확정이면 승인권 반납 후 정상 재승인, 판단 불가면 차단과 Slack 알림 후 사유를 남겨야 하는 수동 반납 API로 나눴습니다. READY 고아 주문은 상태 동기화·이벤트 재발행으로 복구했습니다.',
+          en: 'When an AUTHORIZED payment re-enters, it first queries the gateway: approved payments are backfilled to PAID, confirmed non-approvals release ownership and approve normally, and undetermined ones are blocked with a Slack alert and can only be released through a manual API that requires a reason. Orphaned READY orders are recovered through state sync and event republishing.',
+        },
+        {
+          ko: 'VoC 대응을 위해 운영자가 미수는 그대로 둔 채 충전 차단만 해제할 수 있는 제외 플래그를 billing·앱 서버·운영 콘솔에 추가하고, 카드사 거절 같은 일상적 실패가 ERROR로 잡히던 로그 레벨을 벤더별로 재분류해 진짜 시스템 오류만 경보에 남겼습니다.',
+          en: 'For customer-support cases, added an exclusion flag across billing, the app server, and the operations console that lifts the charging block while keeping the unpaid balance, and reclassified per-provider log levels so everyday declines no longer raise ERROR alerts and only real system errors do.',
         },
       ],
       engineeringViews: [
@@ -1028,6 +1061,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: 'Redis 락은 요청 동시성을 줄이는 1차 장치로 두고, 돈이 움직이기 직전에는 DB 조건부 UPDATE가 최종 직렬화를 보장하도록 방어선을 분리했습니다.',
           en: 'Kept Redis locks as a first-line concurrency control, while making a conditional DB update the final serialization boundary immediately before money moves.',
+        },
+        {
+          ko: '"결제 실패"를 고객 사유와 시스템 사유로 나눠 봤습니다. 결과를 모르는 건까지 미수로 잡으면 우리 쪽 문제로 고객이 충전 차단과 미납 알림을 받게 되므로, 미수는 PG가 거절을 확정했을 때만 만들고 나머지는 승인권을 쥔 채 시스템이 확인하도록 했습니다.',
+          en: 'I treated "payment failure" as two different things: customer-side and system-side. Counting unknown outcomes as unpaid would block customers and send overdue notices for our own problems, so an unpaid balance is created only when the gateway definitively declines; everything else keeps ownership while the system verifies the outcome.',
         },
         {
           ko: '승인 결과가 명확하면 PAID/FAILED로 전이하고 결과가 불확실하면 AUTHORIZED에 남기는 fail-closed 모델로, 가용성보다 이중 청구 방지를 우선했습니다.',
@@ -1046,6 +1083,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: 'DLQ 기반 미수 처리와 READY/AUTHORIZED 상태별 복구 경로를 운영에 적용해 실패 지점을 자동 복구 또는 수동 판단 가능한 상태로 표면화했습니다.',
           en: 'Applied dead-letter-queue handling and state-specific recovery paths for READY and AUTHORIZED payments, making each failure either automatically recoverable or explicitly reviewable by an operator.',
+        },
+        {
+          ko: '응답 유실·타임아웃 같은 시스템 사유가 고객 미수·충전 차단으로 번지지 않게 하고, 결과 미확정 건은 PG 조회로 자동 확정하거나 운영자가 판단할 수 있게 표면화했습니다.',
+          en: 'Kept system-side failures such as lost responses and timeouts from turning into customer unpaid balances or charging blocks, and resolved indeterminate payments automatically through gateway lookups or surfaced them for operator decisions.',
         },
         {
           ko: '승인 성공 후 DB 경합·응답 유실·다른 PG로의 재시도가 이중 청구로 번지는 경로를 상태 기반으로 차단했습니다.',
@@ -1083,6 +1124,17 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
               'Places `VendorChecker.select()` on top of the `VendorType` extension point, separates contracts required for every vendor from features needed by only some vendors, and uses `@RequiredVendor` plus `VendorRequirementsValidator` to catch missing mandatory implementations at startup.',
           },
           code: multiVendorContractDiagram,
+        },
+        {
+          title: {
+            ko: '결제 실패 분기: 고객 사유는 미수, 시스템 사유는 AUTHORIZED',
+            en: 'Failure routing: customer-side declines become unpaid, system-side unknowns stay AUTHORIZED',
+          },
+          description: {
+            ko: 'PG가 거절을 확정한 건만 미수로 넘기고, 결과를 모르는 건은 승인권을 유지한 채 다음 진입에서 PG 실승인 조회로 확정합니다.',
+            en: 'Only definitive gateway declines become unpaid balances; unknown outcomes keep approval ownership and are settled by a gateway lookup on the next entry.',
+          },
+          code: paymentFailureRoutingDiagram,
         },
       ],
     },

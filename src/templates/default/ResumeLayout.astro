@@ -328,7 +328,7 @@ const m = messages(lang);
                               githubClassName="text-gray-500 hover:text-[#0f3460]"
                             />
                             {proj.badge && (
-                              <span class="rounded bg-[#0f3460] px-1.5 py-0.5 text-[10.5px] print:text-[10px] font-bold tracking-wider text-white uppercase">
+                              <span class="shrink-0 whitespace-nowrap rounded bg-[#0f3460] px-1.5 py-0.5 text-[10.5px] print:text-[10px] font-bold tracking-wider text-white uppercase">
                                 {t(proj.badge, lang)}
                               </span>
                             )}
@@ -371,8 +371,8 @@ const m = messages(lang);
                   ))
                 ) : (
                   section.projects.map((proj) => (
-                    <div class="break-inside-avoid border border-gray-100 bg-white p-5 rounded shadow-sm print:shadow-none print:border-gray-200 mb-4 last:mb-0 print:p-4 print:mb-4 print:pb-4">
-                      <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2 border-b border-gray-100 pb-2.5">
+                    <div data-a4-splittable="true" class="break-inside-avoid border border-gray-100 bg-white p-5 rounded shadow-sm print:shadow-none print:border-gray-200 mb-4 last:mb-0 print:p-4 print:mb-4 print:pb-4">
+                      <div data-a4-split-header class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2 border-b border-gray-100 pb-2.5">
                         <h3 class="text-[16px] print:text-[15px] font-bold text-black flex items-center gap-2">
                           {proj.company && (
                             <span class="shrink-0 text-[#0f3460]">[{t(proj.company, lang)}]</span>
@@ -392,7 +392,7 @@ const m = messages(lang);
                             appStoreClassName="text-gray-500 hover:text-[#0f3460]"
                           />
                           {proj.badge && (
-                            <span class="rounded bg-[#0f3460] px-2 py-0.5 text-[11px] font-bold tracking-widest text-white uppercase">
+                            <span class="shrink-0 whitespace-nowrap rounded bg-[#0f3460] px-2 py-0.5 text-[11px] font-bold tracking-widest text-white uppercase">
                               {t(proj.badge, lang)}
                             </span>
                           )}
@@ -403,7 +403,7 @@ const m = messages(lang);
                       </div>
                       
                       {proj.summary && (
-                        <p class="mb-4 print:mb-3 whitespace-pre-line text-[14px] print:text-[12.5px] text-gray-800 leading-[1.6] print:leading-[1.45] font-medium bg-gray-50 px-4 py-3 print:px-3 print:py-2 rounded-sm border-l-4 border-gray-200">
+                        <p data-a4-split-summary class="mb-4 print:mb-3 whitespace-pre-line text-[14px] print:text-[12.5px] text-gray-800 leading-[1.6] print:leading-[1.45] font-medium bg-gray-50 px-4 py-3 print:px-3 print:py-2 rounded-sm border-l-4 border-gray-200">
                           {t(proj.summary, lang)}
                         </p>
                       )}
@@ -411,14 +411,14 @@ const m = messages(lang);
                       <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
                         <!-- LEFT: HIGHLIGHTS -->
                         <div class="space-y-4">
-                          <ul class="grid grid-cols-1 gap-y-1.5 print:gap-y-1 list-disc pl-5 marker:text-[#0f3460]">
+                          <ul data-a4-split-list class="grid grid-cols-1 gap-y-1.5 print:gap-y-1 list-disc pl-5 marker:text-[#0f3460]">
                             {bullets(proj.highlights, lang).map((line, index) => (
                               <li class="pl-1 text-[13.5px] print:text-[12.5px] text-gray-800 leading-[1.6] print:leading-[1.45]">{line}</li>
                             ))}
                           </ul>
                           
                           {proj.results && bullets(proj.results, lang).length > 0 && (
-                            <div class="mt-3 pt-3 border-t border-dashed border-gray-100">
+                            <div data-a4-split-tail class="mt-3 pt-3 border-t border-dashed border-gray-100">
                               <p class="mb-2.5 text-[12px] font-bold uppercase tracking-wider text-[#0f3460]">{m.results}</p>
                               <ul class="grid grid-cols-1 gap-y-2.5 list-none pl-0">
                                 {bullets(proj.results, lang).map((line, index) => (
@@ -433,7 +433,7 @@ const m = messages(lang);
 
                         <!-- RIGHT: TECH STACK SIDEBAR -->
                         {proj.tech?.length > 0 && (
-                          <aside class="flex flex-col">
+                          <aside data-a4-split-aside class="flex flex-col">
                             <div class="h-full bg-slate-50/50 rounded-sm border-l-2 border-gray-100 p-2 md:p-3.5">
                               <div class="flex flex-row flex-wrap md:flex-col md:items-end gap-1.5 md:gap-1 md:text-right font-bold text-gray-600 text-[11.5px] print:text-[10.5px] font-sans tracking-tight">
                                 {proj.tech.map((item) => (

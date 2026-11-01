@@ -1,0 +1,419 @@
+entries:
+  - id: 2026-10-fota-staged-rollout
+    period: 2026-10-01..2026-10-08
+    status: candidate
+    delivery: in_progress
+    area: csms
+    headline: 충전기 펌웨어(FOTA) 단계적 배포 — 지역·비율 단계 확대와 건강 판정 기반 자동 전이
+    impact: 전 대수 일괄 배포였던 펌웨어 업데이트를 시·도 단위 국소전개 후 비율을 단계적으로 늘리고, 단계별 실패 지표가 일정 기간 이상 없으면 다음 단계로 자동 전이하는 구조로 설계·구현. 공통 계약(common)·오케스트레이터와 Flyway(feapp)·연결 이벤트 발행(csms)·지역 필터(charger-service)·어드민 화면까지 5개 저장소에 걸쳐 작업했고, 진행 중 롤아웃이 참조하는 펌웨어 삭제 차단과 기존 실패 판정 오염 결함도 함께 수정. 10/6 여러 모델 펌웨어 쌍 동시 지정·시도 지도 진행 현황·롤백 진행률·단독 충전존 마지막 단계 배정까지 확장. 10/7~8 쌍별 펌웨어 종류·같은 충전기 순차 업데이트(V51)와 상태 이벤트 동기 ack/nack + 1분 주기 상태 보정 루프(이벤트 유실·역전 자동 복구, #1104) 추가. dev·stg 반영, 리뷰 단계(Jakarta 스프린트 PR).
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/voltup-common/pull/264
+        - https://github.com/lgvoltup/voltup-feapp/pull/1075
+        - https://github.com/lgvoltup/voltup-admin-fe/pull/557
+        - https://github.com/lgvoltup/csms/pull/295
+        - https://github.com/lgvoltup/charger-service/pull/149
+        - https://github.com/lgvoltup/voltup-feapp/pull/1104
+      commits:
+        - 3da534a
+        - bf79e9e16
+        - 5c49ddc68
+        - 3ffa70411
+        - 4dc3b1b7c
+        - a0467fea
+        - db63cce
+        - 40537f5c
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-csms-rollout-reconnect-storm-mitigation
+    period: 2026-09-30..2026-10-06
+    status: reflected
+    delivery: deployed
+    area: csms
+    headline: CSMS 롤아웃 시 충전기 1만 대 동시 재접속 DB 폭주 차단 — 헬스체크 창 파드 공유 + 롤아웃 페이싱
+    impact: prod 롤아웃 직후 새 파드의 파드 로컬 헬스체크 창이 비어 재접속 충전기마다 UPDATE+COMMIT 이 몰리고 공용 Cloud SQL·커넥션 풀이 포화되던 원인을 지표로 특정하고, 헬스체크 스로틀 창을 Redis SET NX 기반 파드 공유 창(fail-open)으로 바꾸고 배포 매니페스트에 maxSurge 1·minReadySeconds 90 페이싱을 적용해 재접속이 분산되도록 했다. 결과 카운터 지표로 다음 롤아웃에서 효과를 검증할 수 있게 함.
+    metrics:
+      - 9/30 롤아웃 실측 — Cloud SQL QPS 3.3k→19.3k/s(5.8배), csms·charger-service 커넥션 풀 128/128 포화, charger p99 50ms→3.9s (5xx 0)
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/csms/pull/304
+        - https://github.com/lgvoltup/argocd-gke-service/pull/104
+      commits:
+        - 7425c699
+        - 46189031
+        - 57542615b
+    resume_targets:
+      - profile.yaml#charger-gateway-scale
+      - portfolio-content.ts#charger-gateway-scale
+    reflected_at: 2026-11-01
+    skip_reason:
+  - id: 2026-10-roaming-govern-user-card-partner-cpo-recovery
+    period: 2026-10-02..2026-10-15
+    status: candidate
+    delivery: deployed
+    area: roaming
+    headline: 환경부 회원카드 월 보간을 제휴 CPO 전체로 확대 — CPO 단위 진행 기록으로 중단 지점부터 재개
+    impact: 자사 카드만 대상이던 월 단위 회원카드 상태 보간을 제휴 CPO 전체로 넓히고, CPO 단위 진행 기록 테이블을 두어 실패·중단 시 처리 못한 CPO 의 1페이지부터 이어받도록 설계. 8/27 증분 누락 196건류 사고가 재발해도 운영 수기 보정 없이 다음 보간에서 자동 흡수된다. 후속으로 실패 CPO 같은 실행 안 5분 간격 재시도(#305)와 환경부 엑셀 기반 보간·자사 카드 우리 판정 전송 API(#307, feapp·admin-fe 연동)를 release/261012(1.1.11)로 묶어 10/15 prod 배포·roaming-api 발행 완료.
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/roaming-service/pull/302
+        - https://github.com/lgvoltup/roaming-service/pull/305
+        - https://github.com/lgvoltup/roaming-service/pull/307
+        - https://github.com/lgvoltup/voltup-feapp/pull/1095
+        - https://github.com/lgvoltup/voltup-admin-fe/pull/560
+        - https://github.com/lgvoltup/roaming-service/pull/320
+      commits:
+        - 241e743
+        - 2b286c2
+        - 2e05076
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-csms-reconnect-drain-pacing
+    period: 2026-10-07..2026-10-13
+    status: reflected
+    delivery: deployed
+    area: csms
+    headline: CSMS 롤아웃 시 충전기 일괄 차단 방지 — 10초 페이싱 드레인 + 사이드카 종료 정렬 + 파드당 세션 상한 가드
+    impact: 서버 교체 시 수천 대 충전기 연결이 동시에 끊겨 재접속 폭풍과 DB 부하가 발생하던 문제를 개선. 종료 시그널 수신 후 10초에 걸쳐 점진적으로 소켓을 끊고 신규 연결 수신을 조기 차단하며, Istio 사이드카 드레인(75초) 및 Grace Period(80초)를 앱 타임아웃과 일치시켜 배포 중 패킷 유실을 차단. 10/13 배포에서 신규 에러 0건, DB 커넥션 대기 0건 검증. 파드당 세션 상한 가드(10/15 리뷰 반영으로 7,000 확정, prod 7파드 49k 수용·16% 여유)로 롤아웃 중 구 파드 과밀과 Tomcat max-connections 포화(503)를 방지.
+    metrics:
+      - 10/13 운영 배포 실측 — 신규 오류 0건, DB 커넥션 풀 대기 0건
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/csms/pull/316
+        - https://github.com/lgvoltup/csms/pull/329
+        - https://github.com/lgvoltup/argocd-gke-service/pull/105
+        - https://github.com/lgvoltup/argocd-gke-service/pull/106
+      commits:
+        - 15822ff
+        - 4208a0d
+        - ff00466
+        - f759b88a
+    resume_targets:
+      - profile.yaml#charger-gateway-scale
+      - portfolio-content.ts#charger-gateway-scale
+    reflected_at: 2026-11-01
+    skip_reason:
+  - id: 2026-10-fota-done-judgement-fix
+    period: 2026-10-07..2026-10-12
+    status: candidate
+    delivery: deployed
+    area: csms
+    headline: FOTA 완료 판정 정합성 복구 — 만료로 남던 설치 완료 충전기를 Installed+목표 버전 부팅 기준으로 완료 처리
+    impact: 실제 펌웨어 설치(약 20분)가 요청 만료 시간(15분)보다 길어 이벤트는 정상 도착했는데도 '만료'로 남던 원인을 로그로 실증하고, Installed 보고+목표 버전 부팅이면 완료(만료 포함)·설치 실패+목표 부팅이면 이전 버전 원복으로 판정 규칙을 재정의해 prod 핫픽스. 두 신호의 도착 순서와 무관하게 판정하도록 하고, 운영자가 만료 건을 수기 확인하던 업무를 없앰. 별건(보고 버전 문자열≠등록 버전)은 보고 원문 기록·불일치 조회 API(charger-service#153)로 분리.
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/voltup-feapp/pull/1099
+        - https://github.com/lgvoltup/charger-service/pull/153
+      commits:
+        - aff4cb2d8
+        - 3b2676668
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-csms-gw-websocket-gateway
+    period: 2026-10-07..2026-10-27
+    status: reflected
+    delivery: deployed_stg
+    area: csms
+    headline: 충전기 웹소켓 게이트웨이(Go, csms-gw) 신규 구축 — A 패스스루/B Pub/Sub 이중 경로, OCPP 1.6·2.1, 다중 인스턴스, 에뮬레이터 MCP·1만 대 부하 시험, dev 가동
+    impact: 모놀리식 CSMS(Spring)에서 충전기 접속 계층을 분리하는 Go 게이트웨이를 신규 저장소로 설계·구현. 웹소켓 패스스루(A)와 Pub/Sub 브리지(B) 두 경로, OCPP 1.6·2.1 서브프로토콜 협상, 브로커를 URL 스킴 드라이버(Pub/Sub·Redis Streams·memory)로 교체 가능하게 구성. OCPP 충전기 에뮬레이터를 MCP 서버(22 도구)·팀 배포 바이너리로 만들어 실물 충전기 없이 로컬 E2E(에뮬레이터→게이트웨이→csms→charger-service·feapp)를 검증 가능하게 했고, 충전기 100·1,000·10,000대 로컬 부하 시험 보고서를 작성. 해설 문서 9단원(dev_docs#76). 10/19~20 다중 인스턴스(Redis 세션 디렉터리·인스턴스 간 제어 채널·생존 키)와 B 경로 csms 브리지(verify API·inbound 구독·outbound 발행)를 csms·csms-gw 양쪽에 구현해 dev 3대로 가동, 충전기 기존 접속 주소(/ocpp)를 게이트웨이로 전환하는 호환 라우팅 확인. 10/22 csms 장애·배포 중에도 충전기 연결을 유지하도록 csms 웹소켓을 못 쓰면 핵심 메시지(부팅·인증·충전 시작·종료·설정 회신)를 Pub/Sub 로 넘기고, 전달 못 한 csms 명령은 충전기별 대기열에 두었다가 재접속 직후 전달, csms 처리 실패는 재전달·데드레터로 보내며 회신 전 웹소켓 복귀를 막아 순서를 보호. 파드 간 통신은 파드별 채널 대신 공용 제어 채널 하나로 줄이고, 세션이 12분·무수신 6분에 끊기던 결함 수정, csms 직결·게이트웨이 경유 웹소켓 세션을 실측 지표로 분리. 10/26 레이어별 성능 개선(Heartbeat 게이트웨이 직답·상태 알림/미터값 즉시 응답·csms inbound 핵심/대량 구독 분리, 요청→회신 왕복 지표)과 파드 수용량 실측, cgroup 한도에서 Go 메모리 한도·세션 상한·핸드셰이크 상한을 자동 도출하고 폭주 시 즉시 503+Retry-After 로 거절하도록 개선, 수용량·한도 튜닝 가이드 작성. 운영 투입 3단계(A 앞세우기 → B 일부 → 전면 B)·단계별 메시지 유실 시나리오·A/B 실증 설계·DB 장애 시 충전 지속(Step 4 후보)을 문서화하고 테크팀 공유 자료 작성. 10/27 stg 첫 배포 — 파드 자원을 csms 방식(CPU limit 3·메모리 2Gi, 자동 한도 약 3만 세션)으로 맞추고 csms inbound 구독 처리 스레드를 설정화(기본 20개로는 부팅 초당 70건 남짓만 수용), Google 로그인 운영 콘솔(dev) 공개, Heartbeat 를 csms 로 보내 충전 로그에 남기도록 기본값 전환, 게이트웨이 파드가 Ready 일 때만 /ocpp 를 게이트웨이로 보내고 없으면 csms 로 자동 전환하는 Istio failover 진입점 설계.
+    metrics:
+      - 로컬 부하 시험 — 충전기 1만 대 동시 접속(B 경로) 확인
+      - dev 3 인스턴스 + B 경로 가동 실측(10/19)
+      - 파드당 세션 메모리 절반 — 1만 대 RSS 682MB → 351MB, 512Mi 기준 수용 약 7.3천 → 15.7천 대(10/26)
+      - 1Gi 파드 1.7만 대 RSS 587MB, 초당 2,000대 재접속 폭주 피크 682MB; 폭주 시험 접속 실패 3,414 → 0(10/26)
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/csms-gw/pull/1
+        - https://github.com/lgvoltup/csms-gw/pull/7
+        - https://github.com/lgvoltup/csms-gw/pull/8
+        - https://github.com/lgvoltup/csms-gw/pull/14
+        - https://github.com/lgvoltup/csms/pull/344
+        - https://github.com/lgvoltup/argocd-gke-service/pull/123
+        - https://github.com/lgvoltup/csms-gw/pull/20
+        - https://github.com/lgvoltup/csms-gw/pull/30
+        - https://github.com/lgvoltup/csms/pull/367
+        - https://github.com/lgvoltup/csms-gw/pull/9
+        - https://github.com/lgvoltup/csms-gw/pull/47
+        - https://github.com/lgvoltup/csms/pull/396
+        - https://github.com/lgvoltup/argocd-gke-service/pull/129
+        - https://github.com/lgvoltup/argocd-gke-service/pull/128
+        - https://github.com/lgvoltup/csms/pull/412
+        - https://github.com/lgvoltup/csms-gw/pull/51
+      commits:
+        - 6971998
+        - a9c5a43
+        - 74807a3
+        - ce90f85
+        - 529ceda
+        - 873ba0db
+        - 4bf82bc
+        - e73d4ba
+        - 7b7f573
+        - 5826aeed
+        - e70cb8616
+        - cd6ece64
+    resume_targets:
+      - profile.yaml#charger-gateway-scale
+      - portfolio-content.ts#charger-gateway-scale
+    reflected_at: 2026-11-01
+    skip_reason:
+  - id: 2026-10-spring-boot4-migration
+    period: 2026-10-08..2026-10-28
+    status: candidate
+    delivery: in_progress
+    area: platform
+    headline: Spring Boot 4 전환(CVE-2026-47884 대응) — 18개 서비스 대상 선대응·전환 오케스트레이션 (csms Boot 4 prod 반영·공통 라이브러리 2.0.0 발행)
+    impact: Boot 4.0.8 이상에서만 닫히는 spring-webmvc 치명 취약점(9.8) 대응을 위해 레포별 프로브(Boot 4 컴파일 깨짐 분류)→3.5 라인 선대응 PR(JDK 21·Kotlin 2.3·Gradle 8.14·QueryDSL OpenFeign·Kotest 6)→Boot 4 전환 순서로 표준화하고 /boot4 스킬로 자동화. csms·roaming·partner-roaming·user-service 선대응 완료(dev·stg 반영), 공통 라이브러리 Boot 4 포팅(2.0.0-SNAPSHOT)과 소비 서비스 전환 진행 중. 공통 라이브러리가 소비 레포 전환의 게이트임을 프로브로 확인해 일정 제약을 사전에 드러냄. 10/22 Jackson 3 전환을 공통 라이브러리(Jackson 2 양방향 호환)에 머지하고, csms 는 Jackson 3 100% 전환을 OCPP·HTTP·Pub/Sub JSON 골든 6,965건으로 출력 동일성을 고정한 뒤 Boot 4 와 함께 dev·stg 반영. 서비스 전환 가이드 문서화. 10/27 csms Boot 4.0.8 prod 반영(직전 버그 수정 릴리스를 먼저 내고 stg 확인 뒤 순차 승격), 공통 라이브러리 2.0.0 정식 발행과 1.x 유지 라인(publish/release-1.x) 분리, roaming Boot 4 전환을 release/261028 에 머지해 dev·stg 반영. 10/28 Boot 4.0.8 의 Tomcat 11.0.26 잔여 CVE 4건(2026-65637·65905·65182·68525) 지적을 받아 csms·roaming·partner-roaming 을 4.0.9(Tomcat 11.0.27)로 핫픽스 릴리스(3.5 시절 Tomcat·netty 핀 제거), dev·stg 거쳐 csms prod 승격; 배포 공통 CVE 통과 검증 CI(voltup-workflow)를 과제로 등록.
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/csms/pull/322
+        - https://github.com/lgvoltup/roaming-service/pull/308
+        - https://github.com/lgvoltup/partner-roaming-service/pull/93
+        - https://github.com/lgvoltup/user-service/pull/140
+        - https://github.com/lgvoltup/voltbot/pull/34
+        - https://github.com/lgvoltup/auth/pull/161
+        - https://github.com/lgvoltup/auth/pull/186
+        - https://github.com/lgvoltup/voltup-common/pull/270
+        - https://github.com/lgvoltup/voltup-common/pull/292
+        - https://github.com/lgvoltup/csms/pull/366
+        - https://github.com/lgvoltup/csms/pull/372
+        - https://github.com/lgvoltup/csms/pull/408
+        - https://github.com/lgvoltup/csms/pull/415
+        - https://github.com/lgvoltup/csms/pull/416
+        - https://github.com/lgvoltup/roaming-service/pull/331
+        - https://github.com/lgvoltup/partner-roaming-service/pull/114
+      commits:
+        - 7874ac9
+        - 0341cef
+        - edf31b8
+        - 84afcad
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-ai-code-review-engine-human-eval-loop
+    period: 2026-10-10..2026-10-20
+    status: candidate
+    delivery: merged
+    area: platform
+    headline: 사내 AI 코드리뷰 엔진 고도화 — 관점 패널 검증·사람 평가 환류(evalkit)·PR 인덱스 기반 누락 없는 대용량 PR 리뷰·리뷰 흐름 보강(작성자 결정 분리·재현/테스트·원문 수정)
+    impact: GitHub Actions 재사용 워크플로(voltup-workflow)의 Gemini 코드리뷰를 오탐 중심에서 재설계. 리더 출력 값을 코드가 집행하는 오탐 패턴 체크리스트, 세 관점(정확성·의도·호출자) 패널 합산(중앙값·반대 차감), 수정 지시를 명령형+중요도 꼬리로 통일. 사람 평가를 기준으로 삼는 로컬 평가 시스템(evalkit — 루브릭·웹 평가 UI·오토레이터·평가자 일치도 kappa·MCP 서버)을 만들어 /resolve 판정 29~32건을 데이터셋화하고, 사람이 확인한 레포 사실(review-facts 56건)을 엔진 컨텍스트 전제로 환류. 대용량 PR 은 헝크 사전(PR 인덱스)으로 커버리지 장부·위험 우선순위·증분 이월·자동 이어보기(workflow_dispatch 페이징)를 두고, MAX_TOKENS·도구 예산 소진·잘린 diff 신호 시 큰 창 모델(argon 1M)로 자동 승급하도록 해 누락 없이 전수 검토되게 함. voltbot 적용 계획(#37) 문서화.
+    metrics:
+      - 확인 실행(10/15) — 유효 지적 3/4, 오탐 0/12(세 실행 연속 0); 사람 평가 환류 후 feapp 게시 6건 전부 리뷰어 판정과 일치
+      - PR 인덱스 증분 — 2회차 실행 LLM 호출 0·28초
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/voltup-workflow/pull/35
+        - https://github.com/lgvoltup/voltup-workflow/pull/36
+        - https://github.com/lgvoltup/voltup-workflow/pull/37
+        - https://github.com/lgvoltup/voltbot/pull/37
+      commits:
+        - 039580f
+        - e62ce80
+        - 6957999
+        - d20e8d1
+        - 5151428
+        - 11ffa8e
+        - 431fe93
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-observability-contract-user-id-baggage
+    period: 2026-10-16..2026-10-20
+    status: reflected
+    delivery: merged
+    area: platform
+    headline: 관측 계약 2차 — 회원 단위 상관 키(user_id·admin_id)를 6개 서비스에 OTel baggage 로 전파, 공통 라이브러리 회귀 수정
+    impact: 1차 관측 계약 적용 후 공통 라이브러리의 raw MDC 처리로 user_id 가 prod 로그에서 사라진 회귀(user-service 217/300 → 0/300)를 발견해 원인을 common 으로 특정하고 baggage 스코프 기반으로 근본 수정(MDC.clear 제거·진입 상태 복원·@Async 제출 시점 Context 전파·사내 대상에만 trace 헤더). 인증·회원·쿠폰·메시징·feapp·charger-service·csms 에 회원 한 명의 요청이 서비스 경계(HTTP·Pub/Sub·@Async·코루틴)를 넘어 한 줄로 묶이도록 적용하고, 어드민 요청은 대상 회원(user_id)과 운영자(admin_id)를 분리. 각 레포에 계획 문서(docs/plans/trace-pivot-keys.md)와 실제 OTel 브리지를 쓰는 회귀 테스트를 동봉해 CI 에서 돌게 함. 공통 라이브러리는 1.1.x·Boot 4 두 라인에 동시 반영. auth 는 10/20 prod 반영, 나머지는 release/261020·Jakarta 라인 머지.
+    metrics:
+      - user-service prod user_id 로그 비율 회귀 발견 — 217/300(9/24) → 0/300(10/15), 수정 후 dev·stg 실측 복구
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/voltup-common/pull/272
+        - https://github.com/lgvoltup/voltup-common/pull/280
+        - https://github.com/lgvoltup/voltup-common/pull/285
+        - https://github.com/lgvoltup/auth/pull/160
+        - https://github.com/lgvoltup/user-service/pull/145
+        - https://github.com/lgvoltup/coupon-service/pull/97
+        - https://github.com/lgvoltup/messaging-service/pull/47
+        - https://github.com/lgvoltup/voltup-feapp/pull/1139
+        - https://github.com/lgvoltup/csms/pull/354
+        - https://github.com/lgvoltup/charger-service/pull/160
+      commits:
+        - 6f844b5
+        - 2a1dd3d
+        - deab1d8
+        - 4a91c4d
+        - fad54a0
+        - 9030ffd2
+    resume_targets:
+      - profile.yaml#observability-contract
+      - portfolio-content.ts#observability-contract
+    reflected_at: 2026-11-01
+    skip_reason:
+  - id: 2026-10-auth-log-masking-security-hotfix
+    period: 2026-10-16..2026-10-20
+    status: candidate
+    delivery: deployed
+    area: auth
+    headline: 인증 서비스 로그 민감정보 노출 차단 — 공용 로그 마스킹 라이브러리(voltup-log-masking)와 검증 도구를 만들어 긴급 반영
+    impact: 관측 계약 조사 중 prod 인증 서비스 로그에 액세스 토큰·본인인증 정보(전화·이름·생년월일·OTP)·OAuth code·세션 식별자가 남는 것을 발견해 보안 이슈로 보고하고, 로그 문자열 생성 전에 가리는 공용 마스커(중앙 민감 필드 목록·@Sensitive)와 소비 서비스용 검증 테스트 도구를 공통 라이브러리로 제공. 액세스 로그 바디·쿼리와 Pub/Sub 발행 페이로드도 MDC·INFO 에서 제거. 인증 서비스는 핫픽스로 10/16 prod 반영, 세션 식별자 로그 제거·토큰 검증 실패 로그 지문화는 10/20 정기 릴리스에 포함. 같은 릴리스에 KMS 공개키 ENABLED 버전만 조회·KMS 서명 gRPC 재시도 등 토큰 서명 키 교체 중 장애 내성도 반영.
+    metrics:
+      - prod /refresh 응답 로그 access_token 노출 141/300 샘플 → 마스킹 후 0
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/auth/pull/166
+        - https://github.com/lgvoltup/auth/pull/181
+        - https://github.com/lgvoltup/voltup-common/pull/277
+        - https://github.com/lgvoltup/auth/pull/170
+      commits:
+        - 9b41498
+        - 6b0cec2
+        - 67ded11
+        - 427bff3
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-pr-changes-detector-ci
+    period: 2026-10-26..2026-10-26
+    status: candidate
+    delivery: merged
+    area: platform
+    headline: PR 배포 전 작업 자동 감지 CI — SQL·API·Pub/Sub 토픽·환경변수 변경을 PR 댓글로 표기, 14개 레포에 표준 적용
+    impact: 공용 워크플로(voltup-workflow)에 배포 전 인프라 작업(새 Pub/Sub 토픽·구독·환경변수)과 수동 DDL 감지를 추가하고, csms·auth·billing·user·coupon·voltbot 등 백엔드 레포에 연결해 리뷰어·배포 담당이 PR 단계에서 DB·인프라 선행 작업을 놓치지 않게 함.
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/voltup-workflow/pull/39
+        - https://github.com/lgvoltup/csms/pull/397
+        - https://github.com/lgvoltup/billing-service/pull/680
+        - https://github.com/lgvoltup/auth/pull/194
+      commits:
+        - 7da6385
+        - 3bf1012
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-charger-connection-state
+    period: 2026-10-26..2026-10-26
+    status: candidate
+    delivery: merged
+    area: csms
+    headline: 충전기 통신 상태를 앱까지 반영 — csms 연결·해제 이벤트 → charger-service 일괄 저장 → 앱에서 통신 불가 충전기 표시
+    impact: csms(OCPP·oneM2M)가 충전기 연결·해제를 즉시 + 5분 주기 재대조로 charger-service 에 반영(주기당 1만 건 상한으로 배포 직후 15만 건 UPDATE 집중 방지), charger-service 는 상태·시각별 묶음 UPDATE 로 500건 요청이 호출 측 5초 타임아웃을 넘던 문제 해소, 공통 라이브러리 응답·feapp 표시까지 4개 레포에 걸쳐 구현. release/261027 머지·dev/stg 반영.
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/csms/pull/400
+        - https://github.com/lgvoltup/charger-service/pull/168
+        - https://github.com/lgvoltup/charger-service/pull/169
+      commits:
+        - 21986197
+        - 48b85980
+        - 9d186ac
+        - 2b49229
+        - d937c645a
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-unpaid-alert-ready-orphan-auto-repair
+    period: 2026-10-22..2026-10-27
+    status: candidate
+    delivery: merged
+    area: billing
+    headline: 미결제 알림 배치에 결제 READY 고착 건 자동 복구 연동 — 승인 응답 유실 주문을 PG 실승인 여부로 확정해 정합 처리(prod 10/27)
+    impact: 승인 응답 유실·파드 종료로 billing READY 에 고착되고 재배송도 AlreadyOrderExists 로 소멸하던 주문을, 미결제 알림 배치(autoSync=true)가 billing 복구 조회(저장된 PG tid 기준, 결제 발사·재승인 없음)로 확정하도록 연동. 실승인이면 feapp 결제 완료 처리, 미승인 확정이면 정상 미수 경로로, 미확정·호출 실패는 알림 섹션에 사유와 함께 남겨 운영자의 수기 PG 조회·보정 단계를 제거. 배치 매니페스트(autoSync) 반영과 함께 release/261027 로 prod 반영.
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/voltup-feapp/pull/820
+        - https://github.com/lgvoltup/voltup-feapp/pull/1169
+        - https://github.com/lgvoltup/argocd-gke-service/pull/126
+      commits: []
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-roaming-post-search-query-limit
+    period: 2026-10-28..2026-10-29
+    status: candidate
+    delivery: deployed
+    area: roaming
+    headline: 로밍 ID 목록 다건 조회 5건에 POST /search 짝 추가 — Boot 4 쿼리 파라미터 1000개 한도로 롤백된 prod 배포를 구조적으로 해소
+    impact: 10/28 로밍 서비스 Boot 4 배포가 충전기·충전소·거래번호 ID 목록을 쿼리 파라미터 1000개 이상으로 보내는 API 에서 깨져 롤백됨. GET 을 유지한 채 본문(snake_case)으로 받는 POST /search 5건을 짝으로 추가하고 계약 테스트로 고정, 클라이언트 라이브러리(roaming-api 1.1.12) 발행 후 호출 측(feapp)을 핫픽스로 전환해 당일 dev·stg·prod 재배포 완료.
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/roaming-service/pull/337
+        - https://github.com/lgvoltup/roaming-service/pull/341
+        - https://github.com/lgvoltup/voltup-feapp/pull/1180
+      commits:
+        - 0b78d53
+        - 34646a4
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-location-coordinate-log-masking
+    period: 2026-10-29..2026-10-29
+    status: candidate
+    delivery: deployed
+    area: feapp
+    headline: 위치 좌표(위도·경도) 로그·알림 마스킹 — 서버 웹/MQ 로그·슬로우 프로세스 Slack 알림·앱 클라이언트 로그·Sentry 까지 한 번에
+    impact: 회원 위치 좌표가 서버 요청 로그·예외 메시지·슬로우 프로세스 알림과 앱 클라이언트 로그 응답·Sentry 에 평문으로 남던 것을 공용 마스킹 경로(maskText)로 일괄 처리. Boot 3·4 두 라인 모두 호환되게 테스트를 Jackson 타입 없이 작성. 서버는 당일 prod 핫픽스 반영, 앱은 dev·stg 반영(prod 는 다음 릴리스).
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/voltup-feapp/pull/1185
+        - https://github.com/lgvoltup/voltup-feapp/pull/1188
+        - https://github.com/lgvoltup/voltup-frontend/pull/2107
+      commits:
+        - 7f983709f
+        - 86b840e9b
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-dependency-cve-check-ci
+    period: 2026-10-29..2026-10-30
+    status: candidate
+    delivery: merged
+    area: platform
+    headline: 의존성 CVE 대응 자동화 — prod 승격 PR 체크 + 영업일 매일 운영 브랜치 스캔·숫자만 올리는 hotfix PR 자동 생성을 공용 스캔 모듈 하나로 운영 레포 전반에 적용
+    impact: 매 PR 마다 돌리면 비용·시간이 커지는 취약점 스캔을 prod 승격 PR(main·deploy/prod)에만 걸도록 재사용 워크플로우로 만들고, Gradle 하위 프로젝트·실행 JDK 자동 감지·WIF 권한 없는 레포 비치명 처리·프로젝트당 시간 제한을 넣어 레포별 차이를 흡수. csms 파일럿으로 실패 경로까지 검증 후 30여 개 레포에 일괄 PR. Spring 6.2 CRITICAL CVE 는 Boot 4 전환까지 기한부 예외로 등록. 10/30 스캔을 공용 모듈로 분리해 매일 10시(주말·공휴일·창립기념일 제외) 운영 브랜치를 점검, CRITICAL 이 있으면 버전 프로퍼티·좌표 숫자만 바꾸는 hotfix PR(HIGH 는 접힌 절에 표기)을 만들고 프레임워크 전환이 필요한 건은 추적 이슈로 분리, 같은 대응 PR 이 열려 있으면 재게시하지 않음.
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/voltup-workflow/pull/41
+        - https://github.com/lgvoltup/csms/pull/424
+      commits:
+        - e66d7a7
+        - 0eaa04a
+        - 7fcf315
+        - 2f05e5c
+        - 5297715
+    resume_targets: []
+    reflected_at:
+    skip_reason:
+  - id: 2026-10-charging-disconnect-detection
+    period: 2026-10-28..
+    status: candidate
+    delivery: in_progress
+    area: csms
+    headline: 충전 중 연결 끊김 감지 — 진행 중 충전과 게이트웨이 끊김 이벤트를 대조하고, 게이트웨이는 Heartbeat 로그 대신 세션 시작·종료 pair 로 생존 제공
+    impact: 장시간 충전에서 5분 단위 Heartbeat 로그가 쌓여 고객 영향 판단이 어렵던 것을, csms-gw 가 세션 종료 1줄에 생존 정보를 담고 csms 가 진행 중 충전과 끊김을 대조해 감지하는 구조로 전환. 서로 다른 충전기 병렬 처리 실증 테스트 추가. dev 반영, 운영 문서(10단원) 작성.
+    metrics: []
+    evidence:
+      prs:
+        - https://github.com/lgvoltup/csms/pull/425
+        - https://github.com/lgvoltup/csms-gw/pull/57
+        - https://github.com/lgvoltup/dev_docs/pull/90
+      commits:
+        - 282e1726
+        - b4f5853
+    resume_targets: []
+    reflected_at:
+    skip_reason:

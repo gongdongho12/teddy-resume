@@ -1,11 +1,26 @@
 import { chromium } from 'playwright';
 import { spawn, execFileSync } from 'node:child_process';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import net from 'node:net';
 import path from 'node:path';
 import YAML from 'yaml';
 
-const PORT = 4322;
-const BASE_URL = `http://127.0.0.1:${PORT}`;
+// 고정 포트를 쓰면 다른 로컬 서버가 점유했을 때 Astro 가 다음 포트로 비켜 뜨고,
+// 스크립트는 점유한 서버에 붙어 404 로 타임아웃된다. 매 실행마다 빈 포트를 잡는다.
+let PORT;
+let BASE_URL;
+
+function findFreePort() {
+  return new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.unref();
+    probe.on('error', reject);
+    probe.listen(0, '127.0.0.1', () => {
+      const { port } = probe.address();
+      probe.close(() => resolve(port));
+    });
+  });
+}
 const OUTPUT_DIR = path.resolve('tmp/pdfs/a4-check');
 const DEBUG_GRID = process.argv.includes('--debug-grid');
 const A4_WIDTH_PX = (210 * 96) / 25.4;
@@ -245,6 +260,8 @@ async function main() {
   await rm(OUTPUT_DIR, { recursive: true, force: true });
   await mkdir(OUTPUT_DIR, { recursive: true });
 
+  PORT = await findFreePort();
+  BASE_URL = `http://127.0.0.1:${PORT}`;
   const server = spawn(
     'npm',
     ['run', 'preview', '--', '--host', '127.0.0.1', '--port', String(PORT)],

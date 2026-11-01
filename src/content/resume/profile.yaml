@@ -134,11 +134,11 @@ experience:
 skillGroups:
   - label: Language
     body_ko: |
-      Java / Kotlin
+      Java / Kotlin / Go
       JavaScript / TypeScript
       Dart
     body_en: |
-      Java / Kotlin
+      Java / Kotlin / Go
       JavaScript / TypeScript
       Dart
   - label: Framework
@@ -154,14 +154,14 @@ skillGroups:
   - label: Infra & DB
     body_ko: |
       MySQL / Redis
-      GCP Pub/Sub / Cloud SQL
-      Docker / K8S
-      Kafka / Jenkins / ArgoCD
+      GCP Pub/Sub / Cloud SQL / Kafka
+      Docker / K8S / Istio / ArgoCD
+      OpenTelemetry / OCPP 1.6·2.1
     body_en: |
       MySQL / Redis
-      GCP Pub/Sub / Cloud SQL
-      Docker / Kubernetes
-      Kafka / Jenkins / ArgoCD
+      GCP Pub/Sub / Cloud SQL / Kafka
+      Docker / Kubernetes / Istio / ArgoCD
+      OpenTelemetry / OCPP 1.6·2.1
   - label: CI/CD & DevOps
     body_ko: |
       Jenkins / GitHub Actions
@@ -433,12 +433,69 @@ projectSections:
             - 충전 주문 처리를 별도 서비스로 분리해, 앱 부가 기능에 장애가 나도 충전 시작에는 영향이 없도록 격리 (2026.09 운영 적용)
             - "원격 충전 시작 실패를 원인별 4가지로 분류하고 하나씩 해결: 비정상 메시지 격리, 동시 요청 충돌 해소, 재전송 폭주 차단"
             - 원격 시작 응답 지연 하루 5,861건이 실패가 아닌 평소 흐름임을 데이터로 확인하고 서버 간 오류 기준을 다시 정해, 고객에게 잘못 가던 "충전 시작 실패" 알림 제거
-            - 충전 1건의 처리 과정을 8개 서비스에 걸쳐 하나의 ID로 추적할 수 있도록 표준 수립 (1단계)
           en:
             - Moved charging-order processing into a dedicated service so outages in non-essential app features no longer affect charging starts (in production since Sep 2026)
             - "Traced remote-start failures to four causes and fixed each: isolated malformed charger messages, resolved conflicts between simultaneous requests, and blocked retransmission floods"
             - Confirmed with data that 5,861 delayed remote-start responses per day were normal flow rather than failures, then redefined how servers report errors so customers stop receiving false "charging failed" alerts
-            - Established a standard for tracing each charging session across 8 services with a single ID (phase 1)
+
+      - title:
+          ko: "충전기 접속 계층: 재접속 폭주 차단과 Go 웹소켓 게이트웨이(csms-gw)"
+          en: "Charger Connection Layer: Reconnect-Storm Control and a Go WebSocket Gateway"
+        portfolioSlug: charger-gateway-scale
+        period:
+          ko: 2026.09 ~ 현재
+          en: Sep 2026 — Present
+        summary:
+          ko: |
+            충전기 약 1만 대가 CSMS에 직접 붙어 배포 때마다 재접속이 몰리던 문제를 기존 서버에서 먼저 줄이고,
+            충전기 접속 계층을 Go 게이트웨이로 분리하고 있습니다(2026.10 stg 배포, 운영 투입 준비 중).
+          en: |
+            About 10,000 chargers connected directly to CSMS, so every deployment triggered a reconnect surge.
+            I reduced it on the existing servers first, then began moving the connection layer into a Go gateway (in staging since Oct 2026, preparing for production).
+        tech:
+          - Go
+          - OCPP 1.6/2.1
+          - GCP Pub/Sub
+          - Redis
+          - Istio
+        highlights:
+          ko:
+            - 롤아웃 때 DB QPS 5.8배·커넥션 풀 포화를 일으키던 재접속 폭주를 헬스체크 창 파드 공유·롤아웃 페이싱·10초 드레인·파드당 세션 상한으로 차단 (2026.10.13 운영 배포 신규 오류 0건)
+            - Go 게이트웨이 신규 구축 — 패스스루/Pub/Sub 이중 경로, OCPP 1.6·2.1, 다중 인스턴스, CSMS 배포·장애 중에도 충전기 연결 유지
+            - 자원 한도에서 세션 상한을 자동 계산하고 폭주 시 503 + Retry-After로 거절; 부하 시험에서 세션 메모리 절반, 초당 2,000대 재접속 실패 3,414 → 0건
+          en:
+            - Stopped reconnect storms that drove database QPS up 5.8x and saturated connection pools during rollouts, using a pod-shared health-check window, paced rollouts, a 10-second drain, and per-pod session caps (zero new errors in the Oct 13, 2026 production deployment)
+            - Built a new Go gateway with pass-through and Pub/Sub paths, OCPP 1.6/2.1 support, and multi-instance operation, keeping chargers connected while CSMS deploys or fails
+            - Derived session limits from resource limits and rejected surges with 503 and Retry-After; load tests halved memory per session and cut failures in a 2,000-per-second reconnect surge from 3,414 to 0
+
+      - title:
+          ko: "서비스 간 관측 표준(OpenTelemetry): 충전 1건·회원 1명 종단 추적"
+          en: "Cross-Service Observability Standard (OpenTelemetry)"
+        portfolioSlug: observability-contract
+        period:
+          ko: 2026.09 ~ 2026.10
+          en: Sep 2026 — Oct 2026
+        summary:
+          ko: |
+            Pub/Sub·비동기 경계에서 끊기던 추적 정보를 OpenTelemetry 표준으로 이어 Cloud Trace에서 충전 1건이 하나의 트리로 보이게 했습니다.
+            이어서 회원 단위 키를 6개 서비스로 넓혔습니다.
+          en: |
+            Connected tracing context lost at Pub/Sub and async boundaries with OpenTelemetry, so each charging session appears as one tree in Cloud Trace.
+            Then extended member-level keys to six services.
+        tech:
+          - OpenTelemetry
+          - W3C Trace Context
+          - Kotlin
+          - GCP Pub/Sub
+        highlights:
+          ko:
+            - Pub/Sub traceparent 전파를 공통 라이브러리에 넣어 7개 서비스를 잇고, charging_id·order_number·trace_id 세 키로 8개 서비스 로그를 조인하는 표준과 런북 수립
+            - 실제 충전 4건을 끝까지 따라가며 코루틴·필터 순서·설정 키 등 남은 단절을 메워 서비스 간 피벗 키 전파율 0% → 전 구간 연결
+            - 운영 로그 user_id 비율 217/300 → 0/300 회귀를 발견해 공통 라이브러리에서 근본 수정하고, 실제 OTel 브리지 회귀 테스트를 CI에 고정
+          en:
+            - Added Pub/Sub traceparent propagation to the shared library across seven services, and set a standard and runbook that join logs from eight services on charging_id, order_number, and trace_id
+            - Followed four real charging sessions end to end and closed remaining gaps in coroutines, filter ordering, and configuration keys, taking cross-service pivot-key propagation from 0% to end to end
+            - Found a production regression where user_id appeared in 0/300 logs instead of 217/300, fixed it in the shared library, and locked it down with CI tests against the real OTel bridge
 
       - title:
           ko: 통합 프로모션(쿠폰/포인트) 플랫폼 구축 및 고도화
@@ -612,7 +669,7 @@ projectSections:
       - title:
           ko: 볼트업 앱 검증/운영 보정 익스텐션
           en: Browser-Based App Validation and Operations Tool
-        portfolioSlug: voltup-app-extension
+        portfolioSlug: mobile-app-extension
         period:
           ko: "2026.05 ~ 현재"
           en: "May 2026 — Present"

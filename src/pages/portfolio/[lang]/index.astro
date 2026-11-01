@@ -3,6 +3,7 @@ import CommonHead from '@/components/CommonHead.astro';
 import ContactVisibilityToggle from '@/components/ContactVisibilityToggle.astro';
 import LanguageSwitcher from '@/components/LanguageSwitcher.astro';
 import MermaidDiagram from '@/components/MermaidDiagram.astro';
+import PortfolioComparisonTable from '@/components/PortfolioComparisonTable.astro';
 import PortfolioProjectIndex from '@/components/PortfolioProjectIndex.astro';
 import PortfolioReferenceGallery from '@/components/PortfolioReferenceGallery.astro';
 import PortfolioProjectTitleLink from '@/components/PortfolioProjectTitleLink.astro';
@@ -609,13 +610,25 @@ const sectionLabels =
                 )}
               </div>
 
-              {project.diagrams && project.diagrams.length > 0 && (
+              {((project.diagrams?.length ?? 0) > 0 || (project.comparisons?.length ?? 0) > 0) && (
                 <section class="rounded-[1.45rem] border border-slate-900/10 bg-[linear-gradient(180deg,#f7fbfe_0%,#f1f7fb_100%)] p-5">
                   <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
                     {sectionLabels.diagrams}
                   </p>
                   <div class="mt-4 grid gap-4">
-                    {project.diagrams.map((diagram) => (
+                    {(project.comparisons ?? []).map((comparison) => (
+                      <PortfolioComparisonTable
+                        title={portfolioText(comparison.title, lang)}
+                        description={comparison.description ? portfolioText(comparison.description, lang) : undefined}
+                        columns={comparison.columns.map((column) => portfolioText(column, lang))}
+                        rows={comparison.rows.map((row) => ({
+                          label: portfolioText(row.label, lang),
+                          values: row.values.map((value) => portfolioText(value, lang)),
+                        }))}
+                        note={comparison.note ? portfolioText(comparison.note, lang) : undefined}
+                      />
+                    ))}
+                    {(project.diagrams ?? []).map((diagram) => (
                       <MermaidDiagram
                         title={portfolioText(diagram.title, lang)}
                         description={portfolioText(diagram.description, lang)}

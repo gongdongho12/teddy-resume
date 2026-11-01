@@ -22,33 +22,149 @@ const multiPgArchitectureDiagram = localized(`flowchart TD
   class Vendor,Keys,Api,Tx vendor;
   style PGV fill:#eef7fb,stroke:#0f4c81,stroke-width:2px,color:#0f172a;`);
 
+const chargingOrderIsolationDiagram = localized(
+  `flowchart TB
+  subgraph before["기존 — 앱 기능과 충전 경로가 한 서비스"]
+    direction TB
+    A1["앱 트래픽<br/>대량 푸시 · 차량 조회"] --> FE["앱 서버(feapp) 한 파드<br/>같은 Tomcat · 같은 비동기 풀"]
+    A2["CSMS 충전 인증·주문"] --> FE
+    FE --> EXT["외부 연동 동기 호출<br/>(차량 인증서 조회)"]
+    EXT -. "지연 → 스레드 고갈" .-> X["충전 인증 타임아웃<br/>충전 시작 실패"]
+  end
+  subgraph after["개선 — 충전 경로 물리 격리"]
+    direction TB
+    B1["앱 트래픽"] --> FE2["앱 서버(feapp)<br/>앱 부가 기능"]
+    FE2 --> CG["CallGuard<br/>전용 풀 · 서킷 브레이커 · 총 대기 상한"] --> EXT2["외부 연동"]
+    B2["CSMS 충전 인증·주문"] --> VO["voltup-order 별도 서비스<br/>앱 없이 성립하는 충전 주문 경로"]
+    VO --> OK["앱 장애·외부 지연과 무관하게<br/>충전 시작"]
+  end
+  before ~~~ after
+  classDef bad fill:#fdecec,stroke:#b42318,color:#0f172a;
+  classDef good fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  class X bad;
+  class VO,CG,OK good;`,
+  `flowchart TB
+  subgraph before["Before — app features and the charging path share one service"]
+    direction TB
+    A1["App traffic<br/>mass push · vehicle lookups"] --> FE["App server (feapp) pod<br/>shared Tomcat · shared async pool"]
+    A2["CSMS charging auth & orders"] --> FE
+    FE --> EXT["Synchronous external calls<br/>(vehicle certificate lookup)"]
+    EXT -. "latency → thread exhaustion" .-> X["Charging auth timeouts<br/>failed charging starts"]
+  end
+  subgraph after["After — charging path physically isolated"]
+    direction TB
+    B1["App traffic"] --> FE2["App server (feapp)<br/>non-essential features"]
+    FE2 --> CG["CallGuard<br/>dedicated pool · circuit breaker · total wait cap"] --> EXT2["External integrations"]
+    B2["CSMS charging auth & orders"] --> VO["voltup-order (separate service)<br/>order path that works without the app"]
+    VO --> OK["Charging starts regardless of<br/>app outages or external latency"]
+  end
+  before ~~~ after
+  classDef bad fill:#fdecec,stroke:#b42318,color:#0f172a;
+  classDef good fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  class X bad;
+  class VO,CG,OK good;`,
+);
+
+const chargerGatewayLifecycleDiagram = localized(
+  `sequenceDiagram
+  autonumber
+  participant C as 충전기
+  participant G as csms-gw (Go)
+  participant Q as Pub/Sub
+  participant S as CSMS
+  C->>G: WebSocket 접속 (OCPP 1.6·2.1)
+  Note over G: 상한 초과 → 503 + Retry-After
+  G->>Q: Boot · Authorize
+  Q->>S: 처리
+  S-->>Q: 응답
+  Q-->>G: 응답
+  G-->>C: 응답
+  C->>G: Heartbeat
+  G-->>C: 게이트웨이 직답 (옵션)
+  C->>G: 충전 시작 · 종료
+  G->>Q: 핵심 메시지 (실패 시 재전달·DLQ)
+  Note over S: CSMS 배포·장애
+  Note over C,G: 연결은 게이트웨이에 유지
+  S->>Q: 원격 시작 등 명령
+  Q->>G: 세션 가진 인스턴스로
+  G-->>C: 명령 (끊겼으면 대기열 → 재접속 시)`,
+  `sequenceDiagram
+  autonumber
+  participant C as Charger
+  participant G as csms-gw (Go)
+  participant Q as Pub/Sub
+  participant S as CSMS
+  C->>G: WebSocket connect (OCPP 1.6·2.1)
+  Note over G: over cap → 503 + Retry-After
+  G->>Q: Boot · Authorize
+  Q->>S: Process
+  S-->>Q: Response
+  Q-->>G: Response
+  G-->>C: Response
+  C->>G: Heartbeat
+  G-->>C: gateway reply (optional)
+  C->>G: Start · Stop transaction
+  G->>Q: core messages (redelivery · DLQ)
+  Note over S: CSMS deploy / outage
+  Note over C,G: connection stays on gateway
+  S->>Q: remote start etc.
+  Q->>G: to the session's instance
+  G-->>C: command (offline → queue → on reconnect)`,
+);
+
 const chargerGatewayDiagram = localized(
-  `flowchart TD
-  Charger["충전기 약 1만 대<br/>OCPP 1.6 / 2.1"] -->|"WebSocket /ocpp"| Mesh{"Istio 진입점<br/>게이트웨이 Ready?"}
-  Mesh -->|"아니오 (failover)"| Csms["CSMS<br/>Kotlin / Spring Boot"]
-  Mesh -->|"예"| Gw["csms-gw (Go)<br/>세션·한도 자동 도출<br/>폭주 시 503 + Retry-After"]
-  Gw -->|"A 경로: 패스스루"| Csms
-  Gw -->|"B 경로: 핵심 메시지"| Bus[("GCP Pub/Sub")]
-  Bus --> Csms
-  Csms -->|"명령"| Bus
-  Bus --> Gw
-  Gw <--> Dir[("Redis<br/>세션 디렉터리·제어 채널")]
-  Gw --> Queue["충전기별 대기열<br/>재접속 직후 전달"]
-  classDef gw fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
-  class Gw,Queue gw;`,
-  `flowchart TD
-  Charger["~10,000 chargers<br/>OCPP 1.6 / 2.1"] -->|"WebSocket /ocpp"| Mesh{"Istio entry<br/>gateway ready?"}
-  Mesh -->|"no (failover)"| Csms["CSMS<br/>Kotlin / Spring Boot"]
-  Mesh -->|"yes"| Gw["csms-gw (Go)<br/>derived session limits<br/>503 + Retry-After on surges"]
-  Gw -->|"Path A: pass-through"| Csms
-  Gw -->|"Path B: core messages"| Bus[("GCP Pub/Sub")]
-  Bus --> Csms
-  Csms -->|"commands"| Bus
-  Bus --> Gw
-  Gw <--> Dir[("Redis<br/>session directory / control channel")]
-  Gw --> Queue["per-charger queue<br/>delivered on reconnect"]
-  classDef gw fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
-  class Gw,Queue gw;`,
+  `flowchart TB
+  subgraph before["기존 — 충전기가 CSMS에 직접 연결"]
+    direction LR
+    C0["충전기 약 1만 대"] -->|"WebSocket /ocpp"| S0["CSMS 파드 ×7<br/>연결 유지 + 메시지 처리를 함께<br/>Tomcat 한도 8,192"]
+    S0 --> D0[("Cloud SQL")]
+    S0 -. "배포 때마다 연결 전부 끊김<br/>→ 재접속 폭주" .-> C0
+  end
+  subgraph after["개선 — 연결과 처리를 분리 (파란색 = 새로 추가)"]
+    direction TB
+    C1["충전기"] -->|"① WebSocket /ocpp"| M["Istio 진입점<br/>역할: 게이트웨이 Ready 판정"]
+    M -->|"② Ready"| G["csms-gw (Go)<br/>역할: 연결 유지 · 세션 한도 · 폭주 시 503"]
+    M -. "② Not Ready → 자동 복귀" .-> S1["CSMS (기존)<br/>역할: 메시지 처리만"]
+    G -->|"③-A 패스스루 (1단계 투입)"| S1
+    G -->|"③-B 핵심 메시지"| Q[("Pub/Sub 경로<br/>역할: CSMS 배포 중 보관 · 재전달")]
+    Q --> S1
+    S1 -->|"④ 원격 명령"| Q
+    G <--> R[("Redis<br/>역할: 충전기 → 인스턴스 세션 디렉터리")]
+    G --> W["충전기별 대기열<br/>역할: 끊긴 동안 명령 보관 → 재접속 직후 전달"]
+  end
+  before ~~~ after
+  classDef added fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef existing fill:#f1f5f9,stroke:#94a3b8,color:#334155;
+  classDef pain fill:#fdecec,stroke:#b42318,color:#0f172a;
+  class M,G,Q,R,W added;
+  class C0,C1,S1,D0 existing;
+  class S0 pain;`,
+  `flowchart TB
+  subgraph before["Before — chargers connect directly to CSMS"]
+    direction LR
+    C0["~10,000 chargers"] -->|"WebSocket /ocpp"| S0["CSMS pods ×7<br/>hold connections and process messages<br/>Tomcat limit 8,192"]
+    S0 --> D0[("Cloud SQL")]
+    S0 -. "every deploy drops all connections<br/>→ reconnect surge" .-> C0
+  end
+  subgraph after["After — connections separated from processing (blue = new)"]
+    direction TB
+    C1["Chargers"] -->|"① WebSocket /ocpp"| M["Istio entry<br/>role: checks gateway readiness"]
+    M -->|"② ready"| G["csms-gw (Go)<br/>role: hold connections · session caps · 503 on surges"]
+    M -. "② not ready → automatic fallback" .-> S1["CSMS (existing)<br/>role: message processing only"]
+    G -->|"③-A pass-through (stage 1)"| S1
+    G -->|"③-B core messages"| Q[("Pub/Sub path<br/>role: hold and redeliver during CSMS deploys")]
+    Q --> S1
+    S1 -->|"④ remote commands"| Q
+    G <--> R[("Redis<br/>role: charger → instance session directory")]
+    G --> W["Per-charger queue<br/>role: keep commands while offline → deliver on reconnect"]
+  end
+  before ~~~ after
+  classDef added fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef existing fill:#f1f5f9,stroke:#94a3b8,color:#334155;
+  classDef pain fill:#fdecec,stroke:#b42318,color:#0f172a;
+  class M,G,Q,R,W added;
+  class C0,C1,S1,D0 existing;
+  class S0 pain;`,
 );
 
 const observabilityContractDiagram = localized(
@@ -881,6 +997,14 @@ export interface PortfolioDiagram {
   example?: PortfolioDiagramExample;
 }
 
+export interface PortfolioComparison {
+  title: Localized;
+  description?: Localized;
+  columns: Localized[];
+  rows: Array<{ label: Localized; values: Localized[] }>;
+  note?: Localized;
+}
+
 export interface PortfolioReferenceImage {
   src: string;
   href?: string;
@@ -914,6 +1038,7 @@ export interface PortfolioProject {
     description: Localized;
   }>;
   diagrams?: PortfolioDiagram[];
+  comparisons?: PortfolioComparison[];
   referenceImages?: PortfolioReferenceImage[];
 }
 
@@ -1215,6 +1340,19 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         en: 'A reliability project on a newly owned charging platform, combining structural isolation and root-cause failure fixes.',
       },
       tech: ['Kotlin', 'Spring Boot', 'OCPP', 'GCP Pub/Sub', 'Redis', 'Kubernetes'],
+      diagrams: [
+        {
+          title: {
+            ko: '충전 주문 경로 분리: 기존 → 개선',
+            en: 'Charging-order path isolation: before → after',
+          },
+          description: {
+            ko: '기존에는 앱 부가 기능과 충전 인증·주문이 같은 서비스의 스레드 풀을 나눠 써서, 외부 연동이 느려지면 충전 시작까지 막혔습니다. 충전 주문 경로는 voltup-order로 분리하고, 앱에 남은 외부 호출은 CallGuard로 격리했습니다.',
+            en: 'Previously, non-essential app features and charging auth/orders shared one service\'s thread pools, so slow external integrations could block charging starts. The charging-order path now runs in voltup-order, and external calls left in the app are isolated with CallGuard.',
+          },
+          code: chargingOrderIsolationDiagram,
+        },
+      ],
     },
     {
       slug: 'charger-gateway-scale',
@@ -1304,14 +1442,89 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       diagrams: [
         {
           title: {
-            ko: '충전기 접속 계층: A/B 이중 경로와 자동 복귀',
-            en: 'Charger connection layer: dual A/B paths and automatic fallback',
+            ko: '충전기 접속 계층: 기존 → 개선 (새로 추가한 구성과 역할)',
+            en: 'Charger connection layer: before → after (new components and their roles)',
           },
           description: {
-            ko: '게이트웨이가 준비되지 않으면 Istio가 CSMS로 돌려 보내고, B 경로에서는 핵심 메시지와 명령이 Pub/Sub을 거쳐 CSMS 배포·장애 중에도 연결이 유지됩니다.',
-            en: 'When the gateway is not ready, Istio routes chargers back to CSMS; on path B, core messages and commands travel over Pub/Sub so connections survive CSMS deployments and outages.',
+            ko: '기존에는 CSMS 파드가 연결 유지와 메시지 처리를 함께 맡아, 배포 때마다 연결이 끊기고 재접속이 몰렸습니다. 개선 구조는 ① 접속 → ② Istio가 게이트웨이 준비 여부로 갈라 보내고(아니면 기존 CSMS로 자동 복귀) → ③ 게이트웨이가 패스스루(A) 또는 Pub/Sub(B)로 CSMS에 전달 → ④ CSMS 명령은 Pub/Sub으로 돌아오는 순서입니다. 파란색이 새로 추가한 구성입니다.',
+            en: 'Before, CSMS pods both held connections and processed messages, so every deploy dropped connections and caused a reconnect surge. The new flow: ① connect → ② Istio routes by gateway readiness (falling back to CSMS automatically) → ③ the gateway forwards to CSMS by pass-through (A) or Pub/Sub (B) → ④ CSMS commands return over Pub/Sub. Blue marks new components.',
           },
           code: chargerGatewayDiagram,
+        },
+        {
+          title: {
+            ko: '충전기 연결 수명: 접속부터 CSMS 배포 중 명령 전달까지',
+            en: 'Charger connection lifecycle: from connect to command delivery during a CSMS deploy',
+          },
+          description: {
+            ko: '연결은 게이트웨이가 쥐고, CSMS는 메시지만 처리합니다. CSMS 파드가 바뀌는 동안에도 충전기는 끊기지 않고, 그 사이 명령은 대기열에서 기다렸다가 전달됩니다.',
+            en: 'The gateway owns connections and CSMS only processes messages. Chargers stay connected while CSMS pods change, and commands issued meanwhile wait in a queue until delivery.',
+          },
+          code: chargerGatewayLifecycleDiagram,
+        },
+      ],
+      comparisons: [
+        {
+          title: {
+            ko: '기존 CSMS 직결 vs Go 게이트웨이',
+            en: 'Direct-to-CSMS connections vs. the Go gateway',
+          },
+          description: {
+            ko: '같은 충전기 연결을 누가 쥐고, 한도를 어떻게 정하며, 배포 때 무슨 일이 일어나는지 비교했습니다.',
+            en: 'Who holds the charger connection, how limits are set, and what happens during deployments.',
+          },
+          columns: [
+            { ko: '기존 — CSMS 직결 (Spring · Tomcat)', en: 'Before — direct to CSMS (Spring · Tomcat)' },
+            { ko: '개선 — csms-gw (Go)', en: 'After — csms-gw (Go)' },
+          ],
+          rows: [
+            {
+              label: { ko: '연결을 쥐는 곳', en: 'Connection owner' },
+              values: [
+                { ko: 'CSMS 파드가 웹소켓과 비즈니스 로직을 함께 처리', en: 'CSMS pods handle both WebSockets and business logic' },
+                { ko: '게이트웨이가 연결만 유지, CSMS는 Pub/Sub로 메시지만 처리', en: 'The gateway only holds connections; CSMS processes messages over Pub/Sub' },
+              ],
+            },
+            {
+              label: { ko: '배포·장애 때 연결', en: 'Connections during deploys or outages' },
+              values: [
+                { ko: '파드가 바뀔 때마다 수천 대가 끊기고 재접속이 몰림', en: 'Every pod replacement drops thousands of chargers and triggers a reconnect surge' },
+                { ko: 'CSMS 배포와 무관하게 유지, 못 보낸 명령은 충전기별 대기열 → 재접속 직후 전달', en: 'Stay connected regardless of CSMS deploys; undelivered commands queue per charger until reconnect' },
+              ],
+            },
+            {
+              label: { ko: '동시 접속 한도', en: 'Concurrent connection limit' },
+              values: [
+                { ko: 'Tomcat max-connections 기본 8,192 — 2026.10.13 롤아웃에서 남은 구 파드가 8,190 세션에 걸려 2분간 503 약 515건 → 앱 단 파드당 상한 7,000 추가', en: 'Tomcat max-connections defaults to 8,192 — in the Oct 13, 2026 rollout, a remaining old pod hit 8,190 sessions and returned ~515 503s over 2 minutes → added an app-level cap of 7,000 per pod' },
+                { ko: '파드 메모리 한도에서 세션·핸드셰이크 상한을 자동 계산, 넘치면 즉시 503 + Retry-After', en: 'Session and handshake caps derived from pod memory limits; overflow is rejected at once with 503 + Retry-After' },
+              ],
+            },
+            {
+              label: { ko: '파드당 수용량', en: 'Capacity per pod' },
+              values: [
+                { ko: '7,000 세션 × 운영 7파드 = 약 4.9만 (여유 약 16%)', en: '7,000 sessions × 7 production pods ≈ 49k (about 16% headroom)' },
+                { ko: '1Gi 파드 1.7만 대 실측(RSS 587MB), 2Gi 파드 자동 한도 약 3만 세션 — 적은 파드로 같은 연결 수 수용', en: '17k chargers measured on a 1Gi pod (587MB RSS); ~30k sessions auto-limit on a 2Gi pod — the same connections on fewer pods' },
+              ],
+            },
+            {
+              label: { ko: '재접속 폭주', en: 'Reconnect surges' },
+              values: [
+                { ko: '롤아웃 때 DB QPS 5.8배, 커넥션 풀 128/128 포화, p99 50ms → 3.9s', en: 'During rollouts: DB QPS 5.8x, connection pools 128/128, p99 50ms → 3.9s' },
+                { ko: '초당 2,000대 재접속 시험에서 접속 실패 3,414 → 0, 세션당 메모리 절반(1만 대 682 → 351MB)', en: '2,000-per-second reconnect test: failures 3,414 → 0; memory per session halved (682 → 351MB for 10k chargers)' },
+              ],
+            },
+            {
+              label: { ko: 'Heartbeat', en: 'Heartbeats' },
+              values: [
+                { ko: '전부 CSMS로 — 하루 약 803만 건, 충전기 메시지의 24%', en: 'All sent to CSMS — about 8.03M per day, 24% of charger messages' },
+                { ko: '게이트웨이 직답 옵션 — 5천 대 벤치에서 CSMS 수신 39% 감소', en: 'Optional gateway replies — 39% fewer messages reaching CSMS in a 5,000-charger benchmark' },
+              ],
+            },
+          ],
+          note: {
+            ko: '기존 열은 운영 실측, 게이트웨이 열은 dev·stg와 로컬 부하 시험 수치입니다(2026.10 stg 배포, 운영 투입 준비 중).',
+            en: 'The "before" column is production data; the gateway column comes from dev, staging, and local load tests (in staging since Oct 2026, preparing for production).',
+          },
         },
       ],
     },

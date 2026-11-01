@@ -44,3 +44,19 @@ const { title, description, code, exampleTitle, exampleSteps = [] } = Astro.prop
     </div>
   )}
 </section>
+
+<style is:global>
+  /* 좁은 화면에서 다이어그램이 폭에 맞춰 읽을 수 없을 만큼 줄어들지 않도록,
+     최소 폭을 주고 다이어그램 상자 안에서만 가로 스크롤한다. */
+  /* 상자의 폭이 안쪽 다이어그램 폭에 끌려 늘어나지 않게 (그리드 안에서 페이지 넘침 방지) */
+  .portfolio-mermaid {
+    contain: inline-size;
+  }
+
+  @media (max-width: 767px) {
+    .portfolio-mermaid svg {
+      min-width: 640px;
+      height: auto;
+    }
+  }
+</style>

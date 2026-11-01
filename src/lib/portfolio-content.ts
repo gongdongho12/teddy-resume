@@ -22,6 +22,205 @@ const multiPgArchitectureDiagram = localized(`flowchart TD
   class Vendor,Keys,Api,Tx vendor;
   style PGV fill:#eef7fb,stroke:#0f4c81,stroke-width:2px,color:#0f172a;`);
 
+const chargingOrderIsolationDiagram = localized(
+  `flowchart TB
+  subgraph before["기존 — 앱 기능과 충전 경로가 한 서비스"]
+    direction TB
+    A1["앱 트래픽<br/>대량 푸시 · 차량 조회"] --> FE["앱 서버(feapp) 한 파드<br/>같은 Tomcat · 같은 비동기 풀"]
+    A2["CSMS 충전 인증·주문"] --> FE
+    FE --> EXT["외부 연동 동기 호출<br/>(차량 인증서 조회)"]
+    EXT -. "지연 → 스레드 고갈" .-> X["충전 인증 타임아웃<br/>충전 시작 실패"]
+  end
+  subgraph after["개선 — 충전 경로 물리 격리"]
+    direction TB
+    B1["앱 트래픽"] --> FE2["앱 서버(feapp)<br/>앱 부가 기능"]
+    FE2 --> CG["CallGuard<br/>전용 풀 · 서킷 브레이커 · 총 대기 상한"] --> EXT2["외부 연동"]
+    B2["CSMS 충전 인증·주문"] --> VO["voltup-order 별도 서비스<br/>앱 없이 성립하는 충전 주문 경로"]
+    VO --> OK["앱 장애·외부 지연과 무관하게<br/>충전 시작"]
+  end
+  before ~~~ after
+  classDef bad fill:#fdecec,stroke:#b42318,color:#0f172a;
+  classDef good fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  class X bad;
+  class VO,CG,OK good;`,
+  `flowchart TB
+  subgraph before["Before — app features and the charging path share one service"]
+    direction TB
+    A1["App traffic<br/>mass push · vehicle lookups"] --> FE["App server (feapp) pod<br/>shared Tomcat · shared async pool"]
+    A2["CSMS charging auth & orders"] --> FE
+    FE --> EXT["Synchronous external calls<br/>(vehicle certificate lookup)"]
+    EXT -. "latency → thread exhaustion" .-> X["Charging auth timeouts<br/>failed charging starts"]
+  end
+  subgraph after["After — charging path physically isolated"]
+    direction TB
+    B1["App traffic"] --> FE2["App server (feapp)<br/>non-essential features"]
+    FE2 --> CG["CallGuard<br/>dedicated pool · circuit breaker · total wait cap"] --> EXT2["External integrations"]
+    B2["CSMS charging auth & orders"] --> VO["voltup-order (separate service)<br/>order path that works without the app"]
+    VO --> OK["Charging starts regardless of<br/>app outages or external latency"]
+  end
+  before ~~~ after
+  classDef bad fill:#fdecec,stroke:#b42318,color:#0f172a;
+  classDef good fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  class X bad;
+  class VO,CG,OK good;`,
+);
+
+const chargerGatewayLifecycleDiagram = localized(
+  `sequenceDiagram
+  autonumber
+  participant C as 충전기
+  participant G as csms-gw (Go)
+  participant Q as Pub/Sub
+  participant S as CSMS
+  C->>G: WebSocket 접속 (OCPP 1.6·2.1)
+  Note over G: 상한 초과 → 503 + Retry-After
+  G->>Q: Boot · Authorize
+  Q->>S: 처리
+  S-->>Q: 응답
+  Q-->>G: 응답
+  G-->>C: 응답
+  C->>G: Heartbeat
+  G-->>C: 게이트웨이 직답 (옵션)
+  C->>G: 충전 시작 · 종료
+  G->>Q: 핵심 메시지 (실패 시 재전달·DLQ)
+  Note over S: CSMS 배포·장애
+  Note over C,G: 연결은 게이트웨이에 유지
+  S->>Q: 원격 시작 등 명령
+  Q->>G: 세션 가진 인스턴스로
+  G-->>C: 명령 (끊겼으면 대기열 → 재접속 시)`,
+  `sequenceDiagram
+  autonumber
+  participant C as Charger
+  participant G as csms-gw (Go)
+  participant Q as Pub/Sub
+  participant S as CSMS
+  C->>G: WebSocket connect (OCPP 1.6·2.1)
+  Note over G: over cap → 503 + Retry-After
+  G->>Q: Boot · Authorize
+  Q->>S: Process
+  S-->>Q: Response
+  Q-->>G: Response
+  G-->>C: Response
+  C->>G: Heartbeat
+  G-->>C: gateway reply (optional)
+  C->>G: Start · Stop transaction
+  G->>Q: core messages (redelivery · DLQ)
+  Note over S: CSMS deploy / outage
+  Note over C,G: connection stays on gateway
+  S->>Q: remote start etc.
+  Q->>G: to the session's instance
+  G-->>C: command (offline → queue → on reconnect)`,
+);
+
+const chargerGatewayDiagram = localized(
+  `flowchart TB
+  subgraph before["기존 — 충전기가 CSMS에 직접 연결"]
+    direction LR
+    C0["충전기 약 1만 대"] -->|"WebSocket /ocpp"| S0["CSMS 파드 ×7<br/>연결 유지 + 메시지 처리를 함께<br/>Tomcat 한도 8,192"]
+    S0 --> D0[("Cloud SQL")]
+    S0 -. "배포 때마다 연결 전부 끊김<br/>→ 재접속 폭주" .-> C0
+  end
+  subgraph after["개선 — 연결과 처리를 분리 (파란색 = 새로 추가)"]
+    direction TB
+    C1["충전기"] -->|"① WebSocket /ocpp"| M["Istio 진입점<br/>역할: 게이트웨이 Ready 판정"]
+    M -->|"② Ready"| G["csms-gw (Go)<br/>역할: 연결 유지 · 세션 한도 · 폭주 시 503"]
+    M -. "② Not Ready → 자동 복귀" .-> S1["CSMS (기존)<br/>역할: 메시지 처리만"]
+    G -->|"③-A 패스스루 (1단계 투입)"| S1
+    G -->|"③-B 핵심 메시지"| Q[("Pub/Sub 경로<br/>역할: CSMS 배포 중 보관 · 재전달")]
+    Q --> S1
+    S1 -->|"④ 원격 명령"| Q
+    G <--> R[("Redis<br/>역할: 충전기 → 인스턴스 세션 디렉터리")]
+    G --> W["충전기별 대기열<br/>역할: 끊긴 동안 명령 보관 → 재접속 직후 전달"]
+  end
+  before ~~~ after
+  classDef added fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef existing fill:#f1f5f9,stroke:#94a3b8,color:#334155;
+  classDef pain fill:#fdecec,stroke:#b42318,color:#0f172a;
+  class M,G,Q,R,W added;
+  class C0,C1,S1,D0 existing;
+  class S0 pain;`,
+  `flowchart TB
+  subgraph before["Before — chargers connect directly to CSMS"]
+    direction LR
+    C0["~10,000 chargers"] -->|"WebSocket /ocpp"| S0["CSMS pods ×7<br/>hold connections and process messages<br/>Tomcat limit 8,192"]
+    S0 --> D0[("Cloud SQL")]
+    S0 -. "every deploy drops all connections<br/>→ reconnect surge" .-> C0
+  end
+  subgraph after["After — connections separated from processing (blue = new)"]
+    direction TB
+    C1["Chargers"] -->|"① WebSocket /ocpp"| M["Istio entry<br/>role: checks gateway readiness"]
+    M -->|"② ready"| G["csms-gw (Go)<br/>role: hold connections · session caps · 503 on surges"]
+    M -. "② not ready → automatic fallback" .-> S1["CSMS (existing)<br/>role: message processing only"]
+    G -->|"③-A pass-through (stage 1)"| S1
+    G -->|"③-B core messages"| Q[("Pub/Sub path<br/>role: hold and redeliver during CSMS deploys")]
+    Q --> S1
+    S1 -->|"④ remote commands"| Q
+    G <--> R[("Redis<br/>role: charger → instance session directory")]
+    G --> W["Per-charger queue<br/>role: keep commands while offline → deliver on reconnect"]
+  end
+  before ~~~ after
+  classDef added fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  classDef existing fill:#f1f5f9,stroke:#94a3b8,color:#334155;
+  classDef pain fill:#fdecec,stroke:#b42318,color:#0f172a;
+  class M,G,Q,R,W added;
+  class C0,C1,S1,D0 existing;
+  class S0 pain;`,
+);
+
+const observabilityContractDiagram = localized(
+  `flowchart LR
+  Charger["충전기<br/>OCPP transactionId"] --> Csms["CSMS"]
+  Csms -->|"Pub/Sub<br/>traceparent + baggage"| Feapp["앱 서버"]
+  Feapp -->|"HTTP"| ChargerSvc["charger-service"]
+  Feapp -->|"Pub/Sub"| Billing["billing"]
+  ChargerSvc -->|"Pub/Sub"| Roaming["roaming"]
+  Keys["조인 키 3개<br/>charging_id · order_number · trace_id"] -.-> Csms
+  Keys -.-> Billing
+  Csms --> Trace[("Cloud Trace<br/>충전 1건 = 트리 1개")]
+  Feapp --> Trace
+  Billing --> Trace
+  classDef key fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  class Keys,Trace key;`,
+  `flowchart LR
+  Charger["Charger<br/>OCPP transactionId"] --> Csms["CSMS"]
+  Csms -->|"Pub/Sub<br/>traceparent + baggage"| Feapp["App server"]
+  Feapp -->|"HTTP"| ChargerSvc["charger-service"]
+  Feapp -->|"Pub/Sub"| Billing["billing"]
+  ChargerSvc -->|"Pub/Sub"| Roaming["roaming"]
+  Keys["Three join keys<br/>charging_id · order_number · trace_id"] -.-> Csms
+  Keys -.-> Billing
+  Csms --> Trace[("Cloud Trace<br/>one session = one trace tree")]
+  Feapp --> Trace
+  Billing --> Trace
+  classDef key fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  class Keys,Trace key;`,
+);
+
+const paymentFailureRoutingDiagram = localized(
+  `flowchart TD
+  Call["PG 승인 호출<br/>(승인권 AUTHORIZED 선점 후)"] --> Result{"PG 응답"}
+  Result -->|"승인"| Paid["PAID 확정"]
+  Result -->|"거절 확정<br/>카드사 거절·잔액 부족"| Denied["FAILED + 미수 생성<br/>승인권 반납 · 메시지 ACK<br/>(같은 거절 반복 호출 안 함)"]
+  Result -->|"결과 모름<br/>응답 유실·타임아웃"| Held["AUTHORIZED 유지<br/>미수 만들지 않음<br/>→ 고객 충전 차단·미납 알림 없음"]
+  Held --> Recheck{"재진입 시 PG 실승인 조회"}
+  Recheck -->|"실승인"| Backfill["자동 PAID 백필"]
+  Recheck -->|"미승인 확정"| Release["승인권 반납 후 정상 재승인"]
+  Recheck -->|"판단 불가"| Manual["차단 + Slack 알림<br/>사유 필수 수동 반납 API"]
+  classDef held fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  class Held,Recheck held;`,
+  `flowchart TD
+  Call["Payment-gateway approval call<br/>(after claiming AUTHORIZED)"] --> Result{"Gateway response"}
+  Result -->|"approved"| Paid["PAID"]
+  Result -->|"definitive decline<br/>card declined, insufficient funds"| Denied["FAILED + unpaid balance<br/>release ownership, ACK message<br/>(no repeated calls for the same decline)"]
+  Result -->|"unknown outcome<br/>lost response, timeout"| Held["Keep AUTHORIZED<br/>no unpaid balance<br/>→ no charging block or overdue notice"]
+  Held --> Recheck{"On re-entry: query gateway first"}
+  Recheck -->|"approved there"| Backfill["Backfill to PAID"]
+  Recheck -->|"confirmed not approved"| Release["Release ownership, approve normally"]
+  Recheck -->|"undetermined"| Manual["Block + Slack alert<br/>manual release API with reason"]
+  classDef held fill:#dff2ff,stroke:#0f4c81,stroke-width:2px,color:#0f172a;
+  class Held,Recheck held;`,
+);
+
 const multiVendorContractDiagram = localized(`flowchart TD
   Vendors["VendorType<br/>Kakao Pay / Toss Payments / Kakao T"] --> Select["VendorChecker.select(vendorType)"]
   Select --> Required["Required on all vendors<br/>VendorPaymentProcessor<br/>VendorMethodProcessor"]
@@ -798,6 +997,14 @@ export interface PortfolioDiagram {
   example?: PortfolioDiagramExample;
 }
 
+export interface PortfolioComparison {
+  title: Localized;
+  description?: Localized;
+  columns: Localized[];
+  rows: Array<{ label: Localized; values: Localized[] }>;
+  note?: Localized;
+}
+
 export interface PortfolioReferenceImage {
   src: string;
   href?: string;
@@ -831,6 +1038,7 @@ export interface PortfolioProject {
     description: Localized;
   }>;
   diagrams?: PortfolioDiagram[];
+  comparisons?: PortfolioComparison[];
   referenceImages?: PortfolioReferenceImage[];
 }
 
@@ -850,19 +1058,31 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     en: 'Project Portfolio',
   },
   eyebrow: {
-    ko: '결제, 앱, 로밍, 사내 AI 에이전트, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
-    en: 'Selected cases across payments, apps, roaming, internal AI agents, pricing, membership, promotions, DX, and personal products',
+    ko: '결제, 충전 플랫폼, 충전기 접속 게이트웨이, 관측 표준, 앱, 로밍, 사내 AI 에이전트, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
+    en: 'Selected cases across payments, charging platform, charger gateway, observability, apps, roaming, internal AI agents, pricing, membership, promotions, DX, and personal products',
   },
   intro: {
     ko:
-      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 앱/WebView 브릿지, 로밍 안정화, 사내 AI 에이전트 라우팅과 로그 진단, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
+      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 충전기 1만 대 접속 계층과 Go 게이트웨이, OpenTelemetry 관측 표준, 앱/WebView 브릿지, 로밍 안정화, 사내 AI 에이전트 라우팅과 로그 진단, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
     en:
-      'This page highlights projects such as multi-vendor payments, app/WebView bridge work, roaming reliability, internal AI-agent routing and log diagnosis, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
+      'This page highlights projects such as multi-vendor payments, a connection layer and Go gateway for 10,000 chargers, an OpenTelemetry observability standard, app/WebView bridge work, roaming reliability, internal AI-agent routing and log diagnosis, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
   },
   roleFocus: [
     {
       ko: 'Kotlin/Spring Boot 중심의 백엔드 개발 경험',
       en: 'Backend development experience centered on Kotlin and Spring Boot',
+    },
+    {
+      ko: 'Go 웹소켓 게이트웨이와 OCPP 1.6·2.1 기반 충전기 1만 대 규모 접속 계층 설계·부하 시험 경험',
+      en: 'Designed and load-tested a Go WebSocket gateway for a 10,000-charger OCPP 1.6/2.1 connection layer',
+    },
+    {
+      ko: 'OpenTelemetry로 HTTP·Pub/Sub·비동기 경계를 넘는 종단 추적 표준을 세우고 운영 회귀를 테스트로 고정한 경험',
+      en: 'Established OpenTelemetry end-to-end tracing across HTTP, Pub/Sub, and async boundaries, locking production regressions into tests',
+    },
+    {
+      ko: '혼자 알고 끝내지 않고 문서·런북·사내 우수 사례·운영팀용 가이드로 팀이 쓸 수 있게 공유해 온 경험',
+      en: 'A habit of turning what I learn into team assets: documents, runbooks, internal best-practice write-ups, and guides for operations teams',
     },
     {
       ko: 'OAuth2, PG, 게이트웨이, 외부 인증서 서비스가 포함된 MSA 연동 경험',
@@ -881,8 +1101,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       en: 'Operational stabilization of public roaming integrations using events, retries, and monthly resync',
     },
     {
-      ko: '전월까지의 누적합은 Redis 24h 캐시, 전일까지의 일간 delta는 DB upsert로 누적, 당일 합산은 Redis/LocalCache와 분산 락으로 보호해 홈페이지 공개 트래픽에서도 원본 부하를 줄이며 통계를 지속 갱신한 경험',
-      en: 'Kept homepage statistics updated under public traffic by caching prior-month cumulative totals in Redis for 24h, upserting daily deltas into cumulative DB state, and protecting same-day sums with Redis/local cache plus distributed locks',
+      ko: '홈페이지 누적 충전량 통계 API — 지난 기간 합계는 캐시·DB에 쌓아 두고 당일분만 실시간 합산해, 누구나 보는 공개 페이지 트래픽에도 원본 DB 부하 없이 숫자를 계속 갱신한 경험',
+      en: 'Homepage cumulative charging-volume statistics API — kept past totals in cache and the database and summed only the current day live, so a public page stays up to date without loading the source database',
     },
     {
       ko: 'Pub/Sub DLQ, Athena 배치, 월간 파티션, 서킷브레이커 기반 운영 안정화 경험',
@@ -946,8 +1166,16 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Separated unpaid-balance bookkeeping from payment confirmation so ledger-lock contention cannot roll back an approval, while correcting duplicate point deductions and preventing current settings from being applied retroactively during retries.',
         },
         {
-          ko: 'READY 고아 주문의 상태 동기화·이벤트 재발행과 AUTHORIZED 체류 해소 배치·수동 복구 API를 구성해 자동 복구와 운영 확인 경계를 분리했습니다.',
-          en: 'Added state sync/event republishing for READY orphans and resolution batches/manual repair APIs for AUTHORIZED holds, separating automatic recovery from operator review.',
+          ko: '결제 실패를 원인별로 나눴습니다. 카드사 거절·잔액 부족처럼 PG가 거절을 확정한 건만 실패·미수로 기록하고 메시지를 종료(ACK)해 같은 거절을 PG에 반복 호출하지 않게 했고, 응답 유실·타임아웃처럼 결과를 모르는 시스템 사유는 미수를 만들지 않고 AUTHORIZED로 남겨 고객에게 미수·충전 차단·미납 알림이 걸리지 않게 했습니다.',
+          en: 'Split payment failures by cause. Only definitive gateway declines, such as card declines or insufficient funds, become failed payments with an unpaid balance, and their messages are acknowledged so the same decline is not retried against the gateway. Unknown outcomes caused by our side or the network, such as lost responses and timeouts, stay AUTHORIZED without an unpaid balance, so customers are not blocked from charging or sent overdue notices.',
+        },
+        {
+          ko: 'AUTHORIZED로 남은 건이 다시 들어오면 PG 실승인 조회를 먼저 거치게 하고, 실승인이면 자동 PAID 백필, 미승인 확정이면 승인권 반납 후 정상 재승인, 판단 불가면 차단과 Slack 알림 후 사유를 남겨야 하는 수동 반납 API로 나눴습니다. READY 고아 주문은 상태 동기화·이벤트 재발행으로 복구했습니다.',
+          en: 'When an AUTHORIZED payment re-enters, it first queries the gateway: approved payments are backfilled to PAID, confirmed non-approvals release ownership and approve normally, and undetermined ones are blocked with a Slack alert and can only be released through a manual API that requires a reason. Orphaned READY orders are recovered through state sync and event republishing.',
+        },
+        {
+          ko: 'VoC 대응을 위해 운영자가 미수는 그대로 둔 채 충전 차단만 해제할 수 있는 제외 플래그를 billing·앱 서버·운영 콘솔에 추가하고, 카드사 거절 같은 일상적 실패가 ERROR로 잡히던 로그 레벨을 벤더별로 재분류해 진짜 시스템 오류만 경보에 남겼습니다.',
+          en: 'For customer-support cases, added an exclusion flag across billing, the app server, and the operations console that lifts the charging block while keeping the unpaid balance, and reclassified per-provider log levels so everyday declines no longer raise ERROR alerts and only real system errors do.',
         },
       ],
       engineeringViews: [
@@ -958,6 +1186,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: 'Redis 락은 요청 동시성을 줄이는 1차 장치로 두고, 돈이 움직이기 직전에는 DB 조건부 UPDATE가 최종 직렬화를 보장하도록 방어선을 분리했습니다.',
           en: 'Kept Redis locks as a first-line concurrency control, while making a conditional DB update the final serialization boundary immediately before money moves.',
+        },
+        {
+          ko: '"결제 실패"를 고객 사유와 시스템 사유로 나눠 봤습니다. 결과를 모르는 건까지 미수로 잡으면 우리 쪽 문제로 고객이 충전 차단과 미납 알림을 받게 되므로, 미수는 PG가 거절을 확정했을 때만 만들고 나머지는 승인권을 쥔 채 시스템이 확인하도록 했습니다.',
+          en: 'I treated "payment failure" as two different things: customer-side and system-side. Counting unknown outcomes as unpaid would block customers and send overdue notices for our own problems, so an unpaid balance is created only when the gateway definitively declines; everything else keeps ownership while the system verifies the outcome.',
         },
         {
           ko: '승인 결과가 명확하면 PAID/FAILED로 전이하고 결과가 불확실하면 AUTHORIZED에 남기는 fail-closed 모델로, 가용성보다 이중 청구 방지를 우선했습니다.',
@@ -976,6 +1208,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: 'DLQ 기반 미수 처리와 READY/AUTHORIZED 상태별 복구 경로를 운영에 적용해 실패 지점을 자동 복구 또는 수동 판단 가능한 상태로 표면화했습니다.',
           en: 'Applied dead-letter-queue handling and state-specific recovery paths for READY and AUTHORIZED payments, making each failure either automatically recoverable or explicitly reviewable by an operator.',
+        },
+        {
+          ko: '응답 유실·타임아웃 같은 시스템 사유가 고객 미수·충전 차단으로 번지지 않게 하고, 결과 미확정 건은 PG 조회로 자동 확정하거나 운영자가 판단할 수 있게 표면화했습니다.',
+          en: 'Kept system-side failures such as lost responses and timeouts from turning into customer unpaid balances or charging blocks, and resolved indeterminate payments automatically through gateway lookups or surfaced them for operator decisions.',
         },
         {
           ko: '승인 성공 후 DB 경합·응답 유실·다른 PG로의 재시도가 이중 청구로 번지는 경로를 상태 기반으로 차단했습니다.',
@@ -1013,6 +1249,373 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
               'Places `VendorChecker.select()` on top of the `VendorType` extension point, separates contracts required for every vendor from features needed by only some vendors, and uses `@RequiredVendor` plus `VendorRequirementsValidator` to catch missing mandatory implementations at startup.',
           },
           code: multiVendorContractDiagram,
+        },
+        {
+          title: {
+            ko: '결제 실패 분기: 고객 사유는 미수, 시스템 사유는 AUTHORIZED',
+            en: 'Failure routing: customer-side declines become unpaid, system-side unknowns stay AUTHORIZED',
+          },
+          description: {
+            ko: 'PG가 거절을 확정한 건만 미수로 넘기고, 결과를 모르는 건은 승인권을 유지한 채 다음 진입에서 PG 실승인 조회로 확정합니다.',
+            en: 'Only definitive gateway declines become unpaid balances; unknown outcomes keep approval ownership and are settled by a gateway lookup on the next entry.',
+          },
+          code: paymentFailureRoutingDiagram,
+        },
+      ],
+    },
+    {
+      slug: 'charging-platform-reliability',
+      title: {
+        ko: '충전 플랫폼(CSMS) 안정화 및 충전 주문 경로 분리',
+        en: 'Charging Platform (CSMS) Reliability and Order-Path Isolation',
+      },
+      period: {
+        ko: '2026.08 - 현재',
+        en: 'Aug 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: '그리드 스쿼드 — 충전기 통신 서버(CSMS)와 충전 경로 담당',
+        en: 'Grid squad — owner of the charger communication server (CSMS) and charging path',
+      },
+      summary: {
+        ko:
+          '충전기 통신 서버(CSMS)와 충전 경로를 맡아, 충전 주문 처리를 앱 부가 기능에서 분리하고 원격 충전 시작 실패와 고객에게 잘못 전달되던 실패 알림을 원인별로 정리했습니다.',
+        en:
+          'Took over the charger communication server (CSMS) and charging path, separated charging-order processing from non-essential app features, and resolved remote-start failures and false failure alerts by root cause.',
+      },
+      challenge: {
+        ko:
+          '충전 주문 처리가 앱의 부가 기능과 같은 서비스에 묶여 있어, 차량 조회 같은 외부 연동이 느려지면 충전 시작까지 영향을 받을 수 있었습니다. 원격 충전 시작은 충전기 펌웨어, CSMS, 앱 서버가 함께 관여해 실패 원인이 한곳에 보이지 않았고, 서비스 사이에서 추적 정보가 끊겨 충전 1건의 흐름을 따라가기도 어려웠습니다.',
+        en:
+          'Charging-order processing shared a service with non-essential app features, so slow external integrations such as vehicle lookups could delay charging starts. Remote starts involve charger firmware, CSMS, and the app server, so failure causes were not visible in one place, and tracing context was lost between services, making a single charging session hard to follow.',
+      },
+      actions: [
+        {
+          ko: '충전 시작에 꼭 필요한 주문 경로만 별도 서비스로 분리하고, 배포 순서와 기동 검증(부팅 스모크 테스트)을 정의해 2026.09부터 운영 환경에서 운영했습니다.',
+          en: 'Moved only the order path required to start charging into a dedicated service, defined its deployment order and startup smoke test, and ran it in production from Sep 2026.',
+        },
+        {
+          ko: '원격 충전 시작 실패를 4가지 유형으로 분류하고, 규격에 맞지 않는 충전기 메시지 격리, 동시 요청 간 충돌 해소, 오프라인 충전기의 재전송 폭주 차단으로 하나씩 해결했습니다.',
+          en: 'Classified remote-start failures into four types and fixed each by isolating non-compliant charger messages, resolving conflicts between simultaneous requests, and blocking retransmission floods from chargers coming back online.',
+        },
+        {
+          ko: '원격 시작 응답 지연 하루 5,861건이 실패가 아닌 평소 흐름임을 데이터로 확인하고, CSMS와 앱 서버 사이의 오류 기준을 다시 정해 고객에게 잘못 가던 "충전 시작 실패" 알림 2종을 없앴습니다.',
+          en: 'Confirmed with data that 5,861 delayed remote-start responses per day were normal flow, then redefined the error contract between CSMS and the app server to remove two kinds of false "charging failed" alerts.',
+        },
+        {
+          ko: '인수 후 충전 플랫폼 문서 38편과 증상별 런북 12종을 직접 작성해, 처음 맡는 사람도 장애 증상에서 원인까지 따라갈 수 있게 정리했습니다.',
+          en: 'After taking over the platform, wrote 38 documents and 12 symptom-based runbooks so new owners can trace an incident from symptom to root cause.',
+        },
+        {
+          ko: '충전 1건을 8개 서비스에 걸쳐 추적하는 표준은 「서비스 간 관측 표준(OpenTelemetry)」 프로젝트로 따로 정리했습니다.',
+          en: 'The standard for tracing one charging session across 8 services is covered separately in the "Cross-Service Observability Standard (OpenTelemetry)" project.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: '서비스 전체를 한 번에 나누기보다, 앱 없이도 성립해야 하는 충전 주문 경로만 먼저 분리해 위험을 줄이고 단계적으로 옮겼습니다.',
+          en: 'Instead of splitting everything at once, I first separated only the order path that must work without the app, reducing risk and migrating in stages.',
+        },
+        {
+          ko: '고객 알림의 실패 여부는 서버 응답 코드가 아니라 충전기 원시 로그로 판단했습니다. 응답이 늦어도 실제 충전은 시작되는 경우가 많아, 지연을 곧바로 실패로 보지 않도록 기준을 정했습니다.',
+          en: 'I judged whether a customer alert was truly a failure from raw charger logs rather than server status codes. Many delayed responses still led to a started session, so delays are no longer treated as failures by default.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '앱 부가 기능의 장애나 외부 연동 지연이 충전 시작으로 번지지 않는 구조를 운영 환경에 적용했습니다.',
+          en: 'Put a structure in production that keeps app-feature outages and slow external integrations from spreading to charging starts.',
+        },
+        {
+          ko: '고객에게 잘못 가던 충전 실패 알림을 없애 불필요한 문의와 혼란을 줄였습니다.',
+          en: 'Removed false charging-failure alerts, reducing unnecessary customer confusion and inquiries.',
+        },
+      ],
+      note: {
+        ko: '새로 맡은 충전 플랫폼에서 구조 분리와 원인별 실패 해결을 함께 진행한 안정화 프로젝트입니다.',
+        en: 'A reliability project on a newly owned charging platform, combining structural isolation and root-cause failure fixes.',
+      },
+      tech: ['Kotlin', 'Spring Boot', 'OCPP', 'GCP Pub/Sub', 'Redis', 'Kubernetes'],
+      diagrams: [
+        {
+          title: {
+            ko: '충전 주문 경로 분리: 기존 → 개선',
+            en: 'Charging-order path isolation: before → after',
+          },
+          description: {
+            ko: '기존에는 앱 부가 기능과 충전 인증·주문이 같은 서비스의 스레드 풀을 나눠 써서, 외부 연동이 느려지면 충전 시작까지 막혔습니다. 충전 주문 경로는 voltup-order로 분리하고, 앱에 남은 외부 호출은 CallGuard로 격리했습니다.',
+            en: 'Previously, non-essential app features and charging auth/orders shared one service\'s thread pools, so slow external integrations could block charging starts. The charging-order path now runs in voltup-order, and external calls left in the app are isolated with CallGuard.',
+          },
+          code: chargingOrderIsolationDiagram,
+        },
+      ],
+    },
+    {
+      slug: 'charger-gateway-scale',
+      title: {
+        ko: '충전기 접속 계층: 재접속 폭주 차단과 Go 웹소켓 게이트웨이(csms-gw)',
+        en: 'Charger Connection Layer: Reconnect Storm Control and a Go WebSocket Gateway (csms-gw)',
+      },
+      period: {
+        ko: '2026.09 - 현재',
+        en: 'Sep 2026 - Present',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: '설계·구현 전담 — 운영 대응부터 신규 게이트웨이까지',
+        en: 'Sole designer and implementer, from production fixes to the new gateway',
+      },
+      summary: {
+        ko:
+          '충전기 약 1만 대가 CSMS에 직접 붙어 있어 배포 때마다 재접속이 몰리던 문제를, 기존 서버의 재접속 분산으로 먼저 줄이고 충전기 접속 계층을 Go 게이트웨이로 분리해 근본적으로 해결하고 있습니다. 게이트웨이는 2026.10 stg에 배포했고 운영 투입을 준비 중입니다.',
+        en:
+          'About 10,000 chargers connected directly to CSMS, so every deployment triggered a reconnect surge. I first reduced it by spreading reconnects on the existing servers, then began separating the charger connection layer into a Go gateway. The gateway reached staging in Oct 2026 and is being prepared for production.',
+      },
+      challenge: {
+        ko:
+          '충전기는 OCPP 웹소켓으로 CSMS 파드에 직접 연결되어, 배포나 장애로 파드가 바뀔 때마다 수천 대가 한꺼번에 끊기고 다시 붙었습니다. 2026.09.30 롤아웃에서는 공용 DB QPS가 5.8배(3.3k → 19.3k/s)로 뛰고 커넥션 풀이 128/128로 포화되어 charger-service p99가 50ms에서 3.9s로 늘었습니다.',
+        en:
+          'Chargers held OCPP WebSocket connections directly to CSMS pods, so any pod replacement during deployments or incidents disconnected thousands of chargers at once. During the Sep 30, 2026 rollout, shared-database QPS rose 5.8x (3.3k to 19.3k/s), connection pools hit 128/128, and charger-service p99 latency went from 50ms to 3.9s.',
+      },
+      actions: [
+        {
+          ko: '(운영 반영) 파드마다 따로 비어 있던 헬스체크 스로틀 창을 Redis로 파드 간에 공유하고, 롤아웃 속도를 늦춰(maxSurge 1, minReadySeconds 90) 재접속이 한 파드에 몰리지 않게 했습니다.',
+          en: '(In production) Shared the health-check throttle window across pods through Redis instead of keeping an empty per-pod window, and paced rollouts (maxSurge 1, minReadySeconds 90) so reconnects no longer pile onto one pod.',
+        },
+        {
+          ko: '(운영 반영) 종료 시 연결을 10초에 걸쳐 나눠 끊고, Istio 사이드카 종료(75초)·파드 종료 유예(80초)를 앱 타임아웃에 맞췄으며, 파드당 세션 상한(7,000)으로 구 파드 과밀을 막았습니다.',
+          en: '(In production) Drained connections over 10 seconds on shutdown, aligned Istio sidecar drain (75s) and pod grace period (80s) with the application timeout, and capped sessions per pod at 7,000 to prevent overloaded old pods.',
+        },
+        {
+          ko: 'Go로 충전기 웹소켓 게이트웨이를 새로 만들었습니다. 패스스루(A)와 Pub/Sub(B) 두 경로, OCPP 1.6·2.1 서브프로토콜 협상, 교체 가능한 메시지 브로커(Pub/Sub·Redis Streams·memory), Redis 세션 디렉터리와 공용 제어 채널 기반 다중 인스턴스를 갖췄습니다.',
+          en: 'Built a new charger WebSocket gateway in Go with two paths (pass-through A and Pub/Sub B), OCPP 1.6/2.1 subprotocol negotiation, swappable brokers (Pub/Sub, Redis Streams, in-memory), and multi-instance operation through a Redis session directory and a shared control channel.',
+        },
+        {
+          ko: 'CSMS가 배포 중이거나 장애일 때도 충전기 연결을 유지하도록, 핵심 메시지(부팅·인증·충전 시작·종료)는 Pub/Sub으로 넘기고 전달하지 못한 명령은 충전기별 대기열에 두었다가 재접속 직후 보내며, 처리 실패는 재전달·데드레터로 보냈습니다.',
+          en: 'Kept chargers connected while CSMS is deploying or down: core messages (boot, authorization, start, stop) move over Pub/Sub, undelivered commands wait in a per-charger queue until reconnect, and processing failures go to redelivery or a dead-letter topic.',
+        },
+        {
+          ko: '파드 메모리 한도에서 메모리·세션·핸드셰이크 상한을 자동으로 계산하고, 접속이 폭주하면 즉시 503과 Retry-After로 거절하도록 했습니다.',
+          en: 'Derived memory, session, and handshake limits automatically from pod resource limits, and rejected connection surges immediately with 503 and Retry-After.',
+        },
+        {
+          ko: 'OCPP 충전기 에뮬레이터를 MCP 서버(도구 22개)로 만들어 실물 충전기 없이 E2E를 검증하고, 충전기 100·1,000·10,000대 부하 시험 보고서를 작성했습니다.',
+          en: 'Turned an OCPP charger emulator into an MCP server with 22 tools for end-to-end testing without physical chargers, and wrote load-test reports for 100, 1,000, and 10,000 chargers.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: '근본 해법을 기다리지 않고 기존 서버에서 증상부터 줄였습니다. 재접속 분산과 드레인은 바로 운영에 넣고, 접속 계층 분리는 따로 진행했습니다.',
+          en: 'I did not wait for the structural fix: reconnect spreading and draining went to production first, while separating the connection layer proceeded in parallel.',
+        },
+        {
+          ko: '게이트웨이 투입은 A 경로 먼저 → B 경로 일부 → 전면 B의 3단계로 나누고, 단계별 메시지 유실 시나리오를 문서로 남겼습니다. 게이트웨이가 Ready가 아니면 Istio가 CSMS로 자동으로 돌려 보내 언제든 되돌릴 수 있게 했습니다.',
+          en: 'Rollout is split into three stages (path A first, then partial B, then full B), with message-loss scenarios documented per stage. If the gateway is not ready, Istio routes chargers back to CSMS, so the change can be reversed at any time.',
+        },
+        {
+          ko: '상한값을 사람이 환경 변수로 맞추지 않고 자원 한도에서 계산하게 해, 파드 크기를 바꿔도 한도가 같이 따라오게 했습니다.',
+          en: 'Limits are computed from resource limits rather than hand-tuned environment variables, so they follow pod sizing automatically.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '운영 배포 중 재접속 폭주로 DB가 포화되던 문제를 해소했습니다. 2026.10.13 배포에서 신규 오류 0건, DB 커넥션 대기 0건을 확인했습니다.',
+          en: 'Eliminated database saturation from reconnect storms during production deployments; the Oct 13, 2026 deployment showed zero new errors and zero connection-pool waits.',
+        },
+        {
+          ko: '(부하 시험) 게이트웨이 세션당 메모리를 절반으로 줄였고(1만 대 682MB → 351MB), 초당 2,000대 재접속 폭주에서 접속 실패를 3,414건에서 0건으로 없앴습니다.',
+          en: '(Load test) Halved gateway memory per session (682MB to 351MB for 10,000 chargers) and cut connection failures in a 2,000-per-second reconnect surge from 3,414 to 0.',
+        },
+      ],
+      note: {
+        ko: '운영 장애 대응과 신규 Go 게이트웨이 설계를 함께 보여 주는 프로젝트입니다. 게이트웨이는 stg 배포 단계이며, 운영 수치는 기존 서버 개선분만 적었습니다.',
+        en: 'A project covering both production incident response and a new Go gateway design. The gateway is at the staging stage; production figures above come only from the existing-server improvements.',
+      },
+      tech: ['Go', 'Kotlin', 'Spring Boot', 'OCPP 1.6/2.1', 'WebSocket', 'GCP Pub/Sub', 'Redis', 'Istio', 'Kubernetes'],
+      diagrams: [
+        {
+          title: {
+            ko: '충전기 접속 계층: 기존 → 개선 (새로 추가한 구성과 역할)',
+            en: 'Charger connection layer: before → after (new components and their roles)',
+          },
+          description: {
+            ko: '기존에는 CSMS 파드가 연결 유지와 메시지 처리를 함께 맡아, 배포 때마다 연결이 끊기고 재접속이 몰렸습니다. 개선 구조는 ① 접속 → ② Istio가 게이트웨이 준비 여부로 갈라 보내고(아니면 기존 CSMS로 자동 복귀) → ③ 게이트웨이가 패스스루(A) 또는 Pub/Sub(B)로 CSMS에 전달 → ④ CSMS 명령은 Pub/Sub으로 돌아오는 순서입니다. 파란색이 새로 추가한 구성입니다.',
+            en: 'Before, CSMS pods both held connections and processed messages, so every deploy dropped connections and caused a reconnect surge. The new flow: ① connect → ② Istio routes by gateway readiness (falling back to CSMS automatically) → ③ the gateway forwards to CSMS by pass-through (A) or Pub/Sub (B) → ④ CSMS commands return over Pub/Sub. Blue marks new components.',
+          },
+          code: chargerGatewayDiagram,
+        },
+        {
+          title: {
+            ko: '충전기 연결 수명: 접속부터 CSMS 배포 중 명령 전달까지',
+            en: 'Charger connection lifecycle: from connect to command delivery during a CSMS deploy',
+          },
+          description: {
+            ko: '연결은 게이트웨이가 쥐고, CSMS는 메시지만 처리합니다. CSMS 파드가 바뀌는 동안에도 충전기는 끊기지 않고, 그 사이 명령은 대기열에서 기다렸다가 전달됩니다.',
+            en: 'The gateway owns connections and CSMS only processes messages. Chargers stay connected while CSMS pods change, and commands issued meanwhile wait in a queue until delivery.',
+          },
+          code: chargerGatewayLifecycleDiagram,
+        },
+      ],
+      comparisons: [
+        {
+          title: {
+            ko: '기존 CSMS 직결 vs Go 게이트웨이',
+            en: 'Direct-to-CSMS connections vs. the Go gateway',
+          },
+          description: {
+            ko: '같은 충전기 연결을 누가 쥐고, 한도를 어떻게 정하며, 배포 때 무슨 일이 일어나는지 비교했습니다.',
+            en: 'Who holds the charger connection, how limits are set, and what happens during deployments.',
+          },
+          columns: [
+            { ko: '기존 — CSMS 직결 (Spring · Tomcat)', en: 'Before — direct to CSMS (Spring · Tomcat)' },
+            { ko: '개선 — csms-gw (Go)', en: 'After — csms-gw (Go)' },
+          ],
+          rows: [
+            {
+              label: { ko: '연결을 쥐는 곳', en: 'Connection owner' },
+              values: [
+                { ko: 'CSMS 파드가 웹소켓과 비즈니스 로직을 함께 처리', en: 'CSMS pods handle both WebSockets and business logic' },
+                { ko: '게이트웨이가 연결만 유지, CSMS는 Pub/Sub로 메시지만 처리', en: 'The gateway only holds connections; CSMS processes messages over Pub/Sub' },
+              ],
+            },
+            {
+              label: { ko: '배포·장애 때 연결', en: 'Connections during deploys or outages' },
+              values: [
+                { ko: '파드가 바뀔 때마다 수천 대가 끊기고 재접속이 몰림', en: 'Every pod replacement drops thousands of chargers and triggers a reconnect surge' },
+                { ko: 'CSMS 배포와 무관하게 유지, 못 보낸 명령은 충전기별 대기열 → 재접속 직후 전달', en: 'Stay connected regardless of CSMS deploys; undelivered commands queue per charger until reconnect' },
+              ],
+            },
+            {
+              label: { ko: '동시 접속 한도', en: 'Concurrent connection limit' },
+              values: [
+                { ko: 'Tomcat max-connections 기본 8,192 — 2026.10.13 롤아웃에서 남은 구 파드가 8,190 세션에 걸려 2분간 503 약 515건 → 앱 단 파드당 상한 7,000 추가', en: 'Tomcat max-connections defaults to 8,192 — in the Oct 13, 2026 rollout, a remaining old pod hit 8,190 sessions and returned ~515 503s over 2 minutes → added an app-level cap of 7,000 per pod' },
+                { ko: '파드 메모리 한도에서 세션·핸드셰이크 상한을 자동 계산, 넘치면 즉시 503 + Retry-After', en: 'Session and handshake caps derived from pod memory limits; overflow is rejected at once with 503 + Retry-After' },
+              ],
+            },
+            {
+              label: { ko: '파드당 수용량', en: 'Capacity per pod' },
+              values: [
+                { ko: '7,000 세션 × 운영 7파드 = 약 4.9만 (여유 약 16%)', en: '7,000 sessions × 7 production pods ≈ 49k (about 16% headroom)' },
+                { ko: '1Gi 파드 1.7만 대 실측(RSS 587MB), 2Gi 파드 자동 한도 약 3만 세션 — 적은 파드로 같은 연결 수 수용', en: '17k chargers measured on a 1Gi pod (587MB RSS); ~30k sessions auto-limit on a 2Gi pod — the same connections on fewer pods' },
+              ],
+            },
+            {
+              label: { ko: '재접속 폭주', en: 'Reconnect surges' },
+              values: [
+                { ko: '롤아웃 때 DB QPS 5.8배, 커넥션 풀 128/128 포화, p99 50ms → 3.9s', en: 'During rollouts: DB QPS 5.8x, connection pools 128/128, p99 50ms → 3.9s' },
+                { ko: '초당 2,000대 재접속 시험에서 접속 실패 3,414 → 0, 세션당 메모리 절반(1만 대 682 → 351MB)', en: '2,000-per-second reconnect test: failures 3,414 → 0; memory per session halved (682 → 351MB for 10k chargers)' },
+              ],
+            },
+            {
+              label: { ko: 'Heartbeat', en: 'Heartbeats' },
+              values: [
+                { ko: '전부 CSMS로 — 하루 약 803만 건, 충전기 메시지의 24%', en: 'All sent to CSMS — about 8.03M per day, 24% of charger messages' },
+                { ko: '게이트웨이 직답 옵션 — 5천 대 벤치에서 CSMS 수신 39% 감소', en: 'Optional gateway replies — 39% fewer messages reaching CSMS in a 5,000-charger benchmark' },
+              ],
+            },
+          ],
+          note: {
+            ko: '기존 열은 운영 실측, 게이트웨이 열은 dev·stg와 로컬 부하 시험 수치입니다(2026.10 stg 배포, 운영 투입 준비 중).',
+            en: 'The "before" column is production data; the gateway column comes from dev, staging, and local load tests (in staging since Oct 2026, preparing for production).',
+          },
+        },
+      ],
+    },
+    {
+      slug: 'observability-contract',
+      title: {
+        ko: '서비스 간 관측 표준(OpenTelemetry): 충전 1건·회원 1명 종단 추적',
+        en: 'Cross-Service Observability Standard (OpenTelemetry): End-to-End Tracing per Session and per Member',
+      },
+      period: {
+        ko: '2026.09 - 2026.10',
+        en: 'Sep 2026 - Oct 2026',
+      },
+      company: {
+        ko: 'LG유플러스 볼트업',
+        en: 'LG Uplus VoltUp',
+      },
+      roleLabel: {
+        ko: '관측 계약 설계와 공통 라이브러리·서비스 적용 주도',
+        en: 'Led the observability contract design and its rollout through the shared library and services',
+      },
+      summary: {
+        ko:
+          '충전 1건이 CSMS·앱 서버·충전기 서비스·결제·로밍을 지나는 동안 끊기던 추적 정보를 OpenTelemetry 표준으로 이어, Cloud Trace에서 충전 1건이 하나의 트리로 보이게 했습니다. 이어서 회원 단위 키를 6개 서비스로 넓히고, 그 과정에서 발견한 운영 회귀를 근본 수정했습니다.',
+        en:
+          'Connected tracing context that was lost as a charging session crossed CSMS, the app server, charger service, billing, and roaming, using OpenTelemetry so each session appears as one tree in Cloud Trace. I then extended member-level keys to six services and fixed a production regression found along the way.',
+      },
+      challenge: {
+        ko:
+          'Pub/Sub 3홉, @Async, 코루틴을 지날 때마다 추적 ID가 끊겼고, 서비스 간 baggage 헤더는 0건이었습니다. 공용 스레드에 남은 로그 문맥 때문에 다른 메시지의 로그와 잘못 엮이기도 해서, 장애가 나면 서비스마다 로그를 따로 검색해야 했습니다.',
+        en:
+          'Trace IDs broke at every Pub/Sub hop, @Async boundary, and coroutine, and zero baggage headers crossed service boundaries. Log context left on shared threads also joined logs to the wrong messages, so incidents required searching each service separately.',
+      },
+      actions: [
+        {
+          ko: 'W3C traceparent를 Pub/Sub 메시지로 전파하는 기능을 공통 라이브러리에 넣고, 7개 서비스의 메시지 소비 쪽이 발행 쪽 트레이스를 부모로 잇게 했습니다.',
+          en: 'Added W3C traceparent propagation over Pub/Sub to the shared library so consumers in seven services attach to the publisher trace.',
+        },
+        {
+          ko: 'OCPP transactionId를 charging_id로 삼아 charging_id·order_number·trace_id 세 키로 전 서비스를 조인하게 하고, baggage 계약 키 4개를 공통 설정으로 올려 서비스별 중복 정의를 없앴습니다.',
+          en: 'Promoted the OCPP transactionId to charging_id so every service joins on three keys (charging_id, order_number, trace_id), and moved the four baggage contract keys into shared configuration to remove per-service duplicates.',
+        },
+        {
+          ko: 'dev·stg에서 실제 충전 4건을 끝까지 따라가며 남은 단절(코루틴 헬퍼의 스팬 미전달, 필터 순서, 잘못된 OTLP 설정 키, 헤더 누락)을 하나씩 메웠습니다.',
+          en: 'Followed four real charging sessions end to end in dev and staging and closed every remaining break: coroutine helpers dropping spans, filter ordering, an invalid OTLP setting key, and dropped headers.',
+        },
+        {
+          ko: '2차로 회원 단위 키(user_id·admin_id)를 6개 서비스에 전파하고, 어드민 요청은 대상 회원과 운영자를 분리했습니다.',
+          en: 'In phase two, propagated member-level keys (user_id, admin_id) across six services, separating the target member from the operator on admin requests.',
+        },
+        {
+          ko: '그 과정에서 user-service 운영 로그의 user_id 비율이 217/300에서 0/300으로 떨어진 회귀를 발견해 원인을 공통 라이브러리로 특정하고 근본 수정했으며, 실제 OTel 브리지를 쓰는 회귀 테스트를 CI에 넣었습니다.',
+          en: 'Along the way, found a regression where user_id appeared in 0/300 user-service production logs instead of 217/300, traced it to the shared library, fixed the root cause, and added CI regression tests that run against the real OTel bridge.',
+        },
+      ],
+      engineeringViews: [
+        {
+          ko: '회원 ID 같은 피벗 키는 값이 끝없이 늘어나므로 지표 라벨로 쓰지 않고 로그와 baggage에만 두어, 지표 카디널리티 폭발을 막았습니다.',
+          en: 'Pivot keys such as member IDs grow without bound, so they live only in logs and baggage, never as metric labels, to avoid cardinality explosions.',
+        },
+        {
+          ko: '표준을 문서로만 두지 않고 실제 충전 건으로 끊기는 지점을 확인했고, 소스 가드 테스트로 광역 로그 문맥 삭제 같은 재발 패턴을 막았습니다.',
+          en: 'Rather than leaving the standard as documentation, I verified it against real sessions and used source-guard tests to block recurring patterns such as clearing all log context.',
+        },
+      ],
+      outcomes: [
+        {
+          ko: '서비스 간 피벗 키 전파율이 0%에서 전 구간 연결로 바뀌었고, Cloud Trace에서 충전 1건이 하나의 트리로 보입니다.',
+          en: 'Cross-service pivot-key propagation went from 0% to end to end, and each charging session now appears as one tree in Cloud Trace.',
+        },
+        {
+          ko: '장애 분석이 서비스별 사후 로그 검색에서 키 기반 추적으로 바뀌었습니다.',
+          en: 'Incident analysis shifted from per-service log searches to key-based tracing.',
+        },
+      ],
+      note: {
+        ko: '분산 추적을 실제 운영 경로에 끝까지 적용하고, 회귀를 찾아 테스트로 고정한 관측 표준화 프로젝트입니다.',
+        en: 'An observability project that applied distributed tracing to real production paths end to end and locked regressions down with tests.',
+      },
+      tech: ['OpenTelemetry', 'W3C Trace Context', 'Kotlin', 'Spring Boot', 'GCP Pub/Sub', 'Cloud Trace'],
+      diagrams: [
+        {
+          title: {
+            ko: '충전 1건 종단 추적: 전파 경로와 조인 키',
+            en: 'End-to-end session tracing: propagation path and join keys',
+          },
+          description: {
+            ko: 'HTTP와 Pub/Sub 홉 모두 traceparent와 baggage를 전달하고, 세 키로 서비스 로그를 조인합니다.',
+            en: 'Both HTTP and Pub/Sub hops carry traceparent and baggage, and three keys join logs across services.',
+          },
+          code: observabilityContractDiagram,
         },
       ],
     },
@@ -2106,6 +2709,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '`/voltup-pr`은 커밋 로그, 변경 파일, diff를 근거로 PR 본문을 자동 생성/갱신하고, `voltup-pr` 마커 블록만 교체해 수기 본문을 보존하도록 만들었습니다. `pr-changes-detector`는 PR open/push 시 Flyway, 컨트롤러, 엔티티, 권한 변경을 요약 댓글로 upsert하도록 정리했습니다.',
           en: 'Built `/voltup-pr` to generate and update PR descriptions from commit logs, changed files, and diffs while replacing only the `voltup-pr` marker block to preserve manual content. `pr-changes-detector` upserts PR change summaries for Flyway, controller, entity, and authorization changes on PR open/push.',
+        },
+        {
+          ko: '운영 반영 PR에서만 의존성 취약점을 검사하고, 영업일마다 운영 브랜치를 점검해 버전 숫자만 올리는 핫픽스 PR을 자동으로 만드는 공용 스캔 모듈을 만들었습니다. 프레임워크 전환이 필요한 취약점은 레포별 추적 이슈로 분리했습니다.',
+          en: 'Built a shared dependency-vulnerability scanner that runs only on production-promotion PRs and, every business day, opens version-bump-only hotfix PRs for production branches, routing framework-level upgrades to per-repository tracking issues.',
         },
         {
           ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 배치해 각 서비스의 작업 컨벤션, API 우선 개발 흐름, 보안 규칙, 반복 운영 작업 형상을 여러 생성형 LLM 도구에서 공유 가능한 repo-local context로 만들었습니다.',

@@ -1,0 +1,77 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  columns: string[];
+  rows: Array<{ label: string; values: string[] }>;
+  note?: string;
+}
+
+const { title, description, columns, rows, note } = Astro.props;
+---
+
+<section class="space-y-4 rounded-[1.5rem] border border-slate-900/10 bg-white/55 p-4 sm:p-5">
+  <div class="space-y-2 rounded-[1.2rem] border border-slate-900/10 bg-white/80 px-4 py-4">
+    <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-sky-800">Comparison</p>
+    <p class="text-lg font-semibold tracking-[-0.02em] text-slate-950">{title}</p>
+    {description && <p class="max-w-3xl text-sm leading-7 text-slate-600">{description}</p>}
+  </div>
+
+  <!-- 넓은 화면: 표 / 좁은 화면: 항목별 카드 (가로 스크롤 없이 읽히게) -->
+  <div class="hidden overflow-hidden rounded-[1.2rem] border border-slate-900/10 md:block">
+    <table class="w-full table-fixed border-collapse text-left text-sm">
+      <thead class="bg-slate-50">
+        <tr>
+          <th class="w-[18%] border-b border-slate-900/10 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500"></th>
+          {columns.map((column, index) => (
+            <th
+              class:list={[
+                'border-b border-slate-900/10 px-4 py-3 text-sm font-semibold',
+                index === columns.length - 1 ? 'bg-sky-50 text-sky-900' : 'text-slate-700',
+              ]}
+            >
+              {column}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr class="align-top">
+            <th class="border-b border-slate-900/10 bg-slate-50/60 px-4 py-3 text-sm font-semibold text-slate-800 [overflow-wrap:anywhere]">
+              {row.label}
+            </th>
+            {row.values.map((value, index) => (
+              <td
+                class:list={[
+                  'border-b border-slate-900/10 px-4 py-3 leading-6 text-slate-700 [overflow-wrap:anywhere]',
+                  index === row.values.length - 1 && 'bg-sky-50/50',
+                ]}
+              >
+                {value}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid gap-3 md:hidden">
+    {rows.map((row) => (
+      <div class="rounded-[1rem] border border-slate-900/10 bg-white/80 px-4 py-3">
+        <p class="text-sm font-semibold text-slate-900">{row.label}</p>
+        <dl class="mt-2 grid gap-2">
+          {row.values.map((value, index) => (
+            <div class:list={['rounded-lg px-3 py-2', index === row.values.length - 1 ? 'bg-sky-50' : 'bg-slate-50']}>
+              <dt class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{columns[index]}</dt>
+              <dd class="mt-0.5 text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]">{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    ))}
+  </div>
+
+  {note && <p class="text-xs leading-6 text-slate-500">{note}</p>}
+</section>

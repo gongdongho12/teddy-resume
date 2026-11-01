@@ -1,11 +1,26 @@
 import { chromium } from 'playwright';
 import { spawn, execFileSync } from 'node:child_process';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import net from 'node:net';
 import path from 'node:path';
 import YAML from 'yaml';
 
-const PORT = 4322;
-const BASE_URL = `http://127.0.0.1:${PORT}`;
+// 고정 포트를 쓰면 다른 로컬 서버가 점유했을 때 Astro 가 다음 포트로 비켜 뜨고,
+// 스크립트는 점유한 서버에 붙어 404 로 타임아웃된다. 매 실행마다 빈 포트를 잡는다.
+let PORT;
+let BASE_URL;
+
+function findFreePort() {
+  return new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.unref();
+    probe.on('error', reject);
+    probe.listen(0, '127.0.0.1', () => {
+      const { port } = probe.address();
+      probe.close(() => resolve(port));
+    });
+  });
+}
 const OUTPUT_DIR = path.resolve('tmp/pdfs/a4-check');
 const DEBUG_GRID = process.argv.includes('--debug-grid');
 const A4_WIDTH_PX = (210 * 96) / 25.4;
@@ -83,6 +98,29 @@ async function validateResumeSource() {
             }
           }
         }
+      }
+    }
+  }
+
+  // 포트폴리오 페이지 정렬 목록에서 빠진 slug 는 페이지 맨 뒤로 밀린다.
+  // 이력서의 portfolioSlug 가 포트폴리오에 없으면 링크가 깨진다.
+  const portfolioSource = await readFile(path.resolve('src/lib/portfolio-content.ts'), 'utf8');
+  const portfolioSlugs = [...portfolioSource.matchAll(/^ {6}slug: '([^']+)'/gm)].map((m) => m[1]);
+  for (const page of ['src/pages/portfolio/[lang]/index.astro', 'src/pages/[lang]/portfolio.astro']) {
+    const block = (await readFile(path.resolve(page), 'utf8')).match(/orderedSlugs = \[([\s\S]*?)\]/);
+    if (!block) {
+      issues.push(`${page}: orderedSlugs not found`);
+      continue;
+    }
+    const ordered = [...block[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+    portfolioSlugs
+      .filter((slug) => !ordered.includes(slug))
+      .forEach((slug) => issues.push(`${page}: portfolio slug '${slug}' missing from orderedSlugs`));
+  }
+  for (const section of profile.projectSections || []) {
+    for (const project of section.projects || []) {
+      if (project.portfolioSlug && !portfolioSlugs.includes(project.portfolioSlug)) {
+        issues.push(`profile.yaml portfolioSlug '${project.portfolioSlug}' has no portfolio project`);
       }
     }
   }
@@ -245,6 +283,8 @@ async function main() {
   await rm(OUTPUT_DIR, { recursive: true, force: true });
   await mkdir(OUTPUT_DIR, { recursive: true });
 
+  PORT = await findFreePort();
+  BASE_URL = `http://127.0.0.1:${PORT}`;
   const server = spawn(
     'npm',
     ['run', 'preview', '--', '--host', '127.0.0.1', '--port', String(PORT)],

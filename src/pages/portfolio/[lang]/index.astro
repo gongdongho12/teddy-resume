@@ -3,6 +3,7 @@ import CommonHead from '@/components/CommonHead.astro';
 import ContactVisibilityToggle from '@/components/ContactVisibilityToggle.astro';
 import LanguageSwitcher from '@/components/LanguageSwitcher.astro';
 import MermaidDiagram from '@/components/MermaidDiagram.astro';
+import PortfolioComparisonTable from '@/components/PortfolioComparisonTable.astro';
 import PortfolioProjectIndex from '@/components/PortfolioProjectIndex.astro';
 import PortfolioReferenceGallery from '@/components/PortfolioReferenceGallery.astro';
 import PortfolioProjectTitleLink from '@/components/PortfolioProjectTitleLink.astro';
@@ -28,27 +29,32 @@ const portfolioLangLinks = SUPPORTED_LANGS.map((candidate) => ({
   lang: candidate,
   href: getPortfolioUrl(candidate),
 }));
-const orderedTitles = [
-  '멀티 벤더 결제 시스템 및 미수 복구 안정화',
-  '카카오T 계정 링크 및 결제수단 등록',
-  '차량 등록 / 차량 고유 키 자동 매핑 / PnC(Plug & Charge) 인증',
-  '통합 프로모션(쿠폰/포인트) 플랫폼 구축 및 고도화',
-  '볼트업 하이브리드 앱: WebView 브릿지와 네이티브 기능',
-  '볼트업 앱 검증/운영 보정 익스텐션',
-  'Voltbot Crew: 업무 맥락 기반 AI 에이전트 라우팅',
-  '로밍 서비스 안정성: 공공 연계 상태 재동기화와 재처리',
-  'Voltbot: 사내 업무 에이전트 플랫폼과 로그 분석 자동화',
-  'Voltup Workflow: AI 운영 자동화와 DevOps 표준화',
-  '프라이싱 플랫폼: 상품 관리 시스템과 프로모션 서비스',
-  '멤버십/마일리지 서비스 이관 및 고도화',
-  'Commit Map',
+// 정렬은 제목이 아니라 slug 로 한다 (제목을 바꿔도 순서가 깨지지 않게).
+// 목록에 없는 slug 는 맨 뒤로 가므로, 새 프로젝트를 추가하면 여기에도 넣는다.
+const orderedSlugs = [
+  'multi-pg-payment',
+  'charging-platform-reliability',
+  'charger-gateway-scale',
+  'observability-contract',
+  'kakao-t-integration',
+  'vehicle-pnc-auth',
+  'promotion-platform',
+  'uplus-vip-coupon-ops',
+  'voltup-hybrid-app',
+  'mobile-app-extension',
+  'voltbot-agent-platform',
+  'roaming-reliability',
+  'devops-automation',
+  'pricing-platform',
+  'membership-migration',
+  'commit-map',
 ];
-const getProjectOrder = (title: string) => {
-  const index = orderedTitles.indexOf(title);
-  return index === -1 ? orderedTitles.length : index;
+const getProjectOrder = (slug: string) => {
+  const index = orderedSlugs.indexOf(slug);
+  return index === -1 ? orderedSlugs.length : index;
 };
 const projects = [...content.projects].sort(
-  (a, b) => getProjectOrder(a.title.ko) - getProjectOrder(b.title.ko),
+  (a, b) => getProjectOrder(a.slug) - getProjectOrder(b.slug),
 );
 const hasDiagrams = projects.some((project) => (project.diagrams?.length ?? 0) > 0);
 const primaryStack = ['Kotlin', 'Spring Boot', 'MySQL'];
@@ -604,13 +610,25 @@ const sectionLabels =
                 )}
               </div>
 
-              {project.diagrams && project.diagrams.length > 0 && (
+              {((project.diagrams?.length ?? 0) > 0 || (project.comparisons?.length ?? 0) > 0) && (
                 <section class="rounded-[1.45rem] border border-slate-900/10 bg-[linear-gradient(180deg,#f7fbfe_0%,#f1f7fb_100%)] p-5">
                   <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">
                     {sectionLabels.diagrams}
                   </p>
                   <div class="mt-4 grid gap-4">
-                    {project.diagrams.map((diagram) => (
+                    {(project.comparisons ?? []).map((comparison) => (
+                      <PortfolioComparisonTable
+                        title={portfolioText(comparison.title, lang)}
+                        description={comparison.description ? portfolioText(comparison.description, lang) : undefined}
+                        columns={comparison.columns.map((column) => portfolioText(column, lang))}
+                        rows={comparison.rows.map((row) => ({
+                          label: portfolioText(row.label, lang),
+                          values: row.values.map((value) => portfolioText(value, lang)),
+                        }))}
+                        note={comparison.note ? portfolioText(comparison.note, lang) : undefined}
+                      />
+                    ))}
+                    {(project.diagrams ?? []).map((diagram) => (
                       <MermaidDiagram
                         title={portfolioText(diagram.title, lang)}
                         description={portfolioText(diagram.description, lang)}

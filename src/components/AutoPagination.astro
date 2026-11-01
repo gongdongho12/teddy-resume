@@ -90,22 +90,115 @@
       const maximumItemHeight = pageHeight - topInset - bottomInset - 1;
       let currentHeight = 0;
 
-      const itemHeights = children.map((child) => {
-        const computedStyle = window.getComputedStyle(child);
+      const outerHeight = (element: HTMLElement) => {
+        const computedStyle = window.getComputedStyle(element);
         return (
-          child.getBoundingClientRect().height +
+          element.getBoundingClientRect().height +
           numericMargin(computedStyle.marginTop) +
           numericMargin(computedStyle.marginBottom)
         );
-      });
+      };
 
-      children.forEach((child, childIndex) => {
-        const fullItemHeight = itemHeights[childIndex];
+      // Measures a detached candidate by laying it out in the same column, then removing it.
+      const measureCandidate = (element: HTMLElement) => {
+        contentWrapper.appendChild(element);
+        const height = outerHeight(element);
+        element.remove();
+        return height;
+      };
+
+      /**
+       * A tall project card that does not fit the remaining space is split between
+       * highlight bullets instead of leaving the rest of the page empty. The first
+       * part keeps the header, summary, and tech stack; the continuation repeats the
+       * title with a "continued" label and carries the remaining bullets and results.
+       */
+      const splitCard = (card: HTMLElement, availableHeight: number, requireRestBullets: boolean) => {
+        if (card.dataset.a4Splittable !== 'true') return null;
+        const bullets = card.querySelectorAll('[data-a4-split-list] > li');
+        const hasTail = card.querySelector('[data-a4-split-tail]') !== null;
+        const minimumLead = 2;
+        // Medium cards must carry real bullets onto the next page, not just the results block.
+        const minimumRest = hasTail && !requireRestBullets ? 0 : 2;
+        const isKorean = document.documentElement.lang.startsWith('ko');
+
+        for (let keep = bullets.length - minimumRest; keep >= minimumLead; keep -= 1) {
+          if (keep >= bullets.length && !hasTail) continue;
+
+          const lead = card.cloneNode(true) as HTMLElement;
+          lead.querySelectorAll('[data-a4-split-list] > li').forEach((li, index) => {
+            if (index >= keep) li.remove();
+          });
+          lead.querySelector('[data-a4-split-tail]')?.remove();
+          lead.dataset.a4SplitPart = 'lead';
+          lead.style.marginBottom = '0';
+          if (measureCandidate(lead) > availableHeight) continue;
+
+          const rest = card.cloneNode(true) as HTMLElement;
+          rest.querySelectorAll('[data-a4-split-list] > li').forEach((li, index) => {
+            if (index < keep) li.remove();
+          });
+          if (keep >= bullets.length) {
+            rest.querySelector('[data-a4-split-list]')?.remove();
+            const tail = rest.querySelector<HTMLElement>('[data-a4-split-tail]');
+            if (tail) {
+              tail.style.marginTop = '0';
+              tail.style.paddingTop = '0';
+              tail.style.borderTop = 'none';
+            }
+          }
+          rest.querySelector('[data-a4-split-summary]')?.remove();
+          rest.querySelector('[data-a4-split-aside]')?.remove();
+          rest.dataset.a4SplitPart = 'rest';
+          // Put the label before the period, not in the title, so long titles keep
+          // their original line breaks on the continuation page.
+          const header = rest.querySelector('[data-a4-split-header]');
+          const period = header?.querySelector(':scope > span:last-child');
+          if (period) {
+            const label = document.createElement('span');
+            label.className = 'mr-1.5 text-[11px] font-semibold text-gray-400';
+            label.textContent = isKorean ? '(계속)' : '(continued)';
+            period.prepend(label);
+          }
+          return { lead, rest };
+        }
+        return null;
+      };
+
+      const queue = children.map((element) => ({ element, height: outerHeight(element) }));
+      const minimumSplitSpace = usableHeight * 0.25;
+      // Small cards move whole; splitting them leaves a near-empty continuation.
+      // Medium cards split only when real bullets continue on the next page.
+      const minimumSplitCardHeight = usableHeight * 0.3;
+      const largeCardHeight = usableHeight * 0.45;
+
+      for (let childIndex = 0; childIndex < queue.length; childIndex += 1) {
+        const child = queue[childIndex].element;
+        const fullItemHeight = queue[childIndex].height;
         const isSectionHeading = child.tagName === 'H2';
         const keepWithNextHeight = isSectionHeading
-          ? itemHeights[childIndex + 1] ?? 0
+          ? queue[childIndex + 1]?.height ?? 0
           : 0;
         const explicitlyBreaksBefore = child.dataset.a4BreakBefore === 'true';
+        const remainingHeight = usableHeight - currentHeight;
+
+        if (
+          currentPageItems.length > 0 &&
+          !explicitlyBreaksBefore &&
+          fullItemHeight > remainingHeight &&
+          fullItemHeight >= minimumSplitCardHeight &&
+          remainingHeight >= minimumSplitSpace
+        ) {
+          const parts = splitCard(child, remainingHeight, fullItemHeight < largeCardHeight);
+          if (parts) {
+            currentPageItems.push(parts.lead);
+            pages.push(currentPageItems);
+            currentPageItems = [];
+            currentHeight = 0;
+            queue.splice(childIndex + 1, 0, { element: parts.rest, height: measureCandidate(parts.rest) });
+            continue;
+          }
+        }
 
         child.removeAttribute('data-a4-oversize');
         if (fullItemHeight > maximumItemHeight) {
@@ -135,7 +228,7 @@
           currentPageItems.push(child);
           currentHeight += fullItemHeight;
         }
-      });
+      }
 
       if (currentPageItems.length > 0) pages.push(currentPageItems);
 

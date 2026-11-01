@@ -14,11 +14,11 @@ summary:
   ko: |
     문제 해결과 서비스의 완성도에 집중하는 소프트웨어 엔지니어입니다.
     기획 단계부터 주도적으로 참여하여 고객 편의성을 최우선으로 고려하며,
-    현재 다수의 MSA 환경에서 빌링, 유저사이드 및 충전·로밍 서비스 전반을 담당하고 있습니다.
+    현재 충전 플랫폼(CSMS)을 중심으로 빌링·인증·로밍 등 MSA 전반을 담당하고 있습니다.
   en: |
     Software engineer focused on solving operationally complex problems and delivering reliable, polished products.
     I contribute from product planning through production operations, with customer experience as a primary design constraint.
-    At VoltUp, I work across billing, customer-facing, charging, and roaming services in a microservices architecture.
+    At VoltUp, I focus on the charging platform (CSMS) and also cover billing, authentication, and roaming microservices.
 
 languages_note:
   ko: 한국어 — 네이티브
@@ -40,17 +40,19 @@ experience:
       en: EV charging joint venture between LG U+ and Kakao Mobility.
     description:
       ko: |
-        빌링 - DB 승인권, DLQ 및 다단계 복구 흐름으로 중복 결제 방지와 결제/미수 처리 안정성 확보
+        충전 플랫폼(CSMS) - 충전 주문 경로 분리, 원격 충전 시작 안정화
+        빌링 - DB 승인권과 다단계 복구로 중복 결제 방지, 미수 처리 안정화
         프로모션(쿠폰/포인트) - 고객 리텐션 증대
         유저사이드 - 차량정보 조회, PnC(Plug & Charge) 인증 및 유저사이드 백엔드와 모바일 앱 담당
-        MSA 안정화 - Pub/Sub 무중단 종료 표준화 및 외부 API 장애 격리
+        MSA 안정화 & FinOps - K8s Liveness 캐스케이드 차단, Cloud Logging 85% 비용 절감, Pub/Sub 무중단 종료 표준화
         사내 AI 도구 - 에이전트 라우팅, 로그 진단 자동화, DX 워크플로우 구축
         DX 인프라 - CI/CD 통합, 문서 자동 생성 적용
       en: |
-        Payments & Billing — Built multi-provider payment architecture and dead-letter queue (DLQ) recovery, preventing duplicate charges with database-backed atomic approval locks
+        Charging Platform — Isolated order path, stabilized remote starts
+        Payments & Billing — Built multi-provider payments with DLQ recovery and database-backed approval locks to prevent duplicate charges
         Promotions & Customer Products — Built reusable coupon and points systems, customer-facing backend services, and the VoltUp mobile app
-        Reliability — Standardized graceful Pub/Sub shutdown and isolated external API failures across microservices
-        Developer & AI Tooling — Built specialist-agent routing, first-pass log diagnosis, shared CI/CD workflows, and automated technical documentation
+        Reliability & FinOps — Cut logging volume by 85%, prevented K8s cascade restarts, and enforced graceful Pub/Sub shutdowns
+        Developer & AI Tooling — Built agent routing, first-pass log diagnosis, shared CI/CD workflows, and automated docs
 
   - company:
       ko: 카카오스타일
@@ -132,11 +134,11 @@ experience:
 skillGroups:
   - label: Language
     body_ko: |
-      Java / Kotlin
+      Java / Kotlin / Go
       JavaScript / TypeScript
       Dart
     body_en: |
-      Java / Kotlin
+      Java / Kotlin / Go
       JavaScript / TypeScript
       Dart
   - label: Framework
@@ -152,14 +154,14 @@ skillGroups:
   - label: Infra & DB
     body_ko: |
       MySQL / Redis
-      GCP Pub/Sub / Cloud SQL
-      Docker / K8S
-      Kafka / Jenkins / ArgoCD
+      GCP Pub/Sub / Cloud SQL / Kafka
+      Docker / K8S / Istio / ArgoCD
+      OpenTelemetry / OCPP 1.6·2.1
     body_en: |
       MySQL / Redis
-      GCP Pub/Sub / Cloud SQL
-      Docker / Kubernetes
-      Kafka / Jenkins / ArgoCD
+      GCP Pub/Sub / Cloud SQL / Kafka
+      Docker / Kubernetes / Istio / ArgoCD
+      OpenTelemetry / OCPP 1.6·2.1
   - label: CI/CD & DevOps
     body_ko: |
       Jenkins / GitHub Actions
@@ -393,15 +395,111 @@ projectSections:
             - 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이·토스페이먼츠·카카오T를 수용하는 멀티 벤더 결제 아키텍처 구축
             - GCP Pub/Sub DLQ, 영구 미수 처리, 재시도·보완 배치를 연결한 다단계 복구 흐름으로 실패 이벤트 격리와 미수 처리 누락 방지
             - PG 승인 직전 결제 상태를 `AUTHORIZED`로 조건부 전이하는 DB 승인권을 설계해 Redis 락 만료·응답 유실·벤더 변경 상황에서도 재승인을 fail-closed로 차단; 동일 주문 8스레드 경합에서 1건만 선점하는 MySQL 동시성 테스트로 검증
+            - 결제 실패를 원인별로 분리 — PG가 거절을 확정한 건(카드사 거절·잔액 부족)만 미수로 기록하고, 응답 유실·타임아웃처럼 결과를 모르는 시스템 사유는 AUTHORIZED로 유지해 고객에게 미수·충전 차단이 걸리지 않게 한 뒤 PG 실승인 조회로 자동 확정
             - 결제 확정 트랜잭션과 미수 부기를 분리해 부기 락 경합이 승인 성공을 롤백해 이중 청구로 이어지는 경로를 차단하고, 미수 재결제의 포인트 이중 차감·설정 소급 문제를 함께 교정
             - READY 고아 주문 상태 동기화·이벤트 자동 재발행과 AUTHORIZED 체류 해소 배치·수동 복구 API를 구성해 결과 미확정 건을 자동 복구 또는 운영 판단 가능한 상태로 전환
+            - 같은 결제에 요청이 동시에 들어올 때 기다리던 요청이 "실패"로 잘못 안내되던 문제를 해결하고, 먼저 진행 중인 결제의 실제 상태를 그대로 알려 주도록 변경
           en:
             - Led the payment service from initial design through implementation as a core engineer
             - Designed a provider strategy layer that integrates Kakao Pay, Toss Payments, and Kakao T, a South Korean ride-hailing and mobility platform, behind a common interface
             - Combined Pub/Sub dead-letter queues, retries, and recovery batches into a layered flow that isolates failures and prevents unpaid transactions from being missed
             - Added database-backed approval ownership before payment-gateway calls, preventing duplicate approvals after lock expiry, lost responses, or provider changes; an eight-thread MySQL concurrency test confirmed a single winner per order
+            - Split failures by cause — only definitive gateway declines (card declines, insufficient funds) create unpaid balances, while unknown outcomes from lost responses or timeouts stay AUTHORIZED so customers are not blocked from charging, then get settled automatically through gateway lookups
             - Separated payment confirmation from unpaid-balance bookkeeping so ledger-lock contention cannot roll back successful approvals or trigger duplicate charges; also corrected double point deductions and retroactive configuration changes during retries
             - Added recovery for orphaned READY orders and long-running AUTHORIZED states through event republishing, scheduled reconciliation, and operator repair APIs
+            - Fixed concurrent payment requests being wrongly reported as failed; waiting requests now receive the actual status of the payment already in progress
+
+      - title:
+          ko: 충전 플랫폼(CSMS) 안정화 및 충전 주문 경로 분리
+          en: Charging Platform (CSMS) Reliability and Order-Path Isolation
+        portfolioSlug: charging-platform-reliability
+        period:
+          ko: 2026.08 ~ 현재
+          en: Aug 2026 — Present
+        summary:
+          ko: |
+            그리드 스쿼드에 합류해 충전기 통신 서버(CSMS)와 충전 경로를 맡았습니다.
+            충전 주문 처리를 앱 부가 기능에서 분리하고, 원격 충전 시작 실패와 고객에게 잘못 전달되던 실패 알림을 원인별로 정리했습니다.
+          en: |
+            Joined the grid squad to own the charger communication server (CSMS) and charging path.
+            Separated charging-order processing from non-essential app features and resolved remote-start failures and false failure alerts by root cause.
+        tech:
+          - Kotlin
+          - Spring Boot
+          - OCPP
+          - GCP Pub/Sub
+          - Redis
+          - Kubernetes
+        highlights:
+          ko:
+            - 충전 주문 처리를 별도 서비스로 분리해, 앱 부가 기능에 장애가 나도 충전 시작에는 영향이 없도록 격리 (2026.09 운영 적용)
+            - "원격 충전 시작 실패를 원인별 4가지로 분류하고 하나씩 해결: 비정상 메시지 격리, 동시 요청 충돌 해소, 재전송 폭주 차단"
+            - 원격 시작 응답 지연 하루 5,861건이 실패가 아닌 평소 흐름임을 데이터로 확인하고 서버 간 오류 기준을 다시 정해, 고객에게 잘못 가던 "충전 시작 실패" 알림 제거
+            - 인수 후 충전 플랫폼 문서 38편과 증상별 런북 12종을 직접 작성해, 처음 맡는 사람도 장애 증상에서 원인까지 따라갈 수 있게 정리
+          en:
+            - Moved charging-order processing into a dedicated service so outages in non-essential app features no longer affect charging starts (in production since Sep 2026)
+            - "Traced remote-start failures to four causes and fixed each: isolated malformed charger messages, resolved conflicts between simultaneous requests, and blocked retransmission floods"
+            - Confirmed with data that 5,861 delayed remote-start responses per day were normal flow rather than failures, then redefined how servers report errors so customers stop receiving false "charging failed" alerts
+            - After taking over the platform, wrote 38 documents and 12 symptom-based runbooks so new owners can trace an incident from symptom to root cause
+
+      - title:
+          ko: "충전기 접속 계층: 재접속 폭주 차단과 Go 웹소켓 게이트웨이(csms-gw)"
+          en: "Charger Connection Layer: Reconnect Storm Control and a Go WebSocket Gateway"
+        portfolioSlug: charger-gateway-scale
+        period:
+          ko: 2026.09 ~ 현재
+          en: Sep 2026 — Present
+        summary:
+          ko: |
+            충전기 약 1만 대가 CSMS에 직접 붙어 배포 때마다 재접속이 몰리던 문제를 기존 서버에서 먼저 줄이고,
+            충전기 접속 계층을 Go 게이트웨이로 분리하고 있습니다(2026.10 stg 배포, 운영 투입 준비 중).
+          en: |
+            About 10,000 chargers connected directly to CSMS, so every deployment triggered a reconnect surge.
+            I reduced it on the existing servers first, then began moving the connection layer into a Go gateway (in staging since Oct 2026, preparing for production).
+        tech:
+          - Go
+          - OCPP 1.6/2.1
+          - GCP Pub/Sub
+          - Redis
+          - Istio
+        highlights:
+          ko:
+            - 롤아웃 때 DB QPS 5.8배·커넥션 풀 포화를 일으키던 재접속 폭주를 헬스체크 창 파드 공유·롤아웃 페이싱·10초 드레인·파드당 세션 상한으로 차단 (2026.10.13 운영 배포 신규 오류 0건)
+            - Go 게이트웨이 신규 구축 — 패스스루/Pub/Sub 이중 경로, OCPP 1.6·2.1, 다중 인스턴스, CSMS 배포·장애 중에도 충전기 연결 유지
+            - 자원 한도에서 세션 상한을 자동 계산하고 폭주 시 503 + Retry-After로 거절; 부하 시험에서 세션 메모리 절반, 초당 2,000대 재접속 실패 3,414 → 0건
+          en:
+            - Stopped reconnect storms that drove database QPS up 5.8x and saturated connection pools during rollouts, using a pod-shared health-check window, paced rollouts, a 10-second drain, and per-pod session caps (zero new errors in the Oct 13, 2026 production deployment)
+            - Built a new Go gateway with pass-through and Pub/Sub paths, OCPP 1.6/2.1 support, and multi-instance operation, keeping chargers connected while CSMS deploys or fails
+            - Derived session limits from resource limits and rejected surges with 503 and Retry-After; load tests halved memory per session and cut failures in a 2,000-per-second reconnect surge from 3,414 to 0
+
+      - title:
+          ko: "서비스 간 관측 표준(OpenTelemetry): 충전 1건·회원 1명 종단 추적"
+          en: "Cross-Service Observability Standard (OpenTelemetry)"
+        portfolioSlug: observability-contract
+        period:
+          ko: 2026.09 ~ 2026.10
+          en: Sep 2026 — Oct 2026
+        summary:
+          ko: |
+            Pub/Sub·비동기 경계에서 끊기던 추적 정보를 OpenTelemetry 표준으로 이어 Cloud Trace에서 충전 1건이 하나의 트리로 보이게 했습니다.
+            이어서 회원 단위 키를 6개 서비스로 넓혔습니다.
+          en: |
+            Connected tracing context lost at Pub/Sub and async boundaries with OpenTelemetry, so each charging session appears as one tree in Cloud Trace.
+            Then extended member-level keys to six services.
+        tech:
+          - OpenTelemetry
+          - W3C Trace Context
+          - Kotlin
+          - GCP Pub/Sub
+        highlights:
+          ko:
+            - Pub/Sub traceparent 전파를 공통 라이브러리에 넣어 7개 서비스를 잇고, charging_id·order_number·trace_id 세 키로 8개 서비스 로그를 조인하는 표준과 런북 수립
+            - 실제 충전 4건을 끝까지 따라가며 코루틴·필터 순서·설정 키 등 남은 단절을 메워 서비스 간 피벗 키 전파율 0% → 전 구간 연결
+            - 운영 로그 user_id 비율 217/300 → 0/300 회귀를 발견해 공통 라이브러리에서 근본 수정하고, 실제 OTel 브리지 회귀 테스트를 CI에 고정
+          en:
+            - Added Pub/Sub traceparent propagation to the shared library across seven services, and set a standard and runbook that join logs from eight services on charging_id, order_number, and trace_id
+            - Followed four real charging sessions end to end and closed remaining gaps in coroutines, filter ordering, and configuration keys, taking cross-service pivot-key propagation from 0% to end to end
+            - Found a production regression where user_id appeared in 0/300 logs instead of 217/300, fixed it in the shared library, and locked it down with CI tests against the real OTel bridge
 
       - title:
           ko: 통합 프로모션(쿠폰/포인트) 플랫폼 구축 및 고도화
@@ -503,14 +601,24 @@ projectSections:
             - 카카오T 계정/결제 연동을 4개 MSA(auth→user→billing→feapp)에 걸쳐 설계 및 구현 — OAuth2 기반 계정 연동, 결제수단 등록(5단계), 결제 승인/부분 취소까지 전체 플로우 담당
             - 제휴사 고객 토큰을 외부 결제수단과 내부 사용자 컨텍스트를 잇는 기준 키로 정리하고, 검색 인덱스·해지 검증·앱 콜백 전용 activate API 보강
             - 차량 등록 서비스 및 PnC(Plug & Charge) 충전기-차량 고유 키 자동 매핑·인증 시스템 개발
-            - 홈페이지 통계 API — 전월 누적합·전일 누적 delta·당일 실시간 합산을 하나의 누적 지표로 결합하고, 공개 트래픽을 고려해 Local/RemoteCache와 분산 락으로 원본 부하 최소화
+            - 홈페이지 누적 충전량 통계 API — 지난 기간 합계(전월 누적·전일까지 일간 누적)에 당일 실시간 합산을 더해 하나의 숫자로 제공하고, 공개 트래픽을 고려해 로컬·Redis 캐시와 분산 락으로 원본 DB 부하 최소화
             - 외부 인증서·U+ 멤버십·블루멤버스 포인트 연동에 전용 풀, 타임아웃, 서킷 브레이커/CallGuard를 적용해 지연 전파와 스레드 고갈을 격리하고 승인·포인트 결과가 불확실할 때 명시적으로 실패하도록 설계
+            - 945만 행 규모의 충전 이력 및 어드민 주문 목록에서 발생하던 무필터 COUNT 슬로우 쿼리(1.4~1.6s)를 로컬(1분) + Redis(10분) 2단 캐시로 완충해 DB 풀스캔 부하 해소
+            - 타인 인증수단 삭제 IDOR 취약점 식별 즉시 소유권 검증 가드를 적용해 당일 배포하고, 6개월 노출 구간 로그 전수 검사를 통해 오사용 0건 확인
+            - 인증 서비스 로그에 액세스 토큰·본인인증 정보가 남던 것을 발견해, 로그 문자열이 만들어지기 전에 가리는 공용 마스킹 장치와 검증 도구를 만들어 긴급 반영 (운영 로그 토큰 노출 141/300 → 0)
+            - 로그인 토큰 서명키를 Cloud KMS로 옮기고 관리자·사용자 토큰을 서로 쓸 수 없도록 검증 키를 분리해, 서비스 중단 없이 2단계로 전환
+            - 동시에 로그인 요청이 들어오면 세션이 중복으로 생겨 로그인이 막히던 문제를, 같은 사용자의 로그인을 한 번에 하나씩 처리하도록 바꿔 해결
           en:
             - Designed Kakao T account and payment integration across auth, user, billing, and customer-app services, covering OAuth2 linking, five-step card registration, payment approval, and partial cancellation
             - Established the partner customer token as the link between external payment methods and internal user context, adding search indexes, unlink validation, and a callback-specific activation API
             - Built vehicle enrollment and Plug & Charge credential-registration services
-            - Combined historical totals and same-day real-time data in one homepage statistics API, using local and remote caches plus distributed locks to protect source systems from public traffic
+            - Built the homepage cumulative charging-volume API, combining stored past totals with a live same-day sum and protecting the source database from public traffic with local and Redis caches plus distributed locks
             - Isolated external certificate, LG U+ Membership, and Bluemembers integrations with dedicated thread pools, timeouts, circuit breakers, and CallGuard so uncertain outcomes fail explicitly instead of exhausting request threads
+            - Mitigated 1.4–1.6s full-table scan slow queries on a 9.45M-row charging history table by implementing a two-tier cache (1-min local memory + 10-min Redis)
+            - Remediated an IDOR vulnerability in payment-method deletion with same-day backend ownership validation and deployed to production, verifying zero malicious exploitation across 6 months of historical logs
+            - Found access tokens and identity-verification data in authentication-service logs, then shipped a shared masking layer that redacts values before log strings are built, plus a verification kit, as a hotfix (sampled production logs with exposed tokens went from 141/300 to 0)
+            - Moved login-token signing keys to Cloud KMS and separated admin and customer verification keys so neither token works in the other's domain, migrating in two steps with no downtime
+            - Fixed login lockouts caused by duplicate sessions under simultaneous sign-ins by processing each user's logins one at a time
         results:
           ko:
             - 카카오T 제휴사 연동 인프라 및 핵심 비즈니스 로직 성공적 구축 — 결제수단 등록/결제/취소/프로모션 전체 사이클 구현
@@ -545,6 +653,7 @@ projectSections:
             - ML Kit 기반 커스텀 QR 스캐너 페이지와 반응형 스캔 UI 구현
             - FCM 기반 푸시 알림 시스템 구축
             - Crashlytics 기반 Dart/native 오류 수집과 카메라/FCM 안정화
+            - Android Impeller/Vulkan 렌더러에서 메인-래스터 스레드 상호 대기로 발생하던 네이티브 데드락 ANR 크래시를 Flutter 엔진 핫픽스 업그레이드 및 예측 뒤로가기(PopScope) 연동으로 해결
           en:
             - Scoped the app through a proof of concept and delivered the Android/iOS hybrid app for the March 2025 launch
             - Defined a JS bridge for communication between the web frontend, native app, and device hardware
@@ -552,6 +661,7 @@ projectSections:
             - Custom ML Kit-based QR scanner page and responsive scan UI
             - FCM-based push notification system
             - Crashlytics-driven Dart/native error collection and camera/FCM stabilization
+            - Resolved native deadlock ANR crashes caused by main-and-raster thread contention on Android Impeller/Vulkan renderer through Flutter engine hotfix upgrades and predictive back navigation (PopScope)
         results:
           ko:
             - 2개월 이내 런칭 (2024.12 ~ 2025.02)
@@ -565,7 +675,7 @@ projectSections:
       - title:
           ko: 볼트업 앱 검증/운영 보정 익스텐션
           en: Browser-Based App Validation and Operations Tool
-        portfolioSlug: voltup-app-extension
+        portfolioSlug: mobile-app-extension
         period:
           ko: "2026.05 ~ 현재"
           en: "May 2026 — Present"
@@ -659,12 +769,14 @@ projectSections:
             - 공공 API 에러 발생 시 재처리 프로세스 구성 — 회원카드 등 중요 데이터는 우선 재처리, 충전기 상태 등 누락 허용 가능한 항목은 후순위로 분리
             - 환경부 회원카드 월 1회 전체 재동기화 스케줄러와 task seed를 추가해 외부 시스템과 장기 상태 불일치가 누적되지 않도록 보강
             - 카카오T 파트너 로밍 배치 종료 시 실행 작업보다 Redis 연결이 먼저 닫히던 순서를 교정하고, 60~75분 충전기 동기화 잡을 중복 실행 없이 상주형으로 전환할 수 있는 opt-in 스케줄러와 종료 가드를 구성
+            - 두 달간 전부 실패하던 환경부 충전이력 수집 배치를 복구하고, 이후 실패가 바로 드러나도록 모니터링 추가
           en:
             - Changed public-roaming card-state updates from payment responses to unpaid-balance events so only relevant failures trigger state changes
             - Simplified the roaming card-state processing path and consolidated billing lookups to improve throughput
             - Built a retry process that prioritizes baseline membership-card data over lower-priority charger-status updates
             - Added monthly full resynchronization for public-roaming membership cards to prevent long-term drift from the external system
             - Corrected Kakao T batch shutdown ordering so Redis remains available until active work completes, then added an opt-in resident scheduler and shutdown guards for 60-75 minute charger-sync jobs
+            - Restored a government charging-history collection batch that had failed completely for two months, and added monitoring so future failures surface immediately
         results:
           ko:
             - 카드 상태 업데이트 로직 재설계로 데이터 정확성 향상
@@ -708,6 +820,9 @@ projectSections:
             - Admin 내부 API 호출이 늘어나는 상황에서 admin-internal-* 클라이언트와 X-Internal-Caller 헤더 규약을 도입해 운영자 도구의 내부 호출 경계 표준화
             - Android/iOS 앱 배포 과정을 정리해 인증 키 관리 부담과 불필요한 실패 요인을 줄임
             - Android Jenkins 파이프라인 공통 라이브러리화, GCS Gradle 캐시, iOS 자동 배포, ProGuard/R8 정책 등
+            - CSMS 로그 진입점의 페이로드 상한 설정 및 MDC 중복 제거로 Cloud Logging 일 적재량을 85% 감량(120GB → 18GB, 월 약 3TB 절감)하고 월 약 $1,400의 인프라 비용 절감 실측
+            - 운영 반영 PR에서만 의존성 취약점을 검사하고, 영업일마다 운영 브랜치를 점검해 버전 숫자만 올리는 핫픽스 PR을 자동으로 만드는 공용 스캔 모듈 구축 (프레임워크 전환이 필요한 건은 추적 이슈로 분리)
+            - K8s Liveness Probe 판정 범위를 프로세스 생존 상태로 한정하도록 공통 표준을 수립하여, DB 일시 순단 시 정상 동작 중인 파드까지 연쇄 재시작(Cascade)되는 장애 경로 원천 차단
           en:
             - Built a reusable repository of microservice conventions and recurring task patterns for Claude Code, Cursor, Gemini, and other coding agents
             - Rolled out a LiteLLM proxy and a single source of truth for model defaults, then standardized first-pass reviews, pull-request summaries, security-review drafts, and Slack notifications as shared CI workflows
@@ -718,6 +833,9 @@ projectSections:
             - Standardized internal operations-console API boundaries with shared clients and an X-Internal-Caller convention
             - Simplified Android and iOS delivery to reduce key-management overhead and avoidable failures
             - Consolidated Android Jenkins pipelines into shared libraries and added remote Gradle caching, iOS TestFlight automation, and shared R8 policies
+            - Cut Cloud Logging volume by 85% (120GB to 18GB/day, saving ~3TB and ~$1,400/month) by enforcing body size limits and removing redundant MDC fields at log ingestion points
+            - Built a shared dependency-vulnerability scanner that runs only on production-promotion PRs and, every business day, opens version-bump-only hotfix PRs for production branches, routing framework-level upgrades to tracking issues
+            - Standardized Kubernetes liveness probe boundaries to process-liveness indicators, preventing cascading pod restarts across microservices during transient database hiccups
         results:
           ko:
             - AI 코드 리뷰 자동화로 리뷰 리소스 절감
@@ -738,7 +856,6 @@ projectSections:
     period:
       ko: 2022.06 ~ 2024.09
       en: Jun 2022 — Sep 2024
-    pageBreakBefore: true
     projects:
       - title:
           ko: 모바일 IP 대역 프록시 인프라 및 다이나믹 프라이싱
@@ -895,7 +1012,6 @@ projectSections:
   - heading:
       ko: 이전 경력 프로젝트
       en: Earlier-Career Projects
-    pageBreakBefore: true
     projects:
       - title:
           ko: 프라이데이 서비스
@@ -1068,7 +1184,6 @@ projectSections:
   - heading:
       ko: 사이드 프로젝트
       en: Side Projects
-    pageBreakBefore: true
     layout: compact
     projects:
       - title:

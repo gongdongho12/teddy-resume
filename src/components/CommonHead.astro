@@ -15,3 +15,17 @@ const docTitle = title || (m ? m.docTitle : 'Resume');
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" type="image/png" href={import.meta.env.BASE_URL + 'favicon.png'} />
 <title>{docTitle}</title>
+<style is:global>
+  /* 제목 끝 한두 글자만 다음 줄로 넘어가는 고아 줄바꿈 방지 */
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  html[lang='ko'] :is(h1, h2, h3, h4) {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+</style>

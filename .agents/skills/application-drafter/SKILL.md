@@ -8,7 +8,7 @@ When the user asks you to "draft my application for [Company]" or invokes this s
 
 ## 1. Locate and Read Inputs
 - Read the single source of truth for facts: `src/content/resume/profile.yaml`.
-- Search the `src/content/applications/` directory for the relevant company yaml file.
+- Search the `notes/applications/` directory (guidelines: `src/content/applications/schema-guidelines.md`) for the relevant company yaml file.
 - Read the target application file. Get the `job_description` and the `responses` array.
 
 ## 2. Analyze Alignment

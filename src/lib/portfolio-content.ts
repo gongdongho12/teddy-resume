@@ -1101,8 +1101,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       en: 'Operational stabilization of public roaming integrations using events, retries, and monthly resync',
     },
     {
-      ko: '전월까지의 누적합은 Redis 24h 캐시, 전일까지의 일간 delta는 DB upsert로 누적, 당일 합산은 Redis/LocalCache와 분산 락으로 보호해 홈페이지 공개 트래픽에서도 원본 부하를 줄이며 통계를 지속 갱신한 경험',
-      en: 'Kept homepage statistics updated under public traffic by caching prior-month cumulative totals in Redis for 24h, upserting daily deltas into cumulative DB state, and protecting same-day sums with Redis/local cache plus distributed locks',
+      ko: '홈페이지 누적 충전량 통계 API — 지난 기간 합계는 캐시·DB에 쌓아 두고 당일분만 실시간 합산해, 누구나 보는 공개 페이지 트래픽에도 원본 DB 부하 없이 숫자를 계속 갱신한 경험',
+      en: 'Homepage cumulative charging-volume statistics API — kept past totals in cache and the database and summed only the current day live, so a public page stays up to date without loading the source database',
     },
     {
       ko: 'Pub/Sub DLQ, Athena 배치, 월간 파티션, 서킷브레이커 기반 운영 안정화 경험',

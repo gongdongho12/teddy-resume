@@ -10,10 +10,10 @@ To ensure your resume remains the single source of truth for facts while still a
 
 ## Directory Structure
 
-Place your application files in `src/content/applications/`. They should be named simply mapping the company and position:
+Place your application files in `notes/applications/` (not in `src/content/applications/`: mixing this Markdown guide with YAML data there makes the Astro build fail with MixedContentDataCollectionError). Name them after the company and position:
 
 ```text
-src/content/applications/
+notes/applications/
   ├── companya-frontend-2026.yaml
   ├── companyb-fullstack.yaml
   └── ...

@@ -433,14 +433,16 @@ projectSections:
             - 충전 주문 처리를 별도 서비스로 분리해, 앱 부가 기능에 장애가 나도 충전 시작에는 영향이 없도록 격리 (2026.09 운영 적용)
             - "원격 충전 시작 실패를 원인별 4가지로 분류하고 하나씩 해결: 비정상 메시지 격리, 동시 요청 충돌 해소, 재전송 폭주 차단"
             - 원격 시작 응답 지연 하루 5,861건이 실패가 아닌 평소 흐름임을 데이터로 확인하고 서버 간 오류 기준을 다시 정해, 고객에게 잘못 가던 "충전 시작 실패" 알림 제거
+            - 인수 후 충전 플랫폼 문서 38편과 증상별 런북 12종을 직접 작성해, 처음 맡는 사람도 장애 증상에서 원인까지 따라갈 수 있게 정리
           en:
             - Moved charging-order processing into a dedicated service so outages in non-essential app features no longer affect charging starts (in production since Sep 2026)
             - "Traced remote-start failures to four causes and fixed each: isolated malformed charger messages, resolved conflicts between simultaneous requests, and blocked retransmission floods"
             - Confirmed with data that 5,861 delayed remote-start responses per day were normal flow rather than failures, then redefined how servers report errors so customers stop receiving false "charging failed" alerts
+            - After taking over the platform, wrote 38 documents and 12 symptom-based runbooks so new owners can trace an incident from symptom to root cause
 
       - title:
           ko: "충전기 접속 계층: 재접속 폭주 차단과 Go 웹소켓 게이트웨이(csms-gw)"
-          en: "Charger Connection Layer: Reconnect-Storm Control and a Go WebSocket Gateway"
+          en: "Charger Connection Layer: Reconnect Storm Control and a Go WebSocket Gateway"
         portfolioSlug: charger-gateway-scale
         period:
           ko: 2026.09 ~ 현재
@@ -601,6 +603,7 @@ projectSections:
             - 외부 인증서·U+ 멤버십·블루멤버스 포인트 연동에 전용 풀, 타임아웃, 서킷 브레이커/CallGuard를 적용해 지연 전파와 스레드 고갈을 격리하고 승인·포인트 결과가 불확실할 때 명시적으로 실패하도록 설계
             - 945만 행 규모의 충전 이력 및 어드민 주문 목록에서 발생하던 무필터 COUNT 슬로우 쿼리(1.4~1.6s)를 로컬(1분) + Redis(10분) 2단 캐시로 완충해 DB 풀스캔 부하 해소
             - 타인 인증수단 삭제 IDOR 취약점 식별 즉시 소유권 검증 가드를 적용해 당일 배포하고, 6개월 노출 구간 로그 전수 검사를 통해 오사용 0건 확인
+            - 인증 서비스 로그에 액세스 토큰·본인인증 정보가 남던 것을 발견해, 로그 문자열이 만들어지기 전에 가리는 공용 마스킹 장치와 검증 도구를 만들어 긴급 반영 (운영 로그 토큰 노출 141/300 → 0)
             - 로그인 토큰 서명키를 Cloud KMS로 옮기고 관리자·사용자 토큰을 서로 쓸 수 없도록 검증 키를 분리해, 서비스 중단 없이 2단계로 전환
             - 동시에 로그인 요청이 들어오면 세션이 중복으로 생겨 로그인이 막히던 문제를, 같은 사용자의 로그인을 한 번에 하나씩 처리하도록 바꿔 해결
           en:
@@ -611,6 +614,7 @@ projectSections:
             - Isolated external certificate, LG U+ Membership, and Bluemembers integrations with dedicated thread pools, timeouts, circuit breakers, and CallGuard so uncertain outcomes fail explicitly instead of exhausting request threads
             - Mitigated 1.4–1.6s full-table scan slow queries on a 9.45M-row charging history table by implementing a two-tier cache (1-min local memory + 10-min Redis)
             - Remediated an IDOR vulnerability in payment-method deletion with same-day backend ownership validation and deployed to production, verifying zero malicious exploitation across 6 months of historical logs
+            - Found access tokens and identity-verification data in authentication-service logs, then shipped a shared masking layer that redacts values before log strings are built, plus a verification kit, as a hotfix (sampled production logs with exposed tokens went from 141/300 to 0)
             - Moved login-token signing keys to Cloud KMS and separated admin and customer verification keys so neither token works in the other's domain, migrating in two steps with no downtime
             - Fixed login lockouts caused by duplicate sessions under simultaneous sign-ins by processing each user's logins one at a time
         results:
@@ -815,6 +819,7 @@ projectSections:
             - Android/iOS 앱 배포 과정을 정리해 인증 키 관리 부담과 불필요한 실패 요인을 줄임
             - Android Jenkins 파이프라인 공통 라이브러리화, GCS Gradle 캐시, iOS 자동 배포, ProGuard/R8 정책 등
             - CSMS 로그 진입점의 페이로드 상한 설정 및 MDC 중복 제거로 Cloud Logging 일 적재량을 85% 감량(120GB → 18GB, 월 약 3TB 절감)하고 월 약 $1,400의 인프라 비용 절감 실측
+            - 운영 반영 PR에서만 의존성 취약점을 검사하고, 영업일마다 운영 브랜치를 점검해 버전 숫자만 올리는 핫픽스 PR을 자동으로 만드는 공용 스캔 모듈 구축 (프레임워크 전환이 필요한 건은 추적 이슈로 분리)
             - K8s Liveness Probe 판정 범위를 프로세스 생존 상태로 한정하도록 공통 표준을 수립하여, DB 일시 순단 시 정상 동작 중인 파드까지 연쇄 재시작(Cascade)되는 장애 경로 원천 차단
           en:
             - Built a reusable repository of microservice conventions and recurring task patterns for Claude Code, Cursor, Gemini, and other coding agents
@@ -827,6 +832,7 @@ projectSections:
             - Simplified Android and iOS delivery to reduce key-management overhead and avoidable failures
             - Consolidated Android Jenkins pipelines into shared libraries and added remote Gradle caching, iOS TestFlight automation, and shared R8 policies
             - Cut Cloud Logging volume by 85% (120GB to 18GB/day, saving ~3TB and ~$1,400/month) by enforcing body size limits and removing redundant MDC fields at log ingestion points
+            - Built a shared dependency-vulnerability scanner that runs only on production-promotion PRs and, every business day, opens version-bump-only hotfix PRs for production branches, routing framework-level upgrades to tracking issues
             - Standardized Kubernetes liveness probe boundaries to process-liveness indicators, preventing cascading pod restarts across microservices during transient database hiccups
         results:
           ko:

@@ -259,7 +259,7 @@ entries:
     skip_reason:
   - id: 2026-10-auth-log-masking-security-hotfix
     period: 2026-10-16..2026-10-20
-    status: candidate
+    status: reflected
     delivery: deployed
     area: auth
     headline: 인증 서비스 로그 민감정보 노출 차단 — 공용 로그 마스킹 라이브러리(voltup-log-masking)와 검증 도구를 만들어 긴급 반영
@@ -277,12 +277,14 @@ entries:
         - 6b0cec2
         - 67ded11
         - 427bff3
-    resume_targets: []
-    reflected_at:
+    resume_targets:
+      - profile.yaml#user-side-backend
+      - portfolio-content.ts#user-side-backend
+    reflected_at: 2026-11-01
     skip_reason:
   - id: 2026-10-pr-changes-detector-ci
     period: 2026-10-26..2026-10-26
-    status: candidate
+    status: reflected
     delivery: merged
     area: platform
     headline: PR 배포 전 작업 자동 감지 CI — SQL·API·Pub/Sub 토픽·환경변수 변경을 PR 댓글로 표기, 14개 레포에 표준 적용
@@ -297,8 +299,10 @@ entries:
       commits:
         - 7da6385
         - 3bf1012
-    resume_targets: []
-    reflected_at:
+    resume_targets:
+      - profile.yaml#devops-automation
+      - portfolio-content.ts#devops-automation
+    reflected_at: 2026-11-01
     skip_reason:
   - id: 2026-10-charger-connection-state
     period: 2026-10-26..2026-10-26
@@ -379,7 +383,7 @@ entries:
     skip_reason:
   - id: 2026-10-dependency-cve-check-ci
     period: 2026-10-29..2026-10-30
-    status: candidate
+    status: reflected
     delivery: merged
     area: platform
     headline: 의존성 CVE 대응 자동화 — prod 승격 PR 체크 + 영업일 매일 운영 브랜치 스캔·숫자만 올리는 hotfix PR 자동 생성을 공용 스캔 모듈 하나로 운영 레포 전반에 적용
@@ -395,8 +399,10 @@ entries:
         - 7fcf315
         - 2f05e5c
         - 5297715
-    resume_targets: []
-    reflected_at:
+    resume_targets:
+      - profile.yaml#devops-automation
+      - portfolio-content.ts#devops-automation
+    reflected_at: 2026-11-01
     skip_reason:
   - id: 2026-10-charging-disconnect-detection
     period: 2026-10-28..

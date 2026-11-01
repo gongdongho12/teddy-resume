@@ -931,6 +931,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       en: 'Established OpenTelemetry end-to-end tracing across HTTP, Pub/Sub, and async boundaries, locking production regressions into tests',
     },
     {
+      ko: '혼자 알고 끝내지 않고 문서·런북·사내 우수 사례·운영팀용 가이드로 팀이 쓸 수 있게 공유해 온 경험',
+      en: 'A habit of turning what I learn into team assets: documents, runbooks, internal best-practice write-ups, and guides for operations teams',
+    },
+    {
       ko: 'OAuth2, PG, 게이트웨이, 외부 인증서 서비스가 포함된 MSA 연동 경험',
       en: 'Experience integrating microservices with OAuth2, payment gateways, API gateways, and external certificate services',
     },
@@ -1126,6 +1130,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Confirmed with data that 5,861 delayed remote-start responses per day were normal flow, then redefined the error contract between CSMS and the app server to remove two kinds of false "charging failed" alerts.',
         },
         {
+          ko: '인수 후 충전 플랫폼 문서 38편과 증상별 런북 12종을 직접 작성해, 처음 맡는 사람도 장애 증상에서 원인까지 따라갈 수 있게 정리했습니다.',
+          en: 'After taking over the platform, wrote 38 documents and 12 symptom-based runbooks so new owners can trace an incident from symptom to root cause.',
+        },
+        {
           ko: '충전 1건을 8개 서비스에 걸쳐 추적하는 표준은 「서비스 간 관측 표준(OpenTelemetry)」 프로젝트로 따로 정리했습니다.',
           en: 'The standard for tracing one charging session across 8 services is covered separately in the "Cross-Service Observability Standard (OpenTelemetry)" project.',
         },
@@ -1160,7 +1168,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       slug: 'charger-gateway-scale',
       title: {
         ko: '충전기 접속 계층: 재접속 폭주 차단과 Go 웹소켓 게이트웨이(csms-gw)',
-        en: 'Charger Connection Layer: Reconnect-Storm Control and a Go WebSocket Gateway (csms-gw)',
+        en: 'Charger Connection Layer: Reconnect Storm Control and a Go WebSocket Gateway (csms-gw)',
       },
       period: {
         ko: '2026.09 - 현재',
@@ -2436,6 +2444,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         {
           ko: '`/voltup-pr`은 커밋 로그, 변경 파일, diff를 근거로 PR 본문을 자동 생성/갱신하고, `voltup-pr` 마커 블록만 교체해 수기 본문을 보존하도록 만들었습니다. `pr-changes-detector`는 PR open/push 시 Flyway, 컨트롤러, 엔티티, 권한 변경을 요약 댓글로 upsert하도록 정리했습니다.',
           en: 'Built `/voltup-pr` to generate and update PR descriptions from commit logs, changed files, and diffs while replacing only the `voltup-pr` marker block to preserve manual content. `pr-changes-detector` upserts PR change summaries for Flyway, controller, entity, and authorization changes on PR open/push.',
+        },
+        {
+          ko: '운영 반영 PR에서만 의존성 취약점을 검사하고, 영업일마다 운영 브랜치를 점검해 버전 숫자만 올리는 핫픽스 PR을 자동으로 만드는 공용 스캔 모듈을 만들었습니다. 프레임워크 전환이 필요한 취약점은 레포별 추적 이슈로 분리했습니다.',
+          en: 'Built a shared dependency-vulnerability scanner that runs only on production-promotion PRs and, every business day, opens version-bump-only hotfix PRs for production branches, routing framework-level upgrades to per-repository tracking issues.',
         },
         {
           ko: 'MSA 저장소에는 `.agent/workflows`, `.github/skills`, `.github/prompts`, `copilot-instructions.md`를 배치해 각 서비스의 작업 컨벤션, API 우선 개발 흐름, 보안 규칙, 반복 운영 작업 형상을 여러 생성형 LLM 도구에서 공유 가능한 repo-local context로 만들었습니다.',

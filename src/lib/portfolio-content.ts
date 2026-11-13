@@ -1015,6 +1015,7 @@ export interface PortfolioReferenceImage {
 
 export interface PortfolioProject {
   slug: string;
+  legacyAnchor?: string;
   externalUrl?: string;
   githubUrl?: string;
   title: Localized;
@@ -1058,16 +1059,15 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     en: 'Project Portfolio',
   },
   eyebrow: {
-    ko: '결제, 충전 플랫폼, 충전기 접속 게이트웨이, 관측 표준, 앱, 로밍, 사내 AI 에이전트, 프라이싱, 멤버십, 프로모션, DX, 개인 서비스의 주요 사례',
-    en: 'Selected cases across payments, charging platform, charger gateway, observability, apps, roaming, internal AI agents, pricing, membership, promotions, DX, and personal products',
+    ko: '결제, 전기차 충전, 앱, 로밍, 사내 AI, 커머스, 개발 도구 사례',
+    en: 'Projects in payments, EV charging, mobile apps, internal AI, commerce, and developer tooling',
   },
-  intro: {
-    ko:
-      '경력기술서와 이력서에 정리한 프로젝트 가운데, 멀티 벤더 결제, 충전기 1만 대 접속 계층과 Go 게이트웨이, OpenTelemetry 관측 표준, 앱/WebView 브릿지, 로밍 안정화, 사내 AI 에이전트 라우팅과 로그 진단, 프라이싱 플랫폼, 멤버십 이관, 포인트 지갑 설계, DX 자동화, 그리고 Commit Map처럼 개인 문제를 제품으로 풀어본 사례를 골라 정리했습니다.',
-    en:
-      'This page highlights projects such as multi-vendor payments, a connection layer and Go gateway for 10,000 chargers, an OpenTelemetry observability standard, app/WebView bridge work, roaming reliability, internal AI-agent routing and log diagnosis, pricing APIs, membership migration, point-wallet design, DX automation, and Commit Map as a personal product built from a real planning problem.',
-  },
+  intro: localized(
+    "커머스·마케팅·결제 시스템을 개발해 왔고, 현재는 전기차 충전 서비스를 개발하고 운영합니다. 웹·앱·서버를 직접 개발하며, 사용자 흐름 전체를 살펴 과제로 잡히지 않은 문제도 찾아 해결합니다. 배포와 서비스 연동에서 장애로 이어질 수 있는 경로는 미리 찾아 보강합니다.",
+    "I’ve built software for commerce, marketing, and payments, and now build and operate EV charging services. I work across web, mobile, and backend systems to find and solve problems throughout the user journey, including those that haven’t been scoped yet. I look for ways deployments and service integrations can fail, then build safeguards early.",
+  ),
   roleFocus: [
+    localized("스쿼드의 백엔드 설계와 운영 개선을 주도하고, 공통 도구·문서·코드리뷰로 동료의 문제 해결을 지원했습니다. 패스트캠퍼스·대학교·해커톤 멘토링에서는 설계 검토와 기술 피드백을 제공했습니다.", "Drove backend design and operational improvements within my squad, supporting peers through shared tools, documentation, and code review. Mentored developers through Fast Campus programs, universities, and hackathons, providing design reviews and technical feedback."),
     {
       ko: 'Kotlin/Spring Boot 중심의 백엔드 개발 경험',
       en: 'Backend development experience centered on Kotlin and Spring Boot',
@@ -1098,7 +1098,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     },
     {
       ko: '공공 연계 로밍 데이터의 이벤트 처리, 재처리, 월간 재동기화 기반 운영 안정화 경험',
-      en: 'Operational stabilization of public roaming integrations using events, retries, and monthly resync',
+      en: 'Kept public EV roaming data in sync with event retries and monthly reconciliation',
     },
     {
       ko: '홈페이지 누적 충전량 통계 API — 지난 기간 합계는 캐시·DB에 쌓아 두고 당일분만 실시간 합산해, 누구나 보는 공개 페이지 트래픽에도 원본 DB 부하 없이 숫자를 계속 갱신한 경험',
@@ -1114,7 +1114,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     },
     {
       ko: 'LLM 리뷰 workflow, Docusaurus, Firebase App Distribution, capture/replay 익스텐션, Jenkins/TestFlight 기반 DX 개선 경험',
-      en: 'DX improvements using LLM review workflows, Docusaurus, Firebase App Distribution, capture/replay extensions, and Jenkins/TestFlight',
+      en: 'Automated code review, technical documentation, and app delivery with shared tools',
     },
   ],
   projects: [
@@ -1177,6 +1177,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: 'VoC 대응을 위해 운영자가 미수는 그대로 둔 채 충전 차단만 해제할 수 있는 제외 플래그를 billing·앱 서버·운영 콘솔에 추가하고, 카드사 거절 같은 일상적 실패가 ERROR로 잡히던 로그 레벨을 벤더별로 재분류해 진짜 시스템 오류만 경보에 남겼습니다.',
           en: 'For customer-support cases, added an exclusion flag across billing, the app server, and the operations console that lifts the charging block while keeping the unpaid balance, and reclassified per-provider log levels so everyday declines no longer raise ERROR alerts and only real system errors do.',
         },
+        localized("미결제 점검 배치에 실제 승인 조회를 연결해 응답 유실로 남은 결제 상태를 자동 복구하고, 결과가 미확정인 건은 재승인 없이 운영 판단 대상으로 보존", "Queried payment providers to reconcile unpaid orders after a lost response, without submitting another charge"),
       ],
       engineeringViews: [
         {
@@ -1266,8 +1267,8 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
     {
       slug: 'charging-platform-reliability',
       title: {
-        ko: '충전 플랫폼(CSMS) 안정화 및 충전 주문 경로 분리',
-        en: 'Charging Platform (CSMS) Reliability and Order-Path Isolation',
+        ko: '충전 플랫폼 운영 안정화 및 분산 트레이싱 적용',
+        en: 'EV Charging Reliability and Distributed Tracing',
       },
       period: {
         ko: '2026.08 - 현재',
@@ -1620,6 +1621,27 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
     },
     {
+      slug: 'fota-staged-rollout',
+      title: localized("충전기 펌웨어 단계적 배포와 복구 자동화", "EV Charger Firmware Rollouts and Automated Recovery"),
+      period: localized("2026.10 ~ 현재", "Oct 2026 — Present"),
+      roleLabel: localized("펌웨어 배포 상태 전이와 복구 흐름 설계·구현", "Firmware rollout state transitions and recovery"),
+      summary: localized("충전기 펌웨어의 단계적 배포와 이상 감지, 승인, 롤백을 연결한 운영 흐름을 구축했습니다.", "Built an operations workflow for staged charger firmware updates, health monitoring, approvals, and rollback."),
+      challenge: localized("현장 충전기의 연결·충전 상태에 따라 설치가 지연되며, 설치 보고와 목표 버전 부팅의 도착 순서도 달라질 수 있었습니다.", "Updates can be deferred while chargers are offline or in use, and installation reports and target-version boot events can arrive in either order."),
+      company: localized('LG유플러스 볼트업', 'LG Uplus VoltUp'),
+      actions: [
+        localized("공통 계약·충전 서버·충전기 관리·배포 엔진·운영 화면을 연결해 국소 배포부터 단계별 확대, 이상 감지 시 자동 정지, 승인·롤백까지 구현하고 운영 출시", "Built a rollout engine and console that expand updates from a small group of chargers, pause when problems appear, and support approval and rollback"),
+        localized("충전 중·연결 없음·설치 전 실패를 설치 뒤 이상과 구분하고, 처리 대기·재시도 단계와 제한된 자동 재시도를 설계해 배포 상태 정합성 보강", "Deferred updates for chargers in use or offline, retried failed update attempts within set limits, and handled faults after installation separately"),
+      ],
+      engineeringViews: [
+        localized("설치 보고와 목표 버전 부팅을 함께 확인해 완료를 판정하고, 두 신호의 도착 순서가 바뀌는 경우를 처리했습니다.", "Used both the installation report and a boot into the target version to determine completion, handling either arrival order."),
+      ],
+      outcomes: [
+        localized("2026년 11월 단계적 배포를 운영에 출시하고, 처리 대기와 자동 재시도를 보강했습니다.", "Launched staged rollout in production in November 2026 and added safeguards for deferred work and automatic retries."),
+      ],
+      note: localized("운영 화면에서 배포 단계와 처리 대기·재시도 상태를 확인할 수 있도록 구성했습니다.", "The operations console exposes rollout progress and the status of deferred work and retries."),
+      tech: ["Kotlin", "Spring Boot", "GCP Pub/Sub", "React", "TypeScript"],
+    },
+    {
       slug: 'kakao-t-integration',
       title: {
         ko: '카카오T 계정 링크 및 결제수단 등록',
@@ -1663,6 +1685,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
       ],
       actions: [
+        localized("인증 로그 생성 전 민감 정보를 가리는 공용 라이브러리와 검증 도구를 제공해, 운영 로그 표본 300건 중 141건에서 발견된 토큰 노출이 수정 후 0건임을 확인", "Built shared tools to redact sensitive data before authentication logs are formatted. Token exposures fell from 141 of 300 sampled records to zero in follow-up checks."),
         {
           ko: 'KakaoT OAuth 결과의 `externalId`, `ci`를 기준으로 기존 VoltUp 회원을 찾고 연결된 인증 수단을 추가하는 흐름을 설계했습니다.',
           en: 'Designed the linking flow that identifies an existing VoltUp member from Kakao T OAuth data and encrypted identity information, then adds the linked authentication method.',
@@ -2272,10 +2295,11 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       ],
     },
     {
-      slug: 'mobile-app-extension',
+      slug: 'voltup-app-extension',
+      legacyAnchor: 'mobile-app-extension',
       title: {
         ko: '볼트업 앱 검증/운영 보정 익스텐션',
-        en: 'VoltUp App Validation and Ops Correction Extension',
+        en: 'Chrome Extension for App Testing and API Replay',
       },
       period: {
         ko: '2026.05 - 현재',
@@ -2395,6 +2419,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           'Public roaming data needs to stay aligned with the external system, but online events alone cannot reliably recover after missed events or transient failures. Treating baseline-like member-card data and more tolerably lossy charger-status data with the same priority could also waste retry capacity.',
       },
       actions: [
+        localized("회원카드 재동기화를 제휴 충전 사업자 전체로 확대하고 사업자별 진행 기록·재시도로 중단 후 재개 가능한 복구 흐름 구현", "Extended card-status reconciliation to partner charge-point operators, with per-operator checkpoints and retries so interrupted runs can resume"),
         {
           ko: '카드 상태 업데이트 기준을 결제 응답 중심에서 결제 미수 이벤트 중심으로 바꾸고, 미수 발생 건에 대해서만 선별적으로 상태를 갱신하도록 정리했습니다.',
           en: 'Moved card-state updates from payment responses to unpaid-balance events, so state changes occur only when a failed payment requires correction.',
@@ -2509,6 +2534,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           'When customer payment or charging failures arrived, operators could not easily inspect error codes, cross-service correlation keys, or whether a case was expected policy behavior without asking engineers for manual triage. The internal AI tool also needed to expose multiple agents safely through one chat surface and reduce the decision cost of choosing between code policy, log diagnosis, and data analysis.',
       },
       actions: [
+        localized("운영 AI 답변의 수치·식별자를 도구 결과와 대조하고, 불일치 시 재작성·근거 미확인 표시로 연결하는 검증 단계 구현", "Added checks that compare numerical claims and identifiers in operational AI responses with tool results, triggering a rewrite or an explicit unverified-evidence notice when they disagree"),
         {
           ko: '`Voltbot Crew`를 사용자가 선택할 수 있는 하나의 진입점으로 두고, 내부에서는 `AgentRouter`가 자연어 요청, 대화 맥락, 에이전트 설명, 사용자 권한을 기준으로 로그 분석·데이터 분석·법률 지원·코드 정책 같은 전문 에이전트를 자동 배정하도록 설계·구현했습니다.',
           en: 'Designed and implemented `Voltbot Crew` as a single user-facing entry point, where `AgentRouter` automatically assigns a specialist such as log diagnosis, data analysis, legal support, or code policy based on the request, conversation context, agent descriptions, and user permissions.',
@@ -2573,9 +2599,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         },
       ],
       outcomes: [
+        localized("직접 조회해 확인한 8문항으로 결론 검증 기능을 평가해 정답이 유지됨을 확인하고, 마스킹 우회·신뢰도 오탐·토큰 증가를 발견해 개선", "Checked the assistant’s conclusions against verified answers to eight questions. All eight stayed correct, and the review uncovered masking and confidence-label issues."),
         {
           ko: '9개 평가 케이스를 3회씩 실행한 비교에서 기존 루프와 답변 품질은 통계적으로 동등하게 유지하면서 정합성 평균 87.7%→100%, 토큰·비용 46% 절감, 실행 시간 10% 단축을 확인했습니다.',
-          en: 'Across 9 evaluation cases run 3 times each, preserved statistically equivalent answer quality while improving average groundedness from 87.7% to 100%, cutting token/cost by 46%, and reducing runtime by 10%.',
+          en: 'Across 9 evaluation cases run 3 times each, preserved statistically equivalent answer quality while improving average groundedness from 87.7% to 100%, cutting model call costs by 46%, and reducing runtime by 10%.',
         },
         {
           ko: '사용자가 에이전트 종류를 미리 알지 못해도 질문 내용만으로 적절한 업무 에이전트에 진입할 수 있게 만들어, 사내 AI 도구의 첫 사용 장벽을 낮췄습니다.',
@@ -2694,6 +2721,10 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           'As the service landscape grew, review standards, microservice conventions, recurring task patterns, local secret delivery, internal API usage, and release procedures became inconsistent across engineers. With development and operations owned by different teams, those inconsistencies increased the risk of missed reviews, environment drift, failed releases, and unclear access boundaries for internal tools.',
       },
       actions: [
+        localized("호환성 사전 조사와 단계별 배포로 충전·인증·회원·외부 게이트웨이·링크 서비스의 Spring Boot 4 운영 전환을 수행하고, 충전 서버의 JSON 계약 6,965건을 전환 전후 동일하게 유지", "Assessed compatibility and migrated charging, authentication, user, external gateway, and link services to Spring Boot 4 in stages. Verified that the charger server produced the same JSON output for all 6,965 reference cases."),
+        localized("취약점 검사와 제한된 버전 수정 PR 생성을 공용 CI로 표준화하고, 재검사·컴파일 검증을 자동 수정의 필수 단계로 구성", "Standardized dependency scanning and narrowly scoped version-update pull requests in shared CI, requiring rescanning and compilation before generating a fix"),
+        localized("반복되던 의존성 다운로드 실패 대응을 빌드 이미지 8종의 공통 설정으로 옮겨 서비스별 미러 설정 변경 제거", "Centralized dependency-repository selection in eight build images, removing the need for service-specific mirror configuration when downloads fail"),
+        localized("사람이 평가한 리뷰 결과를 공용 규칙에 반영하고, 여러 관점의 검증과 대용량 PR의 분할·증분 검토를 구현했습니다.", "Fed human review judgments back into shared review rules, added checks from multiple perspectives, and enabled segmented and incremental review of large pull requests."),
         {
           ko: 'LiteLLM 프록시와 LLM 기본 모델 단일 정본을 여러 MSA 저장소에 적용하고, 코드 리뷰·PR 본문 생성·보안성 검토 기안·Slack 알림을 공용 workflow에서 재사용하도록 표준화했습니다.',
           en: 'Rolled out a LiteLLM proxy and centrally managed model defaults across microservice repositories, standardizing code review, PR-description generation, security-review drafts, and Slack notifications as reusable workflows.',
@@ -2860,7 +2891,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           id: 'pricing-platform-product-matching',
           title: {
             ko: '내/외부 동일 상품 매칭',
-            en: 'External-to-Internal Product Matching',
+            en: 'Matching Marketplace Products to Zigzag’s Catalog',
           },
           description: {
             ko: '이미지 유사도, same-shop exact match, winner score를 기반으로 비교 가능한 상품군을 안정적으로 만드는 상품 매칭 영역입니다.',
@@ -2893,7 +2924,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           id: 'pricing-platform-shopping-catalog',
           title: {
             ko: '쇼핑 카탈로그 Engine Page 및 최저가 갱신 (네이버쇼핑 / 유튜브쇼핑)',
-            en: 'Catalog Engine Page and Lowest-Price Update Pipelines',
+            en: 'Product Feed and Price Updates',
           },
           description: {
             ko: '변경 상품만 추려 Engine Page, 쇼핑 피드 CSV, 동기화 데이터셋을 빠르게 생성하는 쇼핑 연동 영역입니다.',

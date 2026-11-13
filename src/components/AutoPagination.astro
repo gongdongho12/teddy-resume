@@ -71,6 +71,7 @@
 
     const pageHeight = measureMillimetres(A4_HEIGHT_MM);
     const pageMargin = measureMillimetres(PAGE_MARGIN_MM);
+    const isPrinting = window.matchMedia('print').matches;
     const containers = document.querySelectorAll<HTMLElement>('.auto-paginate:not([data-paginated="true"])');
     const oversizeItems: string[] = [];
 
@@ -176,15 +177,21 @@
         const child = queue[childIndex].element;
         const fullItemHeight = queue[childIndex].height;
         const isSectionHeading = child.tagName === 'H2';
-        const keepWithNextHeight = isSectionHeading
-          ? queue[childIndex + 1]?.height ?? 0
-          : 0;
+        const nextItem = queue[childIndex + 1];
+        const nextHeight = nextItem?.height ?? 0;
+        const keepProjectPairTogether =
+          isPrinting &&
+          !!child.dataset.a4KeepWithNext &&
+          child.dataset.a4KeepWithNext === nextItem?.element.dataset.a4Project &&
+          fullItemHeight + nextHeight <= usableHeight;
+        const keepWithNextHeight = isSectionHeading || keepProjectPairTogether ? nextHeight : 0;
         const explicitlyBreaksBefore = child.dataset.a4BreakBefore === 'true';
         const remainingHeight = usableHeight - currentHeight;
 
         if (
           currentPageItems.length > 0 &&
           !explicitlyBreaksBefore &&
+          !keepProjectPairTogether &&
           fullItemHeight > remainingHeight &&
           fullItemHeight >= minimumSplitCardHeight &&
           remainingHeight >= minimumSplitSpace
@@ -208,17 +215,10 @@
           );
         }
 
-        // Section headings stay with the first item that follows them. This avoids
-        // both a heading stranded at the bottom of a page and a forced page break
-        // that leaves otherwise usable space behind.
-        const wouldOrphanHeading =
-          isSectionHeading &&
-          currentPageItems.length > 0 &&
-          currentHeight + fullItemHeight + keepWithNextHeight > usableHeight;
+        // Reserve space for the next item when a heading or paired project needs it.
         const shouldBreak =
-          (explicitlyBreaksBefore && currentPageItems.length > 0) ||
-          wouldOrphanHeading ||
-          (currentHeight + fullItemHeight > usableHeight && currentPageItems.length > 0);
+          currentPageItems.length > 0 &&
+          (explicitlyBreaksBefore || currentHeight + fullItemHeight + keepWithNextHeight > usableHeight);
 
         if (shouldBreak) {
           pages.push(currentPageItems);

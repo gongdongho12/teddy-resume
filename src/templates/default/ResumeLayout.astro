@@ -371,7 +371,12 @@ const m = messages(lang);
                   ))
                 ) : (
                   section.projects.map((proj) => (
-                    <div data-a4-splittable="true" class="break-inside-avoid border border-gray-100 bg-white p-5 rounded shadow-sm print:shadow-none print:border-gray-200 mb-4 last:mb-0 print:p-4 print:mb-4 print:pb-4">
+                    <div
+                      data-a4-splittable="true"
+                      data-a4-keep-with-next={proj.portfolioSlug === 'voltup-hybrid-app' ? 'voltup-app-extension' : undefined}
+                      data-a4-project={proj.portfolioSlug}
+                      class="break-inside-avoid border border-gray-100 bg-white p-5 rounded shadow-sm print:shadow-none print:border-gray-200 mb-4 last:mb-0 print:p-4 print:mb-4 print:pb-4"
+                    >
                       <div data-a4-split-header class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2 border-b border-gray-100 pb-2.5">
                         <h3 class="text-[16px] print:text-[15px] font-bold text-black flex items-center gap-2">
                           {proj.company && (

@@ -16,9 +16,9 @@ summary:
     웹·앱·서버를 직접 개발하며, 사용자 흐름 전체를 살펴 과제로 잡히지 않은 문제도 찾아 해결합니다.
     배포와 서비스 연동에서 장애로 이어질 수 있는 경로는 미리 찾아 보강합니다.
   en: |
-    I’ve built software for commerce, marketing, and payments, and now build and operate EV charging services.
-    I work across web, mobile, and backend systems to find and solve problems throughout the user journey, including those that haven’t been scoped yet.
-    I look for ways deployments and service integrations can fail, then build safeguards early.
+    I’ve built software for commerce, marketing, and payments. Today, I build and operate EV charging services.
+    I work across web, mobile, and backend systems, identifying problems early, defining what needs to change, and carrying fixes through to production.
+    I look for ways deployments and integrations can fail and build safeguards before they cause outages.
 
 languages_note:
   ko: 한국어 — 네이티브
@@ -45,7 +45,7 @@ experience:
         충전 주문 경로 분리, 원격 충전 시작 안정화, Pub/Sub 종료 표준화
         스쿼드 기술 과제를 주도하고 사내 AI 도구·공용 CI·개발 문서 구축
       en: |
-        Built a multi-provider payment system that prevents duplicate charges and reconciles uncertain outcomes
+        Built a payment system that prevents duplicate charges and checks provider records when a charge’s outcome is unclear
         Built promotions, automatic charger authentication, customer-facing APIs, and the VoltUp app
         Isolated charging-order processing, stabilized remote starts, and standardized Pub/Sub shutdown
         Built internal AI tools for incident diagnosis, shared CI workflows, and engineering documentation
@@ -66,7 +66,7 @@ experience:
         상품 카탈로그 Engine Page 연동 (네이버 쇼핑 / 구글 쇼핑)
         외부 상품 가격 수집 및 타사 대비 가격 우위/열위 자동화 파이프라인
       en: |
-        Built external-to-internal product matching, dynamic pricing, and the Final Pricing API
+        Matched products from external marketplaces to Zigzag’s catalog and built dynamic pricing and the Final Pricing API
         Built product feeds and price updates for Naver Shopping and YouTube Shopping
 
   - company:
@@ -378,7 +378,7 @@ projectSections:
             DB 기반 승인권과 다층 복구 시스템을 구축하여 중복 청구를 방지하고 실패·미수 결제를 추적 가능한 상태로 복구했습니다.
           en: |
             Led the payment service from initial architecture through production delivery, evolving a single-provider flow into a modular multi-provider platform.
-            Added database-backed approval ownership and layered recovery to prevent duplicate charges and move failed or unpaid transactions into traceable, recoverable states.
+            Used database safeguards to prevent duplicate charges and built recovery workflows to track and resolve failed or unpaid transactions.
         tech:
           - Kotlin
           - Spring Boot
@@ -399,7 +399,7 @@ projectSections:
             - Led the payment service from initial design through implementation as a core engineer
             - Designed a provider strategy layer that integrates Kakao Pay, Toss Payments, and Kakao T, a South Korean ride-hailing and mobility platform, behind a common interface
             - Combined Pub/Sub dead-letter queues, retries, and recovery batches into a layered flow that isolates failures and prevents unpaid transactions from being missed
-            - Added database-backed approval ownership before payment-gateway calls, preventing duplicate approvals after lock expiry, lost responses, or provider changes; an eight-thread MySQL concurrency test confirmed a single winner per order
+            - Used MySQL to ensure only one request per order could submit a charge to the payment provider, even after lock expiry, a lost response, or a provider change. Verified the safeguard with eight concurrent requests
             - Split failures by cause — only definitive gateway declines (card declines, insufficient funds) create unpaid balances, while unknown outcomes from lost responses or timeouts stay AUTHORIZED so customers are not blocked from charging, then get settled automatically through gateway lookups
             - Separated payment confirmation from unpaid-balance bookkeeping so ledger-lock contention cannot roll back successful approvals or trigger duplicate charges; also corrected double point deductions and retroactive configuration changes during retries
             - "Queried payment providers to reconcile unpaid orders after a lost response, without submitting another charge"
@@ -984,10 +984,10 @@ projectSections:
             - Optimized 3-month tier calculation by caching monthly totals and using cumulative sums
         results:
           ko:
-            - 캐싱 도입으로 DB 부하를 임계치(70%)에서 30% 이내로 대폭 감소
+            - 월별 결제 합계 캐싱과 누적합으로 DB 부하 감소
             - API 입출력 통합 테스트 및 게이트웨이 점진적 전환으로 무중단 배포 성공
           en:
-            - Reduced database load from the 70% threshold to below 30% by caching monthly totals and using cumulative sums
+            - Reduced database load by caching monthly payment totals and using cumulative sums
             - Achieved zero-downtime deployment through API I/O integration tests and gradual gateway switching
 
       - title:

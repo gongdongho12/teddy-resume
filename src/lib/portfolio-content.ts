@@ -1309,6 +1309,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           en: 'Confirmed with data that 5,861 delayed remote-start responses per day were normal flow, then redefined the error contract between CSMS and the app server to remove two kinds of false "charging failed" alerts.',
         },
         localized("같은 충전기 메시지가 동시에 들어와 같은 행 UPDATE가 최대 1.48초 대기하던 락 경합을, 원자적 TTL 캐시로 선점한 요청만 DB를 갱신하게 바꿔 해소했습니다.", "Removed row-lock contention where simultaneous messages from one charger made updates to the same row wait up to 1.48 seconds, using an atomic TTL cache so only the first request writes to the database."),
+        localized("충전기 연결·해제를 즉시 반영하고 5분마다 다시 맞춰 앱에 통신 불가 충전기를 표시했습니다. 주기당 1만 건 상한으로 배포 직후 갱신 15만 건이 몰리는 것을 막았습니다(4개 서비스).", "Reflected charger connect and disconnect events immediately, with a reconciliation every five minutes, so the app shows chargers that are offline; capped each cycle at 10,000 updates to avoid a burst of 150,000 right after deployments (four services)."),
         {
           ko: '인수 후 충전 플랫폼 문서 38편과 증상별 런북 12종을 직접 작성해, 처음 맡는 사람도 장애 증상에서 원인까지 따라갈 수 있게 정리했습니다.',
           en: 'After taking over the platform, wrote 38 documents and 12 symptom-based runbooks so new owners can trace an incident from symptom to root cause.',
@@ -1633,6 +1634,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       actions: [
         localized("공통 계약·충전 서버·충전기 관리·배포 엔진·운영 화면을 연결해 국소 배포부터 단계별 확대, 이상 감지 시 자동 정지, 승인·롤백까지 구현하고 운영 출시", "Built a rollout engine and console that expand updates from a small group of chargers, pause when problems appear, and support approval and rollback"),
         localized("충전 중·연결 없음·설치 전 실패를 설치 뒤 이상과 구분하고, 처리 대기·재시도 단계와 제한된 자동 재시도를 설계해 배포 상태 정합성 보강", "Deferred updates for chargers in use or offline, retried failed update attempts within set limits, and handled faults after installation separately"),
+        localized("실제 설치(약 20분)가 요청 만료(15분)보다 길어 '만료'로 남던 충전기를, 설치 완료 보고와 목표 버전 부팅 기준으로 판정하도록 바꿔 운영자의 수기 확인을 없앴습니다.", "Fixed chargers left as 'expired' because installation (about 20 minutes) outlasted the 15-minute request timeout: completion is now judged by the install report plus a boot on the target version, removing manual checks by operators."),
       ],
       engineeringViews: [
         localized("설치 보고와 목표 버전 부팅을 함께 확인해 완료를 판정하고, 두 신호의 도착 순서가 바뀌는 경우를 처리했습니다.", "Marked an update complete only after the charger reported installation and booted into the target firmware, regardless of which signal arrived first."),
@@ -2422,6 +2424,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
       },
       actions: [
         localized("회원카드 재동기화를 제휴 충전 사업자 전체로 확대하고 사업자별 진행 기록·재시도로 중단 후 재개 가능한 복구 흐름 구현", "Extended card-status reconciliation to partner charge-point operators, with per-operator checkpoints and retries so interrupted runs can resume"),
+        localized("ID 목록을 쿼리 파라미터 1,000개 이상으로 보내던 조회 5건이 Spring Boot 4 한도에 걸려 운영 배포가 롤백되자, 본문으로 받는 조회 API를 짝으로 추가하고 계약 테스트로 고정해 당일 재배포했습니다.", "After a production rollout was rolled back because five lookups sent more than 1,000 IDs as query parameters, exceeding a Spring Boot 4 limit, added request-body search endpoints alongside them, locked them with contract tests, and redeployed the same day."),
         {
           ko: '카드 상태 업데이트 기준을 결제 응답 중심에서 결제 미수 이벤트 중심으로 바꾸고, 미수 발생 건에 대해서만 선별적으로 상태를 갱신하도록 정리했습니다.',
           en: 'Moved card-state updates from payment responses to unpaid-balance events, so state changes occur only when a failed payment requires correction.',

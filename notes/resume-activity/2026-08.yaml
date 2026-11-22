@@ -110,7 +110,7 @@ entries:
 
   - id: 2026-08-tas-event-loop-stall
     period: 2026-08-19..2026-08-19
-    status: candidate
+    status: skip
     delivery: merged
     area: grid-squad
     headline: 충전기 입고검수 도구(TAS) stg 접속 불안정 원인 규명과 이벤트루프 스톨 해소
@@ -124,7 +124,7 @@ entries:
       commits: []
     resume_targets: []
     reflected_at:
-    skip_reason:
+    skip_reason: 사내 도구 한 건이라 이력서 가치가 낮아 제외 (2026-11-22 사용자 승인)
 
   - id: 2026-08-voltup-order-separation
     period: 2026-08-19..2026-08-31

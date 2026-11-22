@@ -144,7 +144,7 @@ entries:
 
   - id: 2026-09-messaging-text-universal-vendor
     period: 2026-07-30..2026-09-09
-    status: candidate
+    status: skip
     delivery: merged
     area: messaging
     headline: 문자 발송 유형 자동 판정(TEXT) — 본문 길이로 SMS/LMS 결정, 발송 실패·수기 대응 제거
@@ -157,7 +157,7 @@ entries:
       commits: []
     resume_targets: []
     reflected_at:
-    skip_reason:
+    skip_reason: 규모가 작고 U+ VIP 프로젝트의 발송 불릿과 겹쳐 제외 (2026-11-22 사용자 승인)
 
   - id: 2026-09-b2b-approval-login-gate
     period: 2026-09-15..2026-09-16

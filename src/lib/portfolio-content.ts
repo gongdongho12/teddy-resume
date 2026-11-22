@@ -1177,6 +1177,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: 'VoC 대응을 위해 운영자가 미수는 그대로 둔 채 충전 차단만 해제할 수 있는 제외 플래그를 billing·앱 서버·운영 콘솔에 추가하고, 카드사 거절 같은 일상적 실패가 ERROR로 잡히던 로그 레벨을 벤더별로 재분류해 진짜 시스템 오류만 경보에 남겼습니다.',
           en: 'For customer-support cases, added an exclusion flag across billing, the app server, and the operations console that lifts the charging block while keeping the unpaid balance, and reclassified per-provider log levels so everyday declines no longer raise ERROR alerts and only real system errors do.',
         },
+        localized("요금 오적용 신고를 로그·감사 기록·운영 DB 대조로 추적해 원인을 코드가 아닌 구역 편성 데이터로 확정하고, 대상 기간 전수를 분류해 오적용 220건·893,812원을 산정했습니다.", "Traced a reported pricing error through logs, audit records, and production data, confirmed the cause was zone-assignment master data rather than code, and classified every order in the affected period to quantify 220 mischarged sessions totaling KRW 893,812."),
         localized("미결제 점검 배치에 실제 승인 조회를 연결해 응답 유실로 남은 결제 상태를 자동 복구하고, 결과가 미확정인 건은 재승인 없이 운영 판단 대상으로 보존", "Queried payment providers to reconcile unpaid orders after a lost response, without submitting another charge"),
       ],
       engineeringViews: [
@@ -1307,6 +1308,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
           ko: '원격 시작 응답 지연 하루 5,861건이 실패가 아닌 평소 흐름임을 데이터로 확인하고, CSMS와 앱 서버 사이의 오류 기준을 다시 정해 고객에게 잘못 가던 "충전 시작 실패" 알림 2종을 없앴습니다.',
           en: 'Confirmed with data that 5,861 delayed remote-start responses per day were normal flow, then redefined the error contract between CSMS and the app server to remove two kinds of false "charging failed" alerts.',
         },
+        localized("같은 충전기 메시지가 동시에 들어와 같은 행 UPDATE가 최대 1.48초 대기하던 락 경합을, 원자적 TTL 캐시로 선점한 요청만 DB를 갱신하게 바꿔 해소했습니다.", "Removed row-lock contention where simultaneous messages from one charger made updates to the same row wait up to 1.48 seconds, using an atomic TTL cache so only the first request writes to the database."),
         {
           ko: '인수 후 충전 플랫폼 문서 38편과 증상별 런북 12종을 직접 작성해, 처음 맡는 사람도 장애 증상에서 원인까지 따라갈 수 있게 정리했습니다.',
           en: 'After taking over the platform, wrote 38 documents and 12 symptom-based runbooks so new owners can trace an incident from symptom to root cause.',
@@ -2724,6 +2726,7 @@ export const kakaoPiccomaPortfolio: PortfolioContent = {
         localized("호환성 사전 조사와 단계별 배포로 충전·인증·회원·외부 게이트웨이·링크 서비스의 Spring Boot 4 운영 전환을 수행하고, 충전 서버의 JSON 계약 6,965건을 전환 전후 동일하게 유지", "Assessed compatibility and migrated charging, authentication, user, external gateway, and link services to Spring Boot 4 in stages. Verified that the charger server produced the same JSON output for all 6,965 reference cases."),
         localized("취약점 검사와 제한된 버전 수정 PR 생성을 공용 CI로 표준화하고, 재검사·컴파일 검증을 자동 수정의 필수 단계로 구성", "Standardized dependency scanning and narrowly scoped version-update pull requests in shared CI, requiring rescanning and compilation before generating a fix"),
         localized("반복되던 의존성 다운로드 실패 대응을 빌드 이미지 8종의 공통 설정으로 옮겨 서비스별 미러 설정 변경 제거", "Centralized dependency-repository selection in eight build images, removing the need for service-specific mirror configuration when downloads fail"),
+        localized("AI 코드리뷰를 사람 판정 기준 평가 도구로 고쳐 나가 확인 실행 3회 연속 오탐 0건(0/12) 달성했습니다.", "Tuned the AI code review against human judgments with an evaluation tool, reaching zero false positives (0 of 12) in three consecutive confirmation runs."),
         localized("사람이 평가한 리뷰 결과를 공용 규칙에 반영하고, 여러 관점의 검증과 대용량 PR의 분할·증분 검토를 구현했습니다.", "Fed human review judgments back into shared review rules, added checks from multiple perspectives, and enabled segmented and incremental review of large pull requests."),
         {
           ko: 'LiteLLM 프록시와 LLM 기본 모델 단일 정본을 여러 MSA 저장소에 적용하고, 코드 리뷰·PR 본문 생성·보안성 검토 기안·Slack 알림을 공용 workflow에서 재사용하도록 표준화했습니다.',

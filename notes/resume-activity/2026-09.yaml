@@ -128,7 +128,7 @@ entries:
 
   - id: 2026-09-tariff-zone-remap-misapplication
     period: 2026-09-09..2026-09-09
-    status: candidate
+    status: reflected
     delivery: merged
     area: data-integrity
     headline: 프로모션 요금 오적용 원인 규명 — 코드 무결함 입증 후 마스터 데이터 편성 문제로 확정, 오적용 전수 정량화
@@ -139,7 +139,7 @@ entries:
       prs: []
       commits: []
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-11-22
     skip_reason:
 
   - id: 2026-09-messaging-text-universal-vendor
@@ -326,7 +326,7 @@ entries:
 
   - id: 2026-09-csms-health-check-throttle-lock
     period: 2026-09-18..2026-09-18
-    status: candidate
+    status: reflected
     delivery: merged
     area: backend
     headline: CSMS 헬스체크 스로틀 원자적 캐시 전환 — 동일 충전기 동시 프레임 DB 행 락 경합 해소
@@ -338,7 +338,7 @@ entries:
       commits:
         - 1d3ec20c
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-11-22
     skip_reason:
 
   - id: 2026-09-charger-charging-count-cache

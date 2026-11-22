@@ -12,13 +12,13 @@ contact:
 
 summary:
   ko: |
-    커머스·마케팅·결제 시스템을 개발해 왔고, 현재는 전기차 충전 서비스를 개발하고 운영합니다.
-    웹·앱·서버를 직접 개발하며, 사용자 흐름 전체를 살펴 과제로 잡히지 않은 문제도 찾아 해결합니다.
-    배포와 서비스 연동에서 장애로 이어질 수 있는 경로는 미리 찾아 보강합니다.
+    결제·쿠폰·포인트처럼 돈이 오가는 시스템과 커머스 가격 데이터 파이프라인을 Kotlin·Spring으로 5년 8개월(2021~) 개발해 온 백엔드 엔지니어입니다.
+    중복 청구·응답 유실·미수처럼 정합성이 깨지는 경로를 먼저 찾아 막고, 실패해도 스스로 복구되는 구조로 운영합니다.
+    전기차 충전 서비스에서 결제 시스템을 초기 설계부터 운영까지 맡았고, 지금은 충전 플랫폼을 담당하며 사내 AI 에이전트와 코드리뷰 자동화도 직접 만들어 운영합니다.
   en: |
-    I’ve built software for commerce, marketing, and payments. Today, I build and operate EV charging services.
-    I work across web, mobile, and backend systems, identifying problems early, defining what needs to change, and carrying fixes through to production.
-    I look for ways deployments and integrations can fail and build safeguards before they cause outages.
+    Kotlin/Spring backend engineer since 2021, building payment, coupon, and points systems and pricing pipelines.
+    I look for the paths where money data can go wrong, such as duplicate charges, lost responses, and unpaid balances, close them first, and design systems that recover on their own after failures.
+    At VoltUp, an EV charging service, I owned the payment system from initial design through operations. I now own the charging platform and also build and run internal AI agents and automated code review.
 
 languages_note:
   ko: 한국어 — 네이티브
@@ -36,8 +36,8 @@ experience:
       en: Software Engineer
     location_en: Seoul, South Korea
     descriptionLead:
-      ko: 카카오모빌리티와 LG유플러스가 함께 운영하는 전기차 충전 서비스 JV
-      en: EV charging joint venture between LG U+ and Kakao Mobility.
+      ko: LG유플러스의 전기차 충전 서비스
+      en: EV charging service operated by LG U+.
     description:
       ko: |
         DB 승인권·실제 승인 조회로 중복 결제 방지 및 미수 복구
@@ -64,10 +64,10 @@ experience:
       ko: |
         파이널 프라이싱 서비스 및 상품 매칭 / 지그재그 멤버십 신규개발 및 마이그레이션
         상품 카탈로그 Engine Page 연동 (네이버 쇼핑 / 구글 쇼핑)
-        외부 상품 가격 수집 및 타사 대비 가격 우위/열위 자동화 파이프라인
+        Spring Batch·Kafka 기반 외부 가격 수집·가격 우열위 자동화 파이프라인
       en: |
         Matched products from external marketplaces to Zigzag’s catalog and built dynamic pricing and the Final Pricing API
-        Built product feeds and price updates for Naver Shopping and YouTube Shopping
+        Built Spring Batch/Kafka feeds and price updates for Naver and YouTube Shopping
 
   - company:
       ko: 스토어링크
@@ -140,11 +140,12 @@ skillGroups:
   - label: Framework
     body_ko: |
       Spring Boot / Spring Batch
+      JPA / QueryDSL / WebFlux
       React.js / Next.js
-      Flutter
-      Express.js
+      Flutter / Express.js
     body_en: |
       Spring Boot / Spring Batch
+      JPA / QueryDSL / WebFlux
       React.js / Next.js
       Flutter (Hybrid WebView)
   - label: Infra & DB
@@ -152,25 +153,24 @@ skillGroups:
       MySQL / Redis
       GCP Pub/Sub / Cloud SQL / Kafka
       Docker / K8S / Istio / ArgoCD
+      Grafana / Sentry / OpenSearch
       OpenTelemetry / OCPP 1.6·2.1
     body_en: |
       MySQL / Redis
       GCP Pub/Sub / Cloud SQL / Kafka
       Docker / Kubernetes / Istio / ArgoCD
+      Grafana / Sentry / OpenSearch
       OpenTelemetry / OCPP 1.6·2.1
   - label: CI/CD & DevOps
     body_ko: |
       Jenkins / GitHub Actions
-      Fastlane
-      Firebase App Distribution
+      Fastlane / Firebase App Distribution
       GCS Build Cache
       ProGuard / R8
     body_en: |
       Jenkins / GitHub Actions
-      Fastlane
-      Firebase App Distribution
-      GCS remote Gradle cache
-      ProGuard / R8 policies
+      Fastlane / Firebase App Distribution
+      GCS Gradle cache / R8 policies
   - label: DX / AI workflow
     body_ko: |
       GitHub Copilot
@@ -395,6 +395,7 @@ projectSections:
             - 결제 확정 트랜잭션과 미수 부기를 분리해 부기 락 경합이 승인 성공을 롤백해 이중 청구로 이어지는 경로를 차단하고, 미수 재결제의 포인트 이중 차감·설정 소급 문제를 함께 교정
             - "미결제 점검 배치에 실제 승인 조회를 연결해 응답 유실로 남은 결제 상태를 자동 복구하고, 결과가 미확정인 건은 재승인 없이 운영 판단 대상으로 보존"
             - 같은 결제에 요청이 동시에 들어올 때 기다리던 요청이 "실패"로 잘못 안내되던 문제를 해결하고, 먼저 진행 중인 결제의 실제 상태를 그대로 알려 주도록 변경
+            - 요금 오적용 신고를 로그·감사 기록·운영 DB 대조로 추적해 원인을 코드가 아닌 구역 편성 데이터로 확정하고, 대상 기간 전수를 분류해 오적용 220건·893,812원을 산정
           en:
             - Led the payment service from initial design through implementation as a core engineer
             - Designed a provider strategy layer that integrates Kakao Pay, Toss Payments, and Kakao T, a South Korean ride-hailing and mobility platform, behind a common interface
@@ -404,6 +405,7 @@ projectSections:
             - Separated payment confirmation from unpaid-balance bookkeeping so ledger-lock contention cannot roll back successful approvals or trigger duplicate charges; also corrected double point deductions and retroactive configuration changes during retries
             - "Queried payment providers to reconcile unpaid orders after a lost response, without submitting another charge"
             - Fixed concurrent payment requests being wrongly reported as failed; waiting requests now receive the actual status of the payment already in progress
+            - Traced a reported pricing error through logs, audit records, and production data, confirmed the cause was zone-assignment master data rather than code, and classified every order in the affected period to quantify 220 mischarged sessions totaling KRW 893,812
 
       - title:
           ko: 충전 플랫폼 운영 안정화 및 분산 트레이싱 적용
@@ -431,11 +433,13 @@ projectSections:
             - 충전 주문 처리를 별도 서비스로 분리해, 앱 부가 기능에 장애가 나도 충전 시작에는 영향이 없도록 격리 (2026.09 운영 적용)
             - "원격 충전 시작 실패를 원인별 4가지로 분류하고 하나씩 해결: 비정상 메시지 격리, 동시 요청 충돌 해소, 재전송 폭주 차단"
             - 원격 시작 응답 지연 하루 5,861건이 실패가 아닌 평소 흐름임을 데이터로 확인하고 서버 간 오류 기준을 다시 정해, 고객에게 잘못 가던 "충전 시작 실패" 알림 제거
+            - 같은 충전기 메시지가 동시에 들어와 같은 행 UPDATE가 최대 1.48초 대기하던 락 경합을, 원자적 TTL 캐시로 선점한 요청만 DB를 갱신하게 바꿔 해소
             - 인수 후 충전 플랫폼 문서 38편과 증상별 런북 12종을 직접 작성해, 처음 맡는 사람도 장애 증상에서 원인까지 따라갈 수 있게 정리
           en:
             - Moved charging-order processing into a dedicated service so outages in non-essential app features no longer affect charging starts (in production since Sep 2026)
             - "Traced remote-start failures to four causes and fixed each: isolated malformed charger messages, resolved conflicts between simultaneous requests, and blocked retransmission floods"
             - Confirmed with data that 5,861 delayed remote-start responses per day were normal flow rather than failures, then redefined how servers report errors so customers stop receiving false "charging failed" alerts
+            - Removed row-lock contention where simultaneous messages from one charger made updates to the same row wait up to 1.48 seconds, using an atomic TTL cache so only the first request writes to the database
             - After taking over the platform, wrote 38 documents and 12 symptom-based runbooks so new owners can trace an incident from symptom to root cause
 
       - title:
@@ -852,6 +856,7 @@ projectSections:
         results:
           ko:
             - "호환성 사전 조사와 단계별 배포로 충전·인증·회원·외부 게이트웨이·링크 서비스의 Spring Boot 4 운영 전환을 수행하고, 충전 서버의 JSON 계약 6,965건을 전환 전후 동일하게 유지"
+            - AI 코드리뷰를 사람 판정 기준 평가 도구로 고쳐 나가 확인 실행 3회 연속 오탐 0건(0/12) 달성
             - "취약점 검사와 제한된 버전 수정 PR 생성을 공용 CI로 표준화하고, 재검사·컴파일 검증을 자동 수정의 필수 단계로 구성"
             - "반복되던 의존성 다운로드 실패 대응을 빌드 이미지 8종의 공통 설정으로 옮겨 서비스별 미러 설정 변경 제거"
             - 정상 노드 드레인·롤링 배포 중 신규 메시지 수신과 처리 중 작업 유실 창을 제거하고 4개 서비스에 재사용 가능한 종료 규약 확립
@@ -860,6 +865,7 @@ projectSections:
             - 모바일 배포의 인증 키 관리 부담과 불필요한 실패 요인을 줄여 릴리즈 안정성 개선
           en:
             - "Assessed compatibility and migrated charging, authentication, user, external gateway, and link services to Spring Boot 4 in stages. Verified that the charger server produced the same JSON output for all 6,965 reference cases."
+            - Tuned the AI code review against human judgments with an evaluation tool, reaching zero false positives (0 of 12) in three consecutive confirmation runs
             - "Standardized dependency scanning and narrowly scoped version-update pull requests in shared CI, requiring rescanning and compilation before generating a fix"
             - "Centralized dependency-repository selection in eight build images, removing the need for service-specific mirror configuration when downloads fail"
             - Standardized shutdown across four services so consumers stop taking new messages, finish active work, and allow unfinished messages to be redelivered

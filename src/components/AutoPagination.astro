@@ -134,6 +134,11 @@
           lead.querySelector('[data-a4-split-tail]')?.remove();
           lead.dataset.a4SplitPart = 'lead';
           lead.style.marginBottom = '0';
+          // Leave the bottom open so the two parts read as one box continuing on the next page.
+          lead.style.borderBottom = 'none';
+          lead.style.borderBottomLeftRadius = '0';
+          lead.style.borderBottomRightRadius = '0';
+          lead.style.boxShadow = 'none';
           if (measureCandidate(lead) > availableHeight) continue;
 
           const rest = card.cloneNode(true) as HTMLElement;
@@ -168,15 +173,20 @@
             restAside.setAttribute('aria-hidden', 'true');
           }
           rest.dataset.a4SplitPart = 'rest';
-          // Put the label before the period, not in the title, so long titles keep
-          // their original line breaks on the continuation page.
-          const header = rest.querySelector('[data-a4-split-header]');
-          const period = header?.querySelector(':scope > span:last-child');
-          if (period) {
-            const label = document.createElement('span');
-            label.className = 'mr-1.5 text-[11px] font-semibold text-gray-400';
-            label.textContent = isKorean ? '(계속)' : '(continued)';
-            period.prepend(label);
+          // Open top, and a small muted label instead of a second title bar, so the
+          // continuation looks like the same box rather than a new card.
+          rest.style.borderTop = 'none';
+          rest.style.borderTopLeftRadius = '0';
+          rest.style.borderTopRightRadius = '0';
+          rest.style.boxShadow = 'none';
+          const header = rest.querySelector<HTMLElement>('[data-a4-split-header]');
+          if (header) {
+            const title = (header.querySelector('h3')?.textContent || '').replace(/\s+/g, ' ').trim();
+            const label = document.createElement('p');
+            label.className = 'text-[11px] font-semibold text-gray-400';
+            label.textContent = `${title} ${isKorean ? '(계속)' : '(continued)'}`;
+            header.className = 'mb-2';
+            header.replaceChildren(label);
           }
           return { lead, rest };
         }

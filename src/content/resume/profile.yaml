@@ -390,7 +390,7 @@ projectSections:
             - 결제 서비스를 프로젝트 초기 설계부터 구현까지 전담하며 핵심 개발자로 주도
             - 추상 클래스 기반 벤더 전략 패턴을 설계하여 카카오페이·토스페이먼츠·카카오T를 수용하는 멀티 벤더 결제 아키텍처 구축
             - GCP Pub/Sub DLQ, 영구 미수 처리, 재시도·보완 배치를 연결한 다단계 복구 흐름으로 실패 이벤트 격리와 미수 처리 누락 방지
-            - PG 승인 직전 결제 상태를 `AUTHORIZED`로 조건부 전이하는 DB 승인권을 설계해 Redis 락 만료·응답 유실·벤더 변경 상황에서도 재승인을 fail-closed로 차단; 동일 주문 8스레드 경합에서 1건만 선점하는 MySQL 동시성 테스트로 검증
+            - PG 승인 직전 결제 상태를 AUTHORIZED로 조건부 전이하는 DB 승인권을 설계해 Redis 락 만료·응답 유실·벤더 변경 상황에서도 재승인을 fail-closed로 차단; 동일 주문 8스레드 경합에서 1건만 선점하는 MySQL 동시성 테스트로 검증
             - 결제 실패를 원인별로 분리 — PG가 거절을 확정한 건(카드사 거절·잔액 부족)만 미수로 기록하고, 응답 유실·타임아웃처럼 결과를 모르는 시스템 사유는 AUTHORIZED로 유지해 고객에게 미수·충전 차단이 걸리지 않게 한 뒤 PG 실승인 조회로 자동 확정
             - 결제 확정 트랜잭션과 미수 부기를 분리해 부기 락 경합이 승인 성공을 롤백해 이중 청구로 이어지는 경로를 차단하고, 미수 재결제의 포인트 이중 차감·설정 소급 문제를 함께 교정
             - "미결제 점검 배치에 실제 승인 조회를 연결해 응답 유실로 남은 결제 상태를 자동 복구하고, 결과가 미확정인 건은 재승인 없이 운영 판단 대상으로 보존"
@@ -434,12 +434,14 @@ projectSections:
             - "원격 충전 시작 실패를 원인별 4가지로 분류하고 하나씩 해결: 비정상 메시지 격리, 동시 요청 충돌 해소, 재전송 폭주 차단"
             - 원격 시작 응답 지연 하루 5,861건이 실패가 아닌 평소 흐름임을 데이터로 확인하고 서버 간 오류 기준을 다시 정해, 고객에게 잘못 가던 "충전 시작 실패" 알림 제거
             - 같은 충전기 메시지가 동시에 들어와 같은 행 UPDATE가 최대 1.48초 대기하던 락 경합을, 원자적 TTL 캐시로 선점한 요청만 DB를 갱신하게 바꿔 해소
+            - "충전기 연결·해제를 즉시 반영하고 5분마다 다시 맞춰 앱에 통신 불가 충전기를 표시하고, 주기당 1만 건 상한으로 배포 직후 갱신 15만 건이 몰리는 것을 방지 (4개 서비스)"
             - 인수 후 충전 플랫폼 문서 38편과 증상별 런북 12종을 직접 작성해, 처음 맡는 사람도 장애 증상에서 원인까지 따라갈 수 있게 정리
           en:
             - Moved charging-order processing into a dedicated service so outages in non-essential app features no longer affect charging starts (in production since Sep 2026)
             - "Traced remote-start failures to four causes and fixed each: isolated malformed charger messages, resolved conflicts between simultaneous requests, and blocked retransmission floods"
             - Confirmed with data that 5,861 delayed remote-start responses per day were normal flow rather than failures, then redefined how servers report errors so customers stop receiving false "charging failed" alerts
             - Removed row-lock contention where simultaneous messages from one charger made updates to the same row wait up to 1.48 seconds, using an atomic TTL cache so only the first request writes to the database
+            - "Reflected charger connect and disconnect events immediately, with a reconciliation every five minutes, so the app shows chargers that are offline; capped each cycle at 10,000 updates to avoid a burst of 150,000 right after deployments (four services)"
             - After taking over the platform, wrote 38 documents and 12 symptom-based runbooks so new owners can trace an incident from symptom to root cause
 
       - title:
@@ -520,9 +522,11 @@ projectSections:
           ko:
             - "공통 계약·충전 서버·충전기 관리·배포 엔진·운영 화면을 연결해 국소 배포부터 단계별 확대, 이상 감지 시 자동 정지, 승인·롤백까지 구현하고 운영 출시"
             - "충전 중·연결 없음·설치 전 실패를 설치 뒤 이상과 구분하고, 처리 대기·재시도 단계와 제한된 자동 재시도를 설계해 배포 상태 정합성 보강"
+            - "실제 설치(약 20분)가 요청 만료(15분)보다 길어 '만료'로 남던 충전기를, 설치 완료 보고와 목표 버전 부팅 기준으로 판정하도록 바꿔 운영자의 수기 확인을 없앰"
           en:
             - "Built a rollout engine and console that expand updates from a small group of chargers, pause when problems appear, and support approval and rollback"
             - "Deferred updates for chargers in use or offline, retried failed update attempts within set limits, and handled faults after installation separately"
+            - "Fixed chargers left as 'expired' because installation (about 20 minutes) outlasted the 15-minute request timeout: completion is now judged by the install report plus a boot on the target version, removing manual checks by operators"
 
       - title:
           ko: 통합 프로모션(쿠폰/포인트) 플랫폼 구축 및 고도화
@@ -786,6 +790,7 @@ projectSections:
             - "회원카드 재동기화를 제휴 충전 사업자 전체로 확대하고 사업자별 진행 기록·재시도로 중단 후 재개 가능한 복구 흐름 구현"
             - 카카오T 파트너 로밍 배치 종료 시 실행 작업보다 Redis 연결이 먼저 닫히던 순서를 교정하고, 60~75분 충전기 동기화 잡을 중복 실행 없이 상주형으로 전환할 수 있는 opt-in 스케줄러와 종료 가드를 구성
             - 두 달간 전부 실패하던 환경부 충전이력 수집 배치를 복구하고, 이후 실패가 바로 드러나도록 모니터링 추가
+            - "ID 목록을 쿼리 파라미터 1,000개 이상으로 보내던 조회 5건이 Spring Boot 4 한도에 걸려 운영 배포가 롤백되자, 본문으로 받는 조회 API를 짝으로 추가하고 계약 테스트로 고정해 당일 재배포"
           en:
             - Changed public-roaming card-state updates from payment responses to unpaid-balance events so only relevant failures trigger state changes
             - Simplified the roaming card-state processing path and consolidated billing lookups to improve throughput
@@ -794,17 +799,14 @@ projectSections:
             - "Extended card-status reconciliation to partner charge-point operators, with per-operator checkpoints and retries so interrupted runs can resume"
             - Kept Redis available until active Kakao T charger sync jobs finished and added a scheduler operators could enable during migration
             - Restored a government charging-history collection batch that had failed completely for two months, and added monitoring so future failures surface immediately
+            - "After a production rollout was rolled back because five lookups sent more than 1,000 IDs as query parameters, exceeding a Spring Boot 4 limit, added request-body search endpoints alongside them, locked them with contract tests, and redeployed the same day"
         results:
           ko:
-            - 카드 상태 업데이트 로직 재설계로 데이터 정확성 향상
-            - 변환 오버헤드 제거 및 통합 조회로 처리 성능 개선
-            - 이벤트 누락이나 일시 장애 이후에도 회원카드 기준 데이터를 주기적으로 복구할 수 있는 운영 안전망 확보
-            - 장시간 배치의 강제 종료·스케줄 누락 위험을 줄이고 기존 CronJob과 경합 없이 단계적으로 전환할 수 있는 기반 마련
+            - "월 단위 전체 재동기화로, 이벤트 누락이 생겨도(2026.08 누락 196건 사례) 수기 보정 없이 다음 주기에 자동 복구"
+            - "60~75분 걸리는 충전기 동기화 배치를 중복 실행 없이 기존 CronJob에서 단계적으로 전환할 수 있게 구성"
           en:
-            - Improved data accuracy by aligning card-state changes with unpaid-balance events
-            - Reduced processing overhead by eliminating serialization and consolidating billing queries
-            - Added an operational safety net that periodically restores member-card baseline data after missed events or transient failures
-            - Reduced forced-shutdown and missed-schedule risk while allowing a staged migration without racing existing CronJobs
+            - "Monthly full resynchronization now absorbs missed events (such as 196 missed updates in Aug 2026) in the next cycle without manual correction"
+            - "Made 60–75-minute charger-sync batches migratable from the existing CronJob in stages without overlapping runs"
 
       - title:
           ko: 개발 생산성 자동화 및 DevOps 개선

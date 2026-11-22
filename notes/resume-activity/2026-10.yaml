@@ -51,7 +51,7 @@ entries:
     skip_reason:
   - id: 2026-10-roaming-govern-user-card-partner-cpo-recovery
     period: 2026-10-02..2026-10-15
-    status: candidate
+    status: reflected
     delivery: deployed
     area: roaming
     headline: 환경부 회원카드 월 보간을 제휴 CPO 전체로 확대 — CPO 단위 진행 기록으로 중단 지점부터 재개
@@ -70,7 +70,7 @@ entries:
         - 2b286c2
         - 2e05076
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-11-22
     skip_reason:
   - id: 2026-10-csms-reconnect-drain-pacing
     period: 2026-10-07..2026-10-13
@@ -99,7 +99,7 @@ entries:
     skip_reason:
   - id: 2026-10-fota-done-judgement-fix
     period: 2026-10-07..2026-10-12
-    status: candidate
+    status: reflected
     delivery: deployed
     area: csms
     headline: FOTA 완료 판정 정합성 복구 — 만료로 남던 설치 완료 충전기를 Installed+목표 버전 부팅 기준으로 완료 처리
@@ -113,7 +113,7 @@ entries:
         - aff4cb2d8
         - 3b2676668
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-11-22
     skip_reason:
   - id: 2026-10-csms-gw-websocket-gateway
     period: 2026-10-07..2026-10-27
@@ -306,7 +306,7 @@ entries:
     skip_reason:
   - id: 2026-10-charger-connection-state
     period: 2026-10-26..2026-10-26
-    status: candidate
+    status: reflected
     delivery: merged
     area: csms
     headline: 충전기 통신 상태를 앱까지 반영 — csms 연결·해제 이벤트 → charger-service 일괄 저장 → 앱에서 통신 불가 충전기 표시
@@ -324,11 +324,11 @@ entries:
         - 2b49229
         - d937c645a
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-11-22
     skip_reason:
   - id: 2026-10-unpaid-alert-ready-orphan-auto-repair
     period: 2026-10-22..2026-10-27
-    status: candidate
+    status: reflected
     delivery: merged
     area: billing
     headline: 미결제 알림 배치에 결제 READY 고착 건 자동 복구 연동 — 승인 응답 유실 주문을 PG 실승인 여부로 확정해 정합 처리(prod 10/27)
@@ -341,11 +341,11 @@ entries:
         - https://github.com/lgvoltup/argocd-gke-service/pull/126
       commits: []
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-11-22
     skip_reason:
   - id: 2026-10-roaming-post-search-query-limit
     period: 2026-10-28..2026-10-29
-    status: candidate
+    status: reflected
     delivery: deployed
     area: roaming
     headline: 로밍 ID 목록 다건 조회 5건에 POST /search 짝 추가 — Boot 4 쿼리 파라미터 1000개 한도로 롤백된 prod 배포를 구조적으로 해소
@@ -360,11 +360,11 @@ entries:
         - 0b78d53
         - 34646a4
     resume_targets: []
-    reflected_at:
+    reflected_at: 2026-11-22
     skip_reason:
   - id: 2026-10-location-coordinate-log-masking
     period: 2026-10-29..2026-10-29
-    status: candidate
+    status: skip
     delivery: deployed
     area: feapp
     headline: 위치 좌표(위도·경도) 로그·알림 마스킹 — 서버 웹/MQ 로그·슬로우 프로세스 Slack 알림·앱 클라이언트 로그·Sentry 까지 한 번에
@@ -380,7 +380,7 @@ entries:
         - 86b840e9b
     resume_targets: []
     reflected_at:
-    skip_reason:
+    skip_reason: 인증 로그 마스킹 불릿과 성격이 겹쳐 제외 (2026-11-22 사용자 승인)
   - id: 2026-10-dependency-cve-check-ci
     period: 2026-10-29..2026-10-30
     status: reflected

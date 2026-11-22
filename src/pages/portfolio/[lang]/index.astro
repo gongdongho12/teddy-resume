@@ -34,6 +34,7 @@ const portfolioLangLinks = SUPPORTED_LANGS.map((candidate) => ({
 const orderedSlugs = [
   'multi-pg-payment',
   'charging-platform-reliability',
+  'fota-staged-rollout',
   'charger-gateway-scale',
   'observability-contract',
   'kakao-t-integration',
@@ -41,7 +42,7 @@ const orderedSlugs = [
   'promotion-platform',
   'uplus-vip-coupon-ops',
   'voltup-hybrid-app',
-  'mobile-app-extension',
+  'voltup-app-extension',
   'voltbot-agent-platform',
   'roaming-reliability',
   'devops-automation',
@@ -57,7 +58,7 @@ const projects = [...content.projects].sort(
   (a, b) => getProjectOrder(a.slug) - getProjectOrder(b.slug),
 );
 const hasDiagrams = projects.some((project) => (project.diagrams?.length ?? 0) > 0);
-const primaryStack = ['Kotlin', 'Spring Boot', 'MySQL'];
+const primaryStack = ['Kotlin', 'Spring Boot', 'MySQL', 'TypeScript', 'React'];
 
 const roleFocus = content.roleFocus.map((item) => portfolioText(item, lang));
 const engineeringThemes = [
@@ -394,7 +395,7 @@ const sectionLabels =
         <section class="min-w-0 space-y-6">
         {projects.map((project, index) => (
           <article id={project.slug} class="grid min-w-0 gap-6 scroll-mt-8 rounded-[1.75rem] border border-slate-900/10 bg-white/78 p-4 shadow-[0_28px_80px_-52px_rgba(15,23,42,0.38)] backdrop-blur-sm [overflow-wrap:anywhere] sm:p-6 lg:grid-cols-[7rem_minmax(0,1fr)] lg:p-7">
-            <div class="flex min-w-0 items-start gap-3 lg:block">
+            <div id={project.legacyAnchor} class="flex min-w-0 items-start gap-3 scroll-mt-8 lg:block">
               <span class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-800">
                 {lang === 'ko' ? 'Project' : 'Project'}
               </span>

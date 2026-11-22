@@ -222,7 +222,11 @@ const m = messages(lang);
               </h2>
               
               {section.projects.map((proj) => (
-                <div class="bg-gray-50 rounded-xl p-6 border border-gray-100 shadow-sm mb-8 last:mb-0">
+                <div
+                  data-a4-keep-with-next={proj.portfolioSlug === 'voltup-hybrid-app' ? 'voltup-app-extension' : undefined}
+                  data-a4-project={proj.portfolioSlug}
+                  class="bg-gray-50 rounded-xl p-6 border border-gray-100 shadow-sm mb-8 last:mb-0"
+                >
                     <div class="break-inside-avoid flex flex-wrap items-center justify-between gap-2 mb-3">
                       <h3 class="text-[16px] font-bold text-gray-900 flex items-center gap-3">
                       {proj.company && (

@@ -879,6 +879,7 @@ projectSections:
     period:
       ko: 2022.06 ~ 2024.09
       en: Jun 2022 — Sep 2024
+    pageBreakBefore: true
     projects:
       - title:
           ko: 모바일 IP 대역 프록시 인프라 및 다이나믹 프라이싱
@@ -1035,6 +1036,7 @@ projectSections:
   - heading:
       ko: 이전 경력 프로젝트
       en: Earlier-Career Projects
+    pageBreakBefore: true
     projects:
       - title:
           ko: 프라이데이 서비스
@@ -1208,6 +1210,7 @@ projectSections:
       ko: 사이드 프로젝트
       en: Side Projects
     layout: compact
+    pageBreakBefore: true
     projects:
       - title:
           ko: Clip Atlas (clip-indexer) — 미디어 태그 제너레이터
